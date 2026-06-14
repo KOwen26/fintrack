@@ -427,8 +427,8 @@ Use deferred props to load data after initial page render:
     <h1>Users</h1>
     {#if !users}
         <div class="animate-pulse">
-            <div class="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
-            <div class="h-4 w-1/2 rounded bg-gray-200"></div>
+            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+            <div class="h-4 bg-gray-200 rounded w-1/2"></div>
         </div>
     {:else}
         <ul>

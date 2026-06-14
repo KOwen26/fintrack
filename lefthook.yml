@@ -12,7 +12,7 @@ pre-commit:
             run: pnpx eslint --fix --quiet {staged_files}
             stage_fixed: true
         prettier:
-            glob: "*.{js,ts,svelte,md,html,css}"
+            glob: "*.{js,ts,svelte,html,css}"
             run: pnpx prettier --write {staged_files}
             stage_fixed: true
         laravel:

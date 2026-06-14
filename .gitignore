@@ -26,6 +26,7 @@ yarn-error.log
 /.zed
 /.qwen
 /.claude
+/.kiro
 .php-cs-fixer.cache
 .gemini
 .tinker.php
