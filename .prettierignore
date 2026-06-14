@@ -1,0 +1,23 @@
+.DS_Store
+node_modules
+/build
+/public
+.env
+.env.*
+!.env.example
+/logs
+/static
+/.vscode
+/.idea
+/storage/debugbar
+/storage/framework
+/storage/logs
+
+# Ignore files for PNPM, NPM and YARN
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+composer.lock
+/resources/js/wayfinder
+/test-results
+/playwright-report

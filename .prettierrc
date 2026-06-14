@@ -1,0 +1,63 @@
+{
+    "useTabs": false,
+    "tabWidth": 4,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "semi": true,
+    "singleAttributePerLine": false,
+    "htmlWhitespaceSensitivity": "css",
+    "printWidth": 100,
+    "plugins": [
+        "prettier-plugin-svelte",
+        "@ianvs/prettier-plugin-sort-imports",
+        "prettier-plugin-tailwindcss"
+    ],
+    "tailwindFunctions": ["clsx", "cn", "cva"],
+    "tailwindStylesheet": "resources/css/app.css",
+    "overrides": [
+        {
+            "files": "**/*.yml",
+            "options": {
+                "tabWidth": 2
+            }
+        },
+        {
+            "files": "/resources/js/**/*.svelte",
+            "options": {
+                "parser": "svelte"
+            }
+        }
+    ],
+    "endOfLine": "auto",
+    "importOrder": [
+        "<TYPES>",
+        "^@type(.*)$",
+        "",
+        "<BUILTIN_MODULES>",
+        "",
+        "^[./]",
+        "",
+        "^\\$env/(.*)$",
+        "^@configs(.*)$",
+        "",
+        "<THIRD_PARTY_MODULES>",
+        "^[.]",
+        "",
+        "^@schema(.*)$",
+        "",
+        "^@utilities(.*)$",
+        "^@services(.*)$",
+        "",
+        "^~icons/(.*)$",
+        "^@assets(.*)$",
+        "",
+        "^@layouts(.*)$",
+        "^@components(.*)$",
+        "^@states(.*)$",
+        "",
+        "^@stores(.*)$"
+    ],
+    "importOrderParserPlugins": ["typescript", "javascript", "svelte"],
+    "importOrderTypeScriptVersion": "5.0.0",
+    "bracketSameLine": true
+}

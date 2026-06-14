@@ -1,0 +1,21 @@
+<script lang="ts">
+    import type { WithoutChildrenOrChild } from '@utilities/shadcn.js';
+
+    import { Select as SelectPrimitive } from 'bits-ui';
+
+    import { cn } from '@utilities/shadcn.js';
+
+    let {
+        ref = $bindable(null),
+        class: className,
+        ...restProps
+    }: WithoutChildrenOrChild<SelectPrimitive.ScrollDownButtonProps> = $props();
+</script>
+
+<SelectPrimitive.ScrollDownButton
+    class={cn('flex cursor-default items-center justify-center py-1', className)}
+    data-slot="select-scroll-down-button"
+    bind:ref
+    {...restProps}>
+    <i class="iconify ph--caret-down-duotone size-4"></i>
+</SelectPrimitive.ScrollDownButton>

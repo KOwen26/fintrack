@@ -1,0 +1,10 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ contractNamespace }}\{{ contract }};
+
+class {{ class }} implements {{ contract }}
+{
+    //
+}
