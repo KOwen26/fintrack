@@ -42,7 +42,7 @@ class HandleInertiaRequests extends Middleware
             'csrf_token' => csrf_token(),
             'auth' => [
                 'user' => fn () => $request->user()
-                    ? $request->user()->only('id', 'name', 'email')
+                    ? $request->user()->only('id', 'name', 'email', 'theme_preference')
                     : null,
                 'permissions' => fn () => $request->user()
                     ? [] // $request->user()->getPermissionsViaRoles()->pluck('name')->toArray()

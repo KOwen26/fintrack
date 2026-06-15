@@ -83,7 +83,7 @@ describe('Profile Settings', function () {
             ->assertRedirect('/');
 
         $this->assertGuest();
-        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+        $this->assertSoftDeleted('users', ['id' => $user->id]);
     });
 
     it('does not delete the account with a wrong password', function () {
