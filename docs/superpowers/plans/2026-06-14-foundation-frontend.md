@@ -14,31 +14,31 @@
 
 ## Component Reference (existing — always prefer these)
 
-| Component | Import | Key Props |
-|-----------|--------|-----------|
-| `Badge` | `@components/ui/badge.svelte` | `color` (primary/secondary/accent/success/info/warning/error/light/dark), `variant` (solid/outline/soft) |
-| `Button` | `@components/ui/button.svelte` | `color`, `variant` (solid/outline/ghost/soft/link), `href` (renders as `<a>`), `disabled` |
-| `Card` | `@components/ui/card.svelte` | `title`, `header`, `headerAction` snippet, `footer` snippet, `wrapperClass` |
-| `FormGenerator` | `@components/ui/forms/form-generator.svelte` | `formSchema: {fields, data}`, `bind:form`, `action`, `method`, `withoutSubmit` |
-| `Form` | `@components/ui/forms/form.svelte` | `form`, `action`, `method`, `submitOptions` — wraps `<form>` with Inertia + method spoofing |
-| `FormAction` | `@components/ui/forms/form-action.svelte` | `form`, `formId`, `labelSubmit`, `labelCancel`, `withoutCancel`, `onCancel` |
-| `ConfirmationModal` | `@components/ui/modals/confirmation-modal.svelte` | `bind:open`, `title`, `onConfirm`, `loading`, `confirmText`, `cancelText`, `confirmButtonProps` |
-| `DataList` | `@components/data/data-list.svelte` | `data: [{label, value}]` — feed from `DataComposer.toDataDisplay()` |
-| `DataComposer` | `@utilities/data-composer` | `.from(schema)`, `.extendSchema()`, `.except()`, `.toFormGenerator()`, `.toDataDisplay()` |
-| `Toaster` | `@components/ui/toaster.svelte` | — |
-| Module components | `@components/module/{module}/` | Feature-scoped: badge variants + form components per domain |
+| Component           | Import                                            | Key Props                                                                                                |
+| ------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `Badge`             | `@components/ui/badge.svelte`                     | `color` (primary/secondary/accent/success/info/warning/error/light/dark), `variant` (solid/outline/soft) |
+| `Button`            | `@components/ui/button.svelte`                    | `color`, `variant` (solid/outline/ghost/soft/link), `href` (renders as `<a>`), `disabled`                |
+| `Card`              | `@components/ui/card.svelte`                      | `title`, `header`, `headerAction` snippet, `footer` snippet, `wrapperClass`                              |
+| `FormGenerator`     | `@components/ui/forms/form-generator.svelte`      | `formSchema: {fields, data}`, `bind:form`, `action`, `method`, `withoutSubmit`                           |
+| `Form`              | `@components/ui/forms/form.svelte`                | `form`, `action`, `method`, `submitOptions` — wraps `<form>` with Inertia + method spoofing              |
+| `FormAction`        | `@components/ui/forms/form-action.svelte`         | `form`, `formId`, `labelSubmit`, `labelCancel`, `withoutCancel`, `onCancel`                              |
+| `ConfirmationModal` | `@components/ui/modals/confirmation-modal.svelte` | `bind:open`, `title`, `onConfirm`, `loading`, `confirmText`, `cancelText`, `confirmButtonProps`          |
+| `DataList`          | `@components/data/data-list.svelte`               | `data: [{label, value}]` — feed from `DataComposer.toDataDisplay()`                                      |
+| `DataComposer`      | `@utilities/data-composer`                        | `.from(schema)`, `.extendSchema()`, `.except()`, `.toFormGenerator()`, `.toDataDisplay()`                |
+| `Toaster`           | `@components/ui/toaster.svelte`                   | —                                                                                                        |
+| Module components   | `@components/module/{module}/`                    | Feature-scoped: badge variants + form components per domain                                              |
 
 ### FormGenerator field types
 
-| `type` | Extra props | Maps to |
-|--------|-------------|---------|
-| `text` / `email` / `number` | `inputProps` | `Input` |
-| `select` | `options: [{value, label}]` | `Select` (svelecte) |
-| `radio` | `options: [{value, label}]`, `inputItemProps` | `RadioGroup` + `RadioGroupItem` |
-| `checkbox` | `options: [{value, label}]` | `CheckboxGroup` |
-| `switch` | `inputProps` | `Switch` |
-| `textarea` | `inputProps` | `Textarea` |
-| `date` | `inputProps` | `DateInput` |
+| `type`                      | Extra props                                   | Maps to                         |
+| --------------------------- | --------------------------------------------- | ------------------------------- |
+| `text` / `email` / `number` | `inputProps`                                  | `Input`                         |
+| `select`                    | `options: [{value, label}]`                   | `Select` (svelecte)             |
+| `radio`                     | `options: [{value, label}]`, `inputItemProps` | `RadioGroup` + `RadioGroupItem` |
+| `checkbox`                  | `options: [{value, label}]`                   | `CheckboxGroup`                 |
+| `switch`                    | `inputProps`                                  | `Switch`                        |
+| `textarea`                  | `inputProps`                                  | `Textarea`                      |
+| `date`                      | `inputProps`                                  | `DateInput`                     |
 
 All field types share: `name` (form key), `fieldProps.title` (label), `required`, `show` (bool or `(form) => bool`), `disabledFn: (form) => bool`.
 
@@ -125,6 +125,7 @@ Expected: `resources/js/wayfinder/` populated with controller files, enum consta
 One schema file per model in `resources/js/schema/`. Schemas use the in-house `DataComposer` system (`@utilities/data-composer`) — a single `DataSchema` object drives form fields (`FormGenerator`), display values (`DataList`), and table columns in one place. No external library needed.
 
 Each `DataSchemaItem` declares:
+
 - `label` — display label and form field title
 - `value` — optional formatter for display (e.g. number → localised string)
 - `form` — factory returning `FormGeneratorProps` for `FormGenerator`
@@ -138,8 +139,9 @@ Dynamic options (e.g. provider list from page props) are not in the static schem
 ```typescript
 import type { DataSchema } from '@utilities/data-composer';
 import type { App } from '@wayfinder/types';
-import AccountType from '@wayfinder/App/Enums/AccountType';
+
 import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
+import AccountType from '@wayfinder/App/Enums/AccountType';
 
 export const accountSchema: DataSchema<App.Models.Account> = {
     name: {
@@ -149,7 +151,11 @@ export const accountSchema: DataSchema<App.Models.Account> = {
             type: 'text',
             name: 'name',
             required: true,
-            inputProps: { placeholder: 'e.g. BCA Savings', autocorrect: 'off', autocomplete: 'off' },
+            inputProps: {
+                placeholder: 'e.g. BCA Savings',
+                autocorrect: 'off',
+                autocomplete: 'off',
+            },
         }),
     },
     type: {
@@ -161,10 +167,10 @@ export const accountSchema: DataSchema<App.Models.Account> = {
             required: true,
             options: [
                 { value: AccountType.DebitAccount, label: 'Debit / Savings' },
-                { value: AccountType.CreditCard,   label: 'Credit Card'     },
-                { value: AccountType.CashWallet,   label: 'Cash Wallet'     },
-                { value: AccountType.EWallet,      label: 'E-Wallet'        },
-                { value: AccountType.Investment,   label: 'Investment'      },
+                { value: AccountType.CreditCard, label: 'Credit Card' },
+                { value: AccountType.CashWallet, label: 'Cash Wallet' },
+                { value: AccountType.EWallet, label: 'E-Wallet' },
+                { value: AccountType.Investment, label: 'Investment' },
             ],
         }),
     },
@@ -176,7 +182,7 @@ export const accountSchema: DataSchema<App.Models.Account> = {
             required: true,
             options: [
                 { value: AccountAccessType.Personal, label: 'Personal' },
-                { value: AccountAccessType.Joint,    label: 'Joint'    },
+                { value: AccountAccessType.Joint, label: 'Joint' },
             ],
         }),
     },
@@ -194,9 +200,8 @@ export const accountSchema: DataSchema<App.Models.Account> = {
     credit_card_limit: {
         label: 'Credit Limit',
         show: (data) => data.type === AccountType.CreditCard,
-        value: (data) => data.credit_card_limit
-            ? Number(data.credit_card_limit).toLocaleString('id-ID')
-            : '-',
+        value: (data) =>
+            data.credit_card_limit ? Number(data.credit_card_limit).toLocaleString('id-ID') : '-',
         form: () => ({
             type: 'number',
             name: 'credit_card_limit',
@@ -211,7 +216,12 @@ export const accountSchema: DataSchema<App.Models.Account> = {
             type: 'text',
             name: 'currency',
             required: true,
-            inputProps: { maxlength: 3, placeholder: 'IDR', autocorrect: 'off', autocapitalize: 'characters' },
+            inputProps: {
+                maxlength: 3,
+                placeholder: 'IDR',
+                autocorrect: 'off',
+                autocapitalize: 'characters',
+            },
         }),
     },
 };
@@ -279,7 +289,11 @@ export const householdInviteSchema: DataSchema<{ email: string }> = {
             type: 'email',
             name: 'email',
             required: true,
-            inputProps: { placeholder: 'partner@example.com', autocorrect: 'off', autocapitalize: 'none' },
+            inputProps: {
+                placeholder: 'partner@example.com',
+                autocorrect: 'off',
+                autocapitalize: 'none',
+            },
         }),
     },
 };
@@ -324,19 +338,21 @@ Each badge wraps the existing `Badge` component. The config map uses Wayfinder e
 
 ```svelte
 <script lang="ts">
-    import AccountType from '@wayfinder/App/Enums/AccountType';
-    import type { App } from '@wayfinder/types';
     import type { ColorVariant } from '@/data/theme';
+    import type { App } from '@wayfinder/types';
+
+    import AccountType from '@wayfinder/App/Enums/AccountType';
+
     import Badge from '@components/ui/badge.svelte';
 
     let { type }: { type: App.Enums.AccountType } = $props();
 
     const config: Record<App.Enums.AccountType, { label: string; color: ColorVariant }> = {
-        [AccountType.DebitAccount]: { label: 'Debit',        color: 'primary'   },
-        [AccountType.CreditCard]:   { label: 'Credit Card',  color: 'warning'   },
-        [AccountType.CashWallet]:   { label: 'Cash',         color: 'success'   },
-        [AccountType.EWallet]:      { label: 'E-Wallet',     color: 'info'      },
-        [AccountType.Investment]:   { label: 'Investment',   color: 'secondary' },
+        [AccountType.DebitAccount]: { label: 'Debit', color: 'primary' },
+        [AccountType.CreditCard]: { label: 'Credit Card', color: 'warning' },
+        [AccountType.CashWallet]: { label: 'Cash', color: 'success' },
+        [AccountType.EWallet]: { label: 'E-Wallet', color: 'info' },
+        [AccountType.Investment]: { label: 'Investment', color: 'secondary' },
     };
 
     const badge = $derived(config[type]);
@@ -349,16 +365,18 @@ Each badge wraps the existing `Badge` component. The config map uses Wayfinder e
 
 ```svelte
 <script lang="ts">
-    import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
-    import type { App } from '@wayfinder/types';
     import type { ColorVariant } from '@/data/theme';
+    import type { App } from '@wayfinder/types';
+
+    import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
+
     import Badge from '@components/ui/badge.svelte';
 
     let { type }: { type: App.Enums.AccountAccessType } = $props();
 
     const config: Record<App.Enums.AccountAccessType, { label: string; color: ColorVariant }> = {
-        [AccountAccessType.Personal]: { label: 'Personal', color: 'light'  },
-        [AccountAccessType.Joint]:    { label: 'Joint',    color: 'accent' },
+        [AccountAccessType.Personal]: { label: 'Personal', color: 'light' },
+        [AccountAccessType.Joint]: { label: 'Joint', color: 'accent' },
     };
 
     const badge = $derived(config[type]);
@@ -371,19 +389,21 @@ Each badge wraps the existing `Badge` component. The config map uses Wayfinder e
 
 ```svelte
 <script lang="ts">
-    import ProviderType from '@wayfinder/App/Enums/ProviderType';
-    import type { App } from '@wayfinder/types';
     import type { ColorVariant } from '@/data/theme';
+    import type { App } from '@wayfinder/types';
+
+    import ProviderType from '@wayfinder/App/Enums/ProviderType';
+
     import Badge from '@components/ui/badge.svelte';
 
     let { type }: { type: App.Enums.ProviderType } = $props();
 
     const config: Record<App.Enums.ProviderType, { label: string; color: ColorVariant }> = {
-        [ProviderType.Bank]:        { label: 'Bank',           color: 'primary'   },
-        [ProviderType.DigitalBank]: { label: 'Digital Bank',   color: 'info'      },
-        [ProviderType.EWallet]:     { label: 'E-Wallet',       color: 'success'   },
-        [ProviderType.CreditLoan]:  { label: 'Credit / Loan',  color: 'warning'   },
-        [ProviderType.Investment]:  { label: 'Investment',     color: 'secondary' },
+        [ProviderType.Bank]: { label: 'Bank', color: 'primary' },
+        [ProviderType.DigitalBank]: { label: 'Digital Bank', color: 'info' },
+        [ProviderType.EWallet]: { label: 'E-Wallet', color: 'success' },
+        [ProviderType.CreditLoan]: { label: 'Credit / Loan', color: 'warning' },
+        [ProviderType.Investment]: { label: 'Investment', color: 'secondary' },
     };
 
     const badge = $derived(config[type]);
@@ -396,16 +416,18 @@ Each badge wraps the existing `Badge` component. The config map uses Wayfinder e
 
 ```svelte
 <script lang="ts">
-    import HouseholdMemberRole from '@wayfinder/App/Enums/HouseholdMemberRole';
-    import type { App } from '@wayfinder/types';
     import type { ColorVariant } from '@/data/theme';
+    import type { App } from '@wayfinder/types';
+
+    import HouseholdMemberRole from '@wayfinder/App/Enums/HouseholdMemberRole';
+
     import Badge from '@components/ui/badge.svelte';
 
     let { role }: { role: App.Enums.HouseholdMemberRole } = $props();
 
     const config: Record<App.Enums.HouseholdMemberRole, { label: string; color: ColorVariant }> = {
-        [HouseholdMemberRole.Owner]:  { label: 'Owner',  color: 'primary' },
-        [HouseholdMemberRole.Member]: { label: 'Member', color: 'light'   },
+        [HouseholdMemberRole.Owner]: { label: 'Owner', color: 'primary' },
+        [HouseholdMemberRole.Member]: { label: 'Member', color: 'light' },
     };
 
     const badge = $derived(config[role]);
@@ -426,16 +448,20 @@ Single component for both create (no `account` prop) and edit (`account` prop pr
 
 ```svelte
 <script lang="ts">
-    import type { App } from '@wayfinder/types';
     import type { InertiaForm } from '@inertiajs/svelte';
-    import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+    import type { App } from '@wayfinder/types';
+
     import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
     import AccountType from '@wayfinder/App/Enums/AccountType';
-    import { DataComposer } from '@utilities/data-composer';
+    import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+
     import { accountSchema } from '@schema/account.schema';
+
+    import { DataComposer } from '@utilities/data-composer';
+
     import Card from '@components/ui/card.svelte';
-    import FormGenerator from '@components/ui/forms/form-generator.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';
+    import FormGenerator from '@components/ui/forms/form-generator.svelte';
 
     interface Props {
         providers: App.Models.Provider[];
@@ -452,7 +478,7 @@ Single component for both create (no `account` prop) and edit (`account` prop pr
 
     const providerOptions = $derived([
         { value: '', label: '— None —' },
-        ...providers.map(p => ({ value: p.id, label: p.name })),
+        ...providers.map((p) => ({ value: p.id, label: p.name })),
     ]);
 
     const formSchema = $derived(() => {
@@ -464,17 +490,15 @@ Single component for both create (no `account` prop) and edit (`account` prop pr
         });
 
         if (isEdit && account) {
-            return composer
-                .except(['access_type', 'initial_balance'])
-                .toFormGenerator({
-                    name: account.name,
-                    type: account.type,
-                    provider_id: account.provider_id ?? '',
-                    credit_card_limit: account.credit_card_limit
-                        ? Number(account.credit_card_limit)
-                        : null,
-                    currency: account.currency,
-                });
+            return composer.except(['access_type', 'initial_balance']).toFormGenerator({
+                name: account.name,
+                type: account.type,
+                provider_id: account.provider_id ?? '',
+                credit_card_limit: account.credit_card_limit
+                    ? Number(account.credit_card_limit)
+                    : null,
+                currency: account.currency,
+            });
         }
 
         const { fields, data } = composer.toFormGenerator({
@@ -506,8 +530,7 @@ Single component for both create (no `account` prop) and edit (`account` prop pr
         formSchema={formSchema()}
         {action}
         {method}
-        withoutSubmit
-    />
+        withoutSubmit />
 </Card>
 
 <div class="mt-4">
@@ -517,8 +540,7 @@ Single component for both create (no `account` prop) and edit (`account` prop pr
         labelSubmit={submitLabel}
         labelCancel="Cancel"
         onCancel={onCancel ?? (() => window.history.back())}
-        withoutCancel={!onCancel && !isEdit}
-    />
+        withoutCancel={!onCancel && !isEdit} />
 </div>
 ```
 
@@ -528,15 +550,19 @@ Inline add-category form. Accepts `categories` for parent options; calls `onSucc
 
 ```svelte
 <script lang="ts">
-    import type { App } from '@wayfinder/types';
     import type { InertiaForm } from '@inertiajs/svelte';
+    import type { App } from '@wayfinder/types';
+
     import { CategoriesController } from '@wayfinder/App/Http/Controllers/CategoriesController';
-    import { DataComposer } from '@utilities/data-composer';
+
     import { categorySchema } from '@schema/category.schema';
-    import Card from '@components/ui/card.svelte';
-    import FormGenerator from '@components/ui/forms/form-generator.svelte';
-    import FormAction from '@components/ui/forms/form-action.svelte';
+
+    import { DataComposer } from '@utilities/data-composer';
+
     import Button from '@components/ui/button.svelte';
+    import Card from '@components/ui/card.svelte';
+    import FormAction from '@components/ui/forms/form-action.svelte';
+    import FormGenerator from '@components/ui/forms/form-generator.svelte';
 
     interface Props {
         categories: App.Models.Category[];
@@ -550,7 +576,7 @@ Inline add-category form. Accepts `categories` for parent options; calls `onSucc
 
     const parentOptions = $derived([
         { value: '', label: 'Top-level group' },
-        ...categories.map(c => ({ value: c.id, label: c.name })),
+        ...categories.map((c) => ({ value: c.id, label: c.name })),
     ]);
 
     const formSchema = $derived(() =>
@@ -578,8 +604,12 @@ Inline add-category form. Accepts `categories` for parent options; calls `onSucc
         formSchema={formSchema()}
         action={CategoriesController.store.url()}
         withoutSubmit
-        submitOptions={{ onSuccess: () => { form?.reset?.(); onSuccess?.(); } }}
-    />
+        submitOptions={{
+            onSuccess: () => {
+                form?.reset?.();
+                onSuccess?.();
+            },
+        }} />
     <div class="mt-4 flex gap-2">
         <FormAction {form} formId="add-category" labelSubmit="Save" withoutCancel class="flex-1" />
         {#if onCancel}
@@ -594,12 +624,16 @@ Inline add-category form. Accepts `categories` for parent options; calls `onSucc
 ```svelte
 <script lang="ts">
     import type { InertiaForm } from '@inertiajs/svelte';
+
     import { HouseholdsController } from '@wayfinder/App/Http/Controllers/HouseholdsController';
-    import { DataComposer } from '@utilities/data-composer';
+
     import { householdSchema } from '@schema/household.schema';
+
+    import { DataComposer } from '@utilities/data-composer';
+
     import Card from '@components/ui/card.svelte';
-    import FormGenerator from '@components/ui/forms/form-generator.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';
+    import FormGenerator from '@components/ui/forms/form-generator.svelte';
 
     let form: InertiaForm<any> = $state(null!);
 
@@ -612,8 +646,7 @@ Inline add-category form. Accepts `categories` for parent options; calls `onSucc
         bind:form
         {formSchema}
         action={HouseholdsController.store.url()}
-        withoutSubmit
-    />
+        withoutSubmit />
     <div class="mt-4">
         <FormAction {form} formId="create-household" labelSubmit="Create Household" withoutCancel />
     </div>
@@ -625,12 +658,16 @@ Inline add-category form. Accepts `categories` for parent options; calls `onSucc
 ```svelte
 <script lang="ts">
     import type { InertiaForm } from '@inertiajs/svelte';
+
     import { HouseholdsController } from '@wayfinder/App/Http/Controllers/HouseholdsController';
-    import { DataComposer } from '@utilities/data-composer';
+
     import { householdInviteSchema } from '@schema/household.schema';
+
+    import { DataComposer } from '@utilities/data-composer';
+
     import Card from '@components/ui/card.svelte';
-    import FormGenerator from '@components/ui/forms/form-generator.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';
+    import FormGenerator from '@components/ui/forms/form-generator.svelte';
 
     let form: InertiaForm<any> = $state(null!);
 
@@ -644,8 +681,7 @@ Inline add-category form. Accepts `categories` for parent options; calls `onSucc
         {formSchema}
         action={HouseholdsController.invite.url()}
         withoutSubmit
-        submitOptions={{ onSuccess: () => form?.reset?.() }}
-    />
+        submitOptions={{ onSuccess: () => form?.reset?.() }} />
     <div class="mt-4">
         <FormAction {form} formId="invite-member" labelSubmit="Send Invitation" withoutCancel />
     </div>
@@ -659,8 +695,9 @@ Inline add-category form. Accepts `categories` for parent options; calls `onSucc
 - [ ] **Create `resources/js/hooks/use-theme.svelte.ts`**
 
 ```typescript
-import { page } from '@inertiajs/svelte';
 import type { App } from '@wayfinder/types';
+
+import { page } from '@inertiajs/svelte';
 
 export function useTheme() {
     const current = $derived(
@@ -671,7 +708,11 @@ export function useTheme() {
         document.documentElement.dataset.theme = current;
     });
 
-    return { get current() { return current; } };
+    return {
+        get current() {
+            return current;
+        },
+    };
 }
 ```
 
@@ -687,6 +728,7 @@ export function useTheme() {
     import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
     import { CategoriesController } from '@wayfinder/App/Http/Controllers/CategoriesController';
     import { HouseholdsController } from '@wayfinder/App/Http/Controllers/HouseholdsController';
+
     import Button from '@components/ui/button.svelte';
 
     const currentRoute = $derived(
@@ -695,13 +737,20 @@ export function useTheme() {
     const isActive = (prefix: string) => currentRoute.startsWith(prefix);
 </script>
 
-<nav class="btm-nav btm-nav-sm fixed bottom-0 left-0 right-0 z-50 border-t border-base-300 bg-base-100">
-    <a href={AccountsController.index.url()} class:active={isActive('accounts')} aria-label="Accounts">
+<nav
+    class="btm-nav btm-nav-sm fixed bottom-0 left-0 right-0 z-50 border-t border-base-300 bg-base-100">
+    <a
+        href={AccountsController.index.url()}
+        class:active={isActive('accounts')}
+        aria-label="Accounts">
         <i class="iconify size-5 ph--wallet-bold"></i>
         <span class="btm-nav-label text-xs">Accounts</span>
     </a>
 
-    <a href={CategoriesController.index.url()} class:active={isActive('categories')} aria-label="Categories">
+    <a
+        href={CategoriesController.index.url()}
+        class:active={isActive('categories')}
+        aria-label="Categories">
         <i class="iconify size-5 ph--tag-bold"></i>
         <span class="btm-nav-label text-xs">Categories</span>
     </a>
@@ -710,7 +759,10 @@ export function useTheme() {
         <i class="iconify size-6 ph--plus-bold"></i>
     </button>
 
-    <a href={HouseholdsController.show.url()} class:active={isActive('household')} aria-label="Household">
+    <a
+        href={HouseholdsController.show.url()}
+        class:active={isActive('household')}
+        aria-label="Household">
         <i class="iconify size-5 ph--users-bold"></i>
         <span class="btm-nav-label text-xs">Household</span>
     </a>
@@ -728,6 +780,7 @@ export function useTheme() {
 <script lang="ts">
     import { useFlashToast } from '@hooks/flash-handler.svelte';
     import { useTheme } from '@hooks/use-theme.svelte';
+
     import BottomNav from '@components/navigation/bottom-nav.svelte';
     import Toaster from '@components/ui/toaster.svelte';
 
@@ -775,14 +828,20 @@ case name.startsWith('settings/theme'):
 No form — no FormGenerator needed.
 
 ```svelte
+<script context="module" lang="ts">
+    import { inertia } from '@inertiajs/svelte';
+</script>
+
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+
     import { inertia } from '@inertiajs/svelte';
+    import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+
+    import AccountAccessTypeBadge from '@components/module/account/account-access-type-badge.svelte';
+    import AccountTypeBadge from '@components/module/account/account-type-badge.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import AccountTypeBadge from '@components/module/account/account-type-badge.svelte';
-    import AccountAccessTypeBadge from '@components/module/account/account-access-type-badge.svelte';
 
     let { accounts }: { accounts: App.Models.Account[] } = $props();
 </script>
@@ -815,7 +874,8 @@ No form — no FormGenerator needed.
                                 <div class="flex items-center gap-1">
                                     <AccountTypeBadge type={account.type} />
                                     <AccountAccessTypeBadge type={account.access_type} />
-                                    <span class="text-xs text-base-content/50">{account.currency}</span>
+                                    <span class="text-xs text-base-content/50"
+                                        >{account.currency}</span>
                                 </div>
                             </div>
                             <div class="text-right">
@@ -831,10 +891,6 @@ No form — no FormGenerator needed.
         </div>
     {/if}
 </div>
-
-<script context="module" lang="ts">
-    import { inertia } from '@inertiajs/svelte';
-</script>
 ```
 
 - [ ] **Create `resources/js/pages/accounts/create.svelte`**
@@ -844,9 +900,11 @@ Delegates entirely to `AccountForm` module component.
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
+
     import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
-    import Button from '@components/ui/button.svelte';
+
     import AccountForm from '@components/module/account/account-form.svelte';
+    import Button from '@components/ui/button.svelte';
 
     let {
         providers,
@@ -856,7 +914,11 @@ Delegates entirely to `AccountForm` module component.
 
 <div class="p-4">
     <div class="mb-4 flex items-center gap-3">
-        <Button color="light" variant="ghost" href={AccountsController.index.url()} class="btn-circle btn-sm">
+        <Button
+            color="light"
+            variant="ghost"
+            href={AccountsController.index.url()}
+            class="btn-circle btn-sm">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
         <h1 class="text-xl font-bold">New Account</h1>
@@ -873,27 +935,35 @@ Delegates form to `AccountForm`. Keeps archive/delete actions and their confirma
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+
     import { router } from '@inertiajs/svelte';
-    import Button from '@components/ui/button.svelte';
+    import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+
     import AccountForm from '@components/module/account/account-form.svelte';
+    import Button from '@components/ui/button.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
-    let {
-        account,
-        providers,
-    }: { account: App.Models.Account; providers: App.Models.Provider[] } = $props();
+    let { account, providers }: { account: App.Models.Account; providers: App.Models.Provider[] } =
+        $props();
 
     let showArchiveConfirm = $state(false);
     let showDeleteConfirm = $state(false);
 
-    function archive() { router.post(AccountsController.archive.url({ account: account.id })); }
-    function destroy() { router.delete(AccountsController.destroy.url({ account: account.id })); }
+    function archive() {
+        router.post(AccountsController.archive.url({ account: account.id }));
+    }
+    function destroy() {
+        router.delete(AccountsController.destroy.url({ account: account.id }));
+    }
 </script>
 
 <div class="p-4">
     <div class="mb-4 flex items-center gap-3">
-        <Button color="light" variant="ghost" href={AccountsController.show.url({ account: account.id })} class="btn-circle btn-sm">
+        <Button
+            color="light"
+            variant="ghost"
+            href={AccountsController.show.url({ account: account.id })}
+            class="btn-circle btn-sm">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
         <h1 class="text-xl font-bold">Edit Account</h1>
@@ -902,28 +972,45 @@ Delegates form to `AccountForm`. Keeps archive/delete actions and their confirma
     <AccountForm
         {providers}
         {account}
-        onCancel={() => router.visit(AccountsController.show.url({ account: account.id }))}
-    />
+        onCancel={() => router.visit(AccountsController.show.url({ account: account.id }))} />
 
     <div class="mt-4 space-y-3">
-        <Button color="warning" variant="outline" class="w-full" onclick={() => (showArchiveConfirm = true)}>
+        <Button
+            color="warning"
+            variant="outline"
+            class="w-full"
+            onclick={() => (showArchiveConfirm = true)}>
             <i class="iconify size-4 ph--archive-bold"></i>
             Archive Account
         </Button>
-        <Button color="error" variant="outline" class="w-full" onclick={() => (showDeleteConfirm = true)}>
+        <Button
+            color="error"
+            variant="outline"
+            class="w-full"
+            onclick={() => (showDeleteConfirm = true)}>
             <i class="iconify size-4 ph--trash-bold"></i>
             Delete Account
         </Button>
     </div>
 </div>
 
-<ConfirmationModal bind:open={showArchiveConfirm} title="Archive Account" confirmText="Archive"
-    cancelText="Cancel" onConfirm={archive} confirmButtonProps={{ color: 'warning' }}>
+<ConfirmationModal
+    bind:open={showArchiveConfirm}
+    title="Archive Account"
+    confirmText="Archive"
+    cancelText="Cancel"
+    onConfirm={archive}
+    confirmButtonProps={{ color: 'warning' }}>
     This account will be hidden from active views. You can restore it later.
 </ConfirmationModal>
 
-<ConfirmationModal bind:open={showDeleteConfirm} title="Delete Account" confirmText="Delete"
-    cancelText="Cancel" onConfirm={destroy} confirmButtonProps={{ color: 'error' }}>
+<ConfirmationModal
+    bind:open={showDeleteConfirm}
+    title="Delete Account"
+    confirmText="Delete"
+    cancelText="Cancel"
+    onConfirm={destroy}
+    confirmButtonProps={{ color: 'error' }}>
     This will permanently delete the account and cannot be undone.
 </ConfirmationModal>
 ```
@@ -935,15 +1022,19 @@ Delegates form to `AccountForm`. Keeps archive/delete actions and their confirma
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
+
     import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
-    import { DataComposer } from '@utilities/data-composer';
+
     import { accountSchema } from '@schema/account.schema';
+
+    import { DataComposer } from '@utilities/data-composer';
+
+    import DataList from '@components/data/data-list.svelte';
+    import AccountAccessTypeBadge from '@components/module/account/account-access-type-badge.svelte';
+    import AccountTypeBadge from '@components/module/account/account-type-badge.svelte';
+    import ProviderTypeBadge from '@components/module/provider/provider-type-badge.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import DataList from '@components/data/data-list.svelte';
-    import AccountTypeBadge from '@components/module/account/account-type-badge.svelte';
-    import AccountAccessTypeBadge from '@components/module/account/account-access-type-badge.svelte';
-    import ProviderTypeBadge from '@components/module/provider/provider-type-badge.svelte';
 
     let { account }: { account: App.Models.Account } = $props();
 
@@ -957,7 +1048,11 @@ Delegates form to `AccountForm`. Keeps archive/delete actions and their confirma
 <div class="p-4">
     <div class="mb-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <Button color="light" variant="ghost" href={AccountsController.index.url()} class="btn-circle btn-sm">
+            <Button
+                color="light"
+                variant="ghost"
+                href={AccountsController.index.url()}
+                class="btn-circle btn-sm">
                 <i class="iconify size-5 ph--arrow-left-bold"></i>
             </Button>
             <div>
@@ -972,8 +1067,7 @@ Delegates form to `AccountForm`. Keeps archive/delete actions and their confirma
             color="light"
             variant="ghost"
             href={AccountsController.edit.url({ account: account.id })}
-            class="btn-circle btn-sm"
-        >
+            class="btn-circle btn-sm">
             <i class="iconify size-5 ph--pencil-simple-bold"></i>
         </Button>
     </div>
@@ -1009,12 +1103,14 @@ The add-category panel uses `FormGenerator` with `withoutSubmit`. `icon` is in `
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { CategoriesController } from '@wayfinder/App/Http/Controllers/CategoriesController';
+
     import { router } from '@inertiajs/svelte';
+    import { CategoriesController } from '@wayfinder/App/Http/Controllers/CategoriesController';
+
+    import CategoryForm from '@components/module/category/category-form.svelte';
+    import Badge from '@components/ui/badge.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import Badge from '@components/ui/badge.svelte';
-    import CategoryForm from '@components/module/category/category-form.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
     let { categories }: { categories: App.Models.Category[] } = $props();
@@ -1043,8 +1139,7 @@ The add-category panel uses `FormGenerator` with `withoutSubmit`. `icon` is in `
         <CategoryForm
             {categories}
             onSuccess={() => (showForm = false)}
-            onCancel={() => (showForm = false)}
-        />
+            onCancel={() => (showForm = false)} />
     {/if}
 
     <div class="space-y-3">
@@ -1052,13 +1147,19 @@ The add-category panel uses `FormGenerator` with `withoutSubmit`. `icon` is in `
             <Card>
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <span class="inline-block h-3 w-3 rounded-full" style="background-color: {group.color}"></span>
+                        <span
+                            class="inline-block h-3 w-3 rounded-full"
+                            style="background-color: {group.color}"></span>
                         <span class="font-semibold text-sm">{group.name}</span>
                         {#if group.is_fixed_cost}
                             <Badge color="light" variant="outline">Fixed</Badge>
                         {/if}
                     </div>
-                    <Button color="error" variant="ghost" class="btn-xs" onclick={() => (deletingId = group.id)}>
+                    <Button
+                        color="error"
+                        variant="ghost"
+                        class="btn-xs"
+                        onclick={() => (deletingId = group.id)}>
                         <i class="iconify size-4 ph--trash-bold"></i>
                     </Button>
                 </div>
@@ -1068,13 +1169,19 @@ The add-category panel uses `FormGenerator` with `withoutSubmit`. `icon` is in `
                         {#each group.children as child (child.id)}
                             <li class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <span class="inline-block h-2 w-2 rounded-full" style="background-color: {child.color}"></span>
+                                    <span
+                                        class="inline-block h-2 w-2 rounded-full"
+                                        style="background-color: {child.color}"></span>
                                     <span class="text-sm">{child.name}</span>
                                     {#if child.is_fixed_cost}
                                         <Badge color="light" variant="outline">Fixed</Badge>
                                     {/if}
                                 </div>
-                                <Button color="error" variant="ghost" class="btn-xs" onclick={() => (deletingId = child.id)}>
+                                <Button
+                                    color="error"
+                                    variant="ghost"
+                                    class="btn-xs"
+                                    onclick={() => (deletingId = child.id)}>
                                     <i class="iconify size-4 ph--trash-bold"></i>
                                 </Button>
                             </li>
@@ -1092,8 +1199,7 @@ The add-category panel uses `FormGenerator` with `withoutSubmit`. `icon` is in `
     confirmText="Delete"
     onConfirm={destroy}
     onCancel={() => (deletingId = null)}
-    confirmButtonProps={{ color: 'error' }}
->
+    confirmButtonProps={{ color: 'error' }}>
     This category will be soft-deleted. Transactions using it are unaffected.
 </ConfirmationModal>
 ```
@@ -1109,13 +1215,15 @@ Two `FormGenerator` instances on the same page: one for creating a household, on
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { HouseholdsController } from '@wayfinder/App/Http/Controllers/HouseholdsController';
+
     import { router } from '@inertiajs/svelte';
-    import Button from '@components/ui/button.svelte';
-    import Card from '@components/ui/card.svelte';
+    import { HouseholdsController } from '@wayfinder/App/Http/Controllers/HouseholdsController';
+
     import HouseholdForm from '@components/module/household/household-form.svelte';
     import HouseholdInviteForm from '@components/module/household/household-invite-form.svelte';
     import HouseholdMemberRoleBadge from '@components/module/household/household-member-role-badge.svelte';
+    import Button from '@components/ui/button.svelte';
+    import Card from '@components/ui/card.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
     let { household }: { household: App.Models.Household | null } = $props();
@@ -1144,7 +1252,10 @@ Two `FormGenerator` instances on the same page: one for creating a household, on
                             <HouseholdMemberRoleBadge role={member.role} />
                         </div>
                         {#if member.role !== 'owner'}
-                            <Button color="error" variant="ghost" class="btn-xs"
+                            <Button
+                                color="error"
+                                variant="ghost"
+                                class="btn-xs"
                                 onclick={() => (removingMemberId = member.id)}>
                                 Remove
                             </Button>
@@ -1158,9 +1269,14 @@ Two `FormGenerator` instances on the same page: one for creating a household, on
     {/if}
 </div>
 
-<ConfirmationModal bind:open={removingMemberId !== null} title="Remove Member"
-    confirmText="Remove" cancelText="Cancel" onConfirm={removeMember}
-    onCancel={() => (removingMemberId = null)} confirmButtonProps={{ color: 'error' }}>
+<ConfirmationModal
+    bind:open={removingMemberId !== null}
+    title="Remove Member"
+    confirmText="Remove"
+    cancelText="Cancel"
+    onConfirm={removeMember}
+    onCancel={() => (removingMemberId = null)}
+    confirmButtonProps={{ color: 'error' }}>
     This member will lose access to all joint accounts in this household.
 </ConfirmationModal>
 ```
@@ -1171,15 +1287,23 @@ Accept/decline are single-action forms — use `Form` component (no `FormGenerat
 
 ```svelte
 <script lang="ts">
-    import { HouseholdInvitationsController } from '@wayfinder/App/Http/Controllers/HouseholdInvitationsController';
     import { useForm } from '@inertiajs/svelte';
-    import Card from '@components/ui/card.svelte';
-    import Button from '@components/ui/button.svelte';
-    import SubmitButton from '@components/ui/forms/submit-button.svelte';
-    import Form from '@components/ui/forms/form.svelte';
+    import { HouseholdInvitationsController } from '@wayfinder/App/Http/Controllers/HouseholdInvitationsController';
 
-    let { invitation }: {
-        invitation: { token: string; household_name: string; invited_by: string; expires_at: string };
+    import Button from '@components/ui/button.svelte';
+    import Card from '@components/ui/card.svelte';
+    import Form from '@components/ui/forms/form.svelte';
+    import SubmitButton from '@components/ui/forms/submit-button.svelte';
+
+    let {
+        invitation,
+    }: {
+        invitation: {
+            token: string;
+            household_name: string;
+            invited_by: string;
+            expires_at: string;
+        };
     } = $props();
 
     const acceptForm = useForm({});
@@ -1198,13 +1322,21 @@ Accept/decline are single-action forms — use `Form` component (no `FormGenerat
         <p class="mb-6 text-xs text-base-content/40">Expires {expiresAt}</p>
 
         <div class="space-y-3">
-            <Form form={acceptForm} action={HouseholdInvitationsController.accept.url({ token: invitation.token })}>
+            <Form
+                form={acceptForm}
+                action={HouseholdInvitationsController.accept.url({ token: invitation.token })}>
                 <SubmitButton submitting={acceptForm.processing} class="w-full" color="primary">
                     Accept Invitation
                 </SubmitButton>
             </Form>
-            <Form form={declineForm} action={HouseholdInvitationsController.decline.url({ token: invitation.token })}>
-                <Button color="light" variant="ghost" class="w-full btn-sm" disabled={declineForm.processing}>
+            <Form
+                form={declineForm}
+                action={HouseholdInvitationsController.decline.url({ token: invitation.token })}>
+                <Button
+                    color="light"
+                    variant="ghost"
+                    class="w-full btn-sm"
+                    disabled={declineForm.processing}>
                     Decline
                 </Button>
             </Form>
@@ -1222,16 +1354,40 @@ Accept/decline are single-action forms — use `Form` component (no `FormGenerat
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { UserThemeController } from '@wayfinder/App/Http/Controllers/UserThemeController';
+
     import { page, router } from '@inertiajs/svelte';
-    import Card from '@components/ui/card.svelte';
+    import { UserThemeController } from '@wayfinder/App/Http/Controllers/UserThemeController';
+
     import Badge from '@components/ui/badge.svelte';
+    import Card from '@components/ui/card.svelte';
 
     const daisyThemes = [
-        'light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate',
-        'synthwave', 'retro', 'cyberpunk', 'valentine', 'halloween', 'forest',
-        'aqua', 'lofi', 'pastel', 'fantasy', 'black', 'luxury', 'dracula',
-        'business', 'night', 'coffee', 'winter', 'dim', 'nord', 'sunset',
+        'light',
+        'dark',
+        'cupcake',
+        'bumblebee',
+        'emerald',
+        'corporate',
+        'synthwave',
+        'retro',
+        'cyberpunk',
+        'valentine',
+        'halloween',
+        'forest',
+        'aqua',
+        'lofi',
+        'pastel',
+        'fantasy',
+        'black',
+        'luxury',
+        'dracula',
+        'business',
+        'night',
+        'coffee',
+        'winter',
+        'dim',
+        'nord',
+        'sunset',
     ];
 
     const currentTheme = $derived(
@@ -1240,10 +1396,14 @@ Accept/decline are single-action forms — use `Form` component (no `FormGenerat
 
     function selectTheme(theme: string) {
         document.documentElement.dataset.theme = theme;
-        router.put(UserThemeController.update.url(), { theme }, {
-            preserveScroll: true,
-            preserveState: true,
-        });
+        router.put(
+            UserThemeController.update.url(),
+            { theme },
+            {
+                preserveScroll: true,
+                preserveState: true,
+            }
+        );
     }
 </script>
 
@@ -1255,9 +1415,11 @@ Accept/decline are single-action forms — use `Form` component (no `FormGenerat
             <button
                 data-theme={theme}
                 class="text-left transition-all"
-                onclick={() => selectTheme(theme)}
-            >
-                <Card wrapperClass="border-2 {currentTheme === theme ? 'border-primary' : 'border-base-300'}">
+                onclick={() => selectTheme(theme)}>
+                <Card
+                    wrapperClass="border-2 {currentTheme === theme
+                        ? 'border-primary'
+                        : 'border-base-300'}">
                     <div class="mb-2 flex gap-1">
                         <span class="h-3 w-3 rounded-full bg-primary"></span>
                         <span class="h-3 w-3 rounded-full bg-secondary"></span>

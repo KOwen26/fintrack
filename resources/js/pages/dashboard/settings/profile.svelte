@@ -52,11 +52,11 @@
             <p class="text-base-content/70 text-sm">Update your name and email address.</p>
 
             <form class="mt-4 space-y-4" onsubmit={submitProfile}>
-                <Field title="Name" error={profileForm.errors.name}>
+                <Field error={profileForm.errors.name} title="Name">
                     <Input name="name" type="text" bind:value={profileForm.name} />
                 </Field>
 
-                <Field title="Email" error={profileForm.errors.email}>
+                <Field error={profileForm.errors.email} title="Email">
                     <Input name="email" type="email" bind:value={profileForm.email} />
                 </Field>
 
@@ -87,7 +87,7 @@
                     </p>
                 {/if}
                 <div class="card-actions mt-2">
-                    <Button variant="outline" class="btn-sm" onclick={resendVerification}>
+                    <Button class="btn-sm" onclick={resendVerification} variant="outline">
                         Resend Verification Email
                     </Button>
                 </div>
@@ -107,32 +107,32 @@
             {#if !showDeleteConfirm}
                 <div class="card-actions mt-2">
                     <Button
-                        color="error"
-                        variant="outline"
                         class="btn-sm"
-                        onclick={() => (showDeleteConfirm = true)}>
+                        color="error"
+                        onclick={() => (showDeleteConfirm = true)}
+                        variant="outline">
                         Delete Account
                     </Button>
                 </div>
             {:else}
                 <form class="mt-4 space-y-4" onsubmit={submitDelete}>
                     <Field
-                        title="Confirm your password to continue"
-                        error={deleteForm.errors.password}>
+                        error={deleteForm.errors.password}
+                        title="Confirm your password to continue">
                         <PasswordInput name="password" bind:value={deleteForm.password} />
                     </Field>
 
                     <div class="card-actions mt-2 gap-2">
                         <Button
-                            variant="ghost"
                             class="btn-sm"
+                            onclick={() => (showDeleteConfirm = false)}
                             type="button"
-                            onclick={() => (showDeleteConfirm = false)}>
+                            variant="ghost">
                             Cancel
                         </Button>
                         <SubmitButton
-                            color="error"
                             class="btn-sm"
+                            color="error"
                             submitting={deleteForm.processing}>
                             Confirm Delete
                         </SubmitButton>

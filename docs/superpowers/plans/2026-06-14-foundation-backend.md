@@ -4,7 +4,7 @@
 
 **Goal:** Build the complete backend for Providers, Households, Accounts, Categories, and theme preference — every migration, model, policy, service, DTO, controller, route, and seeder the Foundation spec defines.
 
-**Architecture:** Service pattern throughout — controllers are thin dispatchers, all business logic lives in `app/Services/`. Policies enforce access rules. Spatie Data DTOs typed-prop every Inertia response. No DB enums — string columns + PHP-backed enum casts.
+**Architecture:** Service pattern throughout — controllers are thin dispatchers, all business logic lives in `app/Services/`. Policies enforce access rules. Spatie Data DTOs only for complex/combined shapes — simple model data passes directly to Inertia. No DB enums — string columns + PHP-backed enum casts.
 
 **Tech Stack:** PHP 8.4, Laravel 13, Spatie Laravel Data, Pest 4, Inertia v3
 
@@ -1910,6 +1910,7 @@ require __DIR__ . '/dev.php';
 - [ ] **Update `app/Http/Middleware/HandleInertiaRequests.php` — share `theme_preference`**
 
 Change the `auth.user` share from:
+
 ```php
 'auth' => [
     'user' => fn () => $request->user()
@@ -1918,6 +1919,7 @@ Change the `auth.user` share from:
 ```
 
 To:
+
 ```php
 'auth' => [
     'user' => fn () => $request->user()
@@ -1931,7 +1933,7 @@ To:
 php artisan wayfinder:generate --no-interaction
 ```
 
-Expected: `resources/js/actions/` directory populated with typed controller functions.
+Expected: `resources/js/wayfinder/` populated with controller files, enum constant files, and `types.d.ts`.
 
 ---
 
@@ -2510,7 +2512,7 @@ Expected: Files reformatted to project style with no errors.
 - [ ] **Stage all new and modified files**
 
 ```bash
-git add database/migrations/ app/Enums/ app/Models/ database/factories/ app/Policies/ app/Http/Requests/ app/Services/ app/Data/ app/Http/Controllers/ app/Http/Middleware/HandleInertiaRequests.php routes/web.php database/seeders/ tests/Feature/ resources/js/types/generated.d.ts resources/js/actions/
+git add database/migrations/ app/Enums/ app/Models/ database/factories/ app/Policies/ app/Http/Requests/ app/Services/ app/Data/ app/Http/Controllers/ app/Http/Middleware/HandleInertiaRequests.php routes/web.php database/seeders/ tests/Feature/ resources/js/wayfinder/
 ```
 
 - [ ] **Commit**

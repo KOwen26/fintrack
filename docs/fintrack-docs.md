@@ -584,33 +584,33 @@ erDiagram
 
 #### Users (`users`)
 
-| Column               | Type      | Notes                                                             |
-| -------------------- | --------- | ----------------------------------------------------------------- |
-| `id`                 | bigint    | PK, auto-increment                                                |
-| `name`               | string    | User full name                                                    |
-| `email`              | string    | Required, unique                                                  |
-| `password`           | string    | Hashed password                                                   |
-| `theme_preference`   | string    | Nullable; DaisyUI theme name e.g. `light`, `dark`; null = app default |
-| `email_verified_at`  | timestamp | Nullable                                                          |
-| `remember_token`     | string    | Nullable                                                          |
-| `created_at`         | timestamp |                                                                   |
-| `updated_at`         | timestamp |                                                                   |
-| `deleted_at`         | timestamp | Soft delete                                                       |
+| Column              | Type      | Notes                                                                 |
+| ------------------- | --------- | --------------------------------------------------------------------- |
+| `id`                | bigint    | PK, auto-increment                                                    |
+| `name`              | string    | User full name                                                        |
+| `email`             | string    | Required, unique                                                      |
+| `password`          | string    | Hashed password                                                       |
+| `theme_preference`  | string    | Nullable; DaisyUI theme name e.g. `light`, `dark`; null = app default |
+| `email_verified_at` | timestamp | Nullable                                                              |
+| `remember_token`    | string    | Nullable                                                              |
+| `created_at`        | timestamp |                                                                       |
+| `updated_at`        | timestamp |                                                                       |
+| `deleted_at`        | timestamp | Soft delete                                                           |
 
 #### Providers (`providers`)
 
 Seeded reference data. No user-facing CRUD in MVP.
 
-| Column       | Type      | Notes                                                                    |
-| ------------ | --------- | ------------------------------------------------------------------------ |
-| `id`         | bigint    | PK, auto-increment                                                       |
-| `name`       | string    | e.g. "BCA", "GoPay"                                                      |
-| `slug`       | string    | Unique; e.g. "bca", "gopay"                                              |
-| `logo_url`   | string    | Nullable                                                                 |
+| Column       | Type      | Notes                                                                     |
+| ------------ | --------- | ------------------------------------------------------------------------- |
+| `id`         | bigint    | PK, auto-increment                                                        |
+| `name`       | string    | e.g. "BCA", "GoPay"                                                       |
+| `slug`       | string    | Unique; e.g. "bca", "gopay"                                               |
+| `logo_url`   | string    | Nullable                                                                  |
 | `type`       | string    | PHP enum: `bank`, `digital_bank`, `e_wallet`, `credit_loan`, `investment` |
-| `status`     | string    | PHP enum: `active`, `inactive`                                           |
-| `created_at` | timestamp |                                                                          |
-| `updated_at` | timestamp |                                                                          |
+| `status`     | string    | PHP enum: `active`, `inactive`                                            |
+| `created_at` | timestamp |                                                                           |
+| `updated_at` | timestamp |                                                                           |
 
 #### Households (`households`)
 

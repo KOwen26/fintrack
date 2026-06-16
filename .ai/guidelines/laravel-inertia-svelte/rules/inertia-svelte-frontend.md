@@ -10,7 +10,9 @@ Always use Svelte 5 rune syntax. Never use the legacy Options API (`export let`,
     let { account, providers } = $props();
     let showConfirm = $state(false);
     const isEdit = $derived(!!account);
-    $effect(() => { document.title = account.name; });
+    $effect(() => {
+        document.title = account.name;
+    });
 
     // ❌ legacy Options API
     export let account;
@@ -26,23 +28,23 @@ All `.svelte` and `.ts` files and their containing directories must use `kebab-c
 - `use-theme.svelte.ts` ✅ — `useTheme.ts` ❌
 - `components/account-list/` ✅ — `components/AccountList/` ❌
 
-PascalCase is reserved for component names *inside* files only (`<AccountForm />`).
+PascalCase is reserved for component names _inside_ files only (`<AccountForm />`).
 
 Files that use Svelte runes outside a `.svelte` file must end in `.svelte.ts`.
 
 ## Directory Conventions
 
-| Purpose | Location |
-|---------|----------|
-| Inertia page components | `resources/js/pages/` |
-| Reusable UI primitives | `resources/js/components/ui/` |
+| Purpose                   | Location                                   |
+| ------------------------- | ------------------------------------------ |
+| Inertia page components   | `resources/js/pages/`                      |
+| Reusable UI primitives    | `resources/js/components/ui/`              |
 | Feature module components | `resources/js/components/module/{module}/` |
-| Layouts | `resources/js/components/layouts/` |
-| Navigation | `resources/js/components/navigation/` |
-| Data display | `resources/js/components/data/` |
-| Svelte hooks | `resources/js/hooks/` |
-| DataComposer schemas | `resources/js/schema/` |
-| Wayfinder generated files | `resources/js/wayfinder/` |
+| Layouts                   | `resources/js/components/layouts/`         |
+| Navigation                | `resources/js/components/navigation/`      |
+| Data display              | `resources/js/components/data/`            |
+| Svelte hooks              | `resources/js/hooks/`                      |
+| DataComposer schemas      | `resources/js/schema/`                     |
+| Wayfinder generated files | `resources/js/wayfinder/`                  |
 
 ## Module Components
 
@@ -83,19 +85,21 @@ Every PHP-backed enum must have a badge component in `components/module/{module}
 ```svelte
 <!-- module/account/account-type-badge.svelte -->
 <script lang="ts">
-    import AccountType from '@wayfinder/App/Enums/AccountType';
-    import type { App } from '@wayfinder/types';
     import type { ColorVariant } from '@/data/theme';
+    import type { App } from '@wayfinder/types';
+
+    import AccountType from '@wayfinder/App/Enums/AccountType';
+
     import Badge from '@components/ui/badge.svelte';
 
     let { type }: { type: App.Enums.AccountType } = $props();
 
     const config: Record<App.Enums.AccountType, { label: string; color: ColorVariant }> = {
-        [AccountType.DebitAccount]: { label: 'Debit',       color: 'primary'   },
-        [AccountType.CreditCard]:   { label: 'Credit Card', color: 'warning'   },
-        [AccountType.CashWallet]:   { label: 'Cash',        color: 'success'   },
-        [AccountType.EWallet]:      { label: 'E-Wallet',    color: 'info'      },
-        [AccountType.Investment]:   { label: 'Investment',  color: 'secondary' },
+        [AccountType.DebitAccount]: { label: 'Debit', color: 'primary' },
+        [AccountType.CreditCard]: { label: 'Credit Card', color: 'warning' },
+        [AccountType.CashWallet]: { label: 'Cash', color: 'success' },
+        [AccountType.EWallet]: { label: 'E-Wallet', color: 'info' },
+        [AccountType.Investment]: { label: 'Investment', color: 'secondary' },
     };
 
     const badge = $derived(config[type]);
@@ -114,6 +118,7 @@ One schema file per model in `resources/js/schema/`, named `{model}.schema.ts`. 
 // schema/account.schema.ts
 import type { DataSchema } from '@utilities/data-composer';
 import type { App } from '@wayfinder/types';
+
 import AccountType from '@wayfinder/App/Enums/AccountType';
 
 export const accountSchema: DataSchema<App.Models.Account> = {
@@ -189,12 +194,12 @@ Use `FormGenerator` (`@components/ui/forms/form-generator.svelte`) for all creat
     bind:form
     {formSchema}
     action={AccountsController.store.url()}
-    withoutSubmit
-/>
+    withoutSubmit />
 <FormAction {form} formId="account-form" labelSubmit="Create Account" withoutCancel />
 ```
 
 Key patterns:
+
 - `withoutSubmit` + external `FormAction` with `formId` lets the button live outside the `<form>` tag
 - `data` keys not in `fields` are still submitted (use for hidden values like `household_id`)
 - `show: (form) => bool` in a field definition makes it conditionally visible
@@ -230,14 +235,11 @@ let showDeleteConfirm = $state(false);
     confirmText="Delete"
     cancelText="Cancel"
     onConfirm={destroy}
-    confirmButtonProps={{ color: 'error' }}
->
+    confirmButtonProps={{ color: 'error' }}>
     This cannot be undone.
 </ConfirmationModal>
 
-<Button color="error" variant="outline" onclick={() => (showDeleteConfirm = true)}>
-    Delete
-</Button>
+<Button color="error" variant="outline" onclick={() => (showDeleteConfirm = true)}>Delete</Button>
 ```
 
 ## Wayfinder
@@ -248,24 +250,23 @@ All generated files live under `resources/js/wayfinder/` (alias `@wayfinder`). R
 
 ```typescript
 // Controller actions (PHP namespace path)
-import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
-
-// Named routes
-import accounts from '@wayfinder/routes/accounts';
-
-// Enum constants (runtime comparisons, badge config maps)
-import AccountType from '@wayfinder/App/Enums/AccountType';
 
 // All types
 import type { App } from '@wayfinder/types';
+
+// Enum constants (runtime comparisons, badge config maps)
+import AccountType from '@wayfinder/App/Enums/AccountType';
+import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+// Named routes
+import accounts from '@wayfinder/routes/accounts';
 ```
 
 ### URL generation
 
 ```typescript
-AccountsController.index.url()                            // '/accounts'
-AccountsController.show.url({ account: 1 })               // '/accounts/1'
-AccountsController.index.url({ query: { page: 2 } })      // '/accounts?page=2'
+AccountsController.index.url(); // '/accounts'
+AccountsController.show.url({ account: 1 }); // '/accounts/1'
+AccountsController.index.url({ query: { page: 2 } }); // '/accounts?page=2'
 ```
 
 ### With Inertia — always use `.url()`
@@ -286,7 +287,7 @@ router.visit(AccountsController.show.url({ account: id }));
 ```typescript
 // Produces { action: '/accounts/1?_method=PUT', method: 'post' }
 // Only use when spreading onto a native <form> element — NOT with Inertia useForm
-AccountsController.update.form({ account: 1 })
+AccountsController.update.form({ account: 1 });
 ```
 
 ### Enum constants — no magic strings
@@ -306,8 +307,9 @@ Hooks live in `resources/js/hooks/` (alias `@hooks`). Files that use Svelte rune
 
 ```typescript
 // hooks/use-theme.svelte.ts
-import { page } from '@inertiajs/svelte';
 import type { App } from '@wayfinder/types';
+
+import { page } from '@inertiajs/svelte';
 
 export function useTheme() {
     const current = $derived(
@@ -318,7 +320,11 @@ export function useTheme() {
         document.documentElement.dataset.theme = current;
     });
 
-    return { get current() { return current; } };
+    return {
+        get current() {
+            return current;
+        },
+    };
 }
 ```
 
@@ -326,15 +332,15 @@ export function useTheme() {
 
 Use existing components instead of raw HTML/CSS wherever possible:
 
-| Instead of | Use |
-|-----------|-----|
-| `<button class="btn btn-primary">` | `<Button color="primary">` |
-| `<a href>` / `<Link>` | `<Button href="...">` |
-| `<div class="card">` | `<Card title="...">` |
-| `<fieldset>` + raw `<input>` | `<FormField label errors>` + `<Input>` |
-| `<span class="badge">` | `<Badge color="...">` or module badge component |
-| Manual key-value rows | `<DataList data={DataComposer.toDataDisplay(record)}>` |
-| `browser confirm()` | `<ConfirmationModal bind:open onConfirm>` |
+| Instead of                         | Use                                                    |
+| ---------------------------------- | ------------------------------------------------------ |
+| `<button class="btn btn-primary">` | `<Button color="primary">`                             |
+| `<a href>` / `<Link>`              | `<Button href="...">`                                  |
+| `<div class="card">`               | `<Card title="...">`                                   |
+| `<fieldset>` + raw `<input>`       | `<FormField label errors>` + `<Input>`                 |
+| `<span class="badge">`             | `<Badge color="...">` or module badge component        |
+| Manual key-value rows              | `<DataList data={DataComposer.toDataDisplay(record)}>` |
+| `browser confirm()`                | `<ConfirmationModal bind:open onConfirm>`              |
 
 ## Layout Assignment
 

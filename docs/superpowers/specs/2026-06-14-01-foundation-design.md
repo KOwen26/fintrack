@@ -25,16 +25,16 @@ All other specs (Ledger, Automation, Insights) depend on Foundation being in pla
 
 Seeded reference data. No user-facing CRUD in MVP. Future: import integrations.
 
-| Column       | Type            | Notes                                                                    |
-| ------------ | --------------- | ------------------------------------------------------------------------ |
-| `id`         | bigint PK       |                                                                          |
-| `name`       | string          | e.g. "BCA", "GoPay"                                                      |
-| `slug`       | string unique   | e.g. "bca", "gopay"                                                      |
-| `logo_url`   | string nullable |                                                                          |
+| Column       | Type            | Notes                                                                     |
+| ------------ | --------------- | ------------------------------------------------------------------------- |
+| `id`         | bigint PK       |                                                                           |
+| `name`       | string          | e.g. "BCA", "GoPay"                                                       |
+| `slug`       | string unique   | e.g. "bca", "gopay"                                                       |
+| `logo_url`   | string nullable |                                                                           |
 | `type`       | string          | PHP enum: `bank`, `digital_bank`, `e_wallet`, `credit_loan`, `investment` |
-| `status`     | string          | PHP enum: `active`, `inactive`                                           |
-| `created_at` | timestamp       |                                                                          |
-| `updated_at` | timestamp       |                                                                          |
+| `status`     | string          | PHP enum: `active`, `inactive`                                            |
+| `created_at` | timestamp       |                                                                           |
+| `updated_at` | timestamp       |                                                                           |
 
 ### 2.2 `households`
 
@@ -133,12 +133,12 @@ User-owned classification tags. `parent_id` is schema-ready for hierarchy but th
 
 ### Services
 
-| Service            | Responsibilities                                                 |
-| ------------------ | ---------------------------------------------------------------- |
-| `HouseholdService` | `create()`, `invite()`, `acceptInvitation()`, `removeMember()`                 |
-| `AccountService`   | `create()`, `update()`, `archive()`, `restore()`, `softDelete()`               |
-| `CategoryService`  | `create()`, `update()`, `softDelete()`                                         |
-| `UserThemeService` | `update(User, string $theme)` — persists to `users.theme_preference`           |
+| Service            | Responsibilities                                                     |
+| ------------------ | -------------------------------------------------------------------- |
+| `HouseholdService` | `create()`, `invite()`, `acceptInvitation()`, `removeMember()`       |
+| `AccountService`   | `create()`, `update()`, `archive()`, `restore()`, `softDelete()`     |
+| `CategoryService`  | `create()`, `update()`, `softDelete()`                               |
+| `UserThemeService` | `update(User, string $theme)` — persists to `users.theme_preference` |
 
 ---
 

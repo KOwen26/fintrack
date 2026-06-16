@@ -32,7 +32,7 @@
     }: DataGridProps = $props();
 
     const classes = $derived(
-        cn('@container w-full grid gap-5', directionClassMap[direction], _class)
+        cn('@container grid w-full gap-5', directionClassMap[direction], _class)
     );
 </script>
 

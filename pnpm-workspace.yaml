@@ -1,11 +1,11 @@
 packages:
-  - '.'
+    - '.'
 
 allowBuilds:
-  core-js-pure: true
-  esbuild: true
-  lefthook: true
-  svelte-preprocess: true
+    core-js-pure: true
+    esbuild: true
+    lefthook: true
+    svelte-preprocess: true
 
 publicHoistPattern:
-  - '@inertiajs/core'
+    - '@inertiajs/core'

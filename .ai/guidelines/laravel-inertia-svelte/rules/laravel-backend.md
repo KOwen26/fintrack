@@ -11,6 +11,7 @@
 ## Architecture Patterns
 
 ### Service Pattern
+
 All business logic lives in `app/Services/`. Controllers are thin dispatchers that call one service method and return an Inertia response. Never put queries, calculations, or conditional logic directly in a controller.
 
 ```php
@@ -35,6 +36,7 @@ public function store(Request $request): RedirectResponse
 ```
 
 ### Event-Listener Pattern
+
 Side-effects (cache invalidation, notifications, post-save hooks) live in Listeners attached to Events — never inline inside a service method. Services fire an event after the primary action; listeners react.
 
 ```php
@@ -60,6 +62,7 @@ class InvalidateAccountBalanceCache
 ```
 
 ### Aggregates via SQL — Never PHP
+
 Balance calculations, budget spend, report totals, and any sum/count over rows must be computed using SQL aggregates (`SUM`, `COUNT`, `selectRaw`, `withSum`). Never fetch a collection and reduce it in PHP.
 
 ```php
@@ -178,6 +181,7 @@ When a DTO is needed, run `composer generate:ts` after any Data class change to 
 ## Migrations
 
 ### No DB Enums
+
 Never use `$table->enum()`. Use `$table->string()` and enforce values via PHP-backed enum casts on the model.
 
 ```php
@@ -189,6 +193,7 @@ $table->enum('type', ['debit_account', 'credit_card', ...]);
 ```
 
 ### No Magic Strings for Defaults
+
 When setting a default for an enum-backed column, use the PHP enum's `.value` — not a string literal. Import the enum at the top of the migration class.
 
 ```php
@@ -198,6 +203,7 @@ $table->string('status')->default(ProviderStatus::Active->value);
 ```
 
 ### Column Order
+
 Sort columns in this sequence:
 
 1. `$table->id()`

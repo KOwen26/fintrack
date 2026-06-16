@@ -14,14 +14,14 @@
 
 ## Component Reference (existing — always prefer these)
 
-| Component | Import | Key Props |
-|-----------|--------|-----------|
-| `Badge` | `@components/ui/badge.svelte` | `color`, `variant` (solid/outline/soft) |
-| `Button` | `@components/ui/button.svelte` | `color`, `variant`, `href` |
-| `Card` | `@components/ui/card.svelte` | `title`, `wrapperClass` |
-| `DataList` | `@components/data/data-list.svelte` | `data: [{label, value}]` |
-| `ChartContainer` | `@components/ui/atoms/chart` | `config: ChartConfig` — wraps layerchart chart |
-| `ChartTooltip` | `@components/ui/atoms/chart` | `hideLabel`, `indicator`, `labelFormatter` |
+| Component        | Import                              | Key Props                                      |
+| ---------------- | ----------------------------------- | ---------------------------------------------- |
+| `Badge`          | `@components/ui/badge.svelte`       | `color`, `variant` (solid/outline/soft)        |
+| `Button`         | `@components/ui/button.svelte`      | `color`, `variant`, `href`                     |
+| `Card`           | `@components/ui/card.svelte`        | `title`, `wrapperClass`                        |
+| `DataList`       | `@components/data/data-list.svelte` | `data: [{label, value}]`                       |
+| `ChartContainer` | `@components/ui/atoms/chart`        | `config: ChartConfig` — wraps layerchart chart |
+| `ChartTooltip`   | `@components/ui/atoms/chart`        | `hideLabel`, `indicator`, `labelFormatter`     |
 
 ### Chart atom API summary
 
@@ -71,6 +71,7 @@ Expected: `resources/js/wayfinder/App/Http/Controllers/ReportsController.ts` exi
 - [ ] **Read `resources/js/components/ui/atoms/chart/index.ts`** — confirm the public exports (`ChartContainer`, `ChartTooltip`, `getPayloadConfigFromPayload`, `ChartConfig`).
 
 Key facts from reading:
+
 - `ChartContainer` accepts a `config: ChartConfig` prop where keys match data series names.
 - Chart content is rendered via `children` snippet — use `layerchart` primitives directly inside.
 - `ChartTooltip` must be rendered inside a `layerchart` `<Tooltip.Root>` context (provided by layerchart's `<Chart>` component).
@@ -89,17 +90,19 @@ Maps the `AlertLevel` enum to a DaisyUI badge color. Uses Wayfinder-generated en
 
 ```svelte
 <script lang="ts">
-    import AlertLevel from '@wayfinder/App/Enums/AlertLevel';
-    import type { App } from '@wayfinder/types';
     import type { ColorVariant } from '@/data/theme';
+    import type { App } from '@wayfinder/types';
+
+    import AlertLevel from '@wayfinder/App/Enums/AlertLevel';
+
     import Badge from '@components/ui/badge.svelte';
 
     let { level }: { level: App.Enums.AlertLevel } = $props();
 
     const config: Record<App.Enums.AlertLevel, { label: string; color: ColorVariant }> = {
-        [AlertLevel.Normal]:   { label: 'Normal',    color: 'success' },
-        [AlertLevel.Warning]:  { label: 'Warning',   color: 'warning' },
-        [AlertLevel.HighRisk]: { label: 'High Risk', color: 'error'   },
+        [AlertLevel.Normal]: { label: 'Normal', color: 'success' },
+        [AlertLevel.Warning]: { label: 'Warning', color: 'warning' },
+        [AlertLevel.HighRisk]: { label: 'High Risk', color: 'error' },
     };
 
     const badge = $derived(config[level]);
@@ -116,9 +119,12 @@ Dual grouped-bar chart: income (success color) vs expense (error color) per mont
 
 ```svelte
 <script lang="ts">
+    import type { ChartConfig } from '@components/ui/atoms/chart';
     import type { App } from '@wayfinder/types';
-    import { ChartContainer, ChartTooltip, type ChartConfig } from '@components/ui/atoms/chart';
-    import { Chart, Bars, Axis, Tooltip } from 'layerchart';
+
+    import { Axis, Bars, Chart, Tooltip } from 'layerchart';
+
+    import { ChartContainer, ChartTooltip } from '@components/ui/atoms/chart';
 
     interface TrendMonth {
         year: number;
@@ -132,8 +138,8 @@ Dual grouped-bar chart: income (success color) vs expense (error color) per mont
     let { months }: { months: TrendMonth[] } = $props();
 
     const chartConfig: ChartConfig = {
-        income:  { label: 'Income',  color: 'hsl(var(--su))'  },
-        expense: { label: 'Expense', color: 'hsl(var(--er))'  },
+        income: { label: 'Income', color: 'hsl(var(--su))' },
+        expense: { label: 'Expense', color: 'hsl(var(--er))' },
     };
 
     // Format month labels as "Jan", "Feb", etc.
@@ -143,8 +149,8 @@ Dual grouped-bar chart: income (success color) vs expense (error color) per mont
 
     const chartData = $derived(
         months.map((m) => ({
-            label:   `${monthLabel(m.month)} ${m.year}`,
-            income:  m.income,
+            label: `${monthLabel(m.month)} ${m.year}`,
+            income: m.income,
             expense: m.expense,
         }))
     );
@@ -156,8 +162,7 @@ Dual grouped-bar chart: income (success color) vs expense (error color) per mont
         x="label"
         xScale={{ padding: 0.2 }}
         yDomain={[0, null]}
-        padding={{ left: 16, bottom: 24 }}
-    >
+        padding={{ left: 16, bottom: 24 }}>
         <Axis placement="bottom" format={(v) => String(v)} />
         <Bars key="income" color="var(--color-income)" radius={3} />
         <Bars key="expense" color="var(--color-expense)" radius={3} />
@@ -184,28 +189,33 @@ Pie/donut chart of category spend share. Each slice uses the category's own `col
 ```svelte
 <script lang="ts">
     import type { ChartConfig } from '@components/ui/atoms/chart';
+
+    import { Arc, Chart, Pie, Tooltip } from 'layerchart';
+
     import { ChartContainer, ChartTooltip } from '@components/ui/atoms/chart';
-    import { Chart, Pie, Arc, Tooltip } from 'layerchart';
 
     interface CategoryItem {
-        name:       string;
-        color:      string;
-        icon:       string;
-        total:      number;
+        name: string;
+        color: string;
+        icon: string;
+        total: number;
         percentage: number;
     }
 
-    let { categories, period_total }: { categories: CategoryItem[]; period_total: number } = $props();
+    let { categories, period_total }: { categories: CategoryItem[]; period_total: number } =
+        $props();
 
     // Build ChartConfig keyed by category name — colors come from category data
     const chartConfig = $derived<ChartConfig>(
-        Object.fromEntries(
-            categories.map((c) => [c.name, { label: c.name, color: c.color }])
-        )
+        Object.fromEntries(categories.map((c) => [c.name, { label: c.name, color: c.color }]))
     );
 
     function formatIDR(value: number): string {
-        return value.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+        return value.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            maximumFractionDigits: 0,
+        });
     }
 </script>
 
@@ -216,11 +226,7 @@ Pie/donut chart of category spend share. Each slice uses the category's own `col
     </div>
 {:else}
     <ChartContainer config={chartConfig} class="mx-auto min-h-[200px] w-full max-w-xs">
-        <Chart
-            data={categories}
-            key="name"
-            value="total"
-        >
+        <Chart data={categories} key="name" value="total">
             <Pie innerRadius={50}>
                 {#each categories as cat}
                     <Arc color={cat.color} />
@@ -239,8 +245,7 @@ Pie/donut chart of category spend share. Each slice uses the category's own `col
                 <div class="flex items-center gap-2 min-w-0">
                     <span
                         class="inline-block size-2.5 shrink-0 rounded-[2px]"
-                        style="background-color: {cat.color}"
-                    ></span>
+                        style="background-color: {cat.color}"></span>
                     <span class="truncate">{cat.name}</span>
                 </div>
                 <div class="ml-4 shrink-0 text-right">
@@ -262,9 +267,9 @@ Stacked horizontal progress bars — one segment per member, colored by their co
 ```svelte
 <script lang="ts">
     interface Member {
-        name:        string;
+        name: string;
         contributed: number;
-        percentage:  number;
+        percentage: number;
     }
 
     let { members, total }: { members: Member[]; total: number } = $props();
@@ -273,7 +278,11 @@ Stacked horizontal progress bars — one segment per member, colored by their co
     const memberColors = ['bg-primary', 'bg-secondary', 'bg-accent', 'bg-info', 'bg-success'];
 
     function formatIDR(value: number): string {
-        return value.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+        return value.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            maximumFractionDigits: 0,
+        });
     }
 </script>
 
@@ -289,8 +298,8 @@ Stacked horizontal progress bars — one segment per member, colored by their co
             <div
                 class="{memberColors[i % memberColors.length]} transition-all"
                 style="width: {member.percentage}%"
-                title="{member.name}: {member.percentage}%"
-            ></div>
+                title="{member.name}: {member.percentage}%">
+            </div>
         {/each}
     </div>
 
@@ -299,7 +308,10 @@ Stacked horizontal progress bars — one segment per member, colored by their co
         {#each members as member, i (member.name)}
             <li class="flex items-center justify-between text-sm">
                 <div class="flex items-center gap-2">
-                    <span class="inline-block size-2.5 rounded-full {memberColors[i % memberColors.length]}"></span>
+                    <span
+                        class="inline-block size-2.5 rounded-full {memberColors[
+                            i % memberColors.length
+                        ]}"></span>
                     <span class="font-medium">{member.name}</span>
                 </div>
                 <div class="text-right">
@@ -324,9 +336,11 @@ Arc/radial progress gauge that colors itself based on alert level. Uses a CSS `c
 
 ```svelte
 <script lang="ts">
-    import AlertLevel from '@wayfinder/App/Enums/AlertLevel';
     import type { App } from '@wayfinder/types';
+
     import CreditAlertBadge from './credit-alert-badge.svelte';
+
+    import AlertLevel from '@wayfinder/App/Enums/AlertLevel';
 
     let {
         limit,
@@ -335,25 +349,31 @@ Arc/radial progress gauge that colors itself based on alert level. Uses a CSS `c
         utilization_pct,
         alert_level,
     }: {
-        limit:           number;
-        used:            number;
-        available:       number;
+        limit: number;
+        used: number;
+        available: number;
         utilization_pct: number;
-        alert_level:     App.Enums.AlertLevel;
+        alert_level: App.Enums.AlertLevel;
     } = $props();
 
     // DaisyUI semantic color tokens mapped by alert level
-    const gaugeColorClass = $derived<string>({
-        [AlertLevel.Normal]:   'text-success',
-        [AlertLevel.Warning]:  'text-warning',
-        [AlertLevel.HighRisk]: 'text-error',
-    }[alert_level] ?? 'text-success');
+    const gaugeColorClass = $derived<string>(
+        {
+            [AlertLevel.Normal]: 'text-success',
+            [AlertLevel.Warning]: 'text-warning',
+            [AlertLevel.HighRisk]: 'text-error',
+        }[alert_level] ?? 'text-success'
+    );
 
     // Radial progress uses a CSS custom property --value (0–100)
     const pct = $derived(Math.min(100, Math.round(utilization_pct)));
 
     function formatIDR(value: number): string {
-        return value.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+        return value.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            maximumFractionDigits: 0,
+        });
     }
 </script>
 
@@ -365,8 +385,7 @@ Arc/radial progress gauge that colors itself based on alert level. Uses a CSS `c
         role="progressbar"
         aria-valuenow={pct}
         aria-valuemin={0}
-        aria-valuemax={100}
-    >
+        aria-valuemax={100}>
         {pct}%
     </div>
 
@@ -444,19 +463,40 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { ReportsController } from '@wayfinder/App/Http/Controllers/ReportsController';
+
     import { router } from '@inertiajs/svelte';
+    import { ReportsController } from '@wayfinder/App/Http/Controllers/ReportsController';
+
+    import CategoryLeakChart from '@components/module/report/category-leak-chart.svelte';
+    import TrendChart from '@components/module/report/trend-chart.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import TrendChart from '@components/module/report/trend-chart.svelte';
-    import CategoryLeakChart from '@components/module/report/category-leak-chart.svelte';
 
     interface TrendMonth {
-        year: number; month: number; income: number; expense: number; net: number; surplus_rate: number;
+        year: number;
+        month: number;
+        income: number;
+        expense: number;
+        net: number;
+        surplus_rate: number;
     }
-    interface TrendReport { months: TrendMonth[]; months_count: number; }
-    interface CategoryItem { name: string; color: string; icon: string; total: number; percentage: number; }
-    interface CategoryLeakReport { categories: CategoryItem[]; period_total: number; from: string; to: string; }
+    interface TrendReport {
+        months: TrendMonth[];
+        months_count: number;
+    }
+    interface CategoryItem {
+        name: string;
+        color: string;
+        icon: string;
+        total: number;
+        percentage: number;
+    }
+    interface CategoryLeakReport {
+        categories: CategoryItem[];
+        period_total: number;
+        from: string;
+        to: string;
+    }
 
     let {
         account,
@@ -465,15 +505,19 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
         from,
         to,
     }: {
-        account:       App.Models.Account;
-        trend:         TrendReport;
+        account: App.Models.Account;
+        trend: TrendReport;
         category_leak: CategoryLeakReport;
-        from:          string;
-        to:            string;
+        from: string;
+        to: string;
     } = $props();
 
     function formatIDR(value: number): string {
-        return value.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+        return value.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            maximumFractionDigits: 0,
+        });
     }
 
     // Current month summary (last item in trend array)
@@ -481,17 +525,17 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
 
     function navigatePeriod(direction: 'prev' | 'next') {
         const current = new Date(from);
-        const offset  = direction === 'prev' ? -1 : 1;
+        const offset = direction === 'prev' ? -1 : 1;
         current.setMonth(current.getMonth() + offset);
         const newFrom = new Date(current.getFullYear(), current.getMonth(), 1);
-        const newTo   = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+        const newTo = new Date(current.getFullYear(), current.getMonth() + 1, 0);
 
         router.visit(
             ReportsController.index.url({
                 account: account.id,
-                query:   {
+                query: {
                     from: newFrom.toISOString().slice(0, 10),
-                    to:   newTo.toISOString().slice(0, 10),
+                    to: newTo.toISOString().slice(0, 10),
                 },
             }),
             { preserveScroll: true }
@@ -514,19 +558,26 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
             color="light"
             variant="ghost"
             href={ReportsController.creditUtilization.url({ account: account.id })}
-            class="btn-sm"
-        >
+            class="btn-sm">
             <i class="iconify size-4 ph--chart-pie-bold"></i>
         </Button>
     </div>
 
     <!-- Period nav -->
     <div class="mb-4 flex items-center justify-between rounded-xl bg-base-200 px-3 py-2">
-        <Button color="light" variant="ghost" class="btn-xs btn-circle" onclick={() => navigatePeriod('prev')}>
+        <Button
+            color="light"
+            variant="ghost"
+            class="btn-xs btn-circle"
+            onclick={() => navigatePeriod('prev')}>
             <i class="iconify size-4 ph--caret-left-bold"></i>
         </Button>
         <span class="text-sm font-medium">{periodLabel}</span>
-        <Button color="light" variant="ghost" class="btn-xs btn-circle" onclick={() => navigatePeriod('next')}>
+        <Button
+            color="light"
+            variant="ghost"
+            class="btn-xs btn-circle"
+            onclick={() => navigatePeriod('next')}>
             <i class="iconify size-4 ph--caret-right-bold"></i>
         </Button>
     </div>
@@ -536,15 +587,22 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
         <div class="mb-4 grid grid-cols-3 gap-3">
             <Card wrapperClass="text-center">
                 <p class="text-xs text-base-content/50">Income</p>
-                <p class="font-mono text-sm font-bold text-success">{formatIDR(latestMonth.income)}</p>
+                <p class="font-mono text-sm font-bold text-success">
+                    {formatIDR(latestMonth.income)}
+                </p>
             </Card>
             <Card wrapperClass="text-center">
                 <p class="text-xs text-base-content/50">Expense</p>
-                <p class="font-mono text-sm font-bold text-error">{formatIDR(latestMonth.expense)}</p>
+                <p class="font-mono text-sm font-bold text-error">
+                    {formatIDR(latestMonth.expense)}
+                </p>
             </Card>
             <Card wrapperClass="text-center">
                 <p class="text-xs text-base-content/50">Net</p>
-                <p class="font-mono text-sm font-bold {latestMonth.net >= 0 ? 'text-success' : 'text-error'}">
+                <p
+                    class="font-mono text-sm font-bold {latestMonth.net >= 0
+                        ? 'text-success'
+                        : 'text-error'}">
                     {formatIDR(latestMonth.net)}
                 </p>
             </Card>
@@ -558,8 +616,7 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
                 color="light"
                 variant="ghost"
                 class="btn-xs"
-                href={ReportsController.trend.url({ account: account.id })}
-            >
+                href={ReportsController.trend.url({ account: account.id })}>
                 Full view
             </Button>
         {/snippet}
@@ -576,23 +633,23 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
                 href={ReportsController.categoryLeak.url({
                     account: account.id,
                     query: { from, to },
-                })}
-            >
+                })}>
                 Full view
             </Button>
         {/snippet}
         <CategoryLeakChart
             categories={category_leak.categories.slice(0, 5)}
-            period_total={category_leak.period_total}
-        />
+            period_total={category_leak.period_total} />
     </Card>
 
     <!-- Report nav links -->
     <div class="space-y-2">
         <a
-            href={ReportsController.fixedVsVariable.url({ account: account.id, query: { from, to } })}
-            class="flex items-center justify-between rounded-xl bg-base-200 px-4 py-3 text-sm font-medium transition-opacity active:opacity-70"
-        >
+            href={ReportsController.fixedVsVariable.url({
+                account: account.id,
+                query: { from, to },
+            })}
+            class="flex items-center justify-between rounded-xl bg-base-200 px-4 py-3 text-sm font-medium transition-opacity active:opacity-70">
             <div class="flex items-center gap-2">
                 <i class="iconify size-5 ph--sliders-horizontal-bold text-secondary"></i>
                 Fixed vs Variable
@@ -601,9 +658,11 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
         </a>
 
         <a
-            href={ReportsController.contributionSplit.url({ account: account.id, query: { from, to } })}
-            class="flex items-center justify-between rounded-xl bg-base-200 px-4 py-3 text-sm font-medium transition-opacity active:opacity-70"
-        >
+            href={ReportsController.contributionSplit.url({
+                account: account.id,
+                query: { from, to },
+            })}
+            class="flex items-center justify-between rounded-xl bg-base-200 px-4 py-3 text-sm font-medium transition-opacity active:opacity-70">
             <div class="flex items-center gap-2">
                 <i class="iconify size-5 ph--users-bold text-accent"></i>
                 Contribution Split
@@ -621,17 +680,27 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { ReportsController } from '@wayfinder/App/Http/Controllers/ReportsController';
+
     import { router } from '@inertiajs/svelte';
+    import { ReportsController } from '@wayfinder/App/Http/Controllers/ReportsController';
+
+    import TrendChart from '@components/module/report/trend-chart.svelte';
+    import Badge from '@components/ui/badge.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import Badge from '@components/ui/badge.svelte';
-    import TrendChart from '@components/module/report/trend-chart.svelte';
 
     interface TrendMonth {
-        year: number; month: number; income: number; expense: number; net: number; surplus_rate: number;
+        year: number;
+        month: number;
+        income: number;
+        expense: number;
+        net: number;
+        surplus_rate: number;
     }
-    interface TrendReport { months: TrendMonth[]; months_count: number; }
+    interface TrendReport {
+        months: TrendMonth[];
+        months_count: number;
+    }
 
     let {
         account,
@@ -639,8 +708,8 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
         months,
     }: {
         account: App.Models.Account;
-        trend:   TrendReport;
-        months:  number;
+        trend: TrendReport;
+        months: number;
     } = $props();
 
     function setMonths(m: number) {
@@ -650,12 +719,16 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
     }
 
     function formatIDR(value: number): string {
-        return value.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+        return value.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            maximumFractionDigits: 0,
+        });
     }
 
-    const totalIncome  = $derived(trend.months.reduce((s, m) => s + m.income, 0));
+    const totalIncome = $derived(trend.months.reduce((s, m) => s + m.income, 0));
     const totalExpense = $derived(trend.months.reduce((s, m) => s + m.expense, 0));
-    const totalNet     = $derived(totalIncome - totalExpense);
+    const totalNet = $derived(totalIncome - totalExpense);
 </script>
 
 <div class="p-4">
@@ -664,8 +737,7 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
             color="light"
             variant="ghost"
             href={ReportsController.index.url({ account: account.id })}
-            class="btn-circle btn-sm"
-        >
+            class="btn-circle btn-sm">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
         <div>
@@ -681,8 +753,7 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
                 color={months === m ? 'primary' : 'light'}
                 variant={months === m ? 'solid' : 'outline'}
                 class="btn-sm flex-1"
-                onclick={() => setMonths(m)}
-            >
+                onclick={() => setMonths(m)}>
                 {m}M
             </Button>
         {/each}
@@ -728,16 +799,25 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
                     {#each [...trend.months].reverse() as m (m.year + '-' + m.month)}
                         <tr class="text-sm">
                             <td class="font-medium">
-                                {new Date(m.year, m.month - 1).toLocaleString('default', { month: 'short', year: '2-digit' })}
+                                {new Date(m.year, m.month - 1).toLocaleString('default', {
+                                    month: 'short',
+                                    year: '2-digit',
+                                })}
                             </td>
                             <td class="text-right font-mono text-success">{formatIDR(m.income)}</td>
                             <td class="text-right font-mono text-error">{formatIDR(m.expense)}</td>
-                            <td class="text-right font-mono {m.net >= 0 ? 'text-success' : 'text-error'}">{formatIDR(m.net)}</td>
+                            <td
+                                class="text-right font-mono {m.net >= 0
+                                    ? 'text-success'
+                                    : 'text-error'}">{formatIDR(m.net)}</td>
                             <td class="text-right">
                                 <Badge
-                                    color={m.surplus_rate >= 20 ? 'success' : m.surplus_rate >= 0 ? 'warning' : 'error'}
-                                    variant="soft"
-                                >
+                                    color={m.surplus_rate >= 20
+                                        ? 'success'
+                                        : m.surplus_rate >= 0
+                                          ? 'warning'
+                                          : 'error'}
+                                    variant="soft">
                                     {m.surplus_rate.toFixed(0)}%
                                 </Badge>
                             </td>
@@ -757,14 +837,27 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { ReportsController } from '@wayfinder/App/Http/Controllers/ReportsController';
+
     import { router } from '@inertiajs/svelte';
+    import { ReportsController } from '@wayfinder/App/Http/Controllers/ReportsController';
+
+    import CategoryLeakChart from '@components/module/report/category-leak-chart.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import CategoryLeakChart from '@components/module/report/category-leak-chart.svelte';
 
-    interface CategoryItem { name: string; color: string; icon: string; total: number; percentage: number; }
-    interface CategoryLeakReport { categories: CategoryItem[]; period_total: number; from: string; to: string; }
+    interface CategoryItem {
+        name: string;
+        color: string;
+        icon: string;
+        total: number;
+        percentage: number;
+    }
+    interface CategoryLeakReport {
+        categories: CategoryItem[];
+        period_total: number;
+        from: string;
+        to: string;
+    }
 
     let {
         account,
@@ -772,24 +865,24 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
         from,
         to,
     }: {
-        account:       App.Models.Account;
+        account: App.Models.Account;
         category_leak: CategoryLeakReport;
-        from:          string;
-        to:            string;
+        from: string;
+        to: string;
     } = $props();
 
     function navigatePeriod(direction: 'prev' | 'next') {
         const current = new Date(from);
         current.setMonth(current.getMonth() + (direction === 'prev' ? -1 : 1));
         const newFrom = new Date(current.getFullYear(), current.getMonth(), 1);
-        const newTo   = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+        const newTo = new Date(current.getFullYear(), current.getMonth() + 1, 0);
 
         router.visit(
             ReportsController.categoryLeak.url({
                 account: account.id,
                 query: {
                     from: newFrom.toISOString().slice(0, 10),
-                    to:   newTo.toISOString().slice(0, 10),
+                    to: newTo.toISOString().slice(0, 10),
                 },
             }),
             { preserveScroll: true }
@@ -807,8 +900,7 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
             color="light"
             variant="ghost"
             href={ReportsController.index.url({ account: account.id })}
-            class="btn-circle btn-sm"
-        >
+            class="btn-circle btn-sm">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
         <div>
@@ -819,11 +911,19 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
 
     <!-- Period nav -->
     <div class="mb-4 flex items-center justify-between rounded-xl bg-base-200 px-3 py-2">
-        <Button color="light" variant="ghost" class="btn-xs btn-circle" onclick={() => navigatePeriod('prev')}>
+        <Button
+            color="light"
+            variant="ghost"
+            class="btn-xs btn-circle"
+            onclick={() => navigatePeriod('prev')}>
             <i class="iconify size-4 ph--caret-left-bold"></i>
         </Button>
         <span class="text-sm font-medium">{periodLabel}</span>
-        <Button color="light" variant="ghost" class="btn-xs btn-circle" onclick={() => navigatePeriod('next')}>
+        <Button
+            color="light"
+            variant="ghost"
+            class="btn-xs btn-circle"
+            onclick={() => navigatePeriod('next')}>
             <i class="iconify size-4 ph--caret-right-bold"></i>
         </Button>
     </div>
@@ -831,8 +931,7 @@ Mobile-first stacked dashboard: trend chart above the fold, category leak below.
     <Card wrapperClass="mb-4">
         <CategoryLeakChart
             categories={category_leak.categories}
-            period_total={category_leak.period_total}
-        />
+            period_total={category_leak.period_total} />
     </Card>
 </div>
 ```
@@ -846,14 +945,26 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { ReportsController } from '@wayfinder/App/Http/Controllers/ReportsController';
+
     import { router } from '@inertiajs/svelte';
+    import { ReportsController } from '@wayfinder/App/Http/Controllers/ReportsController';
+
+    import ContributionGauge from '@components/module/report/contribution-gauge.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import ContributionGauge from '@components/module/report/contribution-gauge.svelte';
 
-    interface Member { name: string; contributed: number; percentage: number; }
-    interface ContributionSplit { is_joint: boolean; members: Member[]; total: number; from: string; to: string; }
+    interface Member {
+        name: string;
+        contributed: number;
+        percentage: number;
+    }
+    interface ContributionSplit {
+        is_joint: boolean;
+        members: Member[];
+        total: number;
+        from: string;
+        to: string;
+    }
 
     let {
         account,
@@ -861,24 +972,24 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
         from,
         to,
     }: {
-        account:             App.Models.Account;
-        contribution_split:  ContributionSplit;
-        from:                string;
-        to:                  string;
+        account: App.Models.Account;
+        contribution_split: ContributionSplit;
+        from: string;
+        to: string;
     } = $props();
 
     function navigatePeriod(direction: 'prev' | 'next') {
         const current = new Date(from);
         current.setMonth(current.getMonth() + (direction === 'prev' ? -1 : 1));
         const newFrom = new Date(current.getFullYear(), current.getMonth(), 1);
-        const newTo   = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+        const newTo = new Date(current.getFullYear(), current.getMonth() + 1, 0);
 
         router.visit(
             ReportsController.contributionSplit.url({
                 account: account.id,
                 query: {
                     from: newFrom.toISOString().slice(0, 10),
-                    to:   newTo.toISOString().slice(0, 10),
+                    to: newTo.toISOString().slice(0, 10),
                 },
             }),
             { preserveScroll: true }
@@ -896,8 +1007,7 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
             color="light"
             variant="ghost"
             href={ReportsController.index.url({ account: account.id })}
-            class="btn-circle btn-sm"
-        >
+            class="btn-circle btn-sm">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
         <div>
@@ -908,7 +1018,8 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
 
     {#if !contribution_split.is_joint}
         <!-- Personal account empty state -->
-        <div class="flex flex-col items-center justify-center py-16 text-center text-base-content/50">
+        <div
+            class="flex flex-col items-center justify-center py-16 text-center text-base-content/50">
             <i class="iconify mb-3 size-12 ph--users-slash-bold"></i>
             <p class="font-semibold">Joint accounts only</p>
             <p class="mt-1 max-w-xs text-sm">
@@ -918,11 +1029,19 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
     {:else}
         <!-- Period nav -->
         <div class="mb-4 flex items-center justify-between rounded-xl bg-base-200 px-3 py-2">
-            <Button color="light" variant="ghost" class="btn-xs btn-circle" onclick={() => navigatePeriod('prev')}>
+            <Button
+                color="light"
+                variant="ghost"
+                class="btn-xs btn-circle"
+                onclick={() => navigatePeriod('prev')}>
                 <i class="iconify size-4 ph--caret-left-bold"></i>
             </Button>
             <span class="text-sm font-medium">{periodLabel}</span>
-            <Button color="light" variant="ghost" class="btn-xs btn-circle" onclick={() => navigatePeriod('next')}>
+            <Button
+                color="light"
+                variant="ghost"
+                class="btn-xs btn-circle"
+                onclick={() => navigatePeriod('next')}>
                 <i class="iconify size-4 ph--caret-right-bold"></i>
             </Button>
         </div>
@@ -930,8 +1049,7 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
         <Card title="Income by Member" wrapperClass="mb-4">
             <ContributionGauge
                 members={contribution_split.members}
-                total={contribution_split.total}
-            />
+                total={contribution_split.total} />
         </Card>
     {/if}
 </div>
@@ -944,24 +1062,26 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
+
     import { ReportsController } from '@wayfinder/App/Http/Controllers/ReportsController';
+
+    import CreditUtilizationGauge from '@components/module/report/credit-utilization-gauge.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import CreditUtilizationGauge from '@components/module/report/credit-utilization-gauge.svelte';
 
     interface CreditUtilization {
-        limit:           number;
-        used:            number;
-        available:       number;
+        limit: number;
+        used: number;
+        available: number;
         utilization_pct: number;
-        alert_level:     App.Enums.AlertLevel;
+        alert_level: App.Enums.AlertLevel;
     }
 
     let {
         account,
         credit_utilization,
     }: {
-        account:            App.Models.Account;
+        account: App.Models.Account;
         credit_utilization: CreditUtilization;
     } = $props();
 </script>
@@ -972,8 +1092,7 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
             color="light"
             variant="ghost"
             href={ReportsController.index.url({ account: account.id })}
-            class="btn-circle btn-sm"
-        >
+            class="btn-circle btn-sm">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
         <div>
@@ -988,8 +1107,7 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
             used={credit_utilization.used}
             available={credit_utilization.available}
             utilization_pct={credit_utilization.utilization_pct}
-            alert_level={credit_utilization.alert_level}
-        />
+            alert_level={credit_utilization.alert_level} />
     </Card>
 
     <!-- Guidance text per alert level -->
@@ -997,13 +1115,22 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
         <div class="text-sm text-base-content/70">
             {#if credit_utilization.utilization_pct >= 70}
                 <p class="font-semibold text-error">High risk — above 70%</p>
-                <p class="mt-1">Your utilization is very high. This may affect your credit score. Pay down your balance as soon as possible.</p>
+                <p class="mt-1">
+                    Your utilization is very high. This may affect your credit score. Pay down your
+                    balance as soon as possible.
+                </p>
             {:else if credit_utilization.utilization_pct >= 30}
                 <p class="font-semibold text-warning">Caution — 30% to 69%</p>
-                <p class="mt-1">Your utilization is elevated. Aim to keep it below 30% to maintain a healthy credit profile.</p>
+                <p class="mt-1">
+                    Your utilization is elevated. Aim to keep it below 30% to maintain a healthy
+                    credit profile.
+                </p>
             {:else}
                 <p class="font-semibold text-success">Healthy — below 30%</p>
-                <p class="mt-1">Your utilization is within a healthy range. Keep it here to protect your credit score.</p>
+                <p class="mt-1">
+                    Your utilization is within a healthy range. Keep it here to protect your credit
+                    score.
+                </p>
             {/if}
         </div>
     </Card>
@@ -1017,20 +1144,22 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { ReportsController } from '@wayfinder/App/Http/Controllers/ReportsController';
+
     import { router } from '@inertiajs/svelte';
+    import { ReportsController } from '@wayfinder/App/Http/Controllers/ReportsController';
+
+    import Badge from '@components/ui/badge.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import Badge from '@components/ui/badge.svelte';
 
     interface FixedVariable {
-        fixed_total:    number;
+        fixed_total: number;
         variable_total: number;
-        fixed_pct:      number;
-        variable_pct:   number;
-        safety_margin:  number;
-        from:           string;
-        to:             string;
+        fixed_pct: number;
+        variable_pct: number;
+        safety_margin: number;
+        from: string;
+        to: string;
     }
 
     let {
@@ -1039,24 +1168,24 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
         from,
         to,
     }: {
-        account:           App.Models.Account;
+        account: App.Models.Account;
         fixed_vs_variable: FixedVariable;
-        from:              string;
-        to:                string;
+        from: string;
+        to: string;
     } = $props();
 
     function navigatePeriod(direction: 'prev' | 'next') {
         const current = new Date(from);
         current.setMonth(current.getMonth() + (direction === 'prev' ? -1 : 1));
         const newFrom = new Date(current.getFullYear(), current.getMonth(), 1);
-        const newTo   = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+        const newTo = new Date(current.getFullYear(), current.getMonth() + 1, 0);
 
         router.visit(
             ReportsController.fixedVsVariable.url({
                 account: account.id,
                 query: {
                     from: newFrom.toISOString().slice(0, 10),
-                    to:   newTo.toISOString().slice(0, 10),
+                    to: newTo.toISOString().slice(0, 10),
                 },
             }),
             { preserveScroll: true }
@@ -1070,7 +1199,11 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
     const grandTotal = $derived(fixed_vs_variable.fixed_total + fixed_vs_variable.variable_total);
 
     function formatIDR(value: number): string {
-        return value.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+        return value.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            maximumFractionDigits: 0,
+        });
     }
 </script>
 
@@ -1080,8 +1213,7 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
             color="light"
             variant="ghost"
             href={ReportsController.index.url({ account: account.id })}
-            class="btn-circle btn-sm"
-        >
+            class="btn-circle btn-sm">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
         <div>
@@ -1092,17 +1224,26 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
 
     <!-- Period nav -->
     <div class="mb-4 flex items-center justify-between rounded-xl bg-base-200 px-3 py-2">
-        <Button color="light" variant="ghost" class="btn-xs btn-circle" onclick={() => navigatePeriod('prev')}>
+        <Button
+            color="light"
+            variant="ghost"
+            class="btn-xs btn-circle"
+            onclick={() => navigatePeriod('prev')}>
             <i class="iconify size-4 ph--caret-left-bold"></i>
         </Button>
         <span class="text-sm font-medium">{periodLabel}</span>
-        <Button color="light" variant="ghost" class="btn-xs btn-circle" onclick={() => navigatePeriod('next')}>
+        <Button
+            color="light"
+            variant="ghost"
+            class="btn-xs btn-circle"
+            onclick={() => navigatePeriod('next')}>
             <i class="iconify size-4 ph--caret-right-bold"></i>
         </Button>
     </div>
 
     {#if grandTotal === 0}
-        <div class="flex flex-col items-center justify-center py-16 text-center text-base-content/50">
+        <div
+            class="flex flex-col items-center justify-center py-16 text-center text-base-content/50">
             <i class="iconify mb-3 size-12 ph--sliders-horizontal-bold"></i>
             <p class="font-semibold">No expense data</p>
             <p class="mt-1 text-sm">No expense or fee transactions found for this period.</p>
@@ -1115,13 +1256,13 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
                 <div
                     class="bg-error transition-all"
                     style="width: {fixed_vs_variable.fixed_pct}%"
-                    title="Fixed: {fixed_vs_variable.fixed_pct}%"
-                ></div>
+                    title="Fixed: {fixed_vs_variable.fixed_pct}%">
+                </div>
                 <div
                     class="bg-info transition-all"
                     style="width: {fixed_vs_variable.variable_pct}%"
-                    title="Variable: {fixed_vs_variable.variable_pct}%"
-                ></div>
+                    title="Variable: {fixed_vs_variable.variable_pct}%">
+                </div>
             </div>
             <div class="mt-3 flex justify-between text-xs">
                 <div class="flex items-center gap-1.5">
@@ -1139,12 +1280,16 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
         <div class="grid grid-cols-2 gap-3 mb-4">
             <Card>
                 <p class="text-xs text-base-content/50">Fixed costs</p>
-                <p class="font-mono font-bold text-error">{formatIDR(fixed_vs_variable.fixed_total)}</p>
+                <p class="font-mono font-bold text-error">
+                    {formatIDR(fixed_vs_variable.fixed_total)}
+                </p>
                 <p class="mt-1 text-xs text-base-content/40">Rent, utilities, subscriptions</p>
             </Card>
             <Card>
                 <p class="text-xs text-base-content/50">Variable</p>
-                <p class="font-mono font-bold text-info">{formatIDR(fixed_vs_variable.variable_total)}</p>
+                <p class="font-mono font-bold text-info">
+                    {formatIDR(fixed_vs_variable.variable_total)}
+                </p>
                 <p class="mt-1 text-xs text-base-content/40">Dining, shopping, entertainment</p>
             </Card>
         </div>
@@ -1159,9 +1304,12 @@ Shows empty state for personal accounts (`is_joint: false`). Shows contribution 
                     </p>
                 </div>
                 <Badge
-                    color={fixed_vs_variable.safety_margin >= 50 ? 'success' : fixed_vs_variable.safety_margin >= 25 ? 'warning' : 'error'}
-                    variant="soft"
-                >
+                    color={fixed_vs_variable.safety_margin >= 50
+                        ? 'success'
+                        : fixed_vs_variable.safety_margin >= 25
+                          ? 'warning'
+                          : 'error'}
+                    variant="soft">
                     {fixed_vs_variable.safety_margin.toFixed(0)}%
                 </Badge>
             </div>

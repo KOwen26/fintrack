@@ -63,7 +63,7 @@
 
     const alertClass = $derived(
         cn(
-            'alert gap-y-0.5 rounded-lg border px-4 py-3 text-sm has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current bg-card text-card-foreground shadow-sm',
+            'alert gap-y-0.5 rounded-lg border bg-card px-4 py-3 text-sm text-card-foreground shadow-sm has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current',
             colorVariants[color],
             variant === 'outline' ? 'alert-outline' : '',
             variant === 'outline-dash' ? 'alert-dash' : '',

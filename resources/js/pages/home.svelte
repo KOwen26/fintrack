@@ -1,6 +1,5 @@
 <script lang="ts">
-    
-import { inertia } from '@inertiajs/svelte';
+    import { inertia } from '@inertiajs/svelte';
     import auth from '@wayfinder/routes/auth';
 
     import BaseLayout from '@components/layouts/base-layout.svelte';

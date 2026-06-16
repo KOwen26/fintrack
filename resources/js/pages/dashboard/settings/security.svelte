@@ -41,15 +41,15 @@
             {/if}
 
             <form class="mt-4 space-y-4" {onsubmit}>
-                <Field title="Current Password" error={form.errors.current_password}>
+                <Field error={form.errors.current_password} title="Current Password">
                     <PasswordInput name="current_password" bind:value={form.current_password} />
                 </Field>
 
-                <Field title="New Password" error={form.errors.password}>
+                <Field error={form.errors.password} title="New Password">
                     <PasswordInput name="password" bind:value={form.password} />
                 </Field>
 
-                <Field title="Confirm Password" error={form.errors.password_confirmation}>
+                <Field error={form.errors.password_confirmation} title="Confirm Password">
                     <PasswordInput
                         name="password_confirmation"
                         bind:value={form.password_confirmation} />
@@ -78,7 +78,7 @@
                 Add an extra layer of security to your account using a TOTP authenticator app.
             </p>
             <div class="card-actions mt-2">
-                <Button variant="outline" class="btn-sm" disabled>Enable 2FA</Button>
+                <Button class="btn-sm" disabled variant="outline">Enable 2FA</Button>
             </div>
         </div>
     </div>
@@ -94,7 +94,7 @@
                 Sign in securely without a password using biometrics or a hardware key.
             </p>
             <div class="card-actions mt-2">
-                <Button variant="outline" class="btn-sm" disabled>Manage Passkeys</Button>
+                <Button class="btn-sm" disabled variant="outline">Manage Passkeys</Button>
             </div>
         </div>
     </div>

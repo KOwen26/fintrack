@@ -25,24 +25,24 @@
 <AuthLayout>
     <h1>Register</h1>
     <form class="space-y-4" {onsubmit}>
-        <Field title="Name" error={form.errors.name}>
-            <Input name="name" type="text" placeholder="Your name" bind:value={form.name} />
+        <Field error={form.errors.name} title="Name">
+            <Input name="name" placeholder="Your name" type="text" bind:value={form.name} />
         </Field>
 
-        <Field title="Email" error={form.errors.email}>
+        <Field error={form.errors.email} title="Email">
             <Input
                 name="email"
-                type="email"
                 autocomplete="email"
                 placeholder="email@example.com"
+                type="email"
                 bind:value={form.email} />
         </Field>
 
-        <Field title="Password" error={form.errors.password}>
+        <Field error={form.errors.password} title="Password">
             <PasswordInput name="password" bind:value={form.password} />
         </Field>
 
-        <Field title="Password Confirmation" error={form.errors.password_confirmation}>
+        <Field error={form.errors.password_confirmation} title="Password Confirmation">
             <PasswordInput name="password_confirmation" bind:value={form.password_confirmation} />
         </Field>
 

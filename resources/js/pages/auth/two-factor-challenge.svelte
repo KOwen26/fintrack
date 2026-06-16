@@ -35,22 +35,22 @@
 
     <form class="mt-6 space-y-4" {onsubmit}>
         {#if !useRecovery}
-            <Field title="Authentication Code" error={form.errors.code}>
+            <Field error={form.errors.code} title="Authentication Code">
                 <Input
                     name="code"
-                    type="text"
-                    inputmode="numeric"
                     autocomplete="one-time-code"
+                    inputmode="numeric"
                     placeholder="123456"
+                    type="text"
                     bind:value={form.code} />
             </Field>
         {:else}
-            <Field title="Recovery Code" error={form.errors.recovery_code}>
+            <Field error={form.errors.recovery_code} title="Recovery Code">
                 <Input
                     name="recovery_code"
-                    type="text"
                     autocomplete="one-time-code"
                     placeholder="xxxx-xxxx"
+                    type="text"
                     bind:value={form.recovery_code} />
             </Field>
         {/if}
@@ -58,13 +58,13 @@
         <SubmitButton class="w-full" submitting={form.processing}>Confirm</SubmitButton>
 
         <Button
-            variant="ghost"
             class="w-full"
-            type="button"
             onclick={() => {
                 useRecovery = !useRecovery;
                 form.reset('code', 'recovery_code');
-            }}>
+            }}
+            type="button"
+            variant="ghost">
             {useRecovery ? 'Use an authentication code' : 'Use a recovery code'}
         </Button>
     </form>

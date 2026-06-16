@@ -14,16 +14,16 @@
 
 ## Component Reference (existing — always prefer these)
 
-| Component | Import | Key Props |
-|-----------|--------|-----------|
-| `Badge` | `@components/ui/badge.svelte` | `color` (primary/secondary/accent/success/info/warning/error/light/dark), `variant` (solid/outline/soft) |
-| `Button` | `@components/ui/button.svelte` | `color`, `variant` (solid/outline/ghost/soft/link), `href` (renders as `<a>`), `disabled` |
-| `Card` | `@components/ui/card.svelte` | `title`, `header`, `headerAction` snippet, `footer` snippet, `wrapperClass` |
-| `FormGenerator` | `@components/ui/forms/form-generator.svelte` | `formSchema: {fields, data}`, `bind:form`, `action`, `method`, `withoutSubmit` |
-| `FormAction` | `@components/ui/forms/form-action.svelte` | `form`, `formId`, `labelSubmit`, `labelCancel`, `withoutCancel`, `onCancel` |
-| `ConfirmationModal` | `@components/ui/modals/confirmation-modal.svelte` | `bind:open`, `title`, `onConfirm`, `loading`, `confirmText`, `cancelText`, `confirmButtonProps` |
-| `DataList` | `@components/data/data-list.svelte` | `data: [{label, value}]` — feed from `DataComposer.toDataDisplay()` |
-| `DataComposer` | `@utilities/data-composer` | `.from(schema)`, `.extendSchema()`, `.except()`, `.toFormGenerator()`, `.toDataDisplay()` |
+| Component           | Import                                            | Key Props                                                                                                |
+| ------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `Badge`             | `@components/ui/badge.svelte`                     | `color` (primary/secondary/accent/success/info/warning/error/light/dark), `variant` (solid/outline/soft) |
+| `Button`            | `@components/ui/button.svelte`                    | `color`, `variant` (solid/outline/ghost/soft/link), `href` (renders as `<a>`), `disabled`                |
+| `Card`              | `@components/ui/card.svelte`                      | `title`, `header`, `headerAction` snippet, `footer` snippet, `wrapperClass`                              |
+| `FormGenerator`     | `@components/ui/forms/form-generator.svelte`      | `formSchema: {fields, data}`, `bind:form`, `action`, `method`, `withoutSubmit`                           |
+| `FormAction`        | `@components/ui/forms/form-action.svelte`         | `form`, `formId`, `labelSubmit`, `labelCancel`, `withoutCancel`, `onCancel`                              |
+| `ConfirmationModal` | `@components/ui/modals/confirmation-modal.svelte` | `bind:open`, `title`, `onConfirm`, `loading`, `confirmText`, `cancelText`, `confirmButtonProps`          |
+| `DataList`          | `@components/data/data-list.svelte`               | `data: [{label, value}]` — feed from `DataComposer.toDataDisplay()`                                      |
+| `DataComposer`      | `@utilities/data-composer`                        | `.from(schema)`, `.extendSchema()`, `.except()`, `.toFormGenerator()`, `.toDataDisplay()`                |
 
 ### FormGenerator `show` pattern for conditional fields
 
@@ -75,6 +75,7 @@ php artisan wayfinder:generate --no-interaction
 ```
 
 Expected: the following files now exist in `resources/js/wayfinder/`:
+
 - `App/Http/Controllers/TransactionPresetsController.ts`
 - `App/Http/Controllers/RecurringPresetsController.ts`
 - `App/Enums/TransactionPresetType.ts`
@@ -97,6 +98,7 @@ One schema file per model in `resources/js/schema/`. Dynamic options (accounts l
 ```typescript
 import type { DataSchema } from '@utilities/data-composer';
 import type { App } from '@wayfinder/types';
+
 import TransactionPresetType from '@wayfinder/App/Enums/TransactionPresetType';
 
 export const transactionPresetSchema: DataSchema<App.Models.TransactionPreset> = {
@@ -107,7 +109,11 @@ export const transactionPresetSchema: DataSchema<App.Models.TransactionPreset> =
             type: 'text',
             name: 'name',
             required: true,
-            inputProps: { placeholder: 'e.g. Morning Coffee', autocorrect: 'off', autocomplete: 'off' },
+            inputProps: {
+                placeholder: 'e.g. Morning Coffee',
+                autocorrect: 'off',
+                autocomplete: 'off',
+            },
         }),
     },
     type: {
@@ -118,8 +124,8 @@ export const transactionPresetSchema: DataSchema<App.Models.TransactionPreset> =
             name: 'type',
             required: true,
             options: [
-                { value: TransactionPresetType.Income,   label: 'Income'   },
-                { value: TransactionPresetType.Expense,  label: 'Expense'  },
+                { value: TransactionPresetType.Income, label: 'Income' },
+                { value: TransactionPresetType.Expense, label: 'Expense' },
                 { value: TransactionPresetType.Transfer, label: 'Transfer' },
             ],
         }),
@@ -127,9 +133,7 @@ export const transactionPresetSchema: DataSchema<App.Models.TransactionPreset> =
     default_amount: {
         label: 'Default Amount',
         value: (data) =>
-            data.default_amount != null
-                ? Number(data.default_amount).toLocaleString('id-ID')
-                : '—',
+            data.default_amount != null ? Number(data.default_amount).toLocaleString('id-ID') : '—',
         form: () => ({
             type: 'number',
             name: 'default_amount',
@@ -155,8 +159,9 @@ export const transactionPresetSchema: DataSchema<App.Models.TransactionPreset> =
 ```typescript
 import type { DataSchema } from '@utilities/data-composer';
 import type { App } from '@wayfinder/types';
-import TransactionPresetType from '@wayfinder/App/Enums/TransactionPresetType';
+
 import RecurringFrequency from '@wayfinder/App/Enums/RecurringFrequency';
+import TransactionPresetType from '@wayfinder/App/Enums/TransactionPresetType';
 
 export const recurringPresetSchema: DataSchema<App.Models.TransactionRecurringPreset> = {
     name: {
@@ -166,7 +171,11 @@ export const recurringPresetSchema: DataSchema<App.Models.TransactionRecurringPr
             type: 'text',
             name: 'name',
             required: true,
-            inputProps: { placeholder: 'e.g. Monthly Rent', autocorrect: 'off', autocomplete: 'off' },
+            inputProps: {
+                placeholder: 'e.g. Monthly Rent',
+                autocorrect: 'off',
+                autocomplete: 'off',
+            },
         }),
     },
     type: {
@@ -177,7 +186,7 @@ export const recurringPresetSchema: DataSchema<App.Models.TransactionRecurringPr
             name: 'type',
             required: true,
             options: [
-                { value: TransactionPresetType.Income,  label: 'Income'  },
+                { value: TransactionPresetType.Income, label: 'Income' },
                 { value: TransactionPresetType.Expense, label: 'Expense' },
             ],
         }),
@@ -190,11 +199,11 @@ export const recurringPresetSchema: DataSchema<App.Models.TransactionRecurringPr
             name: 'frequency',
             required: true,
             options: [
-                { value: RecurringFrequency.Daily,       label: 'Daily'       },
-                { value: RecurringFrequency.Weekly,      label: 'Weekly'      },
+                { value: RecurringFrequency.Daily, label: 'Daily' },
+                { value: RecurringFrequency.Weekly, label: 'Weekly' },
                 { value: RecurringFrequency.Fortnightly, label: 'Fortnightly' },
-                { value: RecurringFrequency.Monthly,     label: 'Monthly'     },
-                { value: RecurringFrequency.Yearly,      label: 'Yearly'      },
+                { value: RecurringFrequency.Monthly, label: 'Monthly' },
+                { value: RecurringFrequency.Yearly, label: 'Yearly' },
             ],
         }),
     },
@@ -251,18 +260,21 @@ Each badge wraps the existing `Badge` component. Config map keys use Wayfinder e
 
 ```svelte
 <script lang="ts">
-    import TransactionPresetType from '@wayfinder/App/Enums/TransactionPresetType';
-    import type { App } from '@wayfinder/types';
     import type { ColorVariant } from '@/data/theme';
+    import type { App } from '@wayfinder/types';
+
+    import TransactionPresetType from '@wayfinder/App/Enums/TransactionPresetType';
+
     import Badge from '@components/ui/badge.svelte';
 
     let { type }: { type: App.Enums.TransactionPresetType } = $props();
 
-    const config: Record<App.Enums.TransactionPresetType, { label: string; color: ColorVariant }> = {
-        [TransactionPresetType.Income]:   { label: 'Income',   color: 'success' },
-        [TransactionPresetType.Expense]:  { label: 'Expense',  color: 'error'   },
-        [TransactionPresetType.Transfer]: { label: 'Transfer', color: 'info'    },
-    };
+    const config: Record<App.Enums.TransactionPresetType, { label: string; color: ColorVariant }> =
+        {
+            [TransactionPresetType.Income]: { label: 'Income', color: 'success' },
+            [TransactionPresetType.Expense]: { label: 'Expense', color: 'error' },
+            [TransactionPresetType.Transfer]: { label: 'Transfer', color: 'info' },
+        };
 
     const badge = $derived(config[type]);
 </script>
@@ -274,19 +286,21 @@ Each badge wraps the existing `Badge` component. Config map keys use Wayfinder e
 
 ```svelte
 <script lang="ts">
-    import RecurringFrequency from '@wayfinder/App/Enums/RecurringFrequency';
-    import type { App } from '@wayfinder/types';
     import type { ColorVariant } from '@/data/theme';
+    import type { App } from '@wayfinder/types';
+
+    import RecurringFrequency from '@wayfinder/App/Enums/RecurringFrequency';
+
     import Badge from '@components/ui/badge.svelte';
 
     let { frequency }: { frequency: App.Enums.RecurringFrequency } = $props();
 
     const config: Record<App.Enums.RecurringFrequency, { label: string; color: ColorVariant }> = {
-        [RecurringFrequency.Daily]:       { label: 'Daily',       color: 'warning'   },
-        [RecurringFrequency.Weekly]:      { label: 'Weekly',      color: 'info'      },
+        [RecurringFrequency.Daily]: { label: 'Daily', color: 'warning' },
+        [RecurringFrequency.Weekly]: { label: 'Weekly', color: 'info' },
         [RecurringFrequency.Fortnightly]: { label: 'Fortnightly', color: 'secondary' },
-        [RecurringFrequency.Monthly]:     { label: 'Monthly',     color: 'primary'   },
-        [RecurringFrequency.Yearly]:      { label: 'Yearly',      color: 'accent'    },
+        [RecurringFrequency.Monthly]: { label: 'Monthly', color: 'primary' },
+        [RecurringFrequency.Yearly]: { label: 'Yearly', color: 'accent' },
     };
 
     const badge = $derived(config[frequency]);
@@ -304,6 +318,7 @@ Extract all form logic into module components. Pages become thin — they import
 ### `preset-form.svelte` — transfer conditional fields
 
 When `type === 'transfer'`, three additional fields appear via `show: (form) => ...` in the schema extension:
+
 - `default_source_account_id`
 - `default_destination_account_id`
 - `default_transfer_fee`
@@ -314,15 +329,19 @@ These are added inside `extendSchema()` rather than in the static schema because
 
 ```svelte
 <script lang="ts">
-    import type { App } from '@wayfinder/types';
     import type { InertiaForm } from '@inertiajs/svelte';
-    import { TransactionPresetsController } from '@wayfinder/App/Http/Controllers/TransactionPresetsController';
+    import type { App } from '@wayfinder/types';
+
     import TransactionPresetType from '@wayfinder/App/Enums/TransactionPresetType';
-    import { DataComposer } from '@utilities/data-composer';
+    import { TransactionPresetsController } from '@wayfinder/App/Http/Controllers/TransactionPresetsController';
+
     import { transactionPresetSchema } from '@schema/transaction-preset.schema';
+
+    import { DataComposer } from '@utilities/data-composer';
+
     import Card from '@components/ui/card.svelte';
-    import FormGenerator from '@components/ui/forms/form-generator.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';
+    import FormGenerator from '@components/ui/forms/form-generator.svelte';
 
     interface Props {
         accounts: App.Models.Account[];
@@ -338,9 +357,7 @@ These are added inside `extendSchema()` rather than in the static schema because
 
     const isEdit = $derived(!!preset);
 
-    const accountOptions = $derived(
-        accounts.map((a) => ({ value: a.id, label: a.name }))
-    );
+    const accountOptions = $derived(accounts.map((a) => ({ value: a.id, label: a.name })));
 
     const categoryOptions = $derived([
         { value: '', label: '— None —' },
@@ -396,12 +413,16 @@ These are added inside `extendSchema()` rather than in the static schema because
             return composer.toFormGenerator({
                 name: preset.name,
                 type: preset.type,
-                default_amount: preset.default_amount != null ? Number(preset.default_amount) : null,
+                default_amount:
+                    preset.default_amount != null ? Number(preset.default_amount) : null,
                 default_description: preset.default_description ?? '',
                 default_category_id: preset.default_category_id ?? '',
                 default_source_account_id: preset.default_source_account_id ?? '',
                 default_destination_account_id: preset.default_destination_account_id ?? '',
-                default_transfer_fee: preset.default_transfer_fee != null ? Number(preset.default_transfer_fee) : null,
+                default_transfer_fee:
+                    preset.default_transfer_fee != null
+                        ? Number(preset.default_transfer_fee)
+                        : null,
             });
         }
 
@@ -429,7 +450,12 @@ These are added inside `extendSchema()` rather than in the static schema because
     const submitOptions = $derived(
         isEdit
             ? undefined
-            : { onSuccess: () => { form?.reset?.(); onSuccess?.(); } }
+            : {
+                  onSuccess: () => {
+                      form?.reset?.();
+                      onSuccess?.();
+                  },
+              }
     );
 </script>
 
@@ -441,8 +467,7 @@ These are added inside `extendSchema()` rather than in the static schema because
         {action}
         {method}
         withoutSubmit
-        {submitOptions}
-    />
+        {submitOptions} />
 </Card>
 
 <div class="mt-4">
@@ -452,8 +477,7 @@ These are added inside `extendSchema()` rather than in the static schema because
         labelSubmit={submitLabel}
         labelCancel="Cancel"
         onCancel={onCancel ?? (() => window.history.back())}
-        withoutCancel={!onCancel && !isEdit}
-    />
+        withoutCancel={!onCancel && !isEdit} />
 </div>
 ```
 
@@ -461,16 +485,20 @@ These are added inside `extendSchema()` rather than in the static schema because
 
 ```svelte
 <script lang="ts">
-    import type { App } from '@wayfinder/types';
     import type { InertiaForm } from '@inertiajs/svelte';
-    import { RecurringPresetsController } from '@wayfinder/App/Http/Controllers/RecurringPresetsController';
-    import TransactionPresetType from '@wayfinder/App/Enums/TransactionPresetType';
+    import type { App } from '@wayfinder/types';
+
     import RecurringFrequency from '@wayfinder/App/Enums/RecurringFrequency';
-    import { DataComposer } from '@utilities/data-composer';
+    import TransactionPresetType from '@wayfinder/App/Enums/TransactionPresetType';
+    import { RecurringPresetsController } from '@wayfinder/App/Http/Controllers/RecurringPresetsController';
+
     import { recurringPresetSchema } from '@schema/recurring-preset.schema';
+
+    import { DataComposer } from '@utilities/data-composer';
+
     import Card from '@components/ui/card.svelte';
-    import FormGenerator from '@components/ui/forms/form-generator.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';
+    import FormGenerator from '@components/ui/forms/form-generator.svelte';
 
     interface Props {
         accounts: App.Models.Account[];
@@ -486,9 +514,7 @@ These are added inside `extendSchema()` rather than in the static schema because
 
     const isEdit = $derived(!!preset);
 
-    const accountOptions = $derived(
-        accounts.map((a) => ({ value: a.id, label: a.name }))
-    );
+    const accountOptions = $derived(accounts.map((a) => ({ value: a.id, label: a.name })));
 
     const categoryOptions = $derived([
         { value: '', label: '— None —' },
@@ -561,7 +587,12 @@ These are added inside `extendSchema()` rather than in the static schema because
     const submitOptions = $derived(
         isEdit
             ? undefined
-            : { onSuccess: () => { form?.reset?.(); onSuccess?.(); } }
+            : {
+                  onSuccess: () => {
+                      form?.reset?.();
+                      onSuccess?.();
+                  },
+              }
     );
 </script>
 
@@ -573,8 +604,7 @@ These are added inside `extendSchema()` rather than in the static schema because
         {action}
         {method}
         withoutSubmit
-        {submitOptions}
-    />
+        {submitOptions} />
 </Card>
 
 <div class="mt-4">
@@ -584,8 +614,7 @@ These are added inside `extendSchema()` rather than in the static schema because
         labelSubmit={submitLabel}
         labelCancel="Cancel"
         onCancel={onCancel ?? (() => window.history.back())}
-        withoutCancel={!onCancel && !isEdit}
-    />
+        withoutCancel={!onCancel && !isEdit} />
 </div>
 ```
 
@@ -600,13 +629,15 @@ The page manages the user's "templates" carousel. Create and edit happen inline 
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { TransactionPresetsController } from '@wayfinder/App/Http/Controllers/TransactionPresetsController';
+
     import { router } from '@inertiajs/svelte';
+    import { TransactionPresetsController } from '@wayfinder/App/Http/Controllers/TransactionPresetsController';
+
+    import PresetForm from '@components/module/transaction-preset/preset-form.svelte';
+    import PresetTypeBadge from '@components/module/transaction-preset/preset-type-badge.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
-    import PresetTypeBadge from '@components/module/transaction-preset/preset-type-badge.svelte';
-    import PresetForm from '@components/module/transaction-preset/preset-form.svelte';
 
     interface Props {
         presets: App.Models.TransactionPreset[];
@@ -625,7 +656,9 @@ The page manages the user's "templates" carousel. Create and edit happen inline 
     );
 
     function destroy(): void {
-        if (!deletingPresetId) { return; }
+        if (!deletingPresetId) {
+            return;
+        }
         router.delete(TransactionPresetsController.destroy.url({ preset: deletingPresetId }), {
             onFinish: () => (deletingPresetId = null),
         });
@@ -638,8 +671,10 @@ The page manages the user's "templates" carousel. Create and edit happen inline 
         <Button
             color="primary"
             size="sm"
-            onclick={() => { showCreateForm = !showCreateForm; editingPreset = null; }}
-        >
+            onclick={() => {
+                showCreateForm = !showCreateForm;
+                editingPreset = null;
+            }}>
             <i class="iconify size-4 ph--plus-bold"></i>
             Add
         </Button>
@@ -651,16 +686,21 @@ The page manages the user's "templates" carousel. Create and edit happen inline 
                 {accounts}
                 {categories}
                 onSuccess={() => (showCreateForm = false)}
-                onCancel={() => (showCreateForm = false)}
-            />
+                onCancel={() => (showCreateForm = false)} />
         </div>
     {/if}
 
     {#if editingPreset}
         <div class="mb-4">
             <div class="mb-2 flex items-center justify-between">
-                <p class="text-sm font-medium text-base-content/60">Editing: {editingPreset.name}</p>
-                <Button color="light" variant="ghost" size="sm" onclick={() => (editingPreset = null)}>
+                <p class="text-sm font-medium text-base-content/60">
+                    Editing: {editingPreset.name}
+                </p>
+                <Button
+                    color="light"
+                    variant="ghost"
+                    size="sm"
+                    onclick={() => (editingPreset = null)}>
                     Cancel
                 </Button>
             </div>
@@ -669,8 +709,7 @@ The page manages the user's "templates" carousel. Create and edit happen inline 
                 {categories}
                 preset={editingPreset}
                 onSuccess={() => (editingPreset = null)}
-                onCancel={() => (editingPreset = null)}
-            />
+                onCancel={() => (editingPreset = null)} />
         </div>
     {/if}
 
@@ -679,12 +718,7 @@ The page manages the user's "templates" carousel. Create and edit happen inline 
             <i class="iconify mb-3 size-12 ph--lightning-bold"></i>
             <p class="text-sm">No templates yet</p>
             <p class="mt-1 text-xs text-base-content/40">Templates pre-fill the quick-add form</p>
-            <Button
-                color="primary"
-                size="sm"
-                class="mt-4"
-                onclick={() => (showCreateForm = true)}
-            >
+            <Button color="primary" size="sm" class="mt-4" onclick={() => (showCreateForm = true)}>
                 Create your first template
             </Button>
         </div>
@@ -704,7 +738,9 @@ The page manages the user's "templates" carousel. Create and edit happen inline 
                                 {/if}
                             </div>
                             {#if preset.default_description}
-                                <p class="text-xs text-base-content/50">{preset.default_description}</p>
+                                <p class="text-xs text-base-content/50">
+                                    {preset.default_description}
+                                </p>
                             {/if}
                         </div>
                         <div class="flex items-center gap-1">
@@ -712,16 +748,17 @@ The page manages the user's "templates" carousel. Create and edit happen inline 
                                 color="light"
                                 variant="ghost"
                                 class="btn-circle btn-sm"
-                                onclick={() => { editingPreset = preset; showCreateForm = false; }}
-                            >
+                                onclick={() => {
+                                    editingPreset = preset;
+                                    showCreateForm = false;
+                                }}>
                                 <i class="iconify size-4 ph--pencil-simple-bold"></i>
                             </Button>
                             <Button
                                 color="error"
                                 variant="ghost"
                                 class="btn-circle btn-sm"
-                                onclick={() => (deletingPresetId = preset.id)}
-                            >
+                                onclick={() => (deletingPresetId = preset.id)}>
                                 <i class="iconify size-4 ph--trash-bold"></i>
                             </Button>
                         </div>
@@ -739,8 +776,7 @@ The page manages the user's "templates" carousel. Create and edit happen inline 
     cancelText="Cancel"
     onConfirm={destroy}
     onCancel={() => (deletingPresetId = null)}
-    confirmButtonProps={{ color: 'error' }}
->
+    confirmButtonProps={{ color: 'error' }}>
     {#if deletingPreset}
         Delete <strong>{deletingPreset.name}</strong>? This cannot be undone.
     {/if}
@@ -758,15 +794,17 @@ The page lists active and inactive recurring rules with next run date, frequency
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { RecurringPresetsController } from '@wayfinder/App/Http/Controllers/RecurringPresetsController';
+
     import { router } from '@inertiajs/svelte';
-    import Button from '@components/ui/button.svelte';
-    import Card from '@components/ui/card.svelte';
-    import Badge from '@components/ui/badge.svelte';
-    import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
-    import PresetTypeBadge from '@components/module/transaction-preset/preset-type-badge.svelte';
+    import { RecurringPresetsController } from '@wayfinder/App/Http/Controllers/RecurringPresetsController';
+
     import RecurringFrequencyBadge from '@components/module/recurring-preset/recurring-frequency-badge.svelte';
     import RecurringPresetForm from '@components/module/recurring-preset/recurring-preset-form.svelte';
+    import PresetTypeBadge from '@components/module/transaction-preset/preset-type-badge.svelte';
+    import Badge from '@components/ui/badge.svelte';
+    import Button from '@components/ui/button.svelte';
+    import Card from '@components/ui/card.svelte';
+    import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
     interface Props {
         presets: App.Models.TransactionRecurringPreset[];
@@ -785,21 +823,33 @@ The page lists active and inactive recurring rules with next run date, frequency
     );
 
     function toggle(preset: App.Models.TransactionRecurringPreset): void {
-        router.post(RecurringPresetsController.toggle.url({ preset: preset.id }), {}, {
-            preserveScroll: true,
-        });
+        router.post(
+            RecurringPresetsController.toggle.url({ preset: preset.id }),
+            {},
+            {
+                preserveScroll: true,
+            }
+        );
     }
 
     function destroy(): void {
-        if (!deletingPresetId) { return; }
+        if (!deletingPresetId) {
+            return;
+        }
         router.delete(RecurringPresetsController.destroy.url({ preset: deletingPresetId }), {
             onFinish: () => (deletingPresetId = null),
         });
     }
 
     function formatDate(dateStr: string | null): string {
-        if (!dateStr) { return '—'; }
-        return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        if (!dateStr) {
+            return '—';
+        }
+        return new Date(dateStr).toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+        });
     }
 </script>
 
@@ -809,8 +859,10 @@ The page lists active and inactive recurring rules with next run date, frequency
         <Button
             color="primary"
             size="sm"
-            onclick={() => { showCreateForm = !showCreateForm; editingPreset = null; }}
-        >
+            onclick={() => {
+                showCreateForm = !showCreateForm;
+                editingPreset = null;
+            }}>
             <i class="iconify size-4 ph--plus-bold"></i>
             Add
         </Button>
@@ -822,16 +874,21 @@ The page lists active and inactive recurring rules with next run date, frequency
                 {accounts}
                 {categories}
                 onSuccess={() => (showCreateForm = false)}
-                onCancel={() => (showCreateForm = false)}
-            />
+                onCancel={() => (showCreateForm = false)} />
         </div>
     {/if}
 
     {#if editingPreset}
         <div class="mb-4">
             <div class="mb-2 flex items-center justify-between">
-                <p class="text-sm font-medium text-base-content/60">Editing: {editingPreset.name}</p>
-                <Button color="light" variant="ghost" size="sm" onclick={() => (editingPreset = null)}>
+                <p class="text-sm font-medium text-base-content/60">
+                    Editing: {editingPreset.name}
+                </p>
+                <Button
+                    color="light"
+                    variant="ghost"
+                    size="sm"
+                    onclick={() => (editingPreset = null)}>
                     Cancel
                 </Button>
             </div>
@@ -840,8 +897,7 @@ The page lists active and inactive recurring rules with next run date, frequency
                 {categories}
                 preset={editingPreset}
                 onSuccess={() => (editingPreset = null)}
-                onCancel={() => (editingPreset = null)}
-            />
+                onCancel={() => (editingPreset = null)} />
         </div>
     {/if}
 
@@ -849,13 +905,10 @@ The page lists active and inactive recurring rules with next run date, frequency
         <div class="flex flex-col items-center justify-center py-16 text-base-content/50">
             <i class="iconify mb-3 size-12 ph--clock-countdown-bold"></i>
             <p class="text-sm">No recurring rules yet</p>
-            <p class="mt-1 text-xs text-base-content/40">Set up rent, salary, and subscriptions once</p>
-            <Button
-                color="primary"
-                size="sm"
-                class="mt-4"
-                onclick={() => (showCreateForm = true)}
-            >
+            <p class="mt-1 text-xs text-base-content/40">
+                Set up rent, salary, and subscriptions once
+            </p>
+            <Button color="primary" size="sm" class="mt-4" onclick={() => (showCreateForm = true)}>
                 Create your first rule
             </Button>
         </div>
@@ -899,24 +952,27 @@ The page lists active and inactive recurring rules with next run date, frequency
                                 variant="ghost"
                                 class="btn-circle btn-sm"
                                 title={preset.is_active ? 'Pause' : 'Activate'}
-                                onclick={() => toggle(preset)}
-                            >
-                                <i class="iconify size-4 {preset.is_active ? 'ph--pause-bold' : 'ph--play-bold'}"></i>
+                                onclick={() => toggle(preset)}>
+                                <i
+                                    class="iconify size-4 {preset.is_active
+                                        ? 'ph--pause-bold'
+                                        : 'ph--play-bold'}"></i>
                             </Button>
                             <Button
                                 color="light"
                                 variant="ghost"
                                 class="btn-circle btn-sm"
-                                onclick={() => { editingPreset = preset; showCreateForm = false; }}
-                            >
+                                onclick={() => {
+                                    editingPreset = preset;
+                                    showCreateForm = false;
+                                }}>
                                 <i class="iconify size-4 ph--pencil-simple-bold"></i>
                             </Button>
                             <Button
                                 color="error"
                                 variant="ghost"
                                 class="btn-circle btn-sm"
-                                onclick={() => (deletingPresetId = preset.id)}
-                            >
+                                onclick={() => (deletingPresetId = preset.id)}>
                                 <i class="iconify size-4 ph--trash-bold"></i>
                             </Button>
                         </div>
@@ -934,10 +990,10 @@ The page lists active and inactive recurring rules with next run date, frequency
     cancelText="Cancel"
     onConfirm={destroy}
     onCancel={() => (deletingPresetId = null)}
-    confirmButtonProps={{ color: 'error' }}
->
+    confirmButtonProps={{ color: 'error' }}>
     {#if deletingPreset}
-        Delete <strong>{deletingPreset.name}</strong>? Future transactions will no longer be generated.
+        Delete <strong>{deletingPreset.name}</strong>? Future transactions will no longer be
+        generated.
     {/if}
 </ConfirmationModal>
 ```

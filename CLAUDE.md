@@ -115,11 +115,11 @@ Configured in `vite.config.js` and `tsconfig.json`:
 - **No DB enums** — never use `$table->enum()` in migrations; use `$table->string()` instead and enforce values via PHP-backed enums with Eloquent `$casts`
 - **No magic strings in migrations** — when setting a default value for an enum-backed column, use the PHP enum's `.value` property (e.g. `->default(ProviderStatus::Active->value)`, not `->default('active')`). Import the enum at the top of the migration class.
 - **Migration column order** — sort columns in this sequence:
-  1. `$table->id()`
-  2. Relation keys (`foreignId`) — unless the FK is tightly bound to adjacent data columns (e.g. a morph pair `morphable_type` / `morphable_id`), in which case move it next to those columns
-  3. Core / grouped data columns (name, amount, type, etc.) — keep related fields together
-  4. Status, notes, long-text, and JSON columns
-  5. `archived_at`, `deleted_at` (soft delete), then `timestamps()`
+    1. `$table->id()`
+    2. Relation keys (`foreignId`) — unless the FK is tightly bound to adjacent data columns (e.g. a morph pair `morphable_type` / `morphable_id`), in which case move it next to those columns
+    3. Core / grouped data columns (name, amount, type, etc.) — keep related fields together
+    4. Status, notes, long-text, and JSON columns
+    5. `archived_at`, `deleted_at` (soft delete), then `timestamps()`
 
 ### Wayfinder
 
@@ -131,40 +131,39 @@ Wayfinder (`next` branch) auto-generates TypeScript from Laravel controllers, en
 
 ```typescript
 // Controller actions (follows PHP namespace)
-import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
-
-// Named routes
-import accounts from '@wayfinder/routes/accounts';
-
-// Enum constants (for runtime comparisons and badge config maps)
-import AccountType from '@wayfinder/App/Enums/AccountType';
 
 // All types (models, enums, shared data, page props)
 import type { App } from '@wayfinder/types';
+
+// Enum constants (for runtime comparisons and badge config maps)
+import AccountType from '@wayfinder/App/Enums/AccountType';
+import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+// Named routes
+import accounts from '@wayfinder/routes/accounts';
 ```
 
 #### URL generation
 
 ```typescript
 // URL string — use with Inertia's useForm / router
-AccountsController.index.url()               // '/accounts'
-AccountsController.show.url({ account: 1 })  // '/accounts/1'
+AccountsController.index.url(); // '/accounts'
+AccountsController.show.url({ account: 1 }); // '/accounts/1'
 
 // With query params
-AccountsController.index.url({ query: { page: 2 } })
+AccountsController.index.url({ query: { page: 2 } });
 ```
 
 #### HTTP method variants — use with Inertia router directly
 
 ```typescript
 // Inertia useForm — pass .url() to form methods
-form.get(AccountsController.index.url())
-form.post(AccountsController.store.url())
-form.put(AccountsController.update.url({ account: id }))
-form.delete(AccountsController.destroy.url({ account: id }))
+form.get(AccountsController.index.url());
+form.post(AccountsController.store.url());
+form.put(AccountsController.update.url({ account: id }));
+form.delete(AccountsController.destroy.url({ account: id }));
 
 // Inertia router
-router.post(AccountsController.archive.url({ account: id }))
+router.post(AccountsController.archive.url({ account: id }));
 ```
 
 #### Form variant — native HTML forms only (not Inertia useForm)
@@ -172,7 +171,7 @@ router.post(AccountsController.archive.url({ account: id }))
 ```typescript
 // Produces { action: '/accounts/1?_method=PUT', method: 'post' }
 // Spread onto a <form> element when NOT using Inertia's useForm
-AccountsController.update.form({ account: 1 })
+AccountsController.update.form({ account: 1 });
 ```
 
 #### Typed form requests

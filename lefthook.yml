@@ -5,16 +5,16 @@
 #
 
 pre-commit:
-    parallel: true
-    commands:
-        eslint:
-            glob: "*.{js,ts,svelte}"
-            run: pnpx eslint --fix --quiet {staged_files}
-            stage_fixed: true
-        prettier:
-            glob: "*.{js,ts,svelte,html,css}"
-            run: pnpx prettier --write {staged_files}
-            stage_fixed: true
-        laravel:
-            run: composer format || powershell -Command 'composer format'
-            fail_text: "Laravel formatting failed"
+  parallel: true
+  commands:
+    eslint:
+      glob: '*.{js,ts,svelte}'
+      run: pnpx eslint --fix --quiet {staged_files}
+      stage_fixed: true
+    prettier:
+      glob: '*.{js,ts,svelte,html,css}'
+      run: pnpx prettier --write {staged_files}
+      stage_fixed: true
+    laravel:
+      run: composer format || powershell -Command 'composer format'
+      fail_text: 'Laravel formatting failed'

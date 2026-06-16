@@ -14,16 +14,16 @@
 
 ## Component Reference (existing — always prefer these)
 
-| Component | Import | Key Props |
-|-----------|--------|-----------|
-| `Badge` | `@components/ui/badge.svelte` | `color` (primary/secondary/accent/success/info/warning/error/light/dark), `variant` (solid/outline/soft) |
-| `Button` | `@components/ui/button.svelte` | `color`, `variant`, `href`, `disabled`, `onclick` |
-| `Card` | `@components/ui/card.svelte` | `title`, `wrapperClass` |
-| `FormGenerator` | `@components/ui/forms/form-generator.svelte` | `formSchema: {fields, data}`, `bind:form`, `action`, `method`, `withoutSubmit` |
-| `FormAction` | `@components/ui/forms/form-action.svelte` | `form`, `formId`, `labelSubmit`, `labelCancel`, `withoutCancel`, `onCancel` |
-| `ConfirmationModal` | `@components/ui/modals/confirmation-modal.svelte` | `bind:open`, `title`, `onConfirm`, `confirmText`, `cancelText`, `confirmButtonProps` |
-| `DataList` | `@components/data/data-list.svelte` | `data: [{label, value}]` |
-| `DataComposer` | `@utilities/data-composer` | `.from(schema)`, `.extendSchema()`, `.except()`, `.toFormGenerator()`, `.toDataDisplay()` |
+| Component           | Import                                            | Key Props                                                                                                |
+| ------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `Badge`             | `@components/ui/badge.svelte`                     | `color` (primary/secondary/accent/success/info/warning/error/light/dark), `variant` (solid/outline/soft) |
+| `Button`            | `@components/ui/button.svelte`                    | `color`, `variant`, `href`, `disabled`, `onclick`                                                        |
+| `Card`              | `@components/ui/card.svelte`                      | `title`, `wrapperClass`                                                                                  |
+| `FormGenerator`     | `@components/ui/forms/form-generator.svelte`      | `formSchema: {fields, data}`, `bind:form`, `action`, `method`, `withoutSubmit`                           |
+| `FormAction`        | `@components/ui/forms/form-action.svelte`         | `form`, `formId`, `labelSubmit`, `labelCancel`, `withoutCancel`, `onCancel`                              |
+| `ConfirmationModal` | `@components/ui/modals/confirmation-modal.svelte` | `bind:open`, `title`, `onConfirm`, `confirmText`, `cancelText`, `confirmButtonProps`                     |
+| `DataList`          | `@components/data/data-list.svelte`               | `data: [{label, value}]`                                                                                 |
+| `DataComposer`      | `@utilities/data-composer`                        | `.from(schema)`, `.extendSchema()`, `.except()`, `.toFormGenerator()`, `.toDataDisplay()`                |
 
 ---
 
@@ -74,6 +74,7 @@ One schema file per model in `resources/js/schema/`. Dynamic options (categories
 - [ ] **Create `resources/js/schema/transaction.schema.ts`**
 
 `type` is excluded from the static schema because:
+
 1. The form shows a "Transfer" option (a UI alias) but the DB stores `transfer_out`/`transfer_in`.
 2. Transfer edit is blocked — `type` is read-only after creation.
 3. Type options are injected in the form component where the alias logic lives.
@@ -165,19 +166,21 @@ Maps all five `TransactionType` values plus the display alias `transfer` (used w
 
 ```svelte
 <script lang="ts">
-    import TransactionType from '@wayfinder/App/Enums/TransactionType';
-    import type { App } from '@wayfinder/types';
     import type { ColorVariant } from '@/data/theme';
+    import type { App } from '@wayfinder/types';
+
+    import TransactionType from '@wayfinder/App/Enums/TransactionType';
+
     import Badge from '@components/ui/badge.svelte';
 
     let { type }: { type: App.Enums.TransactionType } = $props();
 
     const config: Record<App.Enums.TransactionType, { label: string; color: ColorVariant }> = {
-        [TransactionType.Income]:      { label: 'Income',      color: 'success'   },
-        [TransactionType.Expense]:     { label: 'Expense',     color: 'error'     },
-        [TransactionType.TransferOut]: { label: 'Transfer Out', color: 'warning'  },
-        [TransactionType.TransferIn]:  { label: 'Transfer In',  color: 'info'     },
-        [TransactionType.Fee]:         { label: 'Fee',          color: 'secondary' },
+        [TransactionType.Income]: { label: 'Income', color: 'success' },
+        [TransactionType.Expense]: { label: 'Expense', color: 'error' },
+        [TransactionType.TransferOut]: { label: 'Transfer Out', color: 'warning' },
+        [TransactionType.TransferIn]: { label: 'Transfer In', color: 'info' },
+        [TransactionType.Fee]: { label: 'Fee', color: 'secondary' },
     };
 
     const badge = $derived(config[type]);
@@ -193,6 +196,7 @@ Maps all five `TransactionType` values plus the display alias `transfer` (used w
 ```svelte
 <script lang="ts">
     import type { ColorVariant } from '@/data/theme';
+
     import Badge from '@components/ui/badge.svelte';
 
     type BudgetStatus = 'on_track' | 'at_risk' | 'over_budget';
@@ -200,9 +204,9 @@ Maps all five `TransactionType` values plus the display alias `transfer` (used w
     let { status }: { status: BudgetStatus } = $props();
 
     const config: Record<BudgetStatus, { label: string; color: ColorVariant }> = {
-        on_track:    { label: 'On Track',    color: 'success' },
-        at_risk:     { label: 'At Risk',     color: 'warning' },
-        over_budget: { label: 'Over Budget', color: 'error'   },
+        on_track: { label: 'On Track', color: 'success' },
+        at_risk: { label: 'At Risk', color: 'warning' },
+        over_budget: { label: 'Over Budget', color: 'error' },
     };
 
     const badge = $derived(config[status]);
@@ -220,6 +224,7 @@ Extract all form logic into module components. Pages become thin — they import
 - [ ] **Create `resources/js/components/module/transaction/transaction-form.svelte`**
 
 Handles both create and edit modes. Key logic:
+
 - `type` options include `transfer` (UI alias) + `income`, `expense`, `fee`
 - `destination_account_id` field is conditionally shown when `type === 'transfer'`
 - `fee_amount` field is conditionally shown when `type === 'transfer'`
@@ -228,20 +233,24 @@ Handles both create and edit modes. Key logic:
 
 ```svelte
 <script lang="ts">
-    import type { App } from '@wayfinder/types';
     import type { InertiaForm } from '@inertiajs/svelte';
-    import { TransactionsController } from '@wayfinder/App/Http/Controllers/TransactionsController';
+    import type { App } from '@wayfinder/types';
+
     import TransactionType from '@wayfinder/App/Enums/TransactionType';
-    import { DataComposer } from '@utilities/data-composer';
+    import { TransactionsController } from '@wayfinder/App/Http/Controllers/TransactionsController';
+
     import { transactionSchema } from '@schema/transaction.schema';
+
+    import { DataComposer } from '@utilities/data-composer';
+
     import Card from '@components/ui/card.svelte';
-    import FormGenerator from '@components/ui/forms/form-generator.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';
+    import FormGenerator from '@components/ui/forms/form-generator.svelte';
 
     interface Props {
         account: App.Models.Account;
         categories: App.Models.Category[];
-        accounts?: App.Models.Account[];  // other accounts for transfer destination
+        accounts?: App.Models.Account[]; // other accounts for transfer destination
         transaction?: App.Models.Transaction;
         onCancel?: () => void;
     }
@@ -254,7 +263,9 @@ Handles both create and edit modes. Key logic:
 
     // Flatten categories (parent + children) for select options
     const categoryOptions = $derived(() => {
-        const opts: { value: string | number; label: string }[] = [{ value: '', label: '— Uncategorized —' }];
+        const opts: { value: string | number; label: string }[] = [
+            { value: '', label: '— Uncategorized —' },
+        ];
 
         for (const parent of categories) {
             if (parent.children && parent.children.length > 0) {
@@ -269,14 +280,12 @@ Handles both create and edit modes. Key logic:
         return opts;
     });
 
-    const accountOptions = $derived(() =>
-        accounts.map(a => ({ value: a.id, label: a.name }))
-    );
+    const accountOptions = $derived(() => accounts.map((a) => ({ value: a.id, label: a.name })));
 
     // Type options for create form — 'transfer' is a UI alias, never sent as-is to DB
     const typeOptions = [
-        { value: 'income',   label: 'Income'   },
-        { value: 'expense',  label: 'Expense'  },
+        { value: 'income', label: 'Income' },
+        { value: 'expense', label: 'Expense' },
         { value: 'transfer', label: 'Transfer' },
         { value: TransactionType.Fee, label: 'Fee' },
     ];
@@ -342,7 +351,12 @@ Handles both create and edit modes. Key logic:
                         type: 'number',
                         name: 'fee_amount',
                         show: (f: any) => f.type === 'transfer',
-                        inputProps: { inputmode: 'decimal', min: 0.01, step: 0.01, placeholder: '0.00' },
+                        inputProps: {
+                            inputmode: 'decimal',
+                            min: 0.01,
+                            step: 0.01,
+                            placeholder: '0.00',
+                        },
                     }),
                 },
             })
@@ -361,7 +375,10 @@ Handles both create and edit modes. Key logic:
 
     const action = $derived(
         isEdit && transaction
-            ? TransactionsController.update.url({ account: account.id, transaction: transaction.id })
+            ? TransactionsController.update.url({
+                  account: account.id,
+                  transaction: transaction.id,
+              })
             : TransactionsController.store.url({ account: account.id })
     );
 
@@ -376,8 +393,7 @@ Handles both create and edit modes. Key logic:
         formSchema={formSchema()}
         {action}
         {method}
-        withoutSubmit
-    />
+        withoutSubmit />
 </Card>
 
 <div class="mt-4">
@@ -386,8 +402,7 @@ Handles both create and edit modes. Key logic:
         formId="transaction-form"
         labelSubmit={submitLabel}
         labelCancel="Cancel"
-        onCancel={onCancel ?? (() => window.history.back())}
-    />
+        onCancel={onCancel ?? (() => window.history.back())} />
 </div>
 ```
 
@@ -397,15 +412,19 @@ Used in `budgets/index.svelte` as an inline add/edit form. `year` and `month` op
 
 ```svelte
 <script lang="ts">
-    import type { App } from '@wayfinder/types';
     import type { InertiaForm } from '@inertiajs/svelte';
+    import type { App } from '@wayfinder/types';
+
     import { BudgetsController } from '@wayfinder/App/Http/Controllers/BudgetsController';
-    import { DataComposer } from '@utilities/data-composer';
+
     import { budgetSchema } from '@schema/budget.schema';
-    import Card from '@components/ui/card.svelte';
-    import FormGenerator from '@components/ui/forms/form-generator.svelte';
-    import FormAction from '@components/ui/forms/form-action.svelte';
+
+    import { DataComposer } from '@utilities/data-composer';
+
     import Button from '@components/ui/button.svelte';
+    import Card from '@components/ui/card.svelte';
+    import FormAction from '@components/ui/forms/form-action.svelte';
+    import FormGenerator from '@components/ui/forms/form-generator.svelte';
 
     interface Props {
         account: App.Models.Account;
@@ -450,14 +469,24 @@ Used in `budgets/index.svelte` as an inline add/edit form. `year` and `month` op
 
     // Generate 12 month options centred around today
     const monthNames = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December',
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
     ];
 
     function generateYearOptions(): { value: number; label: string }[] {
         const currentYear = new Date().getFullYear();
 
-        return [currentYear - 1, currentYear, currentYear + 1].map(y => ({
+        return [currentYear - 1, currentYear, currentYear + 1].map((y) => ({
             value: y,
             label: String(y),
         }));
@@ -532,16 +561,19 @@ Used in `budgets/index.svelte` as an inline add/edit form. `year` and `month` op
         {action}
         {method}
         withoutSubmit
-        submitOptions={{ onSuccess: () => { form?.reset?.(); onSuccess?.(); } }}
-    />
+        submitOptions={{
+            onSuccess: () => {
+                form?.reset?.();
+                onSuccess?.();
+            },
+        }} />
     <div class="mt-4 flex gap-2">
         <FormAction
             {form}
             formId="budget-form"
             labelSubmit={submitLabel}
             withoutCancel={!onCancel}
-            class="flex-1"
-        />
+            class="flex-1" />
         {#if onCancel}
             <Button color="light" variant="outline" onclick={onCancel}>Cancel</Button>
         {/if}
@@ -588,12 +620,14 @@ Ledger feed for a single account. Shows paginated transactions with `Transaction
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { TransactionsController } from '@wayfinder/App/Http/Controllers/TransactionsController';
-    import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+
     import { Link } from '@inertiajs/svelte';
+    import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+    import { TransactionsController } from '@wayfinder/App/Http/Controllers/TransactionsController';
+
+    import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
 
     interface PaginatedTransactions {
         data: App.Models.Transaction[];
@@ -613,7 +647,10 @@ Ledger feed for a single account. Shows paginated transactions with `Transaction
     } = $props();
 
     const formattedBalance = $derived(
-        Number(balance).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        Number(balance).toLocaleString('id-ID', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        })
     );
 </script>
 
@@ -624,8 +661,7 @@ Ledger feed for a single account. Shows paginated transactions with `Transaction
             color="light"
             variant="ghost"
             href={AccountsController.show.url({ account: account.id })}
-            class="btn-circle btn-sm"
-        >
+            class="btn-circle btn-sm">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
         <div class="flex-1">
@@ -635,8 +671,7 @@ Ledger feed for a single account. Shows paginated transactions with `Transaction
         <Button
             color="primary"
             size="sm"
-            href={TransactionsController.create.url({ account: account.id })}
-        >
+            href={TransactionsController.create.url({ account: account.id })}>
             <i class="iconify size-4 ph--plus-bold"></i>
             Add
         </Button>
@@ -657,8 +692,7 @@ Ledger feed for a single account. Shows paginated transactions with `Transaction
                 color="primary"
                 size="sm"
                 href={TransactionsController.create.url({ account: account.id })}
-                class="mt-4"
-            >
+                class="mt-4">
                 Add your first transaction
             </Button>
         </div>
@@ -666,30 +700,51 @@ Ledger feed for a single account. Shows paginated transactions with `Transaction
         <div class="space-y-2">
             {#each transactions.data as transaction (transaction.id)}
                 <a
-                    href={TransactionsController.edit.url({ account: account.id, transaction: transaction.id })}
-                    class="block"
-                >
+                    href={TransactionsController.edit.url({
+                        account: account.id,
+                        transaction: transaction.id,
+                    })}
+                    class="block">
                     <Card wrapperClass="transition-transform active:scale-95">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="flex-1 min-w-0">
                                     <p class="truncate text-sm font-medium">
-                                        {transaction.description ?? (transaction.category?.name ?? 'Transaction')}
+                                        {transaction.description ??
+                                            transaction.category?.name ??
+                                            'Transaction'}
                                     </p>
                                     <div class="mt-1 flex items-center gap-1">
                                         <TransactionTypeBadge type={transaction.type} />
                                         {#if transaction.category}
-                                            <span class="text-xs text-base-content/50">{transaction.category.name}</span>
+                                            <span class="text-xs text-base-content/50"
+                                                >{transaction.category.name}</span>
                                         {/if}
                                     </div>
                                 </div>
                             </div>
                             <div class="text-right shrink-0">
-                                <p class="font-mono text-sm font-semibold {['income', 'transfer_in'].includes(transaction.type) ? 'text-success' : 'text-error'}">
-                                    {['income', 'transfer_in'].includes(transaction.type) ? '+' : '-'}{Number(transaction.amount).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                <p
+                                    class="font-mono text-sm font-semibold {[
+                                        'income',
+                                        'transfer_in',
+                                    ].includes(transaction.type)
+                                        ? 'text-success'
+                                        : 'text-error'}">
+                                    {['income', 'transfer_in'].includes(transaction.type)
+                                        ? '+'
+                                        : '-'}{Number(transaction.amount).toLocaleString('id-ID', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0,
+                                    })}
                                 </p>
                                 <p class="text-xs text-base-content/40">
-                                    {new Date(transaction.transaction_date as string).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
+                                    {new Date(
+                                        transaction.transaction_date as string
+                                    ).toLocaleDateString('id-ID', {
+                                        day: '2-digit',
+                                        month: 'short',
+                                    })}
                                 </p>
                             </div>
                         </div>
@@ -706,8 +761,7 @@ Ledger feed for a single account. Shows paginated transactions with `Transaction
                         <Link
                             href={link.url}
                             class="btn btn-xs {link.active ? 'btn-primary' : 'btn-ghost'}"
-                            preserveScroll
-                        >
+                            preserveScroll>
                             {@html link.label}
                         </Link>
                     {:else}
@@ -727,10 +781,12 @@ Delegates entirely to `TransactionForm`. Thin page component.
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { TransactionsController } from '@wayfinder/App/Http/Controllers/TransactionsController';
+
     import { router } from '@inertiajs/svelte';
-    import Button from '@components/ui/button.svelte';
+    import { TransactionsController } from '@wayfinder/App/Http/Controllers/TransactionsController';
+
     import TransactionForm from '@components/module/transaction/transaction-form.svelte';
+    import Button from '@components/ui/button.svelte';
 
     let {
         account,
@@ -749,8 +805,7 @@ Delegates entirely to `TransactionForm`. Thin page component.
             color="light"
             variant="ghost"
             href={TransactionsController.index.url({ account: account.id })}
-            class="btn-circle btn-sm"
-        >
+            class="btn-circle btn-sm">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
         <h1 class="text-xl font-bold">New Transaction</h1>
@@ -760,8 +815,7 @@ Delegates entirely to `TransactionForm`. Thin page component.
         {account}
         {categories}
         {accounts}
-        onCancel={() => router.visit(TransactionsController.index.url({ account: account.id }))}
-    />
+        onCancel={() => router.visit(TransactionsController.index.url({ account: account.id }))} />
 </div>
 ```
 
@@ -772,12 +826,14 @@ Delegates form to `TransactionForm`. Keeps delete action + confirmation modal in
 ```svelte
 <script lang="ts">
     import type { App } from '@wayfinder/types';
-    import { TransactionsController } from '@wayfinder/App/Http/Controllers/TransactionsController';
+
     import { router } from '@inertiajs/svelte';
-    import Button from '@components/ui/button.svelte';
-    import Card from '@components/ui/card.svelte';
+    import { TransactionsController } from '@wayfinder/App/Http/Controllers/TransactionsController';
+
     import TransactionForm from '@components/module/transaction/transaction-form.svelte';
     import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
+    import Button from '@components/ui/button.svelte';
+    import Card from '@components/ui/card.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
     let {
@@ -801,8 +857,8 @@ Delegates form to `TransactionForm`. Keeps delete action + confirmation modal in
     // Transfer rows cannot have their type changed — show a read-only badge instead of the type select
     const isTransferRow = $derived(
         transaction.type === 'transfer_out' ||
-        transaction.type === 'transfer_in' ||
-        transaction.type === 'fee'
+            transaction.type === 'transfer_in' ||
+            transaction.type === 'fee'
     );
 </script>
 
@@ -812,8 +868,7 @@ Delegates form to `TransactionForm`. Keeps delete action + confirmation modal in
             color="light"
             variant="ghost"
             href={TransactionsController.index.url({ account: account.id })}
-            class="btn-circle btn-sm"
-        >
+            class="btn-circle btn-sm">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
         <div class="flex-1">
@@ -821,7 +876,8 @@ Delegates form to `TransactionForm`. Keeps delete action + confirmation modal in
             <div class="mt-1">
                 <TransactionTypeBadge type={transaction.type} />
                 {#if isTransferRow}
-                    <span class="ml-1 text-xs text-base-content/50">Transfer — type cannot be changed</span>
+                    <span class="ml-1 text-xs text-base-content/50"
+                        >Transfer — type cannot be changed</span>
                 {/if}
             </div>
         </div>
@@ -831,16 +887,14 @@ Delegates form to `TransactionForm`. Keeps delete action + confirmation modal in
         {account}
         {categories}
         {transaction}
-        onCancel={() => router.visit(TransactionsController.index.url({ account: account.id }))}
-    />
+        onCancel={() => router.visit(TransactionsController.index.url({ account: account.id }))} />
 
     <div class="mt-4">
         <Button
             color="error"
             variant="outline"
             class="w-full"
-            onclick={() => (showDeleteConfirm = true)}
-        >
+            onclick={() => (showDeleteConfirm = true)}>
             <i class="iconify size-4 ph--trash-bold"></i>
             {isTransferRow ? 'Delete Transfer (all linked rows)' : 'Delete Transaction'}
         </Button>
@@ -853,8 +907,7 @@ Delegates form to `TransactionForm`. Keeps delete action + confirmation modal in
     confirmText="Delete"
     cancelText="Cancel"
     onConfirm={destroy}
-    confirmButtonProps={{ color: 'error' }}
->
+    confirmButtonProps={{ color: 'error' }}>
     {#if isTransferRow}
         This is part of a transfer. Deleting it will soft-delete all linked transfer rows.
     {:else}
@@ -870,6 +923,7 @@ Delegates form to `TransactionForm`. Keeps delete action + confirmation modal in
 - [ ] **Create `resources/js/pages/budgets/index.svelte`**
 
 Shows monthly budgets for the account. Each budget card has:
+
 - Category name + `BudgetStatusBadge`
 - A progress bar (percentage from `BudgetStatusData`)
 - Spend vs limit figures
@@ -878,15 +932,17 @@ Shows monthly budgets for the account. Each budget card has:
 
 ```svelte
 <script lang="ts">
-    import type { App } from '@wayfinder/types';
     import type { BudgetStatusData } from '@/types/generated';
-    import { BudgetsController } from '@wayfinder/App/Http/Controllers/BudgetsController';
-    import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+    import type { App } from '@wayfinder/types';
+
     import { router } from '@inertiajs/svelte';
+    import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+    import { BudgetsController } from '@wayfinder/App/Http/Controllers/BudgetsController';
+
+    import BudgetForm from '@components/module/budget/budget-form.svelte';
+    import BudgetStatusBadge from '@components/module/budget/budget-status-badge.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import BudgetStatusBadge from '@components/module/budget/budget-status-badge.svelte';
-    import BudgetForm from '@components/module/budget/budget-form.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
     interface BudgetWithStatus {
@@ -913,8 +969,18 @@ Shows monthly budgets for the account. Each budget card has:
     let deletingBudgetId = $state<number | null>(null);
 
     const monthNames = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December',
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
     ];
 
     const currentMonthLabel = $derived(`${monthNames[month - 1]} ${year}`);
@@ -932,13 +998,18 @@ Shows monthly budgets for the account. Each budget card has:
         }
 
         router.visit(
-            BudgetsController.index.url({ account: account.id, query: { year: newYear, month: newMonth } }),
+            BudgetsController.index.url({
+                account: account.id,
+                query: { year: newYear, month: newMonth },
+            }),
             { preserveState: false }
         );
     }
 
     function destroyBudget(): void {
-        if (!deletingBudgetId) { return; }
+        if (!deletingBudgetId) {
+            return;
+        }
 
         router.delete(
             BudgetsController.destroy.url({ account: account.id, budget: deletingBudgetId }),
@@ -947,8 +1018,12 @@ Shows monthly budgets for the account. Each budget card has:
     }
 
     function progressColor(status: string): string {
-        if (status === 'over_budget') { return 'progress-error'; }
-        if (status === 'at_risk') { return 'progress-warning'; }
+        if (status === 'over_budget') {
+            return 'progress-error';
+        }
+        if (status === 'at_risk') {
+            return 'progress-warning';
+        }
 
         return 'progress-success';
     }
@@ -961,8 +1036,7 @@ Shows monthly budgets for the account. Each budget card has:
             color="light"
             variant="ghost"
             href={AccountsController.show.url({ account: account.id })}
-            class="btn-circle btn-sm"
-        >
+            class="btn-circle btn-sm">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
         <div class="flex-1">
@@ -977,11 +1051,19 @@ Shows monthly budgets for the account. Each budget card has:
 
     <!-- Month navigation -->
     <div class="mb-4 flex items-center justify-between rounded-xl bg-base-200 px-4 py-2">
-        <Button color="light" variant="ghost" class="btn-circle btn-sm" onclick={() => navigateMonth(-1)}>
+        <Button
+            color="light"
+            variant="ghost"
+            class="btn-circle btn-sm"
+            onclick={() => navigateMonth(-1)}>
             <i class="iconify size-5 ph--caret-left-bold"></i>
         </Button>
         <p class="font-semibold">{currentMonthLabel}</p>
-        <Button color="light" variant="ghost" class="btn-circle btn-sm" onclick={() => navigateMonth(1)}>
+        <Button
+            color="light"
+            variant="ghost"
+            class="btn-circle btn-sm"
+            onclick={() => navigateMonth(1)}>
             <i class="iconify size-5 ph--caret-right-bold"></i>
         </Button>
     </div>
@@ -994,8 +1076,7 @@ Shows monthly budgets for the account. Each budget card has:
             defaultYear={year}
             defaultMonth={month}
             onSuccess={() => (showAddForm = false)}
-            onCancel={() => (showAddForm = false)}
-        />
+            onCancel={() => (showAddForm = false)} />
     {/if}
 
     <!-- Budget list -->
@@ -1018,8 +1099,7 @@ Shows monthly budgets for the account. Each budget card has:
                         defaultYear={year}
                         defaultMonth={month}
                         onSuccess={() => (editingBudgetId = null)}
-                        onCancel={() => (editingBudgetId = null)}
-                    />
+                        onCancel={() => (editingBudgetId = null)} />
                 {:else}
                     <Card>
                         <!-- Top row: category name + status badge + actions -->
@@ -1037,23 +1117,31 @@ Shows monthly budgets for the account. Each budget card has:
                                     <progress
                                         class="progress h-2 w-full {progressColor(status.status)}"
                                         value={Math.min(status.percentage, 100)}
-                                        max="100"
-                                    ></progress>
+                                        max="100"></progress>
                                 </div>
 
                                 <!-- Spend / limit figures -->
                                 <div class="mt-1 flex items-center justify-between">
                                     <p class="text-xs text-base-content/60">
                                         Spent: <span class="font-mono font-medium">
-                                            {Number(status.spend).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                            {Number(status.spend).toLocaleString('id-ID', {
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0,
+                                            })}
                                         </span>
                                     </p>
                                     <p class="text-xs text-base-content/60">
                                         Limit: <span class="font-mono font-medium">
-                                            {Number(status.limit_amount).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                            {Number(status.limit_amount).toLocaleString('id-ID', {
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0,
+                                            })}
                                         </span>
                                     </p>
-                                    <p class="text-xs font-semibold {status.percentage >= 100 ? 'text-error' : 'text-base-content/60'}">
+                                    <p
+                                        class="text-xs font-semibold {status.percentage >= 100
+                                            ? 'text-error'
+                                            : 'text-base-content/60'}">
                                         {status.percentage.toFixed(0)}%
                                     </p>
                                 </div>
@@ -1065,16 +1153,14 @@ Shows monthly budgets for the account. Each budget card has:
                                     color="light"
                                     variant="ghost"
                                     class="btn-xs"
-                                    onclick={() => (editingBudgetId = budget.id)}
-                                >
+                                    onclick={() => (editingBudgetId = budget.id)}>
                                     <i class="iconify size-4 ph--pencil-simple-bold"></i>
                                 </Button>
                                 <Button
                                     color="error"
                                     variant="ghost"
                                     class="btn-xs"
-                                    onclick={() => (deletingBudgetId = budget.id)}
-                                >
+                                    onclick={() => (deletingBudgetId = budget.id)}>
                                     <i class="iconify size-4 ph--trash-bold"></i>
                                 </Button>
                             </div>
@@ -1093,8 +1179,7 @@ Shows monthly budgets for the account. Each budget card has:
     cancelText="Cancel"
     onConfirm={destroyBudget}
     onCancel={() => (deletingBudgetId = null)}
-    confirmButtonProps={{ color: 'error' }}
->
+    confirmButtonProps={{ color: 'error' }}>
     This budget will be soft-deleted. Existing transactions are unaffected.
 </ConfirmationModal>
 ```
