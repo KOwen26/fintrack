@@ -2,7 +2,7 @@
     import type { InertiaForm } from '@inertiajs/svelte';
     import type { App } from '@wayfinder/types';
 
-    import { CategoriesController } from '@wayfinder/App/Http/Controllers/CategoriesController';
+    import CategoriesController from '@wayfinder/App/Http/Controllers/CategoriesController';
 
     import { categorySchema } from '@schema/category.schema';
 

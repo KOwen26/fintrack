@@ -44,7 +44,7 @@ class AccountsController extends Controller
     {
         $account = $this->accountService->create($request->user(), $request->validated());
 
-        return to_route('accounts.show', $account)->with('message', 'Account created.');
+        return to_route('accounts.show', $account)->flash('Account created.');
     }
 
     public function show(Request $request, Account $account): Response
@@ -71,7 +71,7 @@ class AccountsController extends Controller
         $this->authorize('update', $account);
         $this->accountService->update($account, $request->validated());
 
-        return to_route('accounts.show', $account)->with('message', 'Account updated.');
+        return to_route('accounts.show', $account)->flash('Account updated.');
     }
 
     public function destroy(Account $account): RedirectResponse
@@ -79,7 +79,7 @@ class AccountsController extends Controller
         $this->authorize('delete', $account);
         $this->accountService->softDelete($account);
 
-        return to_route('accounts.index')->with('message', 'Account deleted.');
+        return to_route('accounts.index')->flash('Account deleted.');
     }
 
     public function archive(Account $account): RedirectResponse
@@ -87,7 +87,7 @@ class AccountsController extends Controller
         $this->authorize('archive', $account);
         $this->accountService->archive($account);
 
-        return to_route('accounts.index')->with('message', 'Account archived.');
+        return to_route('accounts.index')->flash('Account archived.');
     }
 
     public function restore(Account $account): RedirectResponse
@@ -95,6 +95,6 @@ class AccountsController extends Controller
         $this->authorize('archive', $account);
         $this->accountService->restore($account);
 
-        return to_route('accounts.show', $account)->with('message', 'Account restored.');
+        return to_route('accounts.show', $account)->flash('Account restored.');
     }
 }

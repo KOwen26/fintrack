@@ -18,7 +18,7 @@ class HouseholdInvitationsController extends Controller
         $invitation = HouseholdInvitation::where('token', $token)->firstOrFail();
 
         if (! $invitation->isPending()) {
-            return to_route('household.settings')->with('message', 'Invitation is no longer valid.');
+            return to_route('household.settings')->flash('Invitation is no longer valid.');
         }
 
         return Inertia::render('household/invitation', [
@@ -37,13 +37,13 @@ class HouseholdInvitationsController extends Controller
         abort_unless($invitation->isPending(), 422, 'Invitation is no longer valid.');
         $this->householdService->acceptInvitation($invitation, $request->user());
 
-        return to_route('household.settings')->with('message', 'You have joined the household.');
+        return to_route('household.settings')->flash('You have joined the household.');
     }
 
     public function decline(string $token): RedirectResponse
     {
         HouseholdInvitation::where('token', $token)->firstOrFail()->update(['accepted_at' => null]);
 
-        return to_route('dashboard')->with('message', 'Invitation declined.');
+        return to_route('dashboard')->flash('Invitation declined.');
     }
 }

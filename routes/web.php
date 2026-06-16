@@ -9,9 +9,10 @@ use App\Http\Controllers\UserThemeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', [LandingController::class, 'index'])->name('home');
-
 require __DIR__ . '/auth.php';
+
+Route::get('/', fn () => to_route('auth.login'));
+// Route::get('/', [LandingController::class, 'index'])->name('home');
 
 Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function (): void {
     Route::get('dashboard', fn () => Inertia::render('dashboard/dashboard'))->name('dashboard');

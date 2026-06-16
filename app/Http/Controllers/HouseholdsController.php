@@ -46,7 +46,7 @@ class HouseholdsController extends Controller
     {
         $this->householdService->create($request->user(), $request->validated()['name']);
 
-        return to_route('household.settings')->with('message', 'Household created.');
+        return to_route('household.settings')->flash('Household created.');
     }
 
     public function invite(InviteHouseholdMemberRequest $request): RedirectResponse
@@ -62,7 +62,7 @@ class HouseholdsController extends Controller
         $this->authorize('invite', $household);
         $this->householdService->invite($household, $request->validated()['email'], $request->user());
 
-        return back()->with('message', 'Invitation sent.');
+        return back()->flash('Invitation sent.');
     }
 
     public function removeMember(Request $request, HouseholdMember $member): RedirectResponse
@@ -70,6 +70,6 @@ class HouseholdsController extends Controller
         $this->authorize('removeMember', $member->household);
         $this->householdService->removeMember($member);
 
-        return back()->with('message', 'Member removed.');
+        return back()->flash('Member removed.');
     }
 }

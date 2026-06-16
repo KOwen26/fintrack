@@ -32,7 +32,7 @@ class CategoriesController extends Controller
     {
         $this->categoryService->create($request->user(), $request->validated());
 
-        return back()->with('message', 'Category created.');
+        return back()->flash('Category created.');
     }
 
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
@@ -40,7 +40,7 @@ class CategoriesController extends Controller
         $this->authorize('update', $category);
         $this->categoryService->update($category, $request->validated());
 
-        return back()->with('message', 'Category updated.');
+        return back()->flash('Category updated.');
     }
 
     public function destroy(Category $category): RedirectResponse
@@ -48,6 +48,6 @@ class CategoriesController extends Controller
         $this->authorize('delete', $category);
         $this->categoryService->softDelete($category);
 
-        return back()->with('message', 'Category deleted.');
+        return back()->flash('Category deleted.');
     }
 }

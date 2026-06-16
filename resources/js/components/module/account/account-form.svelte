@@ -4,7 +4,7 @@
 
     import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
     import AccountType from '@wayfinder/App/Enums/AccountType';
-    import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+    import AccountsController from '@wayfinder/App/Http/Controllers/AccountsController';
 
     import { accountSchema } from '@schema/account.schema';
 

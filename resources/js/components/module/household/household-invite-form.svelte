@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { InertiaForm } from '@inertiajs/svelte';
 
-    import { HouseholdsController } from '@wayfinder/App/Http/Controllers/HouseholdsController';
+    import HouseholdsController from '@wayfinder/App/Http/Controllers/HouseholdsController';
 
     import { householdInviteSchema } from '@schema/household.schema';
 
