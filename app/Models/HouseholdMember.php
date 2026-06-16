@@ -17,6 +17,15 @@ class HouseholdMember extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'role' => HouseholdMemberRole::class,
+            'joined_at' => 'datetime',
+            'created_at' => 'datetime',
+        ];
+    }
+
     public function household(): BelongsTo
     {
         return $this->belongsTo(Household::class);
@@ -25,14 +34,5 @@ class HouseholdMember extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'role' => HouseholdMemberRole::class,
-            'joined_at' => 'datetime',
-            'created_at' => 'datetime',
-        ];
     }
 }

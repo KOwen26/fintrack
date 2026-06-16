@@ -15,6 +15,13 @@ class Budget extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'limit_amount' => 'decimal:2',
+        ];
+    }
+
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
@@ -23,12 +30,5 @@ class Budget extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'limit_amount' => 'decimal:2',
-        ];
     }
 }

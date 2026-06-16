@@ -16,6 +16,15 @@ class TransactionPreset extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'type' => TransactionPresetType::class,
+            'default_amount' => 'decimal:2',
+            'default_transfer_fee' => 'decimal:2',
+        ];
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -34,14 +43,5 @@ class TransactionPreset extends Model
     public function defaultDestinationAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_destination_account_id');
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'type' => TransactionPresetType::class,
-            'default_amount' => 'decimal:2',
-            'default_transfer_fee' => 'decimal:2',
-        ];
     }
 }

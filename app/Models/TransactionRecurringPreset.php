@@ -20,6 +20,19 @@ class TransactionRecurringPreset extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'type' => TransactionPresetType::class,
+            'frequency' => RecurringFrequency::class,
+            'amount' => 'decimal:2',
+            'next_run_date' => 'date',
+            'recurrence_end_date' => 'date',
+            'last_run_date' => 'date',
+            'is_active' => 'boolean',
+        ];
+    }
+
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
@@ -53,18 +66,5 @@ class TransactionRecurringPreset extends Model
             ->where('next_run_date', '<=', today())
             ->where('is_active', true)
             ->whereNull('deleted_at');
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'type' => TransactionPresetType::class,
-            'frequency' => RecurringFrequency::class,
-            'amount' => 'decimal:2',
-            'next_run_date' => 'date',
-            'recurrence_end_date' => 'date',
-            'last_run_date' => 'date',
-            'is_active' => 'boolean',
-        ];
     }
 }

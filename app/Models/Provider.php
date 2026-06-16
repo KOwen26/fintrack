@@ -14,11 +14,6 @@ class Provider extends Model
     /** @use HasFactory<ProviderFactory> */
     use HasFactory;
 
-    public function accounts(): HasMany
-    {
-        return $this->hasMany(Account::class);
-    }
-
     protected function casts(): array
     {
         return [
@@ -26,5 +21,10 @@ class Provider extends Model
             'status' => ProviderStatus::class,
             'cosmetics' => 'array',
         ];
+    }
+
+    public function accounts(): HasMany
+    {
+        return $this->hasMany(Account::class);
     }
 }

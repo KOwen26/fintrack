@@ -19,6 +19,18 @@ class Account extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'type' => AccountType::class,
+            'access_type' => AccountAccessType::class,
+            'initial_balance' => 'decimal:2',
+            'credit_card_limit' => 'decimal:2',
+            'archived_at' => 'datetime',
+            'cosmetics' => 'array',
+        ];
+    }
+
     public function household(): BelongsTo
     {
         return $this->belongsTo(Household::class);
@@ -49,17 +61,5 @@ class Account extends Model
                         ->whereIn('household_id', $householdIds);
                 });
         });
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'type' => AccountType::class,
-            'access_type' => AccountAccessType::class,
-            'initial_balance' => 'decimal:2',
-            'credit_card_limit' => 'decimal:2',
-            'archived_at' => 'datetime',
-            'cosmetics' => 'array',
-        ];
     }
 }
