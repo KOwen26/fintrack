@@ -1543,14 +1543,6 @@ it('advances daily preset correctly', function (): void {
 });
 ```
 
-- [ ] **Run all feature tests**
-
-```bash
-php artisan test --compact --filter="TransactionPresetTest|RecurringPresetTest|RunRecurringPresetsCommandTest"
-```
-
-Expected: All tests pass. Fix any failures before proceeding.
-
 ---
 
 ## Task 12: PHP Formatting

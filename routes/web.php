@@ -6,6 +6,8 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\HouseholdInvitationsController;
 use App\Http\Controllers\HouseholdsController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\RecurringPresetsController;
+use App\Http\Controllers\TransactionPresetsController;
 use App\Http\Controllers\TransactionsController;
 use App\Http\Controllers\UserThemeController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +31,19 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
     Route::delete('accounts/{account}', [AccountsController::class, 'destroy'])->name('accounts.destroy');
     Route::post('accounts/{account}/archive', [AccountsController::class, 'archive'])->name('accounts.archive');
     Route::post('accounts/{account}/restore', [AccountsController::class, 'restore'])->name('accounts.restore');
+
+    // Transaction Presets (templates)
+    Route::get('transaction-presets', [TransactionPresetsController::class, 'index'])->name('transaction-presets.index');
+    Route::post('transaction-presets', [TransactionPresetsController::class, 'store'])->name('transaction-presets.store');
+    Route::put('transaction-presets/{preset}', [TransactionPresetsController::class, 'update'])->name('transaction-presets.update');
+    Route::delete('transaction-presets/{preset}', [TransactionPresetsController::class, 'destroy'])->name('transaction-presets.destroy');
+
+    // Recurring Presets
+    Route::get('recurring-presets', [RecurringPresetsController::class, 'index'])->name('recurring-presets.index');
+    Route::post('recurring-presets', [RecurringPresetsController::class, 'store'])->name('recurring-presets.store');
+    Route::put('recurring-presets/{preset}', [RecurringPresetsController::class, 'update'])->name('recurring-presets.update');
+    Route::delete('recurring-presets/{preset}', [RecurringPresetsController::class, 'destroy'])->name('recurring-presets.destroy');
+    Route::post('recurring-presets/{preset}/toggle', [RecurringPresetsController::class, 'toggle'])->name('recurring-presets.toggle');
 
     // Categories
     Route::get('categories', [CategoriesController::class, 'index'])->name('categories.index');

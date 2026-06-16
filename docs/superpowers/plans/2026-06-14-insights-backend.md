@@ -1166,14 +1166,6 @@ it('InvalidateAccountReportCache listener flushes report cache tags on Transacti
 });
 ```
 
-- [ ] **Run the report tests**
-
-```bash
-php artisan test --compact --filter=ReportTest
-```
-
-Expected: All tests pass. Fix any failures before proceeding.
-
 ---
 
 ## Task 8: PHP Formatting
