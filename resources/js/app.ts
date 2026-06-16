@@ -28,6 +28,8 @@ createInertiaApp({
             case name.startsWith('categories'):
             case name.startsWith('household'):
             case name.startsWith('settings/theme'):
+            case name.startsWith('transaction-presets'):
+            case name.startsWith('recurring-presets'):
                 return AppLayout;
 
             case name.startsWith('dev'):
