@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\Account;
+use App\Models\Household;
+use App\Models\HouseholdMember;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Pest\Expectation;
 use Tests\TestCase;
@@ -50,4 +54,24 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * Create a user, household, household member (owner role), and account for testing.
+ * Returns [user, household, account].
+ */
+function createUserWithAccountAndHousehold(array $accountAttributes = []): array
+{
+    $user = User::factory()->create();
+    $household = Household::factory()->create(['created_by' => $user->id]);
+    HouseholdMember::factory()->owner()->create([
+        'household_id' => $household->id,
+        'user_id' => $user->id,
+    ]);
+    $account = Account::factory()->create(array_merge([
+        'owner_id' => $user->id,
+        'household_id' => $household->id,
+    ], $accountAttributes));
+
+    return [$user, $household, $account];
 }

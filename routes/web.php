@@ -7,6 +7,7 @@ use App\Http\Controllers\HouseholdInvitationsController;
 use App\Http\Controllers\HouseholdsController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\RecurringPresetsController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\TransactionPresetsController;
 use App\Http\Controllers\TransactionsController;
 use App\Http\Controllers\UserThemeController;
@@ -78,6 +79,14 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
     Route::post('accounts/{account}/budgets', [BudgetsController::class, 'store'])->name('budgets.store');
     Route::put('accounts/{account}/budgets/{budget}', [BudgetsController::class, 'update'])->name('budgets.update');
     Route::delete('accounts/{account}/budgets/{budget}', [BudgetsController::class, 'destroy'])->name('budgets.destroy');
+
+    // Reports (read-only — all GET)
+    Route::get('accounts/{account}/reports', [ReportsController::class, 'index'])->name('reports.index');
+    Route::get('accounts/{account}/reports/trend', [ReportsController::class, 'trend'])->name('reports.trend');
+    Route::get('accounts/{account}/reports/category-leak', [ReportsController::class, 'categoryLeak'])->name('reports.category-leak');
+    Route::get('accounts/{account}/reports/contribution-split', [ReportsController::class, 'contributionSplit'])->name('reports.contribution-split');
+    Route::get('accounts/{account}/reports/credit-utilization', [ReportsController::class, 'creditUtilization'])->name('reports.credit-utilization');
+    Route::get('accounts/{account}/reports/fixed-vs-variable', [ReportsController::class, 'fixedVsVariable'])->name('reports.fixed-vs-variable');
 
     require __DIR__ . '/settings.php';
 });

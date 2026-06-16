@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Events\RecurringPresetExecuted;
 use App\Events\TransactionDeleted;
 use App\Events\TransactionSaved;
 use App\Listeners\InvalidateAccountBalanceCache;
@@ -85,6 +86,7 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(TransactionSaved::class, InvalidateAccountBalanceCache::class);
         Event::listen(TransactionDeleted::class, InvalidateAccountBalanceCache::class);
+        Event::listen(RecurringPresetExecuted::class, [InvalidateAccountBalanceCache::class, 'handleRecurringPresetExecuted']);
         Event::listen(TransactionSaved::class, InvalidateAccountReportCache::class);
         Event::listen(TransactionDeleted::class, InvalidateAccountReportCache::class);
     }
