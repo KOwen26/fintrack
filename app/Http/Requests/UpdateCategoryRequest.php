@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\CategoryType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateCategoryRequest extends FormRequest
 {
@@ -15,8 +17,11 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:100'],
-            'icon' => ['required', 'string', 'max:100'],
-            'color' => ['required', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'cosmetics' => ['nullable', 'array'],
+            'cosmetics.icon' => ['required_with:cosmetics', 'string', 'max:100'],
+            'cosmetics.color' => ['required_with:cosmetics', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'type' => ['required', 'string', Rule::enum(CategoryType::class)],
+            'order' => ['required', 'numeric', 'between:0,0.999'],
             'is_fixed_cost' => ['required', 'boolean'],
         ];
     }

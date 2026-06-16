@@ -38,13 +38,15 @@
             })
             .toFormGenerator({
                 name: '',
-                color: '#6366f1',
+                'cosmetics.icon': 'ph:tag',
+                'cosmetics.color': '#6366f1',
+                type: 'output',
+                order: '0.100',
                 is_fixed_cost: false,
                 parent_id: '',
             });
 
-        // icon is required by the backend but not shown as a field — default to ph:tag
-        return { fields, data: { ...data, icon: 'ph:tag' } };
+        return { fields, data };
     });
 </script>
 

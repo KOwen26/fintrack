@@ -14,7 +14,7 @@ class CategoryPolicy
 
     public function view(User $user, Category $category): bool
     {
-        return $category->user_id === $user->id;
+        return true;
     }
 
     public function create(User $user): bool
@@ -24,11 +24,11 @@ class CategoryPolicy
 
     public function update(User $user, Category $category): bool
     {
-        return $category->user_id === $user->id;
+        return true;
     }
 
     public function delete(User $user, Category $category): bool
     {
-        return $category->user_id === $user->id;
+        return true;
     }
 }

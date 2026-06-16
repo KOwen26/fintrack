@@ -48,9 +48,16 @@ it('stores a new personal account', function (): void {
         'currency' => 'IDR',
         'provider_id' => null,
         'credit_card_limit' => null,
+        'cosmetics' => [
+            'icon' => 'ph:wallet-bold',
+            'color' => '#22c55e',
+        ],
     ])->assertRedirect();
 
-    expect(Account::where('name', 'BCA Savings')->exists())->toBeTrue();
+    $account = Account::where('name', 'BCA Savings')->first();
+
+    expect($account)->not->toBeNull();
+    expect($account->cosmetics)->toMatchArray(['icon' => 'ph:wallet-bold', 'color' => '#22c55e']);
 });
 
 it('prevents viewing another user personal account', function (): void {

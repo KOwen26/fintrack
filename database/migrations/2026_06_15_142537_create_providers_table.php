@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('logo_url')->nullable();
             $table->string('type');
             $table->string('status')->default(ProviderStatus::Active->value);
+            $table->json('cosmetics')->nullable();
             $table->timestamps();
         });
     }

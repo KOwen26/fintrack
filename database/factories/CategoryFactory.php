@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\CategoryType;
 use App\Models\Category;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -14,11 +14,14 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
             'parent_id' => null,
             'name' => fake()->word(),
-            'icon' => 'ph:tag',
-            'color' => fake()->hexColor(),
+            'type' => fake()->randomElement(CategoryType::cases()),
+            'order' => 0.100,
+            'cosmetics' => [
+                'icon' => 'ph:tag',
+                'color' => fake()->hexColor(),
+            ],
             'is_fixed_cost' => false,
         ];
     }

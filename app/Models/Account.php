@@ -24,6 +24,7 @@ class Account extends Model
         'initial_balance' => 'decimal:2',
         'credit_card_limit' => 'decimal:2',
         'archived_at' => 'datetime',
+        'cosmetics' => 'array',
     ];
 
     public function household(): BelongsTo

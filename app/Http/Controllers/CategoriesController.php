@@ -18,7 +18,6 @@ class CategoriesController extends Controller
     public function index(Request $request): Response
     {
         $categories = Category::query()
-            ->where('user_id', $request->user()->id)
             ->whereNull('parent_id')
             ->with('children')
             ->get();
@@ -30,7 +29,7 @@ class CategoriesController extends Controller
 
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
-        $this->categoryService->create($request->user(), $request->validated());
+        $this->categoryService->create($request->validated());
 
         return back()->flash('Category created.');
     }

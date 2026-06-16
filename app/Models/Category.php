@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CategoryType;
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,9 +17,24 @@ class Category extends Model
 
     protected $guarded = [];
 
-    public function user(): BelongsTo
+    protected $casts = [
+        'cosmetics' => 'array',
+        'type' => CategoryType::class,
+        'order' => 'decimal:3',
+    ];
+
+    public function getIconAttribute(): string
     {
-        return $this->belongsTo(User::class);
+        $cosmetics = $this->cosmetics ?? [];
+
+        return $cosmetics['icon'] ?? 'ph:tag';
+    }
+
+    public function getColorAttribute(): string
+    {
+        $cosmetics = $this->cosmetics ?? [];
+
+        return $cosmetics['color'] ?? '#6366f1';
     }
 
     public function parent(): BelongsTo

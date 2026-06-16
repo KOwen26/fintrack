@@ -17,6 +17,7 @@ class Provider extends Model
     protected $casts = [
         'type' => ProviderType::class,
         'status' => ProviderStatus::class,
+        'cosmetics' => 'array',
     ];
 
     public function accounts(): HasMany

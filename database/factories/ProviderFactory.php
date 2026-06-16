@@ -20,6 +20,10 @@ class ProviderFactory extends Factory
             'logo_url' => null,
             'type' => fake()->randomElement(ProviderType::cases())->value,
             'status' => ProviderStatus::Active->value,
+            'cosmetics' => [
+                'icon' => 'ph:building-bank-bold',
+                'color' => fake()->hexColor(),
+            ],
         ];
     }
 }

@@ -13,15 +13,14 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('parent_id')->nullable()->constrained('categories')->cascadeOnDelete();
+            $table->string('type')->default('output');
             $table->string('name');
-            $table->string('icon')->default('ph:tag');
-            $table->string('color')->default('#6366f1');
+            $table->decimal('order', 3, 3)->default(0.000);
             $table->boolean('is_fixed_cost')->default(false);
-            $table->softDeletes();
+            $table->json('cosmetics')->nullable();
             $table->timestamps();
-            $table->index('user_id');
+            $table->softDeletes();
             $table->index('parent_id');
             $table->index('deleted_at');
         });

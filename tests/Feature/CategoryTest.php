@@ -6,17 +6,17 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-it('lists categories for authenticated user with children', function (): void {
+it('lists categories with children', function (): void {
     $user = User::factory()->create();
-    $parent = Category::factory()->create(['user_id' => $user->id]);
-    Category::factory()->child($parent->id)->create(['user_id' => $user->id]);
-    Category::factory()->create(); // another user
+    $parent = Category::factory()->create();
+    Category::factory()->child($parent->id)->create();
+    Category::factory()->create();
 
     $this->actingAs($user)->get(route('categories.index'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('categories/index')
-            ->has('categories', 1)
+            ->has('categories', 2)
             ->has('categories.0.children', 1)
         );
 });
@@ -26,26 +26,33 @@ it('stores a top-level category', function (): void {
 
     $this->actingAs($user)->post(route('categories.store'), [
         'name' => 'Groceries',
-        'icon' => 'ph:shopping-cart-bold',
-        'color' => '#f97316',
+        'type' => 'output',
+        'order' => '0.100',
+        'cosmetics' => [
+            'icon' => 'ph:shopping-cart-bold',
+            'color' => '#f97316',
+        ],
         'is_fixed_cost' => false,
         'parent_id' => null,
     ])->assertRedirect();
 
-    expect(Category::where('name', 'Groceries')->where('user_id', $user->id)->exists())->toBeTrue();
+    $category = Category::where('name', 'Groceries')->first();
+
+    expect($category)->not->toBeNull();
+    expect($category->cosmetics)->toMatchArray(['icon' => 'ph:shopping-cart-bold', 'color' => '#f97316']);
 });
 
-it('prevents deleting another user category', function (): void {
+it('allows deleting a category when authenticated', function (): void {
     $user = User::factory()->create();
-    $otherCategory = Category::factory()->create();
+    $category = Category::factory()->create();
 
-    $this->actingAs($user)->delete(route('categories.destroy', $otherCategory))
-        ->assertForbidden();
+    $this->actingAs($user)->delete(route('categories.destroy', $category))
+        ->assertRedirect();
 });
 
 it('soft-deletes a category', function (): void {
     $user = User::factory()->create();
-    $category = Category::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create();
 
     $this->actingAs($user)->delete(route('categories.destroy', $category))
         ->assertRedirect();

@@ -104,8 +104,8 @@ return new class extends Migration
             $table->uuid('transfer_link_id')->nullable();
             $table->date('transaction_date');
             $table->string('description')->nullable();
-            $table->softDeletes();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index('account_id');
             $table->index('category_id');
@@ -146,8 +146,8 @@ return new class extends Migration
             $table->decimal('limit_amount', 15, 2);
             $table->smallInteger('year')->unsigned();
             $table->tinyInteger('month')->unsigned();
-            $table->softDeletes();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->unique(['account_id', 'category_id', 'year', 'month']);
             $table->index(['account_id', 'year', 'month']);

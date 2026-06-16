@@ -22,9 +22,10 @@ return new class extends Migration
             $table->decimal('initial_balance', 15, 2)->default(0);
             $table->decimal('credit_card_limit', 15, 2)->nullable();
             $table->char('currency', 3)->default('IDR');
+            $table->json('cosmetics')->nullable();
             $table->timestamp('archived_at')->nullable();
-            $table->softDeletes();
             $table->timestamps();
+            $table->softDeletes();
             $table->index('household_id');
             $table->index('owner_id');
             $table->index('archived_at');

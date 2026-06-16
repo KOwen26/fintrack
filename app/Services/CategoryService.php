@@ -2,19 +2,19 @@
 
 namespace App\Services;
 
+use App\Data\CosmeticData;
 use App\Models\Category;
-use App\Models\User;
 
 class CategoryService
 {
-    public function create(User $user, array $data): Category
+    public function create(array $data): Category
     {
-        return Category::create([...$data, 'user_id' => $user->id]);
+        return Category::create($this->normalizeCosmetics($data));
     }
 
     public function update(Category $category, array $data): Category
     {
-        $category->update($data);
+        $category->update($this->normalizeCosmetics($data));
 
         return $category->fresh();
     }
@@ -22,5 +22,14 @@ class CategoryService
     public function softDelete(Category $category): void
     {
         $category->delete();
+    }
+
+    private function normalizeCosmetics(array $data): array
+    {
+        if (isset($data['cosmetics'])) {
+            $data['cosmetics'] = CosmeticData::from($data['cosmetics'])->toArray();
+        }
+
+        return $data;
     }
 }
