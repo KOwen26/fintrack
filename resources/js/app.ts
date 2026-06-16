@@ -23,6 +23,8 @@ createInertiaApp({
     layout: (name) => {
         switch (true) {
             case name.startsWith('accounts'):
+            case name.startsWith('transactions'):
+            case name.startsWith('budgets'):
             case name.startsWith('categories'):
             case name.startsWith('household'):
             case name.startsWith('settings/theme'):

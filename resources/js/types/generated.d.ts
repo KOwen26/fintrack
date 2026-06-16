@@ -4,6 +4,7 @@ declare namespace App.Data {
         name: string;
         members: Array<App.Data.HouseholdMemberData>;
     };
+
     export type HouseholdMemberData = {
         id: number;
         user_id: number;
@@ -11,6 +12,7 @@ declare namespace App.Data {
         role: App.Enums.HouseholdMemberRole;
         joined_at: string | null;
     };
+
     export type UserTestData = {
         name: string;
         age: number;
@@ -21,16 +23,23 @@ declare namespace App.Data {
 }
 declare namespace App.Enums {
     export type AccountAccessType = 'personal' | 'joint';
+
     export type AccountType =
         | 'debit_account'
         | 'credit_card'
         | 'cash_wallet'
         | 'e_wallet'
         | 'investment';
+
     export type CategoryType = 'input' | 'output';
+
     export type HouseholdMemberRole = 'owner' | 'member';
+
     export type ProviderStatus = 'active' | 'inactive';
+
     export type ProviderType = 'bank' | 'digital_bank' | 'e_wallet' | 'credit_loan' | 'investment';
+
     export type TestEnum = 'word' | 'two_word' | 'space word' | 'Title Word';
+
     export type TransactionType = 'income' | 'expense' | 'transfer_out' | 'transfer_in' | 'fee';
 }
