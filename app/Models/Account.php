@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\AccountAccessType;
 use App\Enums\AccountType;
 use Database\Factories\AccountFactory;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,15 +18,6 @@ class Account extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
-    protected $casts = [
-        'type' => AccountType::class,
-        'access_type' => AccountAccessType::class,
-        'initial_balance' => 'decimal:2',
-        'credit_card_limit' => 'decimal:2',
-        'archived_at' => 'datetime',
-        'cosmetics' => 'array',
-    ];
 
     public function household(): BelongsTo
     {
@@ -42,7 +34,8 @@ class Account extends Model
         return $this->belongsTo(Provider::class);
     }
 
-    public function scopeVisibleTo(Builder $query, User $user): Builder
+    #[Scope]
+    protected function visibleTo(Builder $query, User $user): Builder
     {
         $householdIds = HouseholdMember::query()
             ->where('user_id', $user->id)
@@ -56,5 +49,17 @@ class Account extends Model
                         ->whereIn('household_id', $householdIds);
                 });
         });
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'type' => AccountType::class,
+            'access_type' => AccountAccessType::class,
+            'initial_balance' => 'decimal:2',
+            'credit_card_limit' => 'decimal:2',
+            'archived_at' => 'datetime',
+            'cosmetics' => 'array',
+        ];
     }
 }

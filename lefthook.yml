@@ -15,7 +15,11 @@ pre-commit:
       glob: '*.{js,ts,svelte,html,css}'
       run: pnpx prettier --write {staged_files}
       stage_fixed: true
+    laravel_rector:
+      run: composer rector {staged_files} || powershell -Command 'composer rector {staged_files}'
+      fail_text: 'Rector Linting Failed'
+      stage_fixed: true
     laravel:
       run: composer format || powershell -Command 'composer format'
-      fail_text: 'Laravel formatting failed'
+      fail_text: 'Laravel Formatting Failed'
       stage_fixed: true

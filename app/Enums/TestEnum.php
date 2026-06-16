@@ -8,8 +8,8 @@ enum TestEnum: string
 {
     use HasValueChecker;
 
-    case WORD = 'word';
-    case TWO_WORD = 'two_word';
-    case SPACE_WORD = 'space word';
-    case TITLE_WORD = 'Title Word';
+    case Word = 'word';
+    case TwoWord = 'two_word';
+    case SpaceWord = 'space word';
+    case TitleWord = 'Title Word';
 }

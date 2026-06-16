@@ -7,6 +7,7 @@ use App\Models\TransactionRecurringPreset;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class RecurringPresetService
 {
@@ -91,7 +92,7 @@ class RecurringPresetService
                 });
 
                 $executed++;
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $failed++;
                 Log::error('RecurringPresetService::runDue failed for preset', [
                     'preset_id' => $preset->id,

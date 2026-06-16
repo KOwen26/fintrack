@@ -28,7 +28,7 @@ class TransactionsController extends Controller
         $transactions = Transaction::query()
             ->where('account_id', $account->id)
             ->with('category')
-            ->orderByDesc('transaction_date')
+            ->latest('transaction_date')
             ->orderByDesc('id')
             ->paginate(30);
 

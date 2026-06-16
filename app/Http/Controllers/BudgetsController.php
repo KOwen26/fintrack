@@ -31,12 +31,10 @@ class BudgetsController extends Controller
             ->with('category')
             ->get();
 
-        $budgetsWithStatus = $budgets->map(function (Budget $budget) use ($account, $year, $month) {
-            return [
-                'budget' => $budget,
-                'status' => $this->budgetService->calculateStatus($account, $budget->category, $year, $month),
-            ];
-        });
+        $budgetsWithStatus = $budgets->map(fn (Budget $budget): array => [
+            'budget' => $budget,
+            'status' => $this->budgetService->calculateStatus($account, $budget->category, $year, $month),
+        ]);
 
         return Inertia::render('budgets/index', [
             'account' => $account,

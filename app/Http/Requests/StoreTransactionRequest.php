@@ -27,7 +27,7 @@ class StoreTransactionRequest extends FormRequest
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'description' => ['nullable', 'string', 'max:500'],
             'destination_account_id' => [
-                Rule::requiredIf(fn () => $this->input('type') === 'transfer'),
+                Rule::requiredIf(fn (): bool => $this->input('type') === 'transfer'),
                 'nullable',
                 'integer',
                 'exists:accounts,id',

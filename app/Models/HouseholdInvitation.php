@@ -16,12 +16,6 @@ class HouseholdInvitation extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'accepted_at' => 'datetime',
-        'expires_at' => 'datetime',
-        'created_at' => 'datetime',
-    ];
-
     public function household(): BelongsTo
     {
         return $this->belongsTo(Household::class);
@@ -35,5 +29,14 @@ class HouseholdInvitation extends Model
     public function isPending(): bool
     {
         return $this->accepted_at === null && $this->expires_at->isFuture();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'accepted_at' => 'datetime',
+            'expires_at' => 'datetime',
+            'created_at' => 'datetime',
+        ];
     }
 }

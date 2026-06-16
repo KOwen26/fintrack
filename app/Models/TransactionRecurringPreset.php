@@ -6,6 +6,7 @@ use App\Enums\RecurringFrequency;
 use App\Enums\TransactionPresetType;
 use Carbon\Carbon;
 use Database\Factories\TransactionRecurringPresetFactory;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,16 +19,6 @@ class TransactionRecurringPreset extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
-    protected $casts = [
-        'type' => TransactionPresetType::class,
-        'frequency' => RecurringFrequency::class,
-        'amount' => 'decimal:2',
-        'next_run_date' => 'date',
-        'recurrence_end_date' => 'date',
-        'last_run_date' => 'date',
-        'is_active' => 'boolean',
-    ];
 
     public function account(): BelongsTo
     {
@@ -55,11 +46,25 @@ class TransactionRecurringPreset extends Model
         };
     }
 
-    public function scopeDue(Builder $query): Builder
+    #[Scope]
+    protected function due(Builder $query): Builder
     {
         return $query
             ->where('next_run_date', '<=', today())
             ->where('is_active', true)
             ->whereNull('deleted_at');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'type' => TransactionPresetType::class,
+            'frequency' => RecurringFrequency::class,
+            'amount' => 'decimal:2',
+            'next_run_date' => 'date',
+            'recurrence_end_date' => 'date',
+            'last_run_date' => 'date',
+            'is_active' => 'boolean',
+        ];
     }
 }

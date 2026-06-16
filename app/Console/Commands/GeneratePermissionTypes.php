@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Spatie\Permission\Models\Permission;
+use Throwable;
 
 class GeneratePermissionTypes extends Command
 {
@@ -32,7 +33,7 @@ class GeneratePermissionTypes extends Command
             // $wildcards->push($permission);
 
             // Split permission into segments
-            $segments = explode('.', $permission);
+            $segments = explode('.', (string) $permission);
 
             // Generate wildcard variants for permissions with multiple segments
             if (count($segments) > 1) {
@@ -69,14 +70,16 @@ class GeneratePermissionTypes extends Command
                 $content .= "    '{$permission}'";
                 $content .= $index < count($permissions) - 1 ? ",\n" : "\n";
             }
+
             $content .= "] as const;\n\n";
 
-            $wildcardPermissions = $this->generateWildcardPermissions($permissions);
+            $wildcardPermissions = self::generateWildcardPermissions($permissions);
             $content .= "export const wildcardPermissions = [\n";
             foreach ($wildcardPermissions as $index => $permission) {
                 $content .= "    '{$permission}'";
                 $content .= $index < count($permissions) - 1 ? ",\n" : "\n";
             }
+
             $content .= "] as const;\n\n";
 
             $content .= "export type BasePermissions = typeof permissions[number];\n\n";
@@ -94,8 +97,8 @@ class GeneratePermissionTypes extends Command
 
             $this->info("TypeScript permission types generated successfully at: {$filePath}");
 
-        } catch (\Throwable $e) {
-            $this->error("Failed to generate permission types: {$e->getMessage()}");
+        } catch (Throwable $throwable) {
+            $this->error("Failed to generate permission types: {$throwable->getMessage()}");
 
             return 1; // Return non-zero for error
         }

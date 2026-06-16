@@ -26,7 +26,7 @@ class UpdateTransactionPresetRequest extends FormRequest
                 'nullable',
                 'integer',
                 'exists:accounts,id',
-                Rule::requiredIf(fn () => $this->input('type') === TransactionPresetType::Transfer->value),
+                Rule::requiredIf(fn (): bool => $this->input('type') === TransactionPresetType::Transfer->value),
             ],
             'default_transfer_fee' => ['nullable', 'numeric', 'min:0'],
         ];

@@ -14,14 +14,17 @@ class Provider extends Model
     /** @use HasFactory<ProviderFactory> */
     use HasFactory;
 
-    protected $casts = [
-        'type' => ProviderType::class,
-        'status' => ProviderStatus::class,
-        'cosmetics' => 'array',
-    ];
-
     public function accounts(): HasMany
     {
         return $this->hasMany(Account::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'type' => ProviderType::class,
+            'status' => ProviderStatus::class,
+            'cosmetics' => 'array',
+        ];
     }
 }

@@ -31,7 +31,7 @@ class HouseholdsController extends Controller
             'household' => $household ? HouseholdData::from([
                 'id' => $household->id,
                 'name' => $household->name,
-                'members' => $household->members->map(fn (HouseholdMember $m) => new HouseholdMemberData(
+                'members' => $household->members->map(fn (HouseholdMember $m): HouseholdMemberData => new HouseholdMemberData(
                     id: $m->id,
                     user_id: $m->user_id,
                     name: $m->user->name,

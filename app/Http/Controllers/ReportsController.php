@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Services\ReportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -141,12 +142,12 @@ class ReportsController extends Controller
     private function parseDateRange(Request $request): array
     {
         $from = $request->query('from')
-            ? Carbon::parse($request->query('from'))->startOfDay()
-            : Carbon::now()->startOfMonth();
+            ? Date::parse($request->query('from'))->startOfDay()
+            : Date::now()->startOfMonth();
 
         $to = $request->query('to')
-            ? Carbon::parse($request->query('to'))->endOfDay()
-            : Carbon::now()->endOfMonth();
+            ? Date::parse($request->query('to'))->endOfDay()
+            : Date::now()->endOfMonth();
 
         return [$from, $to];
     }

@@ -17,26 +17,6 @@ class Category extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'cosmetics' => 'array',
-        'type' => CategoryType::class,
-        'order' => 'decimal:3',
-    ];
-
-    public function getIconAttribute(): string
-    {
-        $cosmetics = $this->cosmetics ?? [];
-
-        return $cosmetics['icon'] ?? 'ph:tag';
-    }
-
-    public function getColorAttribute(): string
-    {
-        $cosmetics = $this->cosmetics ?? [];
-
-        return $cosmetics['color'] ?? '#6366f1';
-    }
-
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'parent_id');
@@ -45,5 +25,14 @@ class Category extends Model
     public function children(): HasMany
     {
         return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'cosmetics' => 'array',
+            'type' => CategoryType::class,
+            'order' => 'decimal:3',
+        ];
     }
 }

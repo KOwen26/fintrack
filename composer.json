@@ -99,6 +99,9 @@
         ],
         "pest": [
             "./vendor/bin/pest"
+        ],
+        "rector": [
+            "./vendor/bin/rector process"
         ]
     },
     "extra": {

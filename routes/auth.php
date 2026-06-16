@@ -11,7 +11,7 @@ use Laravel\Fortify\Http\Controllers\RegisteredUserController;
 use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticatedSessionController;
 use Laravel\Fortify\Http\Controllers\VerifyEmailController;
 
-Route::name('auth.')->group(function () {
+Route::name('auth.')->group(function (): void {
     // Login
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->middleware('guest:' . config('fortify.guard'))

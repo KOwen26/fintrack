@@ -15,6 +15,7 @@ use App\Enums\AlertLevel;
 use App\Models\Account;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 
 class ReportService
@@ -26,17 +27,17 @@ class ReportService
      */
     public function trend(Account $account, int $months = 6): TrendReportData
     {
-        $from = Carbon::now()->startOfMonth()->subMonths($months - 1);
+        $from = Date::now()->startOfMonth()->subMonths($months - 1);
 
         $rows = [];
         $cursor = $from->copy();
 
-        while ($cursor->lte(Carbon::now()->startOfMonth())) {
+        while ($cursor->lte(Date::now()->startOfMonth())) {
             $year = $cursor->year;
             $month = $cursor->month;
 
             $cacheKey = "reports:{$account->id}:trend:{$year}:{$month}";
-            $isCurrentMonth = $cursor->isSameMonth(Carbon::now());
+            $isCurrentMonth = $cursor->isSameMonth(Date::now());
             $ttl = $isCurrentMonth ? now()->addMinutes(5) : null;
 
             /** @var TrendMonthData $row */
@@ -92,7 +93,7 @@ class ReportService
         $year = $from->year;
         $month = $from->month;
         $cacheKey = "reports:{$account->id}:category-leak:{$year}:{$month}";
-        $isCurrentMonth = $from->isSameMonth(Carbon::now());
+        $isCurrentMonth = $from->isSameMonth(Date::now());
         $ttl = $isCurrentMonth ? now()->addMinutes(5) : null;
 
         return Cache::tags(['account:' . $account->id])->remember(
@@ -133,7 +134,7 @@ class ReportService
                     ->orderByDesc('total')
                     ->get();
 
-                $categories = $rows->map(fn (object $r) => new CategoryLeakItemData(
+                $categories = $rows->map(fn (object $r): CategoryLeakItemData => new CategoryLeakItemData(
                     name: $r->name,
                     color: $r->color,
                     icon: $r->icon,
@@ -171,7 +172,7 @@ class ReportService
         $year = $from->year;
         $month = $from->month;
         $cacheKey = "reports:{$account->id}:contribution-split:{$year}:{$month}";
-        $isCurrentMonth = $from->isSameMonth(Carbon::now());
+        $isCurrentMonth = $from->isSameMonth(Date::now());
         $ttl = $isCurrentMonth ? now()->addMinutes(5) : null;
 
         return Cache::tags(['account:' . $account->id])->remember(
@@ -205,7 +206,7 @@ class ReportService
                     ->groupBy('t.created_by', 'u.name')
                     ->get();
 
-                $members = $rows->map(fn (object $r) => new ContributionMemberData(
+                $members = $rows->map(fn (object $r): ContributionMemberData => new ContributionMemberData(
                     name: $r->name,
                     contributed: (float) $r->contributed,
                     percentage: round((float) $r->contributed / $total * 100, 2),
@@ -230,7 +231,7 @@ class ReportService
     public function creditUtilization(Account $account): CreditUtilizationData
     {
         $limit = (float) ($account->credit_card_limit ?? 0);
-        $balance = app(BalanceService::class)->forAccount($account);
+        $balance = resolve(BalanceService::class)->forAccount($account);
 
         // For credit cards: balance starts at limit and decreases as spending happens.
         // used = limit - balance (money spent against the credit line)
@@ -265,7 +266,7 @@ class ReportService
         $year = $from->year;
         $month = $from->month;
         $cacheKey = "reports:{$account->id}:fixed-vs-variable:{$year}:{$month}";
-        $isCurrentMonth = $from->isSameMonth(Carbon::now());
+        $isCurrentMonth = $from->isSameMonth(Date::now());
         $ttl = $isCurrentMonth ? now()->addMinutes(5) : null;
 
         return Cache::tags(['account:' . $account->id])->remember(

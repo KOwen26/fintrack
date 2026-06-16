@@ -16,12 +16,6 @@ class Transaction extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'type' => TransactionType::class,
-        'amount' => 'decimal:2',
-        'transaction_date' => 'date',
-    ];
-
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
@@ -35,5 +29,14 @@ class Transaction extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'type' => TransactionType::class,
+            'amount' => 'decimal:2',
+            'transaction_date' => 'date',
+        ];
     }
 }

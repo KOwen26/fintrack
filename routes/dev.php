@@ -7,7 +7,7 @@ Route::group([
     'prefix' => 'dev',
     'as' => 'dev.',
     'middleware' => [OnlyDevelopment::class],
-], function () {
+], function (): void {
     Route::get('', fn () => Inertia::render('dev/test'))->name('test');
     Route::get('color', fn () => Inertia::render('dev/color'))->name('color');
     Route::get('design', fn () => Inertia::render('dev/design'))->name('design');

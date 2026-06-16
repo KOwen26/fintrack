@@ -23,7 +23,7 @@ class RecurringPresetsController extends Controller
             ->where('created_by', $request->user()->id)
             ->with(['account', 'category'])
             ->orderBy('is_active', 'desc')
-            ->orderBy('next_run_date')
+            ->oldest('next_run_date')
             ->get();
 
         $accounts = Account::query()
