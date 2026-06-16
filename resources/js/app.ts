@@ -30,6 +30,7 @@ createInertiaApp({
             case name.startsWith('settings/theme'):
             case name.startsWith('transaction-presets'):
             case name.startsWith('recurring-presets'):
+            case name.startsWith('reports'):
                 return AppLayout;
 
             case name.startsWith('dev'):

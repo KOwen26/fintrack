@@ -39,7 +39,11 @@ declare namespace App.Enums {
 
     export type ProviderType = 'bank' | 'digital_bank' | 'e_wallet' | 'credit_loan' | 'investment';
 
+    export type RecurringFrequency = 'daily' | 'weekly' | 'fortnightly' | 'monthly' | 'yearly';
+
     export type TestEnum = 'word' | 'two_word' | 'space word' | 'Title Word';
+
+    export type TransactionPresetType = 'income' | 'expense' | 'transfer';
 
     export type TransactionType = 'income' | 'expense' | 'transfer_out' | 'transfer_in' | 'fee';
 }
