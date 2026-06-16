@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AccountsController;
+use App\Http\Controllers\BudgetsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\HouseholdInvitationsController;
 use App\Http\Controllers\HouseholdsController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\TransactionsController;
 use App\Http\Controllers\UserThemeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -47,6 +49,20 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
 
     // Theme
     Route::put('settings/theme', [UserThemeController::class, 'update'])->name('settings.theme.update');
+
+    // Transactions
+    Route::get('accounts/{account}/transactions', [TransactionsController::class, 'index'])->name('transactions.index');
+    Route::get('accounts/{account}/transactions/create', [TransactionsController::class, 'create'])->name('transactions.create');
+    Route::post('accounts/{account}/transactions', [TransactionsController::class, 'store'])->name('transactions.store');
+    Route::get('accounts/{account}/transactions/{transaction}/edit', [TransactionsController::class, 'edit'])->name('transactions.edit');
+    Route::put('accounts/{account}/transactions/{transaction}', [TransactionsController::class, 'update'])->name('transactions.update');
+    Route::delete('accounts/{account}/transactions/{transaction}', [TransactionsController::class, 'destroy'])->name('transactions.destroy');
+
+    // Budgets
+    Route::get('accounts/{account}/budgets', [BudgetsController::class, 'index'])->name('budgets.index');
+    Route::post('accounts/{account}/budgets', [BudgetsController::class, 'store'])->name('budgets.store');
+    Route::put('accounts/{account}/budgets/{budget}', [BudgetsController::class, 'update'])->name('budgets.update');
+    Route::delete('accounts/{account}/budgets/{budget}', [BudgetsController::class, 'destroy'])->name('budgets.destroy');
 
     require __DIR__ . '/settings.php';
 });

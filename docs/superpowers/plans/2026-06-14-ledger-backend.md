@@ -1189,7 +1189,7 @@ class TransactionsController extends Controller
             $this->transactionService->create($account, $request->user(), $data);
         }
 
-        return to_route('transactions.index', $account)->with('message', 'Transaction saved.');
+        return to_route('transactions.index', $account)->flash('Transaction saved.');
     }
 
     public function edit(Request $request, Account $account, Transaction $transaction): Response
@@ -1213,7 +1213,7 @@ class TransactionsController extends Controller
 
         $this->transactionService->update($transaction, $request->validated());
 
-        return to_route('transactions.index', $account)->with('message', 'Transaction updated.');
+        return to_route('transactions.index', $account)->flash('Transaction updated.');
     }
 
     public function destroy(Account $account, Transaction $transaction): RedirectResponse
@@ -1222,7 +1222,7 @@ class TransactionsController extends Controller
 
         $this->transactionService->softDelete($transaction);
 
-        return to_route('transactions.index', $account)->with('message', 'Transaction deleted.');
+        return to_route('transactions.index', $account)->flash('Transaction deleted.');
     }
 }
 ```
@@ -1295,7 +1295,7 @@ class BudgetsController extends Controller
 
         $this->budgetService->upsert($account, $request->validated());
 
-        return to_route('budgets.index', $account)->with('message', 'Budget saved.');
+        return to_route('budgets.index', $account)->flash('Budget saved.');
     }
 
     public function update(UpdateBudgetRequest $request, Account $account, Budget $budget): RedirectResponse
@@ -1304,7 +1304,7 @@ class BudgetsController extends Controller
 
         $this->budgetService->update($budget, $request->validated());
 
-        return to_route('budgets.index', $account)->with('message', 'Budget updated.');
+        return to_route('budgets.index', $account)->flash('Budget updated.');
     }
 
     public function destroy(Account $account, Budget $budget): RedirectResponse
@@ -1313,7 +1313,7 @@ class BudgetsController extends Controller
 
         $this->budgetService->softDelete($budget);
 
-        return to_route('budgets.index', $account)->with('message', 'Budget deleted.');
+        return to_route('budgets.index', $account)->flash('Budget deleted.');
     }
 }
 ```

@@ -23,7 +23,7 @@ class AccountsController extends Controller
     public function store(StoreAccountRequest $request): RedirectResponse
     {
         $account = $this->accountService->create($request->user(), $request->validated());
-        return to_route('accounts.show', $account)->with('message', 'Account created.');
+        return to_route('accounts.show', $account)->flash('Account created.');
     }
 }
 

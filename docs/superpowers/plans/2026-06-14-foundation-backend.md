@@ -1554,7 +1554,7 @@ class AccountsController extends Controller
     {
         $account = $this->accountService->create($request->user(), $request->validated());
 
-        return to_route('accounts.show', $account)->with('message', 'Account created.');
+        return to_route('accounts.show', $account)->flash('Account created.');
     }
 
     public function show(Request $request, Account $account): Response
@@ -1581,7 +1581,7 @@ class AccountsController extends Controller
         $this->authorize('update', $account);
         $this->accountService->update($account, $request->validated());
 
-        return to_route('accounts.show', $account)->with('message', 'Account updated.');
+        return to_route('accounts.show', $account)->flash('Account updated.');
     }
 
     public function destroy(Account $account): RedirectResponse
@@ -1589,7 +1589,7 @@ class AccountsController extends Controller
         $this->authorize('delete', $account);
         $this->accountService->softDelete($account);
 
-        return to_route('accounts.index')->with('message', 'Account deleted.');
+        return to_route('accounts.index')->flash('Account deleted.');
     }
 
     public function archive(Account $account): RedirectResponse
@@ -1597,7 +1597,7 @@ class AccountsController extends Controller
         $this->authorize('archive', $account);
         $this->accountService->archive($account);
 
-        return to_route('accounts.index')->with('message', 'Account archived.');
+        return to_route('accounts.index')->flash('Account archived.');
     }
 
     public function restore(Account $account): RedirectResponse
@@ -1605,7 +1605,7 @@ class AccountsController extends Controller
         $this->authorize('archive', $account);
         $this->accountService->restore($account);
 
-        return to_route('accounts.show', $account)->with('message', 'Account restored.');
+        return to_route('accounts.show', $account)->flash('Account restored.');
     }
 }
 ```
@@ -1651,7 +1651,7 @@ class CategoriesController extends Controller
     {
         $this->categoryService->create($request->user(), $request->validated());
 
-        return back()->with('message', 'Category created.');
+        return back()->flash('Category created.');
     }
 
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
@@ -1659,7 +1659,7 @@ class CategoriesController extends Controller
         $this->authorize('update', $category);
         $this->categoryService->update($category, $request->validated());
 
-        return back()->with('message', 'Category updated.');
+        return back()->flash('Category updated.');
     }
 
     public function destroy(Category $category): RedirectResponse
@@ -1667,7 +1667,7 @@ class CategoriesController extends Controller
         $this->authorize('delete', $category);
         $this->categoryService->softDelete($category);
 
-        return back()->with('message', 'Category deleted.');
+        return back()->flash('Category deleted.');
     }
 }
 ```
@@ -1728,7 +1728,7 @@ class HouseholdsController extends Controller
     {
         $this->householdService->create($request->user(), $request->validated()['name']);
 
-        return to_route('household.settings')->with('message', 'Household created.');
+        return to_route('household.settings')->flash('Household created.');
     }
 
     public function invite(InviteHouseholdMemberRequest $request): RedirectResponse
@@ -1744,7 +1744,7 @@ class HouseholdsController extends Controller
         $this->authorize('invite', $household);
         $this->householdService->invite($household, $request->validated()['email'], $request->user());
 
-        return back()->with('message', 'Invitation sent.');
+        return back()->flash('Invitation sent.');
     }
 
     public function removeMember(Request $request, HouseholdMember $member): RedirectResponse
@@ -1752,7 +1752,7 @@ class HouseholdsController extends Controller
         $this->authorize('removeMember', $member->household);
         $this->householdService->removeMember($member);
 
-        return back()->with('message', 'Member removed.');
+        return back()->flash('Member removed.');
     }
 }
 ```
@@ -1784,7 +1784,7 @@ class HouseholdInvitationsController extends Controller
         $invitation = HouseholdInvitation::where('token', $token)->firstOrFail();
 
         if (! $invitation->isPending()) {
-            return to_route('household.settings')->with('message', 'Invitation is no longer valid.');
+            return to_route('household.settings')->flash('Invitation is no longer valid.');
         }
 
         return Inertia::render('household/invitation', [
@@ -1805,14 +1805,14 @@ class HouseholdInvitationsController extends Controller
 
         $this->householdService->acceptInvitation($invitation, $request->user());
 
-        return to_route('household.settings')->with('message', 'You have joined the household.');
+        return to_route('household.settings')->flash('You have joined the household.');
     }
 
     public function decline(string $token): RedirectResponse
     {
         HouseholdInvitation::where('token', $token)->firstOrFail()->update(['accepted_at' => null]);
 
-        return to_route('dashboard')->with('message', 'Invitation declined.');
+        return to_route('dashboard')->flash('Invitation declined.');
     }
 }
 ```

@@ -18,3 +18,4 @@ pre-commit:
     laravel:
       run: composer format || powershell -Command 'composer format'
       fail_text: 'Laravel formatting failed'
+      stage_fixed: true

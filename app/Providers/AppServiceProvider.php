@@ -2,10 +2,15 @@
 
 namespace App\Providers;
 
+use App\Events\TransactionDeleted;
+use App\Events\TransactionSaved;
+use App\Listeners\InvalidateAccountBalanceCache;
+use App\Listeners\InvalidateAccountReportCache;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
@@ -77,5 +82,10 @@ class AppServiceProvider extends ServiceProvider
             // Merge with the new items
             return array_merge($shared, $value);
         });
+
+        Event::listen(TransactionSaved::class, InvalidateAccountBalanceCache::class);
+        Event::listen(TransactionDeleted::class, InvalidateAccountBalanceCache::class);
+        Event::listen(TransactionSaved::class, InvalidateAccountReportCache::class);
+        Event::listen(TransactionDeleted::class, InvalidateAccountReportCache::class);
     }
 }

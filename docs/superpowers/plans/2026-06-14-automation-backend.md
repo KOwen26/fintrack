@@ -1051,7 +1051,7 @@ class TransactionPresetsController extends Controller
     {
         $this->presetService->create($request->user(), $request->validated());
 
-        return back()->with('message', 'Template created.');
+        return back()->flash('Template created.');
     }
 
     public function update(UpdateTransactionPresetRequest $request, TransactionPreset $preset): RedirectResponse
@@ -1059,7 +1059,7 @@ class TransactionPresetsController extends Controller
         $this->authorize('update', $preset);
         $this->presetService->update($preset, $request->validated());
 
-        return back()->with('message', 'Template updated.');
+        return back()->flash('Template updated.');
     }
 
     public function destroy(TransactionPreset $preset): RedirectResponse
@@ -1067,7 +1067,7 @@ class TransactionPresetsController extends Controller
         $this->authorize('delete', $preset);
         $this->presetService->softDelete($preset);
 
-        return back()->with('message', 'Template deleted.');
+        return back()->flash('Template deleted.');
     }
 }
 ```
@@ -1129,7 +1129,7 @@ class RecurringPresetsController extends Controller
     {
         $this->recurringPresetService->create($request->user(), $request->validated());
 
-        return back()->with('message', 'Recurring rule created.');
+        return back()->flash('Recurring rule created.');
     }
 
     public function update(UpdateRecurringPresetRequest $request, TransactionRecurringPreset $preset): RedirectResponse
@@ -1137,7 +1137,7 @@ class RecurringPresetsController extends Controller
         $this->authorize('update', $preset);
         $this->recurringPresetService->update($preset, $request->validated());
 
-        return back()->with('message', 'Recurring rule updated.');
+        return back()->flash('Recurring rule updated.');
     }
 
     public function destroy(TransactionRecurringPreset $preset): RedirectResponse
@@ -1145,7 +1145,7 @@ class RecurringPresetsController extends Controller
         $this->authorize('delete', $preset);
         $this->recurringPresetService->softDelete($preset);
 
-        return back()->with('message', 'Recurring rule deleted.');
+        return back()->flash('Recurring rule deleted.');
     }
 
     public function toggle(Request $request, TransactionRecurringPreset $preset): RedirectResponse
@@ -1155,7 +1155,7 @@ class RecurringPresetsController extends Controller
 
         $message = $preset->fresh()->is_active ? 'Recurring rule activated.' : 'Recurring rule paused.';
 
-        return back()->with('message', $message);
+        return back()->flash($message);
     }
 }
 ```
