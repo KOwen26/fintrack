@@ -5,9 +5,9 @@
     import { showToast } from '@utilities/helper.svelte';
 
     import Button from '@components/ui/button.svelte';
-    import ConfirmationModal from '@components/ui/confirmation-modal.svelte';
     import SubmitButton from '@components/ui/forms/submit-button.svelte';
     import Modal from '@components/ui/modal.svelte';
+    import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
     const form = useForm({
         name: '',
@@ -96,7 +96,7 @@
 <ConfirmationModal title="Hapus Data" bind:open={openConfirmationModal}>
     <form id="modal_form" action="">Apakah Anda yakin ingin menghapus data ini?</form>
     {#snippet actionButton()}
-        <SubmitButton form="modal_form" submitting={$form.processing}>Simpan</SubmitButton>
+        <SubmitButton form="modal_form" submitting={form.processing}>Simpan</SubmitButton>
     {/snippet}
 </ConfirmationModal>
 

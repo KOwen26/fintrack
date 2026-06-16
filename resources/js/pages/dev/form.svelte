@@ -46,14 +46,12 @@
 
     const onsubmit = (event: SubmitEvent) => {
         event.preventDefault();
-        console.log({ $form });
+        console.log({ form });
 
-        $form
-            .transform((data) => ({
-                ...data,
-                file_upload: data.file_upload[0],
-            }))
-            .post('/dev/form-action');
+        form.transform((data) => ({
+            ...data,
+            file_upload: data.file_upload[0],
+        })).post('/dev/form-action');
     };
 
     const openToast = (type = null) => {
@@ -63,8 +61,6 @@
     const serverToast = (type = null) => {
         router.post('/dev/toast', { type });
     };
-
-    $inspect($form.data());
 </script>
 
 <div class="space-y-10">
@@ -100,49 +96,49 @@
     <section class="grid grid-cols-2 gap-5">
         <Card class="grid grid-cols-2 gap-5" title="Text Inputs">
             <Field title="Text Input (email)">
-                <Input name="email" type="email" bind:value={$form.email} />
+                <Input name="email" type="email" bind:value={form.email} />
             </Field>
             <Field title="Password Input">
-                <PasswordInput name="password" bind:value={$form.password} />
+                <PasswordInput name="password" bind:value={form.password} />
             </Field>
             <Field title="Phone Input">
                 <PhoneInput
                     name="phone"
-                    bind:phone={$form.phone}
-                    bind:phoneCode={$form.phone_code_input} />
+                    bind:phone={form.phone}
+                    bind:phoneCode={form.phone_code_input} />
             </Field>
             <Field title="Masked Input">
                 <MaskedInput
                     mask={{ mask: '000-000-000[-00000]' }}
-                    bind:value={$form.masked_input}
-                    bind:maskedValue={$form.masked_value_input} />
-                {$form.masked_input} <br />
-                {$form.masked_value_input}
+                    bind:value={form.masked_input}
+                    bind:maskedValue={form.masked_value_input} />
+                {form.masked_input} <br />
+                {form.masked_value_input}
             </Field>
             <Field title="Textarea Input">
-                <Textarea name="textarea" bind:value={$form.textarea_input}></Textarea>
+                <Textarea name="textarea" bind:value={form.textarea_input}></Textarea>
             </Field>
         </Card>
         <Card class="grid grid-cols-2 gap-5" title="Predefined Inputs">
-            <Field title="Radio Input" value={$form.radio_input}>
-                <RadioGroup name="radio_input" class="flex" bind:value={$form.radio_input}>
+            <Field title="Radio Input" value={form.radio_input}>
+                <RadioGroup name="radio_input" class="flex" bind:value={form.radio_input}>
                     <RadioItem name="radio" value="A">Option A</RadioItem>
                     <RadioItem name="radio" value="B">Option B</RadioItem>
                 </RadioGroup>
-                {$form.radio_input}
+                {form.radio_input}
             </Field>
             <Field title="Switch Input">
-                <Switch name="switch" value="A" bind:checked={$form.switch_input}>Switch A</Switch>
+                <Switch name="switch" value="A" bind:checked={form.switch_input}>Switch A</Switch>
             </Field>
             <Field title="Checkbox Group Input">
-                <CheckboxGroup name="checkbox_group_input" bind:value={$form.checkbox_group_input}>
+                <CheckboxGroup name="checkbox_group_input" bind:value={form.checkbox_group_input}>
                     <Checkbox name="checkbox" value="A">Checkbox A</Checkbox>
                     <Checkbox name="checkbox" value="B">Checkbox B</Checkbox>
                 </CheckboxGroup>
-                {JSON.stringify($form.checkbox_group_input)}
+                {JSON.stringify(form.checkbox_group_input)}
             </Field>
             <Field title="Checkbox Input">
-                <Checkbox name="checkbox" value="A" bind:checked={$form.checkbox_input}>
+                <Checkbox name="checkbox" value="A" bind:checked={form.checkbox_input}>
                     Checkbox A</Checkbox>
             </Field>
         </Card>
@@ -151,7 +147,7 @@
                 <Select
                     name="select_input"
                     items={['Items 1', 'Items 2', 'Items 3', 'Items 4', 'Items 5']}
-                    bind:value={$form.select_basic_input} />
+                    bind:value={form.select_basic_input} />
             </Field>
             <Field title="Select / Auto Complete">
                 <Select
@@ -161,8 +157,8 @@
                         { label: 'Items 2', value: 2 },
                         { label: 'Items 3', value: 3 },
                     ]}
-                    bind:value={$form.select_input} />
-                Select: {$form.select_input}
+                    bind:value={form.select_input} />
+                Select: {form.select_input}
             </Field>
             <Field title="Advanced Select / Auto Complete">
                 <Select
@@ -184,7 +180,7 @@
                             description: 'Items 3 is lorem lorem lorem lorem lorem',
                         },
                     ]}
-                    bind:value={$form.select_advance_input} />
+                    bind:value={form.select_advance_input} />
             </Field>
         </Card>
         <Card class="grid grid-cols-2 gap-5" title="Date Inputs">
@@ -195,12 +191,12 @@
                         minDate: new SvelteDate().setDate(new Date().getDate() - 20),
                         maxDate: 'today',
                     }}
-                    bind:value={$form.date_input} />
-                {$form.date_input}
+                    bind:value={form.date_input} />
+                {form.date_input}
             </Field>
             <Field title="Date Picker">
-                <DateInput name="date_input" bind:value={$form.date_input} />
-                {$form.date_input}
+                <DateInput name="date_input" bind:value={form.date_input} />
+                {form.date_input}
             </Field>
             <Field title="Date Time Picker">
                 <DateInput
@@ -210,20 +206,20 @@
                         altFormat: 'd F Y H:i',
                         dateFormat: 'Y-m-d H:i:S',
                     }}
-                    bind:value={$form.date_time_input} />
-                {$form.date_time_input}
+                    bind:value={form.date_time_input} />
+                {form.date_time_input}
             </Field>
             <Field title="Month Picker">
                 <DateInput
                     name="month_input"
                     options={{ isMonthPicker: true, altFormat: 'F Y', dateFormat: 'Y-m' }}
-                    bind:value={$form.month_input} />
-                {$form.month_input}
+                    bind:value={form.month_input} />
+                {form.month_input}
             </Field>
         </Card>
         <Card title="File Uploads">
             <Field title="File Input">
-                <FileInput name="file_upload" bind:files={$form.file_upload} />
+                <FileInput name="file_upload" bind:files={form.file_upload} />
             </Field>
         </Card>
         <Card title="Masking Inputs">

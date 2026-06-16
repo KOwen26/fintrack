@@ -197,7 +197,7 @@
     onCancel={() => (deletingPresetId = null)}
     onConfirm={destroy}
     title="Delete Recurring Rule"
-    bind:open={deletingPresetId !== null}>
+    bind:open={deletingPresetId}>
     {#if deletingPreset}
         Delete <strong>{deletingPreset.name}</strong>? Future transactions will no longer be
         generated.

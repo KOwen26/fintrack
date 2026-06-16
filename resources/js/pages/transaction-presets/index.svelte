@@ -147,7 +147,7 @@
     onCancel={() => (deletingPresetId = null)}
     onConfirm={destroy}
     title="Delete Template"
-    bind:open={deletingPresetId !== null}>
+    bind:open={deletingPresetId}>
     {#if deletingPreset}
         Delete <strong>{deletingPreset.name}</strong>? This cannot be undone.
     {/if}

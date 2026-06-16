@@ -246,6 +246,6 @@
     onCancel={() => (deletingBudgetId = null)}
     onConfirm={destroyBudget}
     title="Delete Budget"
-    bind:open={deletingBudgetId !== null}>
+    bind:open={deletingBudgetId}>
     This budget will be soft-deleted. Existing transactions are unaffected.
 </ConfirmationModal>
