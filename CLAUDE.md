@@ -91,7 +91,6 @@ Configured in `vite.config.js` and `tsconfig.json`:
 | `@data`       | `resources/js/data`               |
 | `@type`       | `resources/js/types`              |
 | `@schema`     | `resources/js/schema`             |
-| `@route`      | `vendor/tightenco/ziggy`          |
 | `@wayfinder`  | `resources/js/wayfinder`          |
 
 ## Coding Conventions
@@ -241,7 +240,6 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/pint (PINT) - v1
 - laravel/prompts (PROMPTS) - v0
 - laravel/wayfinder (WAYFINDER) - v
-- tightenco/ziggy (ZIGGY) - v2
 - larastan/larastan (LARASTAN) - v3
 - laravel/boost (BOOST) - v2
 - laravel/mcp (MCP) - v0

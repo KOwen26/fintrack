@@ -59,8 +59,6 @@ Adhere to the SOLID design principles to create maintainable, scalable, and test
 - `inertiajs/inertia-laravel`: Core Inertia bridge.
 - `spatie/laravel-data`: For DTOs.
 - `spatie/laravel-typescript-transformer`: Generates TS types from DTOs.
-- `tightenco/ziggy`: Allows using Laravel routes in JavaScript.
-- `tightenco/duster`: The tool used for linting and formatting.
 
 ### 2.4. Scalability: Service-Repository Pattern
 
@@ -133,7 +131,6 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/pint (PINT) - v1
 - laravel/prompts (PROMPTS) - v0
 - laravel/wayfinder (WAYFINDER) - v
-- tightenco/ziggy (ZIGGY) - v2
 - larastan/larastan (LARASTAN) - v3
 - laravel/boost (BOOST) - v2
 - laravel/mcp (MCP) - v0

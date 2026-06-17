@@ -112,11 +112,10 @@ Powered by laravel ecosystem, and Enhanced by:
 
 - [Tailwindcss v4](https://tailwindcss.com)
 
-- [Inertia v2](https://inertiajs.com/)
-    - [Ziggy](https://github.com/tightenco/ziggy): Generates JavaScript routes from Laravel routes.
+- [Inertia v3](https://inertiajs.com/)
 
 ```shell
-    composer require inertiajs/inertia-laravel tightenco/ziggy
+    composer require inertiajs/inertia-laravel
 
 
     pnpm add @inertiajs/svelte
@@ -139,12 +138,8 @@ Powered by laravel ecosystem, and Enhanced by:
 
 ## Format, Lint, & Static Code Analysis
 
-- [Duster](https://github.com/tighten/duster): A collection of tools to keep your Laravel code clean.
-- [Larastan](https://github.com/nunomaduro/larastan): Adds static analysis to Laravel.
-
-```shell
-    composer require tightenco/duster --dev larastan/larastan --dev --with-all-dependencies
-```
+- [Pint](https://github.com/laravel/pint)
+- [Rector](https://github.com/rectorphp/rector)
 
 - Prettier
     - [Prettier](https://prettier.io/): An opinionated code formatter.
