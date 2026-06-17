@@ -19,13 +19,7 @@ class HouseholdsController extends Controller
 
     public function show(Request $request): Response
     {
-        $membership = $request->user()
-            ->householdMemberships()
-            ->whereNotNull('joined_at')
-            ->with('household.members.user')
-            ->first();
-
-        $household = $membership?->household;
+        $household = $this->householdService->getUserHouseholdWithMembers($request->user());
 
         return Inertia::render('household/settings', [
             'household' => $household ? HouseholdData::from([
@@ -51,12 +45,9 @@ class HouseholdsController extends Controller
 
     public function invite(InviteHouseholdMemberRequest $request): RedirectResponse
     {
-        $membership = $request->user()
-            ->householdMemberships()
-            ->whereNotNull('joined_at')
-            ->first();
+        $membership = $this->householdService->getUserMembership($request->user());
 
-        abort_unless($membership !== null, 403);
+        abort_unless($membership instanceof HouseholdMember, 403);
 
         $household = $membership->household;
         $this->authorize('invite', $household);

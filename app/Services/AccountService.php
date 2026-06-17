@@ -5,9 +5,28 @@ namespace App\Services;
 use App\Data\CosmeticData;
 use App\Models\Account;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 
 class AccountService
 {
+    public function getVisibleAccounts(User $user): Collection
+    {
+        return Account::query()
+            ->visibleTo($user)
+            ->whereNull('archived_at')
+            ->with('provider')
+            ->get();
+    }
+
+    public function getTransferEligibleAccounts(User $user, ?Account $excludeAccount = null): Collection
+    {
+        return Account::query()
+            ->visibleTo($user)
+            ->whereNull('archived_at')
+            ->when($excludeAccount, fn ($q) => $q->where('id', '!=', $excludeAccount->id))
+            ->get();
+    }
+
     public function create(User $user, array $data): Account
     {
         return Account::create([...$this->normalizeCosmetics($data), 'owner_id' => $user->id]);

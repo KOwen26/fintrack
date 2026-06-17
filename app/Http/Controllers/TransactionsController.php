@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\Transaction;
+use App\Services\AccountService;
 use App\Services\BalanceService;
 use App\Services\TransactionService;
 use Illuminate\Http\RedirectResponse;
@@ -19,22 +19,16 @@ class TransactionsController extends Controller
     public function __construct(
         private readonly TransactionService $transactionService,
         private readonly BalanceService $balanceService,
+        private readonly AccountService $accountService,
     ) {}
 
     public function index(Request $request, Account $account): Response
     {
         $this->authorize('viewAny', [Transaction::class, $account]);
 
-        $transactions = Transaction::query()
-            ->where('account_id', $account->id)
-            ->with('category')
-            ->latest('transaction_date')
-            ->orderByDesc('id')
-            ->paginate(30);
-
         return Inertia::render('transactions/index', [
             'account' => $account,
-            'transactions' => $transactions,
+            'transactions' => $this->transactionService->getAccountTransactions($account),
             'balance' => $this->balanceService->forAccount($account),
         ]);
     }
@@ -45,12 +39,8 @@ class TransactionsController extends Controller
 
         return Inertia::render('transactions/create', [
             'account' => $account,
-            'categories' => Category::orderBy('name')->get(),
-            'accounts' => Account::query()
-                ->visibleTo($request->user())
-                ->whereNull('archived_at')
-                ->where('id', '!=', $account->id)
-                ->get(),
+            'categories' => $this->transactionService->getCategories(),
+            'accounts' => $this->accountService->getTransferEligibleAccounts($request->user(), $account),
         ]);
     }
 
@@ -86,7 +76,7 @@ class TransactionsController extends Controller
         return Inertia::render('transactions/edit', [
             'account' => $account,
             'transaction' => $transaction->load('category'),
-            'categories' => Category::orderBy('name')->get(),
+            'categories' => $this->transactionService->getCategories(),
         ]);
     }
 

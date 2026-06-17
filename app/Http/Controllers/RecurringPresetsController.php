@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRecurringPresetRequest;
 use App\Http\Requests\UpdateRecurringPresetRequest;
-use App\Models\Account;
-use App\Models\Category;
 use App\Models\TransactionRecurringPreset;
 use App\Services\RecurringPresetService;
 use Illuminate\Http\RedirectResponse;
@@ -19,28 +17,10 @@ class RecurringPresetsController extends Controller
 
     public function index(Request $request): Response
     {
-        $presets = TransactionRecurringPreset::query()
-            ->where('created_by', $request->user()->id)
-            ->with(['account', 'category'])
-            ->orderBy('is_active', 'desc')
-            ->oldest('next_run_date')
-            ->get();
-
-        $accounts = Account::query()
-            ->visibleTo($request->user())
-            ->whereNull('archived_at')
-            ->get();
-
-        $categories = Category::query()
-            ->where('user_id', $request->user()->id)
-            ->whereNull('parent_id')
-            ->with('children')
-            ->get();
-
         return Inertia::render('recurring-presets/index', [
-            'presets' => $presets,
-            'accounts' => $accounts,
-            'categories' => $categories,
+            'presets' => $this->recurringPresetService->getUserPresets($request->user()),
+            'accounts' => $this->recurringPresetService->getUserAccounts($request->user()),
+            'categories' => $this->recurringPresetService->getUserCategories($request->user()),
         ]);
     }
 

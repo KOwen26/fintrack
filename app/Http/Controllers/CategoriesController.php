@@ -17,13 +17,8 @@ class CategoriesController extends Controller
 
     public function index(Request $request): Response
     {
-        $categories = Category::query()
-            ->whereNull('parent_id')
-            ->with('children')
-            ->get();
-
         return Inertia::render('categories/index', [
-            'categories' => $categories,
+            'categories' => $this->categoryService->getRootCategories(),
         ]);
     }
 

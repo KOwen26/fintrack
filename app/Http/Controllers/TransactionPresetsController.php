@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTransactionPresetRequest;
 use App\Http\Requests\UpdateTransactionPresetRequest;
-use App\Models\Account;
-use App\Models\Category;
 use App\Models\TransactionPreset;
 use App\Services\TransactionPresetService;
 use Illuminate\Http\RedirectResponse;
@@ -19,26 +17,10 @@ class TransactionPresetsController extends Controller
 
     public function index(Request $request): Response
     {
-        $presets = TransactionPreset::query()
-            ->where('user_id', $request->user()->id)
-            ->with(['defaultCategory', 'defaultSourceAccount', 'defaultDestinationAccount'])
-            ->get();
-
-        $accounts = Account::query()
-            ->visibleTo($request->user())
-            ->whereNull('archived_at')
-            ->get();
-
-        $categories = Category::query()
-            ->where('user_id', $request->user()->id)
-            ->whereNull('parent_id')
-            ->with('children')
-            ->get();
-
         return Inertia::render('transaction-presets/index', [
-            'presets' => $presets,
-            'accounts' => $accounts,
-            'categories' => $categories,
+            'presets' => $this->presetService->getUserPresets($request->user()),
+            'accounts' => $this->presetService->getUserAccounts($request->user()),
+            'categories' => $this->presetService->getUserCategories($request->user()),
         ]);
     }
 

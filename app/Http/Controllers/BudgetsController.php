@@ -6,7 +6,6 @@ use App\Http\Requests\StoreBudgetRequest;
 use App\Http\Requests\UpdateBudgetRequest;
 use App\Models\Account;
 use App\Models\Budget;
-use App\Models\Category;
 use App\Services\BudgetService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,12 +23,7 @@ class BudgetsController extends Controller
         $year = $request->integer('year', now()->year);
         $month = $request->integer('month', now()->month);
 
-        $budgets = Budget::query()
-            ->where('account_id', $account->id)
-            ->where('year', $year)
-            ->where('month', $month)
-            ->with('category')
-            ->get();
+        $budgets = $this->budgetService->getBudgetsForPeriod($account, $year, $month);
 
         $budgetsWithStatus = $budgets->map(fn (Budget $budget): array => [
             'budget' => $budget,
@@ -41,7 +35,7 @@ class BudgetsController extends Controller
             'budgets_with_status' => $budgetsWithStatus,
             'year' => $year,
             'month' => $month,
-            'categories' => Category::orderBy('name')->get(),
+            'categories' => $this->budgetService->getCategories(),
         ]);
     }
 

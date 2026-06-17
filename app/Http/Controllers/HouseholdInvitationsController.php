@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\HouseholdInvitation;
 use App\Services\HouseholdService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,7 +14,7 @@ class HouseholdInvitationsController extends Controller
 
     public function show(string $token): Response | RedirectResponse
     {
-        $invitation = HouseholdInvitation::where('token', $token)->firstOrFail();
+        $invitation = $this->householdService->findInvitationByToken($token);
 
         if (! $invitation->isPending()) {
             return to_route('household.settings')->flash('Invitation is no longer valid.');
@@ -33,7 +32,7 @@ class HouseholdInvitationsController extends Controller
 
     public function accept(Request $request, string $token): RedirectResponse
     {
-        $invitation = HouseholdInvitation::where('token', $token)->firstOrFail();
+        $invitation = $this->householdService->findInvitationByToken($token);
         abort_unless($invitation->isPending(), 422, 'Invitation is no longer valid.');
         $this->householdService->acceptInvitation($invitation, $request->user());
 
@@ -42,7 +41,7 @@ class HouseholdInvitationsController extends Controller
 
     public function decline(string $token): RedirectResponse
     {
-        HouseholdInvitation::where('token', $token)->firstOrFail()->update(['accepted_at' => null]);
+        $this->householdService->declineInvitation($token);
 
         return to_route('dashboard')->flash('Invitation declined.');
     }

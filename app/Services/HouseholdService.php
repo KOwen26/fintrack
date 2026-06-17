@@ -11,6 +11,39 @@ use Illuminate\Support\Str;
 
 class HouseholdService
 {
+    public function getUserHouseholdWithMembers(User $user): ?Household
+    {
+        return $user->householdMemberships()
+            ->whereNotNull('joined_at')
+            ->with('household.members.user')
+            ->first()
+            ?->household;
+    }
+
+    public function getUserMembership(User $user): ?HouseholdMember
+    {
+        return $user->householdMemberships()
+            ->whereNotNull('joined_at')
+            ->first();
+    }
+
+    public function getUserHouseholdId(User $user): ?int
+    {
+        return $user->householdMemberships()
+            ->whereNotNull('joined_at')
+            ->value('household_id');
+    }
+
+    public function findInvitationByToken(string $token): HouseholdInvitation
+    {
+        return HouseholdInvitation::where('token', $token)->firstOrFail();
+    }
+
+    public function declineInvitation(string $token): void
+    {
+        HouseholdInvitation::where('token', $token)->firstOrFail()->update(['accepted_at' => null]);
+    }
+
     public function create(User $user, string $name): Household
     {
         $household = Household::create([

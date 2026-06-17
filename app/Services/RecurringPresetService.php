@@ -5,13 +5,38 @@ namespace App\Services;
 use App\Events\RecurringPresetExecuted;
 use App\Models\TransactionRecurringPreset;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class RecurringPresetService
 {
-    public function __construct(private readonly TransactionService $transactionService) {}
+    public function __construct(
+        private readonly TransactionService $transactionService,
+        private readonly AccountService $accountService,
+        private readonly CategoryService $categoryService,
+    ) {}
+
+    public function getUserPresets(User $user): Collection
+    {
+        return TransactionRecurringPreset::query()
+            ->where('created_by', $user->id)
+            ->with(['account', 'category'])
+            ->orderBy('is_active', 'desc')
+            ->oldest('next_run_date')
+            ->get();
+    }
+
+    public function getUserAccounts(User $user): Collection
+    {
+        return $this->accountService->getTransferEligibleAccounts($user);
+    }
+
+    public function getUserCategories(User $user): Collection
+    {
+        return $this->categoryService->getRootCategories($user);
+    }
 
     public function create(User $user, array $data): TransactionRecurringPreset
     {

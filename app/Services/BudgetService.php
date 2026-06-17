@@ -6,10 +6,26 @@ use App\Data\BudgetStatusData;
 use App\Models\Account;
 use App\Models\Budget;
 use App\Models\Category;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class BudgetService
 {
+    public function getCategories(): Collection
+    {
+        return Category::orderBy('name')->get();
+    }
+
+    public function getBudgetsForPeriod(Account $account, int $year, int $month): Collection
+    {
+        return Budget::query()
+            ->where('account_id', $account->id)
+            ->where('year', $year)
+            ->where('month', $month)
+            ->with('category')
+            ->get();
+    }
+
     public function upsert(Account $account, array $data): Budget
     {
         return Budget::updateOrCreate([
