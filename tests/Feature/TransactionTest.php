@@ -3,8 +3,6 @@
 use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Category;
-use App\Models\Household;
-use App\Models\HouseholdMember;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,16 +12,7 @@ uses(RefreshDatabase::class);
 function createAccountForUser(): array
 {
     $user = User::factory()->create();
-    $household = Household::factory()->create(['created_by' => $user->id]);
-    HouseholdMember::factory()->owner()->create([
-        'household_id' => $household->id,
-        'user_id' => $user->id,
-    ]);
-
-    $account = Account::factory()->create([
-        'owner_id' => $user->id,
-        'household_id' => $household->id,
-    ]);
+    $account = Account::factory()->create(['owner_id' => $user->id]);
 
     return [$user, $account];
 }
@@ -70,7 +59,7 @@ it('stores an expense transaction', function (): void {
 
 it('creates a transfer with 2 rows sharing the same transfer_link_id', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
-    $destAccount = Account::factory()->create(['owner_id' => $user->id, 'household_id' => $sourceAccount->household_id]);
+    $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
     $this->actingAs($user)->post(route('transactions.store', $sourceAccount), [
         'type' => 'transfer',
@@ -91,7 +80,7 @@ it('creates a transfer with 2 rows sharing the same transfer_link_id', function 
 
 it('creates a transfer with fee when fee_amount is provided', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
-    $destAccount = Account::factory()->create(['owner_id' => $user->id, 'household_id' => $sourceAccount->household_id]);
+    $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
     $this->actingAs($user)->post(route('transactions.store', $sourceAccount), [
         'type' => 'transfer',
@@ -111,7 +100,7 @@ it('creates a transfer with fee when fee_amount is provided', function (): void 
 
 it('soft-deletes all transfer rows when one is deleted', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
-    $destAccount = Account::factory()->create(['owner_id' => $user->id, 'household_id' => $sourceAccount->household_id]);
+    $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
     $this->actingAs($user)->post(route('transactions.store', $sourceAccount), [
         'type' => 'transfer',

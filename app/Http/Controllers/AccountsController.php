@@ -7,7 +7,6 @@ use App\Http\Requests\UpdateAccountRequest;
 use App\Models\Account;
 use App\Models\Provider;
 use App\Services\AccountService;
-use App\Services\HouseholdService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -17,13 +16,12 @@ class AccountsController extends Controller
 {
     public function __construct(
         private readonly AccountService $accountService,
-        private readonly HouseholdService $householdService,
     ) {}
 
     public function index(Request $request): Response
     {
         return Inertia::render('accounts/index', [
-            'accounts' => $this->accountService->getVisibleAccounts($request->user()),
+            'accounts' => $this->accountService->getVisibleAccounts(),
         ]);
     }
 
@@ -31,7 +29,6 @@ class AccountsController extends Controller
     {
         return Inertia::render('accounts/create', [
             'providers' => Provider::where('status', 'active')->orderBy('name')->get(),
-            'household_id' => $this->householdService->getUserHouseholdId($request->user()),
         ]);
     }
 

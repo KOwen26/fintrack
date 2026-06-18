@@ -16,12 +16,11 @@
 
     interface Props {
         providers: App.Models.Provider[];
-        household_id?: number | null;
         account?: App.Models.Account;
         onCancel?: () => void;
     }
 
-    let { providers, household_id, account, onCancel }: Props = $props();
+    let { providers, account, onCancel }: Props = $props();
 
     let form: InertiaForm<any> = $state(null!);
 
@@ -52,7 +51,7 @@
             });
         }
 
-        const { fields, data } = composer.toFormGenerator({
+        return composer.toFormGenerator({
             type: AccountType.DebitAccount,
             access_type: AccountAccessType.Personal,
             provider_id: '',
@@ -60,8 +59,6 @@
             credit_card_limit: null,
             currency: 'IDR',
         });
-
-        return { fields, data: { ...data, household_id: household_id ?? '' } };
     });
 
     const action = $derived(

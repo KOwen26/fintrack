@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Enums\AccountAccessType;
 use App\Enums\AccountType;
 use App\Models\Account;
-use App\Models\Household;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,7 +16,6 @@ class AccountFactory extends Factory
     public function definition(): array
     {
         return [
-            'household_id' => Household::factory(),
             'owner_id' => User::factory(),
             'provider_id' => null,
             'name' => fake()->words(2, true),
@@ -32,11 +30,6 @@ class AccountFactory extends Factory
             ],
             'archived_at' => null,
         ];
-    }
-
-    public function joint(): static
-    {
-        return $this->state(['access_type' => AccountAccessType::Joint->value]);
     }
 
     public function creditCard(): static

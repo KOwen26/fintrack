@@ -3,8 +3,6 @@
 use App\Enums\RecurringFrequency;
 use App\Enums\TransactionPresetType;
 use App\Models\Account;
-use App\Models\Household;
-use App\Models\HouseholdMember;
 use App\Models\TransactionRecurringPreset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,15 +12,7 @@ uses(RefreshDatabase::class);
 function createUserWithAccount(): array
 {
     $user = User::factory()->create();
-    $household = Household::factory()->create(['created_by' => $user->id]);
-    HouseholdMember::factory()->owner()->create([
-        'household_id' => $household->id,
-        'user_id' => $user->id,
-    ]);
-    $account = Account::factory()->create([
-        'owner_id' => $user->id,
-        'household_id' => $household->id,
-    ]);
+    $account = Account::factory()->create(['owner_id' => $user->id]);
 
     return [$user, $account];
 }

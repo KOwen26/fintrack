@@ -2,9 +2,7 @@
 
 namespace App\Policies;
 
-use App\Enums\AccountAccessType;
 use App\Models\Account;
-use App\Models\HouseholdMember;
 use App\Models\User;
 
 class AccountPolicy
@@ -16,7 +14,7 @@ class AccountPolicy
 
     public function view(User $user, Account $account): bool
     {
-        return $this->canAccess($user, $account);
+        return true;
     }
 
     public function create(User $user): bool
@@ -42,22 +40,5 @@ class AccountPolicy
     public function archive(User $user, Account $account): bool
     {
         return $account->owner_id === $user->id;
-    }
-
-    private function canAccess(User $user, Account $account): bool
-    {
-        if ($account->owner_id === $user->id) {
-            return true;
-        }
-
-        if ($account->access_type !== AccountAccessType::Joint) {
-            return false;
-        }
-
-        return HouseholdMember::query()
-            ->where('household_id', $account->household_id)
-            ->where('user_id', $user->id)
-            ->whereNotNull('joined_at')
-            ->exists();
     }
 }

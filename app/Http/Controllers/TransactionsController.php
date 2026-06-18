@@ -40,7 +40,7 @@ class TransactionsController extends Controller
         return Inertia::render('transactions/create', [
             'account' => $account,
             'categories' => $this->transactionService->getCategories(),
-            'accounts' => $this->accountService->getTransferEligibleAccounts($request->user(), $account),
+            'accounts' => $this->accountService->getTransferEligibleAccounts($account),
         ]);
     }
 

@@ -9,19 +9,17 @@ use Illuminate\Database\Eloquent\Collection;
 
 class AccountService
 {
-    public function getVisibleAccounts(User $user): Collection
+    public function getVisibleAccounts(): Collection
     {
         return Account::query()
-            ->visibleTo($user)
             ->whereNull('archived_at')
             ->with('provider')
             ->get();
     }
 
-    public function getTransferEligibleAccounts(User $user, ?Account $excludeAccount = null): Collection
+    public function getTransferEligibleAccounts(?Account $excludeAccount = null): Collection
     {
         return Account::query()
-            ->visibleTo($user)
             ->whereNull('archived_at')
             ->when($excludeAccount, fn ($q) => $q->where('id', '!=', $excludeAccount->id))
             ->get();

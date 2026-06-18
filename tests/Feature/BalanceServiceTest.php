@@ -1,8 +1,6 @@
 <?php
 
 use App\Models\Account;
-use App\Models\Household;
-use App\Models\HouseholdMember;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\BalanceService;
@@ -13,15 +11,8 @@ uses(RefreshDatabase::class);
 function setupBalanceAccount(float $initialBalance = 0): array
 {
     $user = User::factory()->create();
-    $household = Household::factory()->create(['created_by' => $user->id]);
-    HouseholdMember::factory()->owner()->create([
-        'household_id' => $household->id,
-        'user_id' => $user->id,
-    ]);
-
     $account = Account::factory()->create([
         'owner_id' => $user->id,
-        'household_id' => $household->id,
         'initial_balance' => $initialBalance,
     ]);
 

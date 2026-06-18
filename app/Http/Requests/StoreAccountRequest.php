@@ -17,7 +17,6 @@ class StoreAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'household_id' => ['required', 'integer', 'exists:households,id'],
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'string', Rule::enum(AccountType::class)],
             'access_type' => ['required', 'string', Rule::enum(AccountAccessType::class)],

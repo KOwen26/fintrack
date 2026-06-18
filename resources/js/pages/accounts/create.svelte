@@ -6,10 +6,7 @@
     import AccountForm from '@components/module/account/account-form.svelte';
     import Button from '@components/ui/button.svelte';
 
-    let {
-        providers,
-        household_id,
-    }: { providers: App.Models.Provider[]; household_id: number | null } = $props();
+    let { providers }: { providers: App.Models.Provider[] } = $props();
 </script>
 
 <div class="p-4">
@@ -24,5 +21,5 @@
         <h1 class="text-xl font-bold">New Account</h1>
     </div>
 
-    <AccountForm {household_id} {providers} />
+    <AccountForm {providers} />
 </div>

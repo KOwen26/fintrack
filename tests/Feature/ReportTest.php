@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Date;
 use App\Data\Report\CategoryLeakReportData;
 use App\Data\Report\ContributionSplitData;
 use App\Data\Report\CreditUtilizationData;
@@ -11,8 +12,6 @@ use App\Enums\AlertLevel;
 use App\Events\TransactionSaved;
 use App\Models\Account;
 use App\Models\Category;
-use App\Models\Household;
-use App\Models\HouseholdMember;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\ReportService;
@@ -124,7 +123,7 @@ it('trend report aggregates income and expense correctly', function (): void {
         'category_id' => $category->id,
         'type' => 'income',
         'amount' => 5_000_000,
-        'transaction_date' => Carbon::now()->startOfMonth(),
+        'transaction_date' => Date::now()->startOfMonth(),
     ]);
 
     Transaction::factory()->create([
@@ -133,10 +132,10 @@ it('trend report aggregates income and expense correctly', function (): void {
         'category_id' => $category->id,
         'type' => 'expense',
         'amount' => 2_000_000,
-        'transaction_date' => Carbon::now()->startOfMonth(),
+        'transaction_date' => Date::now()->startOfMonth(),
     ]);
 
-    $service = app(ReportService::class);
+    $service = resolve(ReportService::class);
     $result = $service->trend($account, 1);
 
     expect($result)->toBeInstanceOf(TrendReportData::class);
@@ -157,16 +156,16 @@ it('category leak report returns ranked categories by spend', function (): void 
     Transaction::factory()->create([
         'account_id' => $account->id, 'created_by' => $user->id,
         'category_id' => $catA->id, 'type' => 'expense',
-        'amount' => 3_000_000, 'transaction_date' => Carbon::now()->startOfMonth(),
+        'amount' => 3_000_000, 'transaction_date' => Date::now()->startOfMonth(),
     ]);
     Transaction::factory()->create([
         'account_id' => $account->id, 'created_by' => $user->id,
         'category_id' => $catB->id, 'type' => 'expense',
-        'amount' => 1_000_000, 'transaction_date' => Carbon::now()->startOfMonth(),
+        'amount' => 1_000_000, 'transaction_date' => Date::now()->startOfMonth(),
     ]);
 
-    $service = app(ReportService::class);
-    $result = $service->categoryLeak($account, Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth());
+    $service = resolve(ReportService::class);
+    $result = $service->categoryLeak($account, Date::now()->startOfMonth(), Date::now()->endOfMonth());
 
     expect($result)->toBeInstanceOf(CategoryLeakReportData::class);
     expect($result->categories)->toHaveCount(2);
@@ -178,8 +177,8 @@ it('category leak report returns ranked categories by spend', function (): void 
 it('contribution split returns empty state for personal account without error', function (): void {
     [$user, , $account] = createUserWithAccountAndHousehold(['access_type' => AccountAccessType::Personal->value]);
 
-    $service = app(ReportService::class);
-    $result = $service->contributionSplit($account, Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth());
+    $service = resolve(ReportService::class);
+    $result = $service->contributionSplit($account, Date::now()->startOfMonth(), Date::now()->endOfMonth());
 
     expect($result)->toBeInstanceOf(ContributionSplitData::class);
     expect($result->is_joint)->toBeFalse();
@@ -189,29 +188,23 @@ it('contribution split returns empty state for personal account without error', 
 it('contribution split returns member shares for joint accounts', function (): void {
     $owner = User::factory()->create();
     $partner = User::factory()->create();
-    $household = Household::factory()->create(['created_by' => $owner->id]);
-    HouseholdMember::factory()->owner()->create(['household_id' => $household->id, 'user_id' => $owner->id]);
-    HouseholdMember::factory()->create(['household_id' => $household->id, 'user_id' => $partner->id]);
 
-    $account = Account::factory()->joint()->create([
-        'owner_id' => $owner->id,
-        'household_id' => $household->id,
-    ]);
+    $account = Account::factory()->create(['owner_id' => $owner->id, 'access_type' => AccountAccessType::Joint->value]);
     $category = Category::factory()->create(['user_id' => $owner->id]);
 
     Transaction::factory()->create([
         'account_id' => $account->id, 'created_by' => $owner->id,
         'category_id' => $category->id, 'type' => 'income',
-        'amount' => 6_000_000, 'transaction_date' => Carbon::now()->startOfMonth(),
+        'amount' => 6_000_000, 'transaction_date' => Date::now()->startOfMonth(),
     ]);
     Transaction::factory()->create([
         'account_id' => $account->id, 'created_by' => $partner->id,
         'category_id' => $category->id, 'type' => 'income',
-        'amount' => 4_000_000, 'transaction_date' => Carbon::now()->startOfMonth(),
+        'amount' => 4_000_000, 'transaction_date' => Date::now()->startOfMonth(),
     ]);
 
-    $service = app(ReportService::class);
-    $result = $service->contributionSplit($account, Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth());
+    $service = resolve(ReportService::class);
+    $result = $service->contributionSplit($account, Date::now()->startOfMonth(), Date::now()->endOfMonth());
 
     expect($result->is_joint)->toBeTrue();
     expect($result->members)->toHaveCount(2);
@@ -236,10 +229,10 @@ it('credit utilization calculates alert levels correctly', function (): void {
         'category_id' => $category->id,
         'type' => 'expense',
         'amount' => 8_000_000,
-        'transaction_date' => Carbon::now()->startOfMonth(),
+        'transaction_date' => Date::now()->startOfMonth(),
     ]);
 
-    $service = app(ReportService::class);
+    $service = resolve(ReportService::class);
     $result = $service->creditUtilization($account);
 
     expect($result)->toBeInstanceOf(CreditUtilizationData::class);
@@ -255,16 +248,16 @@ it('fixed vs variable splits expenses by is_fixed_cost', function (): void {
     Transaction::factory()->create([
         'account_id' => $account->id, 'created_by' => $user->id,
         'category_id' => $fixed->id, 'type' => 'expense',
-        'amount' => 3_000_000, 'transaction_date' => Carbon::now()->startOfMonth(),
+        'amount' => 3_000_000, 'transaction_date' => Date::now()->startOfMonth(),
     ]);
     Transaction::factory()->create([
         'account_id' => $account->id, 'created_by' => $user->id,
         'category_id' => $variable->id, 'type' => 'expense',
-        'amount' => 1_000_000, 'transaction_date' => Carbon::now()->startOfMonth(),
+        'amount' => 1_000_000, 'transaction_date' => Date::now()->startOfMonth(),
     ]);
 
-    $service = app(ReportService::class);
-    $result = $service->fixedVsVariable($account, Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth());
+    $service = resolve(ReportService::class);
+    $result = $service->fixedVsVariable($account, Date::now()->startOfMonth(), Date::now()->endOfMonth());
 
     expect($result)->toBeInstanceOf(FixedVariableData::class);
     expect($result->fixed_total)->toBe(3_000_000.0);

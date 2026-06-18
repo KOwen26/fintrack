@@ -2,7 +2,6 @@
     import { page } from '@inertiajs/svelte';
     import AccountsController from '@wayfinder/App/Http/Controllers/AccountsController';
     import CategoriesController from '@wayfinder/App/Http/Controllers/CategoriesController';
-    import HouseholdsController from '@wayfinder/App/Http/Controllers/HouseholdsController';
 
     const currentRoute = $derived(
         (page.props.meta as { current_route_name?: string } | null)?.current_route_name ?? ''
@@ -31,14 +30,6 @@
     <button class="rounded-full bg-primary text-primary-content" aria-label="Quick add" disabled>
         <i class="iconify size-6 ph--plus-bold"></i>
     </button>
-
-    <a
-        class:active={isActive('household')}
-        aria-label="Household"
-        href={HouseholdsController.show.url()}>
-        <i class="iconify size-5 ph--users-bold"></i>
-        <span class="btm-nav-label text-xs">Household</span>
-    </a>
 
     <a class:active={isActive('dashboard')} aria-label="Reports" href="/dashboard">
         <i class="iconify size-5 ph--chart-bar-bold"></i>

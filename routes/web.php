@@ -3,8 +3,6 @@
 use App\Http\Controllers\AccountsController;
 use App\Http\Controllers\BudgetsController;
 use App\Http\Controllers\CategoriesController;
-use App\Http\Controllers\HouseholdInvitationsController;
-use App\Http\Controllers\HouseholdsController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\RecurringPresetsController;
 use App\Http\Controllers\ReportsController;
@@ -51,17 +49,6 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
     Route::post('categories', [CategoriesController::class, 'store'])->name('categories.store');
     Route::put('categories/{category}', [CategoriesController::class, 'update'])->name('categories.update');
     Route::delete('categories/{category}', [CategoriesController::class, 'destroy'])->name('categories.destroy');
-
-    // Household
-    Route::get('household/settings', [HouseholdsController::class, 'show'])->name('household.settings');
-    Route::post('household', [HouseholdsController::class, 'store'])->name('household.store');
-    Route::post('household/invite', [HouseholdsController::class, 'invite'])->name('household.invite');
-    Route::delete('household/members/{member}', [HouseholdsController::class, 'removeMember'])->name('household.members.destroy');
-
-    // Household invitations
-    Route::get('household/invitations/{token}', [HouseholdInvitationsController::class, 'show'])->name('household.invitations.show');
-    Route::post('household/invitations/{token}/accept', [HouseholdInvitationsController::class, 'accept'])->name('household.invitations.accept');
-    Route::post('household/invitations/{token}/decline', [HouseholdInvitationsController::class, 'decline'])->name('household.invitations.decline');
 
     // Theme
     Route::put('settings/theme', [UserThemeController::class, 'update'])->name('settings.theme.update');
