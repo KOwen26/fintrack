@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\AccountAccessType;
 use App\Enums\AccountType;
 use Database\Factories\AccountFactory;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,7 +27,7 @@ class Account extends Model
             'initial_balance' => 'decimal:2',
             'credit_card_limit' => 'decimal:2',
             'archived_at' => 'datetime',
-            'cosmetics' => 'array',
+            'decorations' => 'array',
         ];
     }
 
@@ -37,5 +39,17 @@ class Account extends Model
     public function provider(): BelongsTo
     {
         return $this->belongsTo(Provider::class);
+    }
+
+    #[Scope]
+    protected function notArchived(Builder $builder): void
+    {
+        $builder->whereNull('archived_at');
+    }
+
+    #[Scope]
+    protected function shareable(Builder $builder): void
+    {
+        $builder->orWhere('access_type', AccountAccessType::Joint);
     }
 }

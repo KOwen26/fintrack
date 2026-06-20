@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('order', 3, 3)->default(0.000);
             $table->boolean('is_fixed_cost')->default(false);
-            $table->json('cosmetics')->nullable();
+            $table->json('decorations')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->index('parent_id');

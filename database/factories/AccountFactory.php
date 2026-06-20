@@ -24,7 +24,7 @@ class AccountFactory extends Factory
             'initial_balance' => 0,
             'credit_card_limit' => null,
             'currency' => 'IDR',
-            'cosmetics' => [
+            'decorations' => [
                 'icon' => 'ph:wallet-bold',
                 'color' => fake()->hexColor(),
             ],

@@ -2,7 +2,7 @@
     import type { App } from '@wayfinder/types';
 
     import { router } from '@inertiajs/svelte';
-    import ReportsController from '@wayfinder/App/Http/Controllers/ReportsController';
+    import ReportController from '@wayfinder/App/Http/Controllers/ReportController';
     import { SvelteDate } from 'svelte/reactivity';
 
     import CategoryLeakChart from '@components/module/report/category-leak-chart.svelte';
@@ -69,7 +69,7 @@
         const newTo = new Date(current.getFullYear(), current.getMonth() + 1, 0);
 
         router.visit(
-            ReportsController.index.url({
+            ReportController.index.url({
                 account: account.id,
                 query: {
                     from: newFrom.toISOString().slice(0, 10),
@@ -95,7 +95,7 @@
         <Button
             class="btn-sm"
             color="light"
-            href={ReportsController.creditUtilization.url({ account: account.id })}
+            href={ReportController.creditUtilization.url({ account: account.id })}
             variant="ghost">
             <i class="iconify size-4 ph--chart-pie-bold"></i>
         </Button>
@@ -153,7 +153,7 @@
             <Button
                 class="btn-xs"
                 color="light"
-                href={ReportsController.trend.url({ account: account.id })}
+                href={ReportController.trend.url({ account: account.id })}
                 variant="ghost">
                 Full view
             </Button>
@@ -167,7 +167,7 @@
             <Button
                 class="btn-xs"
                 color="light"
-                href={ReportsController.categoryLeak.url({
+                href={ReportController.categoryLeak.url({
                     account: account.id,
                     query: { from, to },
                 })}
@@ -184,7 +184,7 @@
     <div class="space-y-2">
         <a
             class="flex items-center justify-between rounded-xl bg-base-200 px-4 py-3 text-sm font-medium transition-opacity active:opacity-70"
-            href={ReportsController.fixedVsVariable.url({
+            href={ReportController.fixedVsVariable.url({
                 account: account.id,
                 query: { from, to },
             })}>
@@ -197,7 +197,7 @@
 
         <a
             class="flex items-center justify-between rounded-xl bg-base-200 px-4 py-3 text-sm font-medium transition-opacity active:opacity-70"
-            href={ReportsController.contributionSplit.url({
+            href={ReportController.contributionSplit.url({
                 account: account.id,
                 query: { from, to },
             })}>

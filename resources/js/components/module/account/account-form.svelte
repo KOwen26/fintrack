@@ -4,7 +4,7 @@
 
     import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
     import AccountType from '@wayfinder/App/Enums/AccountType';
-    import AccountsController from '@wayfinder/App/Http/Controllers/AccountsController';
+    import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
     import { accountSchema } from '@schema/account.schema';
 
@@ -63,8 +63,8 @@
 
     const action = $derived(
         isEdit && account
-            ? AccountsController.update.url({ account: account.id })
-            : AccountsController.store.url()
+            ? AccountController.update.url({ account: account.id })
+            : AccountController.store.url()
     );
 
     const method = $derived(isEdit ? 'put' : undefined);

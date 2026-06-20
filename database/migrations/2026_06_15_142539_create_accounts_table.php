@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('initial_balance', 15, 2)->default(0);
             $table->decimal('credit_card_limit', 15, 2)->nullable();
             $table->char('currency', 3)->default('IDR');
-            $table->json('cosmetics')->nullable();
+            $table->json('decorations')->nullable();
             $table->timestamp('archived_at')->nullable();
             $table->timestamps();
             $table->softDeletes();

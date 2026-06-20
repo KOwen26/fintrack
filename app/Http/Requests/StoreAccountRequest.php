@@ -24,9 +24,9 @@ class StoreAccountRequest extends FormRequest
             'initial_balance' => ['required', 'numeric', 'min:0'],
             'credit_card_limit' => ['nullable', 'numeric', 'min:0'],
             'currency' => ['required', 'string', 'size:3'],
-            'cosmetics' => ['nullable', 'array'],
-            'cosmetics.icon' => ['required_with:cosmetics', 'string', 'max:100'],
-            'cosmetics.color' => ['required_with:cosmetics', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'decorations' => ['nullable', 'array'],
+            'decorations.icon' => ['required_with:decorations', 'string', 'max:100'],
+            'decorations.color' => ['required_with:decorations', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
         ];
     }
 }

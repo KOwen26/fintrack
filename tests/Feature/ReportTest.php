@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Date;
 use App\Data\Report\CategoryLeakReportData;
 use App\Data\Report\ContributionSplitData;
 use App\Data\Report\CreditUtilizationData;
@@ -15,9 +14,9 @@ use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\ReportService;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Event;
 
 uses(RefreshDatabase::class);

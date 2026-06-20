@@ -2,7 +2,7 @@
     import type { App } from '@wayfinder/types';
 
     import { router } from '@inertiajs/svelte';
-    import ReportsController from '@wayfinder/App/Http/Controllers/ReportsController';
+    import ReportController from '@wayfinder/App/Http/Controllers/ReportController';
     import { SvelteDate } from 'svelte/reactivity';
 
     import CategoryLeakChart from '@components/module/report/category-leak-chart.svelte';
@@ -42,7 +42,7 @@
         const newTo = new Date(current.getFullYear(), current.getMonth() + 1, 0);
 
         router.visit(
-            ReportsController.categoryLeak.url({
+            ReportController.categoryLeak.url({
                 account: account.id,
                 query: {
                     from: newFrom.toISOString().slice(0, 10),
@@ -63,7 +63,7 @@
         <Button
             class="btn-circle btn-sm"
             color="light"
-            href={ReportsController.index.url({ account: account.id })}
+            href={ReportController.index.url({ account: account.id })}
             variant="ghost">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>

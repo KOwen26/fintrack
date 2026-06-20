@@ -2,7 +2,7 @@
     import type { InertiaForm } from '@inertiajs/svelte';
     import type { App } from '@wayfinder/types';
 
-    import BudgetsController from '@wayfinder/App/Http/Controllers/BudgetsController';
+    import BudgetController from '@wayfinder/App/Http/Controllers/BudgetController';
 
     import { budgetSchema } from '@schema/budget.schema';
 
@@ -132,8 +132,8 @@
 
     const action = $derived(
         isEdit && budget
-            ? BudgetsController.update.url({ account: account.id, budget: budget.id })
-            : BudgetsController.store.url({ account: account.id })
+            ? BudgetController.update.url({ account: account.id, budget: budget.id })
+            : BudgetController.store.url({ account: account.id })
     );
 
     const method = $derived<'put' | undefined>(isEdit ? 'put' : undefined);

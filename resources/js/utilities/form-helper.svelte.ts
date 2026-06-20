@@ -124,6 +124,19 @@ interface RawInputFieldProps extends BaseInputFieldProps {
     inputProps?: AnyRecord;
 }
 
+interface CategorySelectInputFieldProps extends BaseInputFieldProps {
+    type: 'category-select';
+    categories: { id: number; name: string; children?: { id: number; name: string }[] }[];
+    inputProps?: AnyRecord;
+}
+
+interface AccountSelectInputFieldProps extends BaseInputFieldProps {
+    type: 'account-select';
+    endpoint?: string;
+    accounts?: { id: number; name: string }[];
+    inputProps?: AnyRecord;
+}
+
 export type FormGeneratorProps =
     | TextInputFieldProps
     | PasswordInputFieldProps
@@ -136,7 +149,9 @@ export type FormGeneratorProps =
     | CheckboxInputFieldProps
     | RadioInputFieldProps
     | SwitchInputFieldProps
-    | RawInputFieldProps;
+    | RawInputFieldProps
+    | CategorySelectInputFieldProps
+    | AccountSelectInputFieldProps;
 
 export type InputFieldType = FormGeneratorProps['type'];
 

@@ -199,7 +199,7 @@ class Account extends Model
             'access_type'  => AccountAccessType::class,
             'initial_balance' => 'decimal:2',
             'archived_at'  => 'datetime',
-            'cosmetics'    => 'array',
+            'decorations'    => 'array',
         ];
     }
 
@@ -334,10 +334,10 @@ DTOs are also used as **input normalizers** inside services, not just response s
 
 ```php
 // app/Services/AccountService.php
-private function normalizeCosmetics(array $data): array
+private function normalizeDecorations(array $data): array
 {
-    if (! isset($data['cosmetics'])) { return $data; }
-    $data['cosmetics'] = CosmeticData::from($data['cosmetics'])->toArray();
+    if (! isset($data['decorations'])) { return $data; }
+    $data['decorations'] = DecorationData::from($data['decorations'])->toArray();
     return $data;
 }
 ```

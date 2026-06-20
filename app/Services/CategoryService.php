@@ -2,17 +2,40 @@
 
 namespace App\Services;
 
-use App\Data\CosmeticData;
+use App\Data\DecorationData;
 use App\Models\Category;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class CategoryService
 {
+    public static function getCategories(): Collection
+    {
+        return Category::query()->levelChildren()->get();
+    }
+
+    public static function getGroupedCategories(): Collection
+    {
+        return Category::query()
+            ->levelParent()
+            ->with('children')
+            ->get()
+            ->map(fn ($parent): array => [
+                'id' => $parent->id,
+                'name' => $parent->name,
+                'type' => $parent->type->value,
+                'decorations' => $parent->decorations,
+                'options' => $parent->children->map(fn ($child): array => [
+                    'id' => $child->id,
+                    'name' => $child->name,
+                    'decorations' => $child->decorations,
+                ]),
+            ]);
+    }
+
     public function getRootCategories(?User $user = null): Collection
     {
         return Category::query()
-            ->when($user, fn ($q) => $q->where('user_id', $user->id))
             ->whereNull('parent_id')
             ->with('children')
             ->get();
@@ -20,12 +43,12 @@ class CategoryService
 
     public function create(array $data): Category
     {
-        return Category::create($this->normalizeCosmetics($data));
+        return Category::create($this->normalizeDecorations($data));
     }
 
     public function update(Category $category, array $data): Category
     {
-        $category->update($this->normalizeCosmetics($data));
+        $category->update($this->normalizeDecorations($data));
 
         return $category->fresh();
     }
@@ -35,10 +58,10 @@ class CategoryService
         $category->delete();
     }
 
-    private function normalizeCosmetics(array $data): array
+    private function normalizeDecorations(array $data): array
     {
-        if (isset($data['cosmetics'])) {
-            $data['cosmetics'] = CosmeticData::from($data['cosmetics'])->toArray();
+        if (isset($data['decorations'])) {
+            $data['decorations'] = DecorationData::from($data['decorations'])->toArray();
         }
 
         return $data;

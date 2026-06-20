@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class TransactionsController extends Controller
+class TransactionController extends Controller
 {
     public function __construct(
         private readonly TransactionService $transactionService,

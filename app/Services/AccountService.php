@@ -2,17 +2,19 @@
 
 namespace App\Services;
 
-use App\Data\CosmeticData;
+use App\Data\DecorationData;
 use App\Models\Account;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class AccountService
 {
-    public function getVisibleAccounts(): Collection
+    public static function getAccountsByUser(User $user): Collection
     {
         return Account::query()
-            ->whereNull('archived_at')
+            ->where('owner_id', $user->id)
+            ->notArchived()
+            ->shareable()
             ->with('provider')
             ->get();
     }
@@ -20,32 +22,21 @@ class AccountService
     public function getTransferEligibleAccounts(?Account $excludeAccount = null): Collection
     {
         return Account::query()
-            ->whereNull('archived_at')
+            ->notArchived()
             ->when($excludeAccount, fn ($q) => $q->where('id', '!=', $excludeAccount->id))
             ->get();
     }
 
     public function create(User $user, array $data): Account
     {
-        return Account::create([...$this->normalizeCosmetics($data), 'owner_id' => $user->id]);
+        return Account::create([...$this->normalizeDecorations($data), 'owner_id' => $user->id]);
     }
 
     public function update(Account $account, array $data): Account
     {
-        $account->update($this->normalizeCosmetics($data));
+        $account->update($this->normalizeDecorations($data));
 
         return $account->fresh();
-    }
-
-    private function normalizeCosmetics(array $data): array
-    {
-        if (! isset($data['cosmetics'])) {
-            return $data;
-        }
-
-        $data['cosmetics'] = CosmeticData::from($data['cosmetics'])->toArray();
-
-        return $data;
     }
 
     public function archive(Account $account): Account
@@ -65,5 +56,16 @@ class AccountService
     public function softDelete(Account $account): void
     {
         $account->delete();
+    }
+
+    private function normalizeDecorations(array $data): array
+    {
+        if (! isset($data['decorations'])) {
+            return $data;
+        }
+
+        $data['decorations'] = DecorationData::from($data['decorations'])->toArray();
+
+        return $data;
     }
 }

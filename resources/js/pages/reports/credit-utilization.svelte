@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { App } from '@wayfinder/types';
 
-    import ReportsController from '@wayfinder/App/Http/Controllers/ReportsController';
+    import ReportController from '@wayfinder/App/Http/Controllers/ReportController';
 
     import CreditUtilizationGauge from '@components/module/report/credit-utilization-gauge.svelte';
     import Button from '@components/ui/button.svelte';
@@ -29,7 +29,7 @@
         <Button
             class="btn-circle btn-sm"
             color="light"
-            href={ReportsController.index.url({ account: account.id })}
+            href={ReportController.index.url({ account: account.id })}
             variant="ghost">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>

@@ -3,8 +3,8 @@
     import type { App } from '@wayfinder/types';
 
     import { router } from '@inertiajs/svelte';
-    import AccountsController from '@wayfinder/App/Http/Controllers/AccountsController';
-    import BudgetsController from '@wayfinder/App/Http/Controllers/BudgetsController';
+    import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
+    import BudgetController from '@wayfinder/App/Http/Controllers/BudgetController';
 
     import BudgetForm from '@components/module/budget/budget-form.svelte';
     import BudgetStatusBadge from '@components/module/budget/budget-status-badge.svelte';
@@ -65,7 +65,7 @@
         }
 
         router.visit(
-            BudgetsController.index.url({
+            BudgetController.index.url({
                 account: account.id,
                 query: { year: newYear, month: newMonth },
             }),
@@ -79,7 +79,7 @@
         }
 
         router.delete(
-            BudgetsController.destroy.url({ account: account.id, budget: deletingBudgetId }),
+            BudgetController.destroy.url({ account: account.id, budget: deletingBudgetId }),
             { onFinish: () => (deletingBudgetId = null) }
         );
     }
@@ -102,7 +102,7 @@
         <Button
             class="btn-circle btn-sm"
             color="light"
-            href={AccountsController.show.url({ account: account.id })}
+            href={AccountController.show.url({ account: account.id })}
             variant="ghost">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>

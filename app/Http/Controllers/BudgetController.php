@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class BudgetsController extends Controller
+class BudgetController extends Controller
 {
     public function __construct(private readonly BudgetService $budgetService) {}
 

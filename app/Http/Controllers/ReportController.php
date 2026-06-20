@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Date;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class ReportsController extends Controller
+class ReportController extends Controller
 {
     public function __construct(private readonly ReportService $reportService) {}
 

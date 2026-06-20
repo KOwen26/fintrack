@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { App } from '@wayfinder/types';
 
-    import AccountsController from '@wayfinder/App/Http/Controllers/AccountsController';
+    import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
     import { accountSchema } from '@schema/account.schema';
 
@@ -29,7 +29,7 @@
             <Button
                 class="btn-circle btn-sm"
                 color="light"
-                href={AccountsController.index.url()}
+                href={AccountController.index.url()}
                 variant="ghost">
                 <i class="iconify size-5 ph--arrow-left-bold"></i>
             </Button>
@@ -44,7 +44,7 @@
         <Button
             class="btn-circle btn-sm"
             color="light"
-            href={AccountsController.edit.url({ account: account.id })}
+            href={AccountController.edit.url({ account: account.id })}
             variant="ghost">
             <i class="iconify size-5 ph--pencil-simple-bold"></i>
         </Button>

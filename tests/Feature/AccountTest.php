@@ -32,7 +32,7 @@ it('stores a new account', function (): void {
         'currency' => 'IDR',
         'provider_id' => null,
         'credit_card_limit' => null,
-        'cosmetics' => [
+        'decorations' => [
             'icon' => 'ph:wallet-bold',
             'color' => '#22c55e',
         ],
@@ -40,7 +40,7 @@ it('stores a new account', function (): void {
 
     $account = Account::where('name', 'BCA Savings')->first();
     expect($account)->not->toBeNull();
-    expect($account->cosmetics)->toMatchArray(['icon' => 'ph:wallet-bold', 'color' => '#22c55e']);
+    expect($account->decorations)->toMatchArray(['icon' => 'ph:wallet-bold', 'color' => '#22c55e']);
 });
 
 it('allows any user to view any account', function (): void {

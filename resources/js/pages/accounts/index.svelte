@@ -2,7 +2,7 @@
     import type { App } from '@wayfinder/types';
 
     import { inertia } from '@inertiajs/svelte';
-    import AccountsController from '@wayfinder/App/Http/Controllers/AccountsController';
+    import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
     import AccountAccessTypeBadge from '@components/module/account/account-access-type-badge.svelte';
     import AccountTypeBadge from '@components/module/account/account-type-badge.svelte';
@@ -15,7 +15,7 @@
 <div class="p-4">
     <div class="mb-4 flex items-center justify-between">
         <h1 class="text-xl font-bold">Accounts</h1>
-        <Button color="primary" href={AccountsController.create.url()} size="sm">
+        <Button color="primary" href={AccountController.create.url()} size="sm">
             <i class="iconify size-4 ph--plus-bold"></i>
             Add
         </Button>
@@ -25,14 +25,14 @@
         <div class="flex flex-col items-center justify-center py-16 text-base-content/50">
             <i class="iconify mb-3 size-12 ph--wallet-bold"></i>
             <p class="text-sm">No accounts yet</p>
-            <Button class="mt-4" color="primary" href={AccountsController.create.url()} size="sm">
+            <Button class="mt-4" color="primary" href={AccountController.create.url()} size="sm">
                 Create your first account
             </Button>
         </div>
     {:else}
         <div class="space-y-3">
             {#each accounts as account (account.id)}
-                <a href={AccountsController.show.url({ account: account.id })} use:inertia>
+                <a href={AccountController.show.url({ account: account.id })} use:inertia>
                     <Card wrapperClass="transition-transform active:scale-95">
                         <div class="flex items-center justify-between">
                             <div class="space-y-1">

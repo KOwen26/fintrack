@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AccountsController extends Controller
+class AccountController extends Controller
 {
     public function __construct(
         private readonly AccountService $accountService,
@@ -21,7 +21,7 @@ class AccountsController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('accounts/index', [
-            'accounts' => $this->accountService->getVisibleAccounts(),
+            'accounts' => $this->accountService->getAccountsByUser(auth()->user()),
         ]);
     }
 

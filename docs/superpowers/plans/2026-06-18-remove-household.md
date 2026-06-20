@@ -104,7 +104,7 @@ return new class extends Migration
             $table->decimal('initial_balance', 15, 2)->default(0);
             $table->decimal('credit_card_limit', 15, 2)->nullable();
             $table->char('currency', 3)->default('IDR');
-            $table->json('cosmetics')->nullable();
+            $table->json('decorations')->nullable();
             $table->timestamp('archived_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -180,7 +180,7 @@ class Account extends Model
             'initial_balance' => 'decimal:2',
             'credit_card_limit' => 'decimal:2',
             'archived_at' => 'datetime',
-            'cosmetics' => 'array',
+            'decorations' => 'array',
         ];
     }
 
@@ -304,7 +304,7 @@ class AccountPolicy
 
 namespace App\Services;
 
-use App\Data\CosmeticData;
+use App\Data\DecorationData;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -329,23 +329,23 @@ class AccountService
 
     public function create(User $user, array $data): Account
     {
-        return Account::create([...$this->normalizeCosmetics($data), 'owner_id' => $user->id]);
+        return Account::create([...$this->normalizedecorations($data), 'owner_id' => $user->id]);
     }
 
     public function update(Account $account, array $data): Account
     {
-        $account->update($this->normalizeCosmetics($data));
+        $account->update($this->normalizedecorations($data));
 
         return $account->fresh();
     }
 
-    private function normalizeCosmetics(array $data): array
+    private function normalizedecorations(array $data): array
     {
-        if (! isset($data['cosmetics'])) {
+        if (! isset($data['decorations'])) {
             return $data;
         }
 
-        $data['cosmetics'] = CosmeticData::from($data['cosmetics'])->toArray();
+        $data['decorations'] = DecorationData::from($data['decorations'])->toArray();
 
         return $data;
     }
@@ -511,9 +511,9 @@ class StoreAccountRequest extends FormRequest
             'initial_balance' => ['required', 'numeric', 'min:0'],
             'credit_card_limit' => ['nullable', 'numeric', 'min:0'],
             'currency' => ['required', 'string', 'size:3'],
-            'cosmetics' => ['nullable', 'array'],
-            'cosmetics.icon' => ['required_with:cosmetics', 'string', 'max:100'],
-            'cosmetics.color' => ['required_with:cosmetics', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'decorations' => ['nullable', 'array'],
+            'decorations.icon' => ['required_with:decorations', 'string', 'max:100'],
+            'decorations.color' => ['required_with:decorations', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
         ];
     }
 }
@@ -548,7 +548,7 @@ class AccountFactory extends Factory
             'initial_balance' => 0,
             'credit_card_limit' => null,
             'currency' => 'IDR',
-            'cosmetics' => [
+            'decorations' => [
                 'icon' => 'ph:wallet-bold',
                 'color' => fake()->hexColor(),
             ],
@@ -751,7 +751,7 @@ it('stores a new account', function (): void {
         'currency' => 'IDR',
         'provider_id' => null,
         'credit_card_limit' => null,
-        'cosmetics' => [
+        'decorations' => [
             'icon' => 'ph:wallet-bold',
             'color' => '#22c55e',
         ],
@@ -759,7 +759,7 @@ it('stores a new account', function (): void {
 
     $account = Account::where('name', 'BCA Savings')->first();
     expect($account)->not->toBeNull();
-    expect($account->cosmetics)->toMatchArray(['icon' => 'ph:wallet-bold', 'color' => '#22c55e']);
+    expect($account->decorations)->toMatchArray(['icon' => 'ph:wallet-bold', 'color' => '#22c55e']);
 });
 
 it('allows any user to view any account', function (): void {

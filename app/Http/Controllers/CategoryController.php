@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class CategoriesController extends Controller
+class CategoryController extends Controller
 {
     public function __construct(private readonly CategoryService $categoryService) {}
 

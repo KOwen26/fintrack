@@ -4,7 +4,7 @@ namespace App\Data;
 
 use Spatie\LaravelData\Data;
 
-class CosmeticData extends Data
+class DecorationData extends Data
 {
     public function __construct(
         public ?string $icon = null,

@@ -2,6 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use Illuminate\Support\Collection;
+use App\Services\AccountService;
+use App\Services\CategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Middleware;
@@ -57,6 +60,11 @@ class HandleInertiaRequests extends Middleware
                 'app_name' => config('app.name'),
                 'current_route_name' => fn () => $method === 'GET' ? $request->route()->getName() : null,
                 'previous_route_name' => fn () => $method === 'GET' ? Route::getPreviousName() : null,
+            ],
+            'static' => [
+                'accounts' => fn (): Collection => AccountService::getAccountsByUser(auth()->user()),
+                'categories' => CategoryService::getCategories(...),
+                'groupedCategories' => CategoryService::getGroupedCategories(...),
             ],
         ]);
     }

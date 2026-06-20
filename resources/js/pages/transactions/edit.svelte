@@ -2,7 +2,7 @@
     import type { App } from '@wayfinder/types';
 
     import { router } from '@inertiajs/svelte';
-    import TransactionsController from '@wayfinder/App/Http/Controllers/TransactionsController';
+    import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
     import TransactionForm from '@components/module/transaction/transaction-form.svelte';
     import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
@@ -23,7 +23,7 @@
 
     function destroy(): void {
         router.delete(
-            TransactionsController.destroy.url({ account: account.id, transaction: transaction.id })
+            TransactionController.destroy.url({ account: account.id, transaction: transaction.id })
         );
     }
 
@@ -40,7 +40,7 @@
         <Button
             class="btn-circle btn-sm"
             color="light"
-            href={TransactionsController.index.url({ account: account.id })}
+            href={TransactionController.index.url({ account: account.id })}
             variant="ghost">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
@@ -59,7 +59,7 @@
     <TransactionForm
         {account}
         {categories}
-        onCancel={() => router.visit(TransactionsController.index.url({ account: account.id }))}
+        onCancel={() => router.visit(TransactionController.index.url({ account: account.id }))}
         {transaction} />
 
     <div class="mt-4">

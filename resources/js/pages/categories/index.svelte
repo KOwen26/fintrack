@@ -2,7 +2,7 @@
     import type { App } from '@wayfinder/types';
 
     import { router } from '@inertiajs/svelte';
-    import CategoriesController from '@wayfinder/App/Http/Controllers/CategoriesController';
+    import CategoryController from '@wayfinder/App/Http/Controllers/CategoryController';
 
     import CategoryForm from '@components/module/category/category-form.svelte';
     import Badge from '@components/ui/badge.svelte';
@@ -28,7 +28,7 @@
 
     function destroy() {
         if (!deletingId) return;
-        router.delete(CategoriesController.destroy.url({ category: deletingId }), {
+        router.delete(CategoryController.destroy.url({ category: deletingId }), {
             onFinish: () => {
                 deletingId = null;
                 showDeleteConfirm = false;
@@ -59,7 +59,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span
-                            style="background-color: {group.cosmetics?.color}"
+                            style="background-color: {group.decorations?.color}"
                             class="inline-block h-3 w-3 rounded-full"></span>
                         <span class="font-semibold text-sm">{group.name}</span>
                         {#if group.is_fixed_cost}
@@ -81,7 +81,7 @@
                             <li class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <span
-                                        style="background-color: {child.cosmetics?.color}"
+                                        style="background-color: {child.decorations?.color}"
                                         class="inline-block h-2 w-2 rounded-full"></span>
                                     <span class="text-sm">{child.name}</span>
                                     {#if child.is_fixed_cost}

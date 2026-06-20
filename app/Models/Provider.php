@@ -19,7 +19,7 @@ class Provider extends Model
         return [
             'type' => ProviderType::class,
             'status' => ProviderStatus::class,
-            'cosmetics' => 'array',
+            'decorations' => 'array',
         ];
     }
 

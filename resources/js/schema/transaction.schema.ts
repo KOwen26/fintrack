@@ -1,47 +1,84 @@
 import type { DataSchema } from '@utilities/data-composer';
-import type { App } from '@wayfinder/types';
 
-export const transactionSchema: DataSchema<App.Models.Transaction> = {
+import { App } from '@wayfinder/types';
+
+import { DataComposer } from '@utilities/data-composer';
+
+export type TransactionFormData = {
+    type: string;
+    amount: number;
+    transaction_date: string;
+    description: string;
+    account_id: number;
+    category_id?: number;
+    destination_account_id?: number;
+    fee_amount?: number | null;
+};
+
+const transactionSchema: DataSchema<
+    App.Models.Transaction & { destination_account_id?: number; fee_amount?: number }
+> = {
+    category_id: {
+        label: 'Category',
+        form: () => ({
+            type: 'select',
+            options: [],
+        }),
+    },
+    account_id: {
+        label: 'Source Account',
+        form: () => ({
+            type: 'select',
+            required: true,
+            options: [],
+        }),
+    },
+    destination_account_id: {
+        label: 'Destination Account',
+        form: () => ({
+            type: 'select',
+            required: true,
+            options: [],
+        }),
+    },
+
     amount: {
         label: 'Amount',
-        value: (data) =>
-            Number(data.amount).toLocaleString('id-ID', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            }),
         form: () => ({
             type: 'number',
-            name: 'amount',
             required: true,
             inputProps: { inputmode: 'decimal', min: 0.01, step: 0.01, placeholder: '0.00' },
         }),
     },
     transaction_date: {
         label: 'Date',
-        value: (data) =>
-            data.transaction_date
-                ? new Date(data.transaction_date as string).toLocaleDateString('id-ID', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                  })
-                : '-',
         form: () => ({
             type: 'date',
-            name: 'transaction_date',
             required: true,
-            inputProps: { max: new Date().toISOString().split('T')[0] },
         }),
     },
     description: {
         label: 'Note',
-        value: (data) => (data.description as string | null) ?? '-',
         form: () => ({
             type: 'text',
-            name: 'description',
             inputProps: { placeholder: 'Optional note or memo', autocorrect: 'off' },
         }),
     },
-    // category_id: dynamic options — extended in component
-    // type: excluded — form component handles type selection + UI alias logic
+    fee_amount: {
+        label: 'Transfer Fee (optional)',
+        form: () => ({
+            type: 'number',
+            inputProps: { inputmode: 'decimal', min: 0.01, step: 0.01, placeholder: '0.00' },
+        }),
+    },
 };
+
+export const incomeSchema = DataComposer.from(transactionSchema)
+    .except(['destination_account_id', 'fee_amount'])
+    .getSchema();
+
+export const expenseSchema = DataComposer.from(transactionSchema)
+    .except(['destination_account_id', 'fee_amount'])
+    .getSchema();
+
+export const transferSchema = DataComposer.from(transactionSchema).getSchema();

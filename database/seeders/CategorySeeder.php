@@ -105,6 +105,9 @@ class CategorySeeder extends Seeder
         [
             'name' => 'Finance', 'icon' => 'ph:coins-bold', 'color' => '#0ea5e9', 'fixed' => true,
             'children' => [
+                ['name' => 'Admin Fees', 'icon' => 'ph:wallet-bold', 'color' => '#0ea5e9', 'fixed' => false],
+                ['name' => 'Taxes', 'icon' => 'ph:wallet-bold', 'color' => '#0ea5e9', 'fixed' => false],
+                ['name' => 'Interest', 'icon' => 'ph:wallet-bold', 'color' => '#0ea5e9', 'fixed' => false],
                 ['name' => 'Savings', 'icon' => 'ph:wallet-bold', 'color' => '#0ea5e9', 'fixed' => true],
                 ['name' => 'Loans & Repayments', 'icon' => 'ph:receipt-bold', 'color' => '#0ea5e9', 'fixed' => true],
                 ['name' => 'Insurance', 'icon' => 'ph:shield-check-bold', 'color' => '#0ea5e9', 'fixed' => true],
@@ -128,7 +131,7 @@ class CategorySeeder extends Seeder
                 'name' => $group['name'],
                 'type' => $group['name'] === 'Income' ? 'input' : 'output',
                 'order' => $topOrder,
-                'cosmetics' => [
+                'decorations' => [
                     'icon' => $group['icon'],
                     'color' => $group['color'],
                 ],
@@ -142,7 +145,7 @@ class CategorySeeder extends Seeder
                     'name' => $child['name'],
                     'type' => $group['name'] === 'Income' ? 'input' : 'output',
                     'order' => $childOrder,
-                    'cosmetics' => [
+                    'decorations' => [
                         'icon' => $child['icon'],
                         'color' => $child['color'],
                     ],

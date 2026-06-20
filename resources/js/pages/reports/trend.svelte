@@ -2,7 +2,7 @@
     import type { App } from '@wayfinder/types';
 
     import { router } from '@inertiajs/svelte';
-    import ReportsController from '@wayfinder/App/Http/Controllers/ReportsController';
+    import ReportController from '@wayfinder/App/Http/Controllers/ReportController';
 
     import TrendChart from '@components/module/report/trend-chart.svelte';
     import Badge from '@components/ui/badge.svelte';
@@ -33,7 +33,7 @@
     } = $props();
 
     function setMonths(m: number) {
-        router.visit(ReportsController.trend.url({ account: account.id, query: { months: m } }), {
+        router.visit(ReportController.trend.url({ account: account.id, query: { months: m } }), {
             preserveScroll: true,
         });
     }
@@ -56,7 +56,7 @@
         <Button
             class="btn-circle btn-sm"
             color="light"
-            href={ReportsController.index.url({ account: account.id })}
+            href={ReportController.index.url({ account: account.id })}
             variant="ghost">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>

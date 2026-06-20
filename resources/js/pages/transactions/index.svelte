@@ -2,8 +2,8 @@
     import type { App } from '@wayfinder/types';
 
     import { Link } from '@inertiajs/svelte';
-    import AccountsController from '@wayfinder/App/Http/Controllers/AccountsController';
-    import TransactionsController from '@wayfinder/App/Http/Controllers/TransactionsController';
+    import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
+    import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
     import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
     import Button from '@components/ui/button.svelte';
@@ -40,7 +40,7 @@
         <Button
             class="btn-circle btn-sm"
             color="light"
-            href={AccountsController.show.url({ account: account.id })}
+            href={AccountController.show.url({ account: account.id })}
             variant="ghost">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
@@ -48,10 +48,7 @@
             <h1 class="text-xl font-bold">{account.name}</h1>
             <p class="text-xs text-base-content/50">Transactions</p>
         </div>
-        <Button
-            color="primary"
-            href={TransactionsController.create.url({ account: account.id })}
-            size="sm">
+        <Button color="primary" href={TransactionController.create.url()} size="sm">
             <i class="iconify size-4 ph--plus-bold"></i>
             Add
         </Button>
@@ -71,7 +68,7 @@
             <Button
                 class="mt-4"
                 color="primary"
-                href={TransactionsController.create.url({ account: account.id })}
+                href={TransactionController.create.url({ account: account.id })}
                 size="sm">
                 Add your first transaction
             </Button>
@@ -81,7 +78,7 @@
             {#each transactions.data as transaction (transaction.id)}
                 <a
                     class="block"
-                    href={TransactionsController.edit.url({
+                    href={TransactionController.edit.url({
                         account: account.id,
                         transaction: transaction.id,
                     })}>

@@ -12,20 +12,20 @@ export const categorySchema: DataSchema<App.Models.Category> = {
             inputProps: { placeholder: 'Category name', autocorrect: 'off' },
         }),
     },
-    'cosmetics.icon': {
+    'decorations.icon': {
         label: 'Icon',
         form: () => ({
             type: 'text',
-            name: 'cosmetics.icon',
+            name: 'decorations.icon',
             required: true,
             inputProps: { placeholder: 'ph:tag', autocorrect: 'off' },
         }),
     },
-    'cosmetics.color': {
+    'decorations.color': {
         label: 'Color',
         form: () => ({
             type: 'text',
-            name: 'cosmetics.color',
+            name: 'decorations.color',
             required: true,
             inputProps: { placeholder: '#6366f1' },
         }),

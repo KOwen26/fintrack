@@ -2,10 +2,9 @@
     import type { InertiaForm } from '@inertiajs/svelte';
     import type { App } from '@wayfinder/types';
 
-    import TransactionType from '@wayfinder/App/Enums/TransactionType';
-    import TransactionsController from '@wayfinder/App/Http/Controllers/TransactionsController';
+    import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
-    import { transactionSchema } from '@schema/transaction.schema';
+    import { expenseSchema, incomeSchema, transferSchema } from '@schema/transaction.schema';
 
     import { DataComposer } from '@utilities/data-composer';
 
@@ -14,59 +13,58 @@
     import FormGenerator from '@components/ui/forms/form-generator.svelte';
 
     interface Props {
+        type?: 'income' | 'expense' | 'transfer';
         account: App.Models.Account;
         categories: App.Models.Category[];
-        accounts?: App.Models.Account[]; // other accounts for transfer destination
+        accounts?: App.Models.Account[];
         transaction?: App.Models.Transaction;
         onCancel?: () => void;
     }
 
-    let { account, categories, accounts = [], transaction, onCancel }: Props = $props();
+    let {
+        type = 'expense',
+        account,
+        categories,
+        accounts = [],
+        transaction,
+        onCancel,
+    }: Props = $props();
 
     let form: InertiaForm<any> = $state(null!);
 
     const isEdit = $derived(!!transaction);
 
-    // Flatten categories (parent + children) for select options
-    const categoryOptions = $derived(() => {
-        const opts: { value: string | number; label: string }[] = [
-            { value: '', label: '— Uncategorized —' },
-        ];
-
-        for (const parent of categories) {
-            if (parent.children && parent.children.length > 0) {
-                for (const child of parent.children) {
-                    opts.push({ value: child.id, label: `${parent.name} › ${child.name}` });
-                }
-            } else {
-                opts.push({ value: parent.id, label: parent.name });
-            }
-        }
-
-        return opts;
-    });
-
-    const accountOptions = $derived(() => accounts.map((a) => ({ value: a.id, label: a.name })));
-
-    // Type options for create form — 'transfer' is a UI alias, never sent as-is to DB
-    const typeOptions = [
-        { value: 'income', label: 'Income' },
-        { value: 'expense', label: 'Expense' },
-        { value: 'transfer', label: 'Transfer' },
-        { value: TransactionType.Fee, label: 'Fee' },
-    ];
+    const today = new Date().toISOString().split('T')[0];
 
     const formSchema = $derived(() => {
         if (isEdit && transaction) {
-            // Edit: amount, transaction_date, category_id, description only
-            const { fields, data } = DataComposer.from(transactionSchema)
+            const isTransferType =
+                transaction.type === 'transfer_out' ||
+                transaction.type === 'transfer_in' ||
+                transaction.type === 'fee';
+
+            if (isTransferType) {
+                return DataComposer.from(
+                    DataComposer.toSchema(transferSchema, {
+                        only: ['amount', 'transaction_date', 'description'],
+                    })
+                ).toFormGenerator({
+                    amount: Number(transaction.amount),
+                    transaction_date: transaction.transaction_date as string,
+                    description: transaction.description ?? '',
+                });
+            }
+
+            const baseSchema = transaction.type === 'income' ? incomeSchema : expenseSchema;
+
+            const { fields, data } = DataComposer.from(baseSchema)
                 .extendSchema({
                     category_id: {
                         label: 'Category',
                         form: () => ({
-                            type: 'select',
+                            type: 'category-select',
                             name: 'category_id',
-                            options: categoryOptions(),
+                            categories,
                         }),
                     },
                 })
@@ -80,87 +78,87 @@
             return { fields, data };
         }
 
-        // Create: full form with type + conditional transfer fields
-        const { fields, data } = DataComposer.from(transactionSchema)
+        if (type === 'transfer') {
+            const { fields, data } = DataComposer.from(transferSchema)
+                .extendSchema({
+                    destination_account_id: {
+                        label: 'Destination Account',
+                        form: () => ({
+                            type: 'account-select',
+                            name: 'destination_account_id',
+                            required: true,
+                            accounts,
+                            placeholder: 'Select destination',
+                        }),
+                    },
+                })
+                .toFormGenerator({
+                    amount: 0,
+                    transaction_date: today,
+                    fee_amount: null,
+                    description: '',
+                });
+
+            data.type = 'transfer';
+
+            return { fields, data };
+        }
+
+        const baseSchema = type === 'income' ? incomeSchema : expenseSchema;
+
+        const { fields, data } = DataComposer.from(baseSchema)
             .extendSchema({
-                type: {
-                    label: 'Type',
-                    form: () => ({
-                        type: 'select',
-                        name: 'type',
-                        required: true,
-                        options: typeOptions,
-                    }),
-                },
                 category_id: {
                     label: 'Category',
                     form: () => ({
-                        type: 'select',
+                        type: 'category-select',
                         name: 'category_id',
-                        options: categoryOptions(),
-                        show: (f: any) => f.type !== 'transfer',
-                    }),
-                },
-                destination_account_id: {
-                    label: 'Destination Account',
-                    form: () => ({
-                        type: 'select',
-                        name: 'destination_account_id',
-                        options: accountOptions(),
-                        show: (f: any) => f.type === 'transfer',
-                        required: false, // required rule in StoreTransactionRequest handles it server-side
-                    }),
-                },
-                fee_amount: {
-                    label: 'Transfer Fee (optional)',
-                    form: () => ({
-                        type: 'number',
-                        name: 'fee_amount',
-                        show: (f: any) => f.type === 'transfer',
-                        inputProps: {
-                            inputmode: 'decimal',
-                            min: 0.01,
-                            step: 0.01,
-                            placeholder: '0.00',
-                        },
+                        categories,
                     }),
                 },
             })
             .toFormGenerator({
-                type: 'expense',
                 amount: 0,
-                transaction_date: new Date().toISOString().split('T')[0],
+                transaction_date: today,
                 category_id: '',
-                destination_account_id: '',
-                fee_amount: null,
                 description: '',
             });
+
+        data.type = type === 'income' ? 'income' : 'expense';
 
         return { fields, data };
     });
 
     const action = $derived(
         isEdit && transaction
-            ? TransactionsController.update.url({
-                  account: account.id,
-                  transaction: transaction.id,
-              })
-            : TransactionsController.store.url({ account: account.id })
+            ? TransactionController.update.url(transaction.id)
+            : TransactionController.store.url()
     );
 
     const method = $derived<'put' | undefined>(isEdit ? 'put' : undefined);
-    const submitLabel = $derived(isEdit ? 'Save Changes' : 'Add Transaction');
+
+    const submitLabel = $derived(
+        isEdit
+            ? 'Save Changes'
+            : type === 'income'
+              ? 'Add Income'
+              : type === 'transfer'
+                ? 'Add Transfer'
+                : 'Add Expense'
+    );
 </script>
 
-<Card>
-    <FormGenerator
-        id="transaction-form"
-        {action}
-        formSchema={formSchema()}
-        {method}
-        withoutSubmit
-        bind:form />
-</Card>
+{#key isEdit ? 'edit' : type}
+    <Card>
+        <FormGenerator
+            id="transaction-form"
+            {action}
+            formSchema={formSchema()}
+            {method}
+            withoutSubmit
+            bind:form />
+    </Card>
+{/key}
 
 <div class="mt-4">
     <FormAction

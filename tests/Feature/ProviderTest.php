@@ -5,13 +5,13 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-it('stores provider cosmetics data when created', function (): void {
+it('stores provider decorations data when created', function (): void {
     $provider = Provider::factory()->create([
-        'cosmetics' => [
+        'decorations' => [
             'icon' => 'ph:bank-bold',
             'color' => '#2563eb',
         ],
     ]);
 
-    expect($provider->cosmetics)->toMatchArray(['icon' => 'ph:bank-bold', 'color' => '#2563eb']);
+    expect($provider->decorations)->toMatchArray(['icon' => 'ph:bank-bold', 'color' => '#2563eb']);
 });

@@ -2,7 +2,7 @@
     import type { App } from '@wayfinder/types';
 
     import { router } from '@inertiajs/svelte';
-    import AccountsController from '@wayfinder/App/Http/Controllers/AccountsController';
+    import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
     import AccountForm from '@components/module/account/account-form.svelte';
     import Button from '@components/ui/button.svelte';
@@ -15,10 +15,10 @@
     let showDeleteConfirm = $state(false);
 
     function archive() {
-        router.post(AccountsController.archive.url({ account: account.id }));
+        router.post(AccountController.archive.url({ account: account.id }));
     }
     function destroy() {
-        router.delete(AccountsController.destroy.url({ account: account.id }));
+        router.delete(AccountController.destroy.url({ account: account.id }));
     }
 </script>
 
@@ -27,7 +27,7 @@
         <Button
             class="btn-circle btn-sm"
             color="light"
-            href={AccountsController.show.url({ account: account.id })}
+            href={AccountController.show.url({ account: account.id })}
             variant="ghost">
             <i class="iconify size-5 ph--arrow-left-bold"></i>
         </Button>
@@ -36,7 +36,7 @@
 
     <AccountForm
         {account}
-        onCancel={() => router.visit(AccountsController.show.url({ account: account.id }))}
+        onCancel={() => router.visit(AccountController.show.url({ account: account.id }))}
         {providers} />
 
     <div class="mt-4 space-y-3">

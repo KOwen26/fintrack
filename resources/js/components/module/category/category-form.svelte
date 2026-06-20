@@ -2,7 +2,7 @@
     import type { InertiaForm } from '@inertiajs/svelte';
     import type { App } from '@wayfinder/types';
 
-    import CategoriesController from '@wayfinder/App/Http/Controllers/CategoriesController';
+    import CategoryController from '@wayfinder/App/Http/Controllers/CategoryController';
 
     import { categorySchema } from '@schema/category.schema';
 
@@ -38,8 +38,8 @@
             })
             .toFormGenerator({
                 name: '',
-                'cosmetics.icon': 'ph:tag',
-                'cosmetics.color': '#6366f1',
+                'decorations.icon': 'ph:tag',
+                'decorations.color': '#6366f1',
                 type: 'output',
                 order: '0.100',
                 is_fixed_cost: false,
@@ -53,7 +53,7 @@
 <Card wrapperClass="mb-4">
     <FormGenerator
         id="add-category"
-        action={CategoriesController.store.url()}
+        action={CategoryController.store.url()}
         formSchema={formSchema()}
         submitOptions={{
             onSuccess: () => {

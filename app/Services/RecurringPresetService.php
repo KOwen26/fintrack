@@ -30,7 +30,7 @@ class RecurringPresetService
 
     public function getUserAccounts(User $user): Collection
     {
-        return $this->accountService->getTransferEligibleAccounts($user);
+        return $this->accountService->getTransferEligibleAccounts();
     }
 
     public function getUserCategories(User $user): Collection
