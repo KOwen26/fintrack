@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Data\DecorationData;
 use App\Enums\CategoryType;
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -24,7 +25,7 @@ class Category extends Model
         return [
             'type' => CategoryType::class,
             'order' => 'decimal:3',
-            'decorations' => 'array',
+            'decorations' => DecorationData::class,
         ];
     }
 

@@ -5,7 +5,6 @@ import type { ResolvedComponent } from '@inertiajs/svelte';
 import { createInertiaApp } from '@inertiajs/svelte';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
-import AppLayout from '@components/layouts/app-layout.svelte';
 import DashboardLayout from '@components/layouts/dashboard-layout.svelte';
 
 const appName = import.meta.env?.VITE_APP_NAME || 'Laravel';
@@ -31,8 +30,6 @@ createInertiaApp({
             case name.startsWith('transaction-presets'):
             case name.startsWith('recurring-presets'):
             case name.startsWith('reports'):
-                return AppLayout;
-
             case name.startsWith('dev'):
             case name.startsWith('dashboard'):
                 return DashboardLayout;

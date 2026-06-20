@@ -2,14 +2,13 @@
     import type { App } from '@wayfinder/types';
 
     import { Link } from '@inertiajs/svelte';
-    import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
-    import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
+    
+import TransactionCard from '@components/module/transaction/transaction-card.svelte';
     import Button from '@components/ui/button.svelte';
-    import Card from '@components/ui/card.svelte';
-
-    interface PaginatedTransactions {
+    
+interface PaginatedTransactions {
         data: App.Models.Transaction[];
         links: { url: string | null; label: string; active: boolean }[];
         current_page: number;
@@ -17,26 +16,19 @@
     }
 
     let {
-        account,
+        // account,
         transactions,
-        balance,
+        // balance,
     }: {
-        account: App.Models.Account;
+        // account: App.Models.Account;
         transactions: PaginatedTransactions;
-        balance: string;
+        // balance: string;
     } = $props();
-
-    const formattedBalance = $derived(
-        Number(balance).toLocaleString('id-ID', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        })
-    );
 </script>
 
 <div class="p-4">
     <!-- Header -->
-    <div class="mb-4 flex items-center gap-3">
+    <!-- <div class="mb-4 flex items-center gap-3">
         <Button
             class="btn-circle btn-sm"
             color="light"
@@ -52,13 +44,13 @@
             <i class="iconify size-4 ph--plus-bold"></i>
             Add
         </Button>
-    </div>
+    </div> -->
 
     <!-- Balance card -->
-    <Card wrapperClass="mb-4 bg-primary text-primary-content">
+    <!-- <Card wrapperClass="mb-4 bg-primary text-primary-content">
         <p class="text-xs opacity-70">Current Balance</p>
         <p class="font-mono text-2xl font-bold">{account.currency} {formattedBalance}</p>
-    </Card>
+    </Card> -->
 
     <!-- Transaction list -->
     {#if transactions.data.length === 0}
@@ -68,7 +60,7 @@
             <Button
                 class="mt-4"
                 color="primary"
-                href={TransactionController.create.url({ account: account.id })}
+                href={TransactionController.create.url()}
                 size="sm">
                 Add your first transaction
             </Button>
@@ -76,57 +68,7 @@
     {:else}
         <div class="space-y-2">
             {#each transactions.data as transaction (transaction.id)}
-                <a
-                    class="block"
-                    href={TransactionController.edit.url({
-                        account: account.id,
-                        transaction: transaction.id,
-                    })}>
-                    <Card wrapperClass="transition-transform active:scale-95">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="flex-1 min-w-0">
-                                    <p class="truncate text-sm font-medium">
-                                        {transaction.description ??
-                                            transaction.category?.name ??
-                                            'Transaction'}
-                                    </p>
-                                    <div class="mt-1 flex items-center gap-1">
-                                        <TransactionTypeBadge type={transaction.type} />
-                                        {#if transaction.category}
-                                            <span class="text-xs text-base-content/50"
-                                                >{transaction.category.name}</span>
-                                        {/if}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="text-right shrink-0">
-                                <p
-                                    class="font-mono text-sm font-semibold {[
-                                        'income',
-                                        'transfer_in',
-                                    ].includes(transaction.type)
-                                        ? 'text-success'
-                                        : 'text-error'}">
-                                    {['income', 'transfer_in'].includes(transaction.type)
-                                        ? '+'
-                                        : '-'}{Number(transaction.amount).toLocaleString('id-ID', {
-                                        minimumFractionDigits: 0,
-                                        maximumFractionDigits: 0,
-                                    })}
-                                </p>
-                                <p class="text-xs text-base-content/40">
-                                    {new Date(
-                                        transaction.transaction_date as string
-                                    ).toLocaleDateString('id-ID', {
-                                        day: '2-digit',
-                                        month: 'short',
-                                    })}
-                                </p>
-                            </div>
-                        </div>
-                    </Card>
-                </a>
+                <TransactionCard {transaction} />
             {/each}
         </div>
 
@@ -139,10 +81,10 @@
                             class="btn btn-xs {link.active ? 'btn-primary' : 'btn-ghost'}"
                             href={link.url}
                             preserveScroll>
-                            {@html link.label}
+                            {link.label}
                         </Link>
                     {:else}
-                        <span class="btn btn-xs btn-disabled">{@html link.label}</span>
+                        <span class="btn btn-xs btn-disabled">{link.label}</span>
                     {/if}
                 {/each}
             </div>

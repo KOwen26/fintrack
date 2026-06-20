@@ -1,6 +1,8 @@
 <script lang="ts">
     import type { RestProps } from '@type/index';
 
+    import ErrorWrapper from './error-wrapper.svelte';
+
     import { flatMenu, transformMenuToBreadcrumbs } from '@data/menu';
     import { useFlashToast } from '@hooks/flash-handler.svelte';
     import { page } from '@inertiajs/svelte';
@@ -48,9 +50,13 @@
     <DashboardSidebar />
     <Sidebar.Inset>
         {@render header()}
-        <div class="flex h-full flex-col gap-6 p-6">
-            {@render children()}
-        </div>
+
+        <ErrorWrapper>
+            <div class="flex h-full flex-col gap-6 p-6">
+                {@render children?.()}
+            </div>
+        </ErrorWrapper>
+
         {@render footer()}
     </Sidebar.Inset>
 </Sidebar.Provider>

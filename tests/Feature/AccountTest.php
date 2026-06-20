@@ -33,14 +33,17 @@ it('stores a new account', function (): void {
         'provider_id' => null,
         'credit_card_limit' => null,
         'decorations' => [
-            'icon' => 'ph:wallet-bold',
-            'color' => '#22c55e',
+            'icon' => ['id' => 'wallet-bold', 'value' => 'ph:wallet-bold'],
+            'color' => ['id' => 'green-500', 'value' => '#22c55e'],
         ],
     ])->assertRedirect();
 
     $account = Account::where('name', 'BCA Savings')->first();
     expect($account)->not->toBeNull();
-    expect($account->decorations)->toMatchArray(['icon' => 'ph:wallet-bold', 'color' => '#22c55e']);
+    expect($account->decorations)->toMatchArray([
+        'icon' => ['id' => 'wallet-bold', 'value' => 'ph:wallet-bold'],
+        'color' => ['id' => 'green-500', 'value' => '#22c55e'],
+    ]);
 });
 
 it('allows any user to view any account', function (): void {

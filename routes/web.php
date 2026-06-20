@@ -55,14 +55,12 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
 
     // Transactions
     Route::prefix('transactions')->name('transactions.')->group(function (): void {
+        Route::get('', [TransactionController::class, 'index'])->name('index');
         Route::get('create', [TransactionController::class, 'create'])->name('create');
         Route::post('', [TransactionController::class, 'store'])->name('store');
         Route::put('{transaction}', [TransactionController::class, 'update'])->name('update');
         Route::delete('{transaction}', [TransactionController::class, 'destroy'])->name('destroy');
     });
-
-    // Route::get('accounts/{account}/transactions', [TransactionController::class, 'index'])->name('transactions.index');
-    // Route::get('accounts/{account}/transactions/{transaction}/edit', [TransactionController::class, 'edit'])->name('transactions.edit');
 
     // Budgets
     Route::get('accounts/{account}/budgets', [BudgetController::class, 'index'])->name('budgets.index');

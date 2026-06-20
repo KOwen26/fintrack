@@ -25,8 +25,8 @@ class AccountFactory extends Factory
             'credit_card_limit' => null,
             'currency' => 'IDR',
             'decorations' => [
-                'icon' => 'ph:wallet-bold',
-                'color' => fake()->hexColor(),
+                'icon' => ['id' => 'wallet-bold', 'value' => 'ph:wallet-bold'],
+                'color' => ['id' => fake()->hexColor(), 'value' => fake()->hexColor()],
             ],
             'archived_at' => null,
         ];

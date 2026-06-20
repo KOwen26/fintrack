@@ -6,19 +6,17 @@ use App\Enums\TransactionType;
 use App\Events\TransactionDeleted;
 use App\Events\TransactionSaved;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class TransactionService
 {
-    public function getCategories(): Collection
+    public static function getTransactions()
     {
-        return Category::orderBy('name')->get();
+        return Transaction::query()->with(['account', 'category'])->latest('transaction_date')->paginate(30);
     }
 
     public function getAccountTransactions(Account $account): LengthAwarePaginator

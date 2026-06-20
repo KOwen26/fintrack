@@ -27,9 +27,8 @@ class TransactionController extends Controller
         $this->authorize('viewAny', [Transaction::class, $account]);
 
         return Inertia::render('transactions/index', [
-            'account' => $account,
-            'transactions' => $this->transactionService->getAccountTransactions($account),
-            'balance' => $this->balanceService->forAccount($account),
+            'transactions' => $this->transactionService->getTransactions(),
+            'summary' => [],
         ]);
     }
 

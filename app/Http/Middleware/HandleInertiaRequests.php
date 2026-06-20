@@ -62,7 +62,7 @@ class HandleInertiaRequests extends Middleware
                 'previous_route_name' => fn () => $method === 'GET' ? Route::getPreviousName() : null,
             ],
             'static' => [
-                'accounts' => fn (): Collection => AccountService::getAccountsByUser(auth()->user()),
+                'accounts' => fn (): Collection|array => auth()->user() ? AccountService::getAccountsByUser(auth()->user()) : [],
                 'categories' => CategoryService::getCategories(...),
                 'groupedCategories' => CategoryService::getGroupedCategories(...),
             ],

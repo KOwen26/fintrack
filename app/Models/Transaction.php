@@ -20,8 +20,8 @@ class Transaction extends Model
     {
         return [
             'type' => TransactionType::class,
-            'amount' => 'decimal:2',
-            'transaction_date' => 'date',
+            'amount' => 'decimal:0',
+            'transaction_date' => 'datetime',
         ];
     }
 

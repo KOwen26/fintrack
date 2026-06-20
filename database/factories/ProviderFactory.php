@@ -21,8 +21,8 @@ class ProviderFactory extends Factory
             'type' => fake()->randomElement(ProviderType::cases())->value,
             'status' => ProviderStatus::Active->value,
             'decorations' => [
-                'icon' => 'ph:building-bank-bold',
-                'color' => fake()->hexColor(),
+                'icon' => ['id' => 'building-bank-bold', 'value' => 'ph:building-bank-bold'],
+                'color' => ['id' => fake()->hexColor(), 'value' => fake()->hexColor()],
             ],
         ];
     }

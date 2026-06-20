@@ -3,9 +3,11 @@ import type { Permissions } from '@utilities/authorization.svelte';
 import type { Component, Snippet } from 'svelte';
 
 import { appearance, dashboard } from '@wayfinder/routes';
+import accounts from '@wayfinder/routes/accounts';
 import dev from '@wayfinder/routes/dev';
 import profile from '@wayfinder/routes/profile';
 import security from '@wayfinder/routes/security';
+import transactions from '@wayfinder/routes/transactions';
 
 import { can } from '@utilities/authorization.svelte';
 
@@ -135,11 +137,34 @@ export const settingsMenu = {
     },
 } satisfies MenuGroup;
 
-export const menus: MenuGroups = [dashboardMenu, settingsMenu];
+export const homeMenu: MenuGroup = {
+    name: 'Accounts',
+    type: 'collapsible',
+    menus: {
+        accounts: {
+            name: 'Accounts',
+            url: accounts.index().url,
+            route: 'accounts.edit',
+            active: 'accounts.*',
+            icon: 'iconify ph--user-duotone',
+            type: 'menu',
+        },
+        transactions: {
+            name: 'Transactions',
+            url: transactions.index().url,
+            route: 'transactions.edit',
+            active: 'transactions.*',
+            icon: 'iconify ph--user-duotone',
+            type: 'menu',
+        },
+    },
+};
+
+export const menus: MenuGroups = [dashboardMenu, homeMenu, settingsMenu];
 
 const isDev = ['local', 'staging'].includes(import.meta.env?.VITE_APP_ENV || 'local');
 if (isDev) {
-    menus.push(devMenu);
+    // menus.push(devMenu);
 }
 
 function menuItemsOf(group: MenuGroup): Menu[] {

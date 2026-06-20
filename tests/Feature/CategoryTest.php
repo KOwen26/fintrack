@@ -39,7 +39,10 @@ it('stores a top-level category', function (): void {
     $category = Category::where('name', 'Groceries')->first();
 
     expect($category)->not->toBeNull();
-    expect($category->decorations)->toMatchArray(['icon' => 'ph:shopping-cart-bold', 'color' => '#f97316']);
+    expect($category->decorations)->toMatchArray([
+        'icon' => ['id' => 'shopping-cart-bold', 'value' => 'ph:shopping-cart-bold'],
+        'color' => ['id' => 'orange-500', 'value' => '#f97316'],
+    ]);
 });
 
 it('allows deleting a category when authenticated', function (): void {

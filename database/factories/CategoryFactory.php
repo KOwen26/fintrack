@@ -19,8 +19,8 @@ class CategoryFactory extends Factory
             'type' => fake()->randomElement(CategoryType::cases()),
             'order' => 0.100,
             'decorations' => [
-                'icon' => 'ph:tag',
-                'color' => fake()->hexColor(),
+                'icon' => ['id' => 'tag', 'value' => 'ph:tag'],
+                'color' => ['id' => fake()->hexColor(), 'value' => fake()->hexColor()],
             ],
             'is_fixed_cost' => false,
         ];
