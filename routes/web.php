@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\RecurringPresetsController;
 use App\Http\Controllers\ReportController;
@@ -10,7 +11,6 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransactionPresetsController;
 use App\Http\Controllers\UserThemeController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 require __DIR__ . '/auth.php';
 
@@ -18,7 +18,7 @@ Route::get('/', fn () => to_route('auth.login'));
 // Route::get('/', [LandingController::class, 'index'])->name('home');
 
 Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function (): void {
-    Route::get('dashboard', fn () => Inertia::render('dashboard/dashboard'))->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Accounts
     Route::get('accounts', [AccountController::class, 'index'])->name('accounts.index');

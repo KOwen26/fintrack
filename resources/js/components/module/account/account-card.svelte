@@ -16,25 +16,30 @@
 
     let { account, class: _class }: Props = $props();
 
-    const className = cn(_class, 'p-4');
+    const color = $derived(account.decorations?.color);
 </script>
 
-<Card
-    wrapperClass={className}
-    wrapperProps={{ style: `background-color: ${account?.decorations?.color?.value}` }}>
-    <div class="flex items-center justify-between">
-        <div class="space-y-1">
-            <p class="font-semibold">{account.name}</p>
-            <div class="flex items-center gap-1">
-                <AccountTypeBadge type={account.type} />
-                <AccountAccessTypeBadge type={account.access_type} />
-            </div>
-        </div>
-        <div class="text-right">
-            <p class="text-sm text-base-content/70">Current Balance</p>
-            <p class="font-semibold">
-                {Formatter.currency(account?.current_balance ?? 0)}
+<div class="@container/account-card">
+    <div
+        style:--bg-color={color?.value}
+        style:--text-color={color?.text_color ?? '#FFFFFF'}
+        class={cn(
+            'p-2.5 rounded @min-[12rem]:rounded-md',
+            'bg-(--bg-color) text-(--text-color)',
+            'flex h-full flex-col items-start justify-around gap-1.5',
+            _class
+        )}>
+        <div class="flex items-center justify-between w-full">
+            <p class="text-sm @min-[12rem]:text-base font-semibold text-current/80 text-nowrap">
+                {account.name}
             </p>
+
+            <!-- TODO control label via container query *:data-[slot='badge-label']:hidden -->
+            <AccountTypeBadge icon="only" type={account.type} />
         </div>
+
+        <p class="font-semibold text-lg @min-[12rem]:text-xl leading-snug">
+            {Formatter.currency(account?.current_balance ?? 100_000_000)}
+        </p>
     </div>
-</Card>
+</div>

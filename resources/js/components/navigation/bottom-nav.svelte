@@ -1,4 +1,8 @@
 <script lang="ts">
+    import type { Menu } from '@data/menu';
+
+    import { dashboardMenu } from '@data/menu';
+    import { useUrlHandler } from '@hooks/url-handler.svelte';
     import { Link, page } from '@inertiajs/svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
     import CategoryController from '@wayfinder/App/Http/Controllers/CategoryController';
@@ -6,40 +10,52 @@
 
     import { cn } from '@utilities/shadcn';
 
-    const currentRoute = $derived(
-        (page.props.meta as { current_route_name?: string } | null)?.current_route_name ?? ''
-    );
+    interface Props {
+        withLabel?: boolean;
+    }
 
-    const isActive = (prefix: string) => currentRoute.startsWith(prefix);
+    let { withLabel = true }: Props = $props();
+
+    const urlHandler = useUrlHandler();
+
+    const activeChecks = $derived((url) =>
+        urlHandler.isCurrentOrParentUrl(url, urlHandler.currentUrl)
+    );
 </script>
 
-<nav
-    class="btm-nav btm-nav-sm fixed bottom-0 left-0 right-0 z-50 border-t border-base-300 bg-base-100">
-    <Link
-        class={isActive('accounts') ? 'active' : ''}
-        aria-label="Accounts"
-        href={AccountController.index.url()}>
-        <i class="iconify size-5 ph--wallet-bold"></i>
-        <span class="btm-nav-label text-xs">Accounts</span>
-    </Link>
+<nav class="md:hidden dock dock-sm">
+    {@render dockItem(dashboardMenu.menus.dashboard)}
 
-    <a
-        class:active={isActive('categories')}
-        aria-label="Categories"
-        href={CategoryController.index.url()}>
-        <i class="iconify size-5 ph--tag-bold"></i>
-        <span class="btm-nav-label text-xs">Categories</span>
-    </a>
+    {@render dockItem(dashboardMenu.menus.transactions)}
 
-    <Link
-        class={cn('rounded-full size-12 bg-primary', isActive('accounts') ? 'active' : '')}
-        aria-label="Add"
-        href={TransactionController.create.url()}>
-        <i class="iconify size-6 ph--plus-bold"></i>
-    </Link>
+    <div class="relative">
+        <div class="bg-primary rounded-lg p-2 min-size-12 absolute -top-1 -translate-y-1/2">
+            <Link
+                class="size-8 flex items-center justify-center"
+                aria-label="Add"
+                href={TransactionController.create.url()}>
+                <i class="iconify size-8 tabler--plus"></i>
+            </Link>
+        </div>
+    </div>
 
-    <a class:active={isActive('dashboard')} aria-label="Reports" href="/dashboard">
-        <i class="iconify size-5 ph--chart-bar-bold"></i>
-        <span class="btm-nav-label text-xs">Reports</span>
-    </a>
+    {@render dockItem(dashboardMenu.menus.reports)}
+
+    {@render dockItem({
+        name: 'Config',
+        url: AccountController.index.url(),
+        icon: 'solar--wallet-money-linear',
+    })}
 </nav>
+
+{#snippet dockItem({ name, url, icon }: Menu)}
+    {let isActive = $derived(activeChecks(url))}
+
+    <Link class={cn(isActive ? 'dock-active' : '')} aria-label={name} href={url}>
+        <i class={cn('iconify size-6 ', icon)}></i>
+
+        {#if withLabel}
+            <span class="dock-label">{name}</span>
+        {/if}
+    </Link>
+{/snippet}

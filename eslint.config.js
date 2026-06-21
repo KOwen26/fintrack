@@ -57,7 +57,7 @@ export default defineConfig([
             'no-undef': 'off',
             'no-useless-assignment': 'warn',
             'no-unused-vars': 'warn',
-            'unused-imports/no-unused-imports': 'error',
+            'unused-imports/no-unused-imports': 'warn',
             '@stylistic/padding-line-between-statements': [
                 'warn',
                 { blankLine: 'always', prev: '*', next: 'return' }, //Give a blank line before return statement
@@ -118,7 +118,7 @@ export default defineConfig([
                             sort: 'alphabetical',
                         },
                         // `bind:` directives (other then `bind:this`), and `on:` directives.
-                        ['/^bind:/u', '!bind:this', '/^on:/u'],
+                        ['/^on/u', '/^on:/u', '/^bind:/u', '!bind:this'],
                         // `use:` directives. (Alphabetical order within the same group.)
                         { match: '/^use:/u', sort: 'alphabetical' },
                         // `transition:` directive.

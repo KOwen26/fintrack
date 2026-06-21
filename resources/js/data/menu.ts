@@ -38,7 +38,7 @@ export type MenuGroups = MenuGroup[];
 
 const icon = 'iconify solar--widget-5-line-duotone';
 
-const devMenu = {
+const devMenu: MenuGroup = {
     name: 'Dev',
     type: 'collapsible',
     menus: {
@@ -89,9 +89,9 @@ const devMenu = {
             },
         },
     },
-} satisfies MenuGroup;
+};
 
-export const dashboardMenu = {
+export const dashboardMenu: MenuGroup = {
     name: 'Dashboard',
     type: 'popover',
     menus: {
@@ -103,8 +103,32 @@ export const dashboardMenu = {
             route: 'dashboard',
             type: 'menu',
         },
+        transactions: {
+            name: 'Transactions',
+            url: transactions.index().url,
+            route: 'transactions.edit',
+            active: 'transactions.*',
+            icon: 'iconify solar--bill-list-linear',
+            type: 'menu',
+        },
+        reports: {
+            name: 'Reports',
+            url: transactions.index().url,
+            route: 'transactions.edit',
+            active: 'transactions.*',
+            icon: 'iconify solar--chat-square-2-linear',
+            type: 'menu',
+        },
+        accounts: {
+            name: 'Accounts',
+            url: accounts.index().url,
+            route: 'accounts.edit',
+            active: 'accounts.*',
+            icon: 'iconify ph--user-duotone',
+            type: 'menu',
+        },
     },
-} satisfies MenuGroup;
+};
 
 export const settingsMenu = {
     name: 'Settings',
@@ -137,30 +161,7 @@ export const settingsMenu = {
     },
 } satisfies MenuGroup;
 
-export const homeMenu: MenuGroup = {
-    name: 'Accounts',
-    type: 'collapsible',
-    menus: {
-        accounts: {
-            name: 'Accounts',
-            url: accounts.index().url,
-            route: 'accounts.edit',
-            active: 'accounts.*',
-            icon: 'iconify ph--user-duotone',
-            type: 'menu',
-        },
-        transactions: {
-            name: 'Transactions',
-            url: transactions.index().url,
-            route: 'transactions.edit',
-            active: 'transactions.*',
-            icon: 'iconify ph--user-duotone',
-            type: 'menu',
-        },
-    },
-};
-
-export const menus: MenuGroups = [dashboardMenu, homeMenu, settingsMenu];
+export const menus: MenuGroups = [dashboardMenu, settingsMenu];
 
 const isDev = ['local', 'staging'].includes(import.meta.env?.VITE_APP_ENV || 'local');
 if (isDev) {

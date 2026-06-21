@@ -10,6 +10,7 @@
     import { getBreadcrumbItems } from '@utilities/global-states.svelte';
     import { getTitleFromMenu } from '@utilities/helper.svelte';
 
+    import BottomNav from '@components/navigation/bottom-nav.svelte';
     import DashboardSidebar from '@components/navigation/dashboard-sidebar.svelte';
     import * as Sidebar from '@components/ui/atoms/sidebar';
     import Breadcrumbs from '@components/ui/breadcrumbs.svelte';
@@ -52,9 +53,11 @@
         {@render header()}
 
         <ErrorWrapper>
-            <div class="flex h-full flex-col gap-6 p-4 md:p-6">
+            <div class="flex h-full flex-col gap-6 p-5 md:p-6">
                 {@render children?.()}
             </div>
+
+            <BottomNav />
         </ErrorWrapper>
 
         {@render footer()}

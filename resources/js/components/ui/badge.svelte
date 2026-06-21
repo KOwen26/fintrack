@@ -41,7 +41,7 @@
         color = 'light',
         variant = 'solid',
         shape = 'rounded',
-        class: className,
+        class: _class,
         children,
         ...props
     }: BadgeProps = $props();
@@ -72,7 +72,7 @@
             variant === 'outline-dash' ? 'badge-dash' : '',
             variant === 'soft' ? 'badge-soft' : '',
             shapesClass[shape],
-            props.class
+            _class
         )
     );
 </script>
