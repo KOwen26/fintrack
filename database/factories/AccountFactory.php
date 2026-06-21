@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\AccountAccessType;
 use App\Enums\AccountType;
 use App\Models\Account;
+use App\Models\DecorationColor;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,10 +25,18 @@ class AccountFactory extends Factory
             'initial_balance' => 0,
             'credit_card_limit' => null,
             'currency' => 'IDR',
-            'decorations' => [
-                'icon' => ['id' => 'wallet-bold', 'value' => 'ph:wallet-bold'],
-                'color' => ['id' => fake()->hexColor(), 'value' => fake()->hexColor()],
-            ],
+            'decorations' => function (array $attributes): array {
+                $color = DecorationColor::inRandomOrder()->first();
+
+                return [
+                    'icon' => ['id' => 'wallet-bold', 'value' => 'ph:wallet-bold'],
+                    'color' => [
+                        'id' => $color->slug,
+                        'value' => $color->hex,
+                        'text_color' => $color->text_color,
+                    ],
+                ];
+            },
             'archived_at' => null,
         ];
     }

@@ -101,6 +101,7 @@ export default defineConfig([
                         'maskName',
                         // `slot` attribute.
                         'slot',
+                        'data-slot',
                         // `--style-props` (Alphabetical order within the same group.)
                         { match: '/^--/u', sort: 'alphabetical' },
                         // `style` attribute, and `style:` directives.

@@ -17,13 +17,11 @@
     let { account, class: _class }: Props = $props();
 
     const className = cn(_class, 'p-4');
-
-    $inspect({ account });
 </script>
 
 <Card
-    wrapperProps={{ style: `background-color: ${account?.decorations?.color?.value}` }}
-    wrapperClass={className}>
+    wrapperClass={className}
+    wrapperProps={{ style: `background-color: ${account?.decorations?.color?.value}` }}>
     <div class="flex items-center justify-between">
         <div class="space-y-1">
             <p class="font-semibold">{account.name}</p>

@@ -2,15 +2,14 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Support\Facades\Date;
 use App\Enums\AccountType;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 
 class DummyDataSeeder extends Seeder
 {

@@ -1,4 +1,15 @@
 declare namespace App.Data {
+    export type DecorationData = {
+        icon: DecorationItemData;
+        color: DecorationItemData;
+    };
+
+    export type DecorationItemData = {
+        id: string;
+        value: string;
+        text_color: string | null;
+    };
+
     export type HouseholdData = {
         id: number;
         name: string;

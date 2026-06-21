@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Data\DecorationData;
 use App\Enums\AccountAccessType;
 use App\Enums\AccountType;
 use Database\Factories\AccountFactory;
@@ -27,7 +28,7 @@ class Account extends Model
             'initial_balance' => 'decimal:2',
             'credit_card_limit' => 'decimal:2',
             'archived_at' => 'datetime',
-            'decorations' => 'array',
+            'decorations' => DecorationData::class,
         ];
     }
 

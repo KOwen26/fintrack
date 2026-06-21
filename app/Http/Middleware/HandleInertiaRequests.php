@@ -40,14 +40,15 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $method = $request->method();
+        $authed = (bool) $request->user();
 
         return array_merge(parent::share($request), [
             'csrf_token' => csrf_token(),
             'auth' => [
-                'user' => fn () => $request->user()
+                'user' => fn () => $authed
                     ? $request->user()->only('id', 'name', 'email', 'theme_preference')
                     : null,
-                'permissions' => fn () => $request->user()
+                'permissions' => fn () => $authed
                     ? ($request->user()->getPermissionsViaRoles()->pluck('name')->toArray() ?? [])
                     : null,
             ],
@@ -62,9 +63,9 @@ class HandleInertiaRequests extends Middleware
                 'previous_route_name' => fn () => $method === 'GET' ? Route::getPreviousName() : null,
             ],
             'static' => [
-                'accounts' => fn (): Collection|array => auth()->user() ? AccountService::getAccountsByUser(auth()->user()) : [],
-                'categories' => CategoryService::getCategories(...),
-                'groupedCategories' => CategoryService::getGroupedCategories(...),
+                'accounts' => fn (): Collection => $authed ? AccountService::getAccountsByUser($request->user()) : collect(),
+                'categories' => fn (): Collection => $authed ? CategoryService::getCategories() : collect(),
+                'groupedCategories' => fn (): Collection => $authed ? CategoryService::getGroupedCategories() : collect(),
             ],
         ]);
     }

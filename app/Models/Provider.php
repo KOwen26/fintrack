@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Data\DecorationData;
 use App\Enums\ProviderStatus;
 use App\Enums\ProviderType;
 use Database\Factories\ProviderFactory;
@@ -19,7 +20,7 @@ class Provider extends Model
         return [
             'type' => ProviderType::class,
             'status' => ProviderStatus::class,
-            'decorations' => 'array',
+            'decorations' => DecorationData::class,
         ];
     }
 

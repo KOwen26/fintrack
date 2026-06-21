@@ -72,8 +72,12 @@ class AccountService
         }
 
         if (isset($decorationData['color']) && is_string($decorationData['color'])) {
-            $slug = DecorationColor::where('hex', $decorationData['color'])->first()?->slug;
-            $decorationData['color'] = ['id' => $slug ?? $decorationData['color'], 'value' => $decorationData['color']];
+            $color = DecorationColor::where('hex', $decorationData['color'])->first();
+            $decorationData['color'] = [
+                'id' => $color?->slug ?? $decorationData['color'],
+                'value' => $decorationData['color'],
+                'text_color' => $color?->text_color,
+            ];
         }
 
         $data['decorations'] = DecorationData::from($decorationData)->toArray();

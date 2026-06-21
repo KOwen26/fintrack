@@ -40,8 +40,8 @@ it('stores a top-level category', function (): void {
 
     expect($category)->not->toBeNull();
     expect($category->decorations)->toMatchArray([
-        'icon' => ['id' => 'shopping-cart-bold', 'value' => 'ph:shopping-cart-bold'],
-        'color' => ['id' => 'orange-500', 'value' => '#f97316'],
+        'icon' => ['id' => 'shopping-cart-bold', 'value' => 'ph:shopping-cart-bold', 'text_color' => null],
+        'color' => ['id' => 'orange-500', 'value' => '#f97316', 'text_color' => '#000000'],
     ]);
 });
 

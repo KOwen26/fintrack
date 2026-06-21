@@ -1,12 +1,28 @@
 <script lang="ts">
     import type { App } from '@wayfinder/types';
 
-    let { account }: { account: App.Models.Account } = $props();
+    import { cn } from '@utilities/shadcn';
+
+    interface Props {
+        account: App.Models.Account;
+        labelOnly?: boolean;
+    }
+
+    let { account, labelOnly = false }: Props = $props();
+
+    const color = $derived(account.decorations?.color);
 </script>
 
 <span
-    class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium"
-    style="background-color: {account.decorations?.color?.value}20; color: {account.decorations
-        ?.color?.value}">
+    data-slot="account-badge"
+    style:--bg-color={labelOnly ? 'transparent' : color?.value}
+    style:--text-color={labelOnly
+        ? `color-mix(in oklab, ${color?.value} 100%, #000 40%)`
+        : (color?.text_color ?? '#FFFFFF')}
+    class={cn(
+        'font-semibold ',
+        labelOnly ? '' : 'badge rounded border-none px-2',
+        'bg-(--bg-color) text-(--text-color)'
+    )}>
     {account.name}
 </span>

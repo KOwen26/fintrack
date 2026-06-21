@@ -41,8 +41,8 @@ it('stores a new account', function (): void {
     $account = Account::where('name', 'BCA Savings')->first();
     expect($account)->not->toBeNull();
     expect($account->decorations)->toMatchArray([
-        'icon' => ['id' => 'wallet-bold', 'value' => 'ph:wallet-bold'],
-        'color' => ['id' => 'green-500', 'value' => '#22c55e'],
+        'icon' => ['id' => 'wallet-bold', 'value' => 'ph:wallet-bold', 'text_color' => null],
+        'color' => ['id' => 'green-500', 'value' => '#22c55e', 'text_color' => null],
     ]);
 });
 

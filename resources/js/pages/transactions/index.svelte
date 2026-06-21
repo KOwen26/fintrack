@@ -4,11 +4,10 @@
     import { Link } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
-    
-import TransactionCard from '@components/module/transaction/transaction-card.svelte';
+    import TransactionCard from '@components/module/transaction/transaction-card.svelte';
     import Button from '@components/ui/button.svelte';
-    
-interface PaginatedTransactions {
+
+    interface PaginatedTransactions {
         data: App.Models.Transaction[];
         links: { url: string | null; label: string; active: boolean }[];
         current_page: number;
@@ -26,7 +25,7 @@ interface PaginatedTransactions {
     } = $props();
 </script>
 
-<div class="p-4">
+<div class="">
     <!-- Header -->
     <!-- <div class="mb-4 flex items-center gap-3">
         <Button
@@ -74,7 +73,7 @@ interface PaginatedTransactions {
 
         <!-- Pagination -->
         {#if transactions.last_page > 1}
-            <div class="mt-6 flex items-center justify-center gap-1 flex-wrap">
+            <div class=" flex items-center justify-center gap-1 flex-wrap">
                 {#each transactions.links as link (link.label)}
                     {#if link.url}
                         <Link

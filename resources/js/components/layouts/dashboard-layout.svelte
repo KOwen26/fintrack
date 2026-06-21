@@ -52,7 +52,7 @@
         {@render header()}
 
         <ErrorWrapper>
-            <div class="flex h-full flex-col gap-6 p-6">
+            <div class="flex h-full flex-col gap-6 p-4 md:p-6">
                 {@render children?.()}
             </div>
         </ErrorWrapper>
