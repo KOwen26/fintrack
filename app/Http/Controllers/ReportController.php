@@ -25,7 +25,7 @@ class ReportController extends Controller
         [$from, $to] = $this->parseDateRange($request);
 
         $trend = $this->reportService->trend($account, 6);
-        $categoryLeak = $this->reportService->categoryLeak($account, $from, $to);
+        $categoryLeak = $this->reportService->categorySpending($account, $from, $to);
 
         return Inertia::render('reports/index', [
             'account' => $account,
@@ -64,7 +64,7 @@ class ReportController extends Controller
 
         [$from, $to] = $this->parseDateRange($request);
 
-        $data = $this->reportService->categoryLeak($account, $from, $to);
+        $data = $this->reportService->categorySpending($account, $from, $to);
 
         return Inertia::render('reports/category-leak', [
             'account' => $account,

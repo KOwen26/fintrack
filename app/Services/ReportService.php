@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Data\Report\CategoryLeakItemData;
-use App\Data\Report\CategoryLeakReportData;
+use App\Data\Report\CategorySpendingItemData;
+use App\Data\Report\CategorySpendingReportData;
 use App\Data\Report\ContributionMemberData;
 use App\Data\Report\ContributionSplitData;
 use App\Data\Report\CreditUtilizationData;
@@ -88,7 +88,7 @@ class ReportService
      * Category Leak — expense + fee totals ranked by category for a given period.
      * Cached per (from, to) window — past months permanently, current month for 5 minutes.
      */
-    public function categoryLeak(Account $account, Carbon $from, Carbon $to): CategoryLeakReportData
+    public function categorySpending(Account $account, Carbon $from, Carbon $to): CategorySpendingReportData
     {
         $year = $from->year;
         $month = $from->month;
@@ -99,7 +99,7 @@ class ReportService
         return Cache::tags(['account:' . $account->id])->remember(
             $cacheKey,
             $ttl,
-            function () use ($account, $from, $to): CategoryLeakReportData {
+            function () use ($account, $from, $to): CategorySpendingReportData {
                 // Compute the period total first (used to calculate percentages inside the DB)
                 $periodTotal = (float) DB::table('transactions')
                     ->where('account_id', $account->id)
@@ -109,7 +109,7 @@ class ReportService
                     ->sum('amount');
 
                 if ($periodTotal <= 0) {
-                    return new CategoryLeakReportData(
+                    return new CategorySpendingReportData(
                         categories: [],
                         period_total: 0.0,
                         from: $from->toDateString(),
@@ -134,7 +134,7 @@ class ReportService
                     ->orderByDesc('total')
                     ->get();
 
-                $categories = $rows->map(fn (object $r): CategoryLeakItemData => new CategoryLeakItemData(
+                $categories = $rows->map(fn (object $r): CategorySpendingItemData => new CategorySpendingItemData(
                     name: $r->name,
                     color: $r->color,
                     icon: $r->icon,
@@ -142,7 +142,7 @@ class ReportService
                     percentage: (float) $r->percentage,
                 ))->all();
 
-                return new CategoryLeakReportData(
+                return new CategorySpendingReportData(
                     categories: $categories,
                     period_total: $periodTotal,
                     from: $from->toDateString(),

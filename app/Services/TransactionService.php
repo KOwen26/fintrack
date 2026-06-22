@@ -6,6 +6,7 @@ use App\Enums\TransactionType;
 use App\Events\TransactionDeleted;
 use App\Events\TransactionSaved;
 use App\Models\Account;
+use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -14,18 +15,26 @@ use Illuminate\Support\Str;
 
 class TransactionService
 {
-    public static function getTransactions()
+    public static function getTransactions(): LengthAwarePaginator
     {
         return Transaction::query()->with(['account', 'category'])->latest('transaction_date')->paginate(30);
     }
 
-    public function getAccountTransactions(Account $account): LengthAwarePaginator
+    public static function getAccountTransactions(Account $account): LengthAwarePaginator
     {
         return Transaction::query()
             ->where('account_id', $account->id)
-            ->with('category')
+            ->with(['account', 'category'])
             ->latest('transaction_date')
-            ->orderByDesc('id')
+            ->paginate(30);
+    }
+
+    public static function getCategoryTransactions(Category $category): LengthAwarePaginator
+    {
+        return Transaction::query()
+            ->where('category_id', $category->id)
+            ->with(['account', 'category'])
+            ->latest('transaction_date')
             ->paginate(30);
     }
 

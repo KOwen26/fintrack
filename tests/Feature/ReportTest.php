@@ -164,7 +164,7 @@ it('category leak report returns ranked categories by spend', function (): void 
     ]);
 
     $service = resolve(ReportService::class);
-    $result = $service->categoryLeak($account, Date::now()->startOfMonth(), Date::now()->endOfMonth());
+    $result = $service->categorySpending($account, Date::now()->startOfMonth(), Date::now()->endOfMonth());
 
     expect($result)->toBeInstanceOf(CategoryLeakReportData::class);
     expect($result->categories)->toHaveCount(2);
