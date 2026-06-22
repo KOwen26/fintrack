@@ -1,14 +1,11 @@
 <?php
 
 use App\Http\Controllers\AccountController;
-use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LandingController;
-use App\Http\Controllers\RecurringPresetsController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\TransactionPresetsController;
 use App\Http\Controllers\UserThemeController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,19 +28,6 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
     Route::post('accounts/{account}/archive', [AccountController::class, 'archive'])->name('accounts.archive');
     Route::post('accounts/{account}/restore', [AccountController::class, 'restore'])->name('accounts.restore');
 
-    // Transaction Presets (templates)
-    Route::get('transaction-presets', [TransactionPresetsController::class, 'index'])->name('transaction-presets.index');
-    Route::post('transaction-presets', [TransactionPresetsController::class, 'store'])->name('transaction-presets.store');
-    Route::put('transaction-presets/{preset}', [TransactionPresetsController::class, 'update'])->name('transaction-presets.update');
-    Route::delete('transaction-presets/{preset}', [TransactionPresetsController::class, 'destroy'])->name('transaction-presets.destroy');
-
-    // Recurring Presets
-    Route::get('recurring-presets', [RecurringPresetsController::class, 'index'])->name('recurring-presets.index');
-    Route::post('recurring-presets', [RecurringPresetsController::class, 'store'])->name('recurring-presets.store');
-    Route::put('recurring-presets/{preset}', [RecurringPresetsController::class, 'update'])->name('recurring-presets.update');
-    Route::delete('recurring-presets/{preset}', [RecurringPresetsController::class, 'destroy'])->name('recurring-presets.destroy');
-    Route::post('recurring-presets/{preset}/toggle', [RecurringPresetsController::class, 'toggle'])->name('recurring-presets.toggle');
-
     // Categories
     Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
 
@@ -58,12 +42,6 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
         Route::put('{transaction}', [TransactionController::class, 'update'])->name('update');
         Route::delete('{transaction}', [TransactionController::class, 'destroy'])->name('destroy');
     });
-
-    // Budgets
-    Route::get('accounts/{account}/budgets', [BudgetController::class, 'index'])->name('budgets.index');
-    Route::post('accounts/{account}/budgets', [BudgetController::class, 'store'])->name('budgets.store');
-    Route::put('accounts/{account}/budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
-    Route::delete('accounts/{account}/budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
 
     // Reports (read-only — all GET)
     Route::get('accounts/{account}/reports', [ReportController::class, 'index'])->name('reports.index');

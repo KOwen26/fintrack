@@ -11,5 +11,3 @@ Artisan::command('inspire', function (): void {
 if (config('app.env') !== 'local') {
     Schedule::command('telescope:prune --hours=48')->weekly();
 }
-
-Schedule::command('presets:run-recurring')->dailyAt('00:05');
