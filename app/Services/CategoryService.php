@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Data\DecorationData;
 use App\Models\Category;
 use App\Models\DecorationColor;
-use App\Models\User;
 use Illuminate\Support\Collection;
 
 class CategoryService
@@ -32,14 +31,6 @@ class CategoryService
                     'decorations' => $child->decorations,
                 ]),
             ]);
-    }
-
-    public function getRootCategories(?User $user = null): Collection
-    {
-        return Category::query()
-            ->whereNull('parent_id')
-            ->with('children')
-            ->get();
     }
 
     public function create(array $data): Category
