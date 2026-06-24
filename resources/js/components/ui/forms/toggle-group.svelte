@@ -37,12 +37,12 @@ Discriminated Unions + Destructing (required for bindable) do not
 get along, so we shut typescript up by casting `value` to `never`.
 -->
 <ToggleGroupPrimitive.Root
+    data-slot="toggle-group"
     class={cn(
         'group/toggle-group flex w-fit items-center rounded-md data-[variant=outline]:shadow-xs',
         className
     )}
     data-size={size}
-    data-slot="toggle-group"
     data-variant={variant}
     bind:value={value as never}
     bind:ref

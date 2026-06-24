@@ -52,13 +52,13 @@
 </script>
 
 <ScrollAreaPrimitive.Root
-    class={rootClass}
     data-slot="scroll-area"
+    class={rootClass}
     bind:ref={rootRef}
     {...restProps}>
     <ScrollAreaPrimitive.Viewport
-        class={baseViewportClass}
         data-slot="scroll-area-viewport"
+        class={baseViewportClass}
         bind:ref={viewportRef}>
         {@render children?.()}
     </ScrollAreaPrimitive.Viewport>
@@ -73,9 +73,9 @@
 
 {#snippet scrollbarSnippet({ orientation })}
     <ScrollAreaPrimitive.Scrollbar
-        class={orientation === 'vertical' ? scrollbarVerticalClass : scrollbarHorizontalClass}
         data-slot="scroll-area-scrollbar"
+        class={orientation === 'vertical' ? scrollbarVerticalClass : scrollbarHorizontalClass}
         {orientation}>
-        <ScrollAreaPrimitive.Thumb class={baseThumbClass} data-slot="scroll-area-thumb" />
+        <ScrollAreaPrimitive.Thumb data-slot="scroll-area-thumb" class={baseThumbClass} />
     </ScrollAreaPrimitive.Scrollbar>
 {/snippet}

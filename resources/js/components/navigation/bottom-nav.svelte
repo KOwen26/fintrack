@@ -3,9 +3,8 @@
 
     import { dashboardMenu } from '@data/menu';
     import { useUrlHandler } from '@hooks/url-handler.svelte';
-    import { Link, page } from '@inertiajs/svelte';
+    import { Link } from '@inertiajs/svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
-    import CategoryController from '@wayfinder/App/Http/Controllers/CategoryController';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
     import { cn } from '@utilities/shadcn';

@@ -4,16 +4,16 @@ namespace App\Data\Report;
 
 use Spatie\LaravelData\Data;
 
-class CategorySpendingItemData extends Data
+class ParentSpendingItemData extends Data
 {
     public function __construct(
+        public int $categoryId,
         public string $name,
         public string $color,
         public string $icon,
         public float $total,
         public float $percentage,
-        public ?int $categoryId = null,
-        public ?int $parentId = null,
-        public ?string $parentName = null,
+        /** @var ChildSpendingItemData[] */
+        public array $children,
     ) {}
 }

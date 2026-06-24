@@ -22,9 +22,9 @@
 </script>
 
 <Button
+    data-slot="sidebar-trigger"
     class={cn('size-10 p-1', className)}
     data-sidebar="trigger"
-    data-slot="sidebar-trigger"
     onclick={(e) => {
         onclick?.(e);
         sidebar.toggle();

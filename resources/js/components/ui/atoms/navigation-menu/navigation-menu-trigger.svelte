@@ -20,8 +20,8 @@
 </script>
 
 <NavigationMenuPrimitive.Trigger
-    class={cn(navigationMenuTriggerStyle(), 'group', className)}
     data-slot="navigation-menu-trigger"
+    class={cn(navigationMenuTriggerStyle(), 'group', className)}
     bind:ref
     {...restProps}>
     {@render children?.()}

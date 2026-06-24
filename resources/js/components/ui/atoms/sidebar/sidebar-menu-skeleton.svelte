@@ -22,9 +22,9 @@
 
 <div
     bind:this={ref}
+    data-slot="sidebar-menu-skeleton"
     class={cn('flex h-8 items-center gap-2 rounded-md px-2', className)}
     data-sidebar="menu-skeleton"
-    data-slot="sidebar-menu-skeleton"
     {...restProps}>
     {#if showIcon}
         <Skeleton class="size-4 rounded-md" data-sidebar="menu-skeleton-icon" />

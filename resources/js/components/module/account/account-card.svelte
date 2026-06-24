@@ -2,13 +2,10 @@
     import type { RestProps } from '@type/index';
     import type { App } from '@wayfinder/types';
 
-    import AccountAccessTypeBadge from './account-access-type-badge.svelte';
     import AccountTypeBadge from './account-type-badge.svelte';
 
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
-
-    import Card from '@components/ui/card.svelte';
 
     interface Props extends RestProps {
         account: App.Models.Account;

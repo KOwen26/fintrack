@@ -14,8 +14,8 @@
 
 <thead
     bind:this={ref}
-    class={cn('border-neutral-400 bg-neutral-200/60 [&_tr]:border-b', className)}
     data-slot="table-header"
+    class={cn('border-neutral-400 bg-neutral-200/60 [&_tr]:border-b', className)}
     {...restProps}>
     {@render children?.()}
 </thead>

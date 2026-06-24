@@ -77,6 +77,6 @@
     );
 </script>
 
-<span bind:this={ref} class={badgeClass} data-slot="badge" {...props}>
+<span bind:this={ref} data-slot="badge" class={badgeClass} {...props}>
     {@render children?.()}
 </span>

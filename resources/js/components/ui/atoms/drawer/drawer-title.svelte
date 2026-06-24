@@ -11,7 +11,7 @@
 </script>
 
 <DrawerPrimitive.Title
-    class={cn('text-foreground font-semibold', className)}
     data-slot="drawer-title"
+    class={cn('text-foreground font-semibold', className)}
     bind:ref
     {...restProps} />

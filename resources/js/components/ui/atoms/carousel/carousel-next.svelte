@@ -19,6 +19,7 @@
 </script>
 
 <Button
+    data-slot="carousel-next"
     class={cn(
         'absolute size-8 rounded-full',
         emblaCtx.orientation === 'horizontal'
@@ -27,7 +28,6 @@
         className
     )}
     aria-disabled={!emblaCtx.canScrollNext}
-    data-slot="carousel-next"
     onclick={emblaCtx.scrollNext}
     onkeydown={emblaCtx.handleKeyDown}
     {size}

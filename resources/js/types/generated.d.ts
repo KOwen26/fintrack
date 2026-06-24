@@ -1,29 +1,4 @@
 declare namespace App.Data {
-    export type DecorationData = {
-        icon: DecorationItemData;
-        color: DecorationItemData;
-    };
-
-    export type DecorationItemData = {
-        id: string;
-        value: string;
-        text_color: string | null;
-    };
-
-    export type HouseholdData = {
-        id: number;
-        name: string;
-        members: Array<App.Data.HouseholdMemberData>;
-    };
-
-    export type HouseholdMemberData = {
-        id: number;
-        user_id: number;
-        name: string;
-        role: App.Enums.HouseholdMemberRole;
-        joined_at: string | null;
-    };
-
     export type UserTestData = {
         name: string;
         age: number;
@@ -42,9 +17,9 @@ declare namespace App.Enums {
         | 'e_wallet'
         | 'investment';
 
-    export type CategoryType = 'input' | 'output';
+    export type AlertLevel = 'normal' | 'warning' | 'high_risk';
 
-    export type HouseholdMemberRole = 'owner' | 'member';
+    export type CategoryType = 'input' | 'output';
 
     export type ProviderStatus = 'active' | 'inactive';
 
@@ -53,8 +28,6 @@ declare namespace App.Enums {
     export type RecurringFrequency = 'daily' | 'weekly' | 'fortnightly' | 'monthly' | 'yearly';
 
     export type TestEnum = 'word' | 'two_word' | 'space word' | 'Title Word';
-
-    export type TransactionPresetType = 'income' | 'expense' | 'transfer';
 
     export type TransactionType = 'income' | 'expense' | 'transfer_out' | 'transfer_in' | 'fee';
 }

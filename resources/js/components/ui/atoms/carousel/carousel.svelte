@@ -82,9 +82,9 @@
 
 <div
     bind:this={ref}
+    data-slot="carousel"
     class={cn('relative', className)}
     aria-roledescription="carousel"
-    data-slot="carousel"
     role="region"
     {...restProps}>
     {@render children?.()}

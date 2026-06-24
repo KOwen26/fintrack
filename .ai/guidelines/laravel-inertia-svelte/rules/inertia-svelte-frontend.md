@@ -130,20 +130,27 @@ Wayfinder generates `inertia-config.d.ts` which augments `@inertiajs/core`. Thes
 ```typescript
 {
     csrf_token: string | null;
-    auth: { user: unknown; permissions: [] | null };
-    flash: { type: unknown; message: unknown; details: unknown };
+    auth: {
+        user: unknown;
+        permissions: [] | null;
+    }
+    flash: {
+        type: unknown;
+        message: unknown;
+        details: unknown;
+    }
     meta: {
         app_name: unknown;
         current_route_name: string | null;
         previous_route_name: string | null;
-    };
+    }
 }
 ```
 
 Cast `auth.user` to `App.Models.User | null` when accessing user fields:
 
 ```typescript
-(page.props.auth?.user as App.Models.User | null)?.theme_preference
+(page.props.auth?.user as App.Models.User | null)?.theme_preference;
 ```
 
 ## Module Components
@@ -255,7 +262,7 @@ import AccountType from '@wayfinder/App/Enums/AccountType';
 export const accountSchema: DataSchema<App.Models.Account> = {
     name: {
         label: 'Name',
-        table: true,           // include in toDatatableColumn()
+        table: true, // include in toDatatableColumn()
         form: () => ({
             type: 'text',
             name: 'name',
@@ -287,16 +294,16 @@ export const accountSchema: DataSchema<App.Models.Account> = {
 
 ### DataSchemaItem properties
 
-| Property | Type | Purpose |
-| --- | --- | --- |
-| `label` | `string` | Human-readable field label |
-| `value` | `any \| (data) => any` | Display value / formatter |
-| `form` | `(data?) => FormGeneratorProps` | Form field config factory |
-| `table` | `boolean \| TableProps` | Include in datatable columns |
+| Property      | Type                                       | Purpose                                            |
+| ------------- | ------------------------------------------ | -------------------------------------------------- |
+| `label`       | `string`                                   | Human-readable field label                         |
+| `value`       | `any \| (data) => any`                     | Display value / formatter                          |
+| `form`        | `(data?) => FormGeneratorProps`            | Form field config factory                          |
+| `table`       | `boolean \| TableProps`                    | Include in datatable columns                       |
 | `tableFilter` | `boolean \| (data?) => FormGeneratorProps` | Filter config; `true` falls back to `form` factory |
-| `show` | `boolean \| (data) => boolean` | Conditional visibility for display and form fields |
-| `class` | `string` | CSS class applied to the display value |
-| `meta` | `AnyRecord` | Arbitrary extra data attached to the field |
+| `show`        | `boolean \| (data) => boolean`             | Conditional visibility for display and form fields |
+| `class`       | `string`                                   | CSS class applied to the display value             |
+| `meta`        | `AnyRecord`                                | Arbitrary extra data attached to the field         |
 
 ### DataComposer full API
 
@@ -304,52 +311,53 @@ export const accountSchema: DataSchema<App.Models.Account> = {
 
 **Static factory methods**
 
-| Method | Description |
-| --- | --- |
-| `DataComposer.from(schema, data?)` | Create instance from explicit schema |
-| `DataComposer.fromData(data)` | Auto-generate schema from object keys (snake_case → human labels) |
-| `DataComposer.toSchema(schema, options?)` | Filter/order a schema without an instance |
-| `DataComposer.mergeSchema(...schemas)` | Merge multiple schemas; later wins |
+| Method                                    | Description                                                       |
+| ----------------------------------------- | ----------------------------------------------------------------- |
+| `DataComposer.from(schema, data?)`        | Create instance from explicit schema                              |
+| `DataComposer.fromData(data)`             | Auto-generate schema from object keys (snake_case → human labels) |
+| `DataComposer.toSchema(schema, options?)` | Filter/order a schema without an instance                         |
+| `DataComposer.mergeSchema(...schemas)`    | Merge multiple schemas; later wins                                |
 
 **Instance filter / order methods**
 
-| Method | Description |
-| --- | --- |
-| `.only(keys)` | Whitelist fields (mutually exclusive with `.except()`) |
-| `.except(keys)` | Blacklist fields (mutually exclusive with `.only()`) |
-| `.order(keys)` | Reorder — specified keys appear first |
-| `.setData(data)` | Replace the data context |
-| `.clone()` | Deep-copy the instance |
-| `.getSchema(override?)` | Return the final filtered schema |
+| Method                  | Description                                            |
+| ----------------------- | ------------------------------------------------------ |
+| `.only(keys)`           | Whitelist fields (mutually exclusive with `.except()`) |
+| `.except(keys)`         | Blacklist fields (mutually exclusive with `.only()`)   |
+| `.order(keys)`          | Reorder — specified keys appear first                  |
+| `.setData(data)`        | Replace the data context                               |
+| `.clone()`              | Deep-copy the instance                                 |
+| `.getSchema(override?)` | Return the final filtered schema                       |
 
 **Schema mutation methods**
 
-| Method | Description |
-| --- | --- |
+| Method                     | Description                                                                                                         |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `.extendSchema(extension)` | Merge schema items — `form` factories are composed (extension wins on conflicts), other properties shallow-replaced |
-| `.overrideSchema(schema)` | Replace matching schema items wholesale (drops inner props not re-specified) |
+| `.overrideSchema(schema)`  | Replace matching schema items wholesale (drops inner props not re-specified)                                        |
 
 **Terminal methods**
 
-| Method | Returns | Use for |
-| --- | --- | --- |
-| `.toDataDisplay(data?, override?)` | `DataDisplay[]` | Feed `<DataList>` or `<DataGrid>` |
-| `.toFormGenerator(defaults?, options?)` | `{ fields, data }` | Pass as `formSchema` to `<FormGenerator>` |
-| `.toFormFields(data?, options?)` | `Record<string, FormGeneratorProps>` | Fields without data |
-| `.toFormData(defaults?)` | `Record<string, any>` | Seeded form data |
-| `.toDatatableColumn(options?, override?)` | `ColumnDef[]` | TanStack Table column definitions |
-| `.toDatatable(data?, colOpts?, opts?, override?)` | `DataTable` | Full TanStack Table instance |
-| `.toDatatableFilters(override?)` | `{ name, label, form }[]` | Filter form configs |
-| `.get(key, data?)` | Single field object | One field's display + form data |
-| `.getAll(data?, override?)` | Record of field objects | All fields as display + form objects |
+| Method                                            | Returns                              | Use for                                   |
+| ------------------------------------------------- | ------------------------------------ | ----------------------------------------- |
+| `.toDataDisplay(data?, override?)`                | `DataDisplay[]`                      | Feed `<DataList>` or `<DataGrid>`         |
+| `.toFormGenerator(defaults?, options?)`           | `{ fields, data }`                   | Pass as `formSchema` to `<FormGenerator>` |
+| `.toFormFields(data?, options?)`                  | `Record<string, FormGeneratorProps>` | Fields without data                       |
+| `.toFormData(defaults?)`                          | `Record<string, any>`                | Seeded form data                          |
+| `.toDatatableColumn(options?, override?)`         | `ColumnDef[]`                        | TanStack Table column definitions         |
+| `.toDatatable(data?, colOpts?, opts?, override?)` | `DataTable`                          | Full TanStack Table instance              |
+| `.toDatatableFilters(override?)`                  | `{ name, label, form }[]`            | Filter form configs                       |
+| `.get(key, data?)`                                | Single field object                  | One field's display + form data           |
+| `.getAll(data?, override?)`                       | Record of field objects              | All fields as display + form objects      |
 
 ### DataComposer usage in components
 
 ```svelte
 <!-- resources/js/components/module/account/account-form.svelte -->
 <script lang="ts">
-    import { DataComposer } from '@utilities/data-composer';
     import { accountSchema } from '@schema/account.schema';
+
+    import { DataComposer } from '@utilities/data-composer';
 
     // formSchema is a $derived wrapping a function — invoke in the template: formSchema()
     const formSchema = $derived(() => {
@@ -426,6 +434,7 @@ Use `FormGenerator` (`@components/ui/forms/form-generator.svelte`) for all creat
 ```
 
 Key patterns:
+
 - `bind:form` — exposes the `useForm` instance to the parent for use in `FormAction`
 - `withoutSubmit` + external `FormAction` with `formId` — submit button lives outside the `<form>` tag via the HTML `form` attribute
 - `method` prop — pass `"put"` for updates; omit for `"post"` (default)
@@ -438,31 +447,31 @@ Key patterns:
 
 The `variant` prop controls layout:
 
-| variant | layout |
-| --- | --- |
-| `default` | single column |
-| `grid-2` | 2 columns on `md+` |
-| `grid-3` | 3 columns on `md+` |
-| `grid-4` | 4 columns on `md+` |
+| variant   | layout             |
+| --------- | ------------------ |
+| `default` | single column      |
+| `grid-2`  | 2 columns on `md+` |
+| `grid-3`  | 3 columns on `md+` |
+| `grid-4`  | 4 columns on `md+` |
 
 ### Supported field types
 
 `FormGeneratorProps.type` values and what they render:
 
-| `type` | Renders |
-| --- | --- |
-| `text`, `email`, `number`, `input` | `<Input>` |
-| `password-input` | `<PasswordInput>` |
-| `phone-input` | `<PhoneInput>` |
-| `textarea` | `<Textarea>` |
-| `masked-input` | `<MaskedInput>` |
-| `date` | `<DateInput>` |
-| `file` | `<FileInput>` |
-| `select` | `<Select items={options}>` |
-| `checkbox` | `<CheckboxGroup>` + `<Checkbox>` items |
-| `radio` | `<RadioGroup>` + `<RadioGroupItem>` items |
-| `switch` | `<Switch>` |
-| `raw` | `<FlexRender>` with a component or snippet |
+| `type`                             | Renders                                    |
+| ---------------------------------- | ------------------------------------------ |
+| `text`, `email`, `number`, `input` | `<Input>`                                  |
+| `password-input`                   | `<PasswordInput>`                          |
+| `phone-input`                      | `<PhoneInput>`                             |
+| `textarea`                         | `<Textarea>`                               |
+| `masked-input`                     | `<MaskedInput>`                            |
+| `date`                             | `<DateInput>`                              |
+| `file`                             | `<FileInput>`                              |
+| `select`                           | `<Select items={options}>`                 |
+| `checkbox`                         | `<CheckboxGroup>` + `<Checkbox>` items     |
+| `radio`                            | `<RadioGroup>` + `<RadioGroupItem>` items  |
+| `switch`                           | `<Switch>`                                 |
+| `raw`                              | `<FlexRender>` with a component or snippet |
 
 ### Form component
 
@@ -472,9 +481,7 @@ Use `Form` (`@components/ui/forms/form.svelte`) for simple single-action forms t
 <Form
     form={acceptForm}
     action={HouseholdInvitationsController.accept.url({ token: invitation.token })}>
-    <SubmitButton class="w-full" submitting={acceptForm.processing}>
-        Accept Invitation
-    </SubmitButton>
+    <SubmitButton class="w-full" submitting={acceptForm.processing}>Accept Invitation</SubmitButton>
 </Form>
 ```
 
@@ -666,14 +673,13 @@ All generated files live under `resources/js/wayfinder/` (alias `@wayfinder`). R
 
 ```typescript
 // Controller — always default import (the named export object)
-import AccountsController from '@wayfinder/App/Http/Controllers/AccountsController';
 
 // All model / enum / DTO types
 import type { App } from '@wayfinder/types';
 
 // Enum constants for runtime comparisons and badge config maps
 import AccountType from '@wayfinder/App/Enums/AccountType';
-
+import AccountsController from '@wayfinder/App/Http/Controllers/AccountsController';
 // Named routes (rarely needed; prefer controller imports)
 import accounts from '@wayfinder/routes/accounts';
 ```
@@ -681,9 +687,9 @@ import accounts from '@wayfinder/routes/accounts';
 ### URL generation
 
 ```typescript
-AccountsController.index.url();                          // '/accounts'
-AccountsController.show.url({ account: 1 });             // '/accounts/1'
-AccountsController.index.url({ query: { page: 2 } });    // '/accounts?page=2'
+AccountsController.index.url(); // '/accounts'
+AccountsController.show.url({ account: 1 }); // '/accounts/1'
+AccountsController.index.url({ query: { page: 2 } }); // '/accounts?page=2'
 ```
 
 ### With Inertia — always use `.url()`
@@ -739,19 +745,21 @@ export function useTheme() {
     });
 
     return {
-        get current() { return current; },
+        get current() {
+            return current;
+        },
     };
 }
 ```
 
 ### Available hooks
 
-| Export | File | Purpose |
-| --- | --- | --- |
-| `useTheme()` | `use-theme.svelte.ts` | Reads `auth.user.theme_preference`; applies to `document.documentElement.dataset.theme` |
-| `useFlashToast()` | `flash-handler.svelte.ts` | Watches `page.props.flash` and fires `toast[type](message)` on change |
-| `initializeFlashToast()` | `flash-handler.svelte.ts` | Wires `router.on('flash', ...)` at app boot |
-| `useUrlHandler()` | `url-handler.svelte.ts` | Returns `currentUrl`, `isCurrentUrl()`, `isCurrentOrParentUrl()`, `whenCurrentUrl()` |
+| Export                   | File                      | Purpose                                                                                 |
+| ------------------------ | ------------------------- | --------------------------------------------------------------------------------------- |
+| `useTheme()`             | `use-theme.svelte.ts`     | Reads `auth.user.theme_preference`; applies to `document.documentElement.dataset.theme` |
+| `useFlashToast()`        | `flash-handler.svelte.ts` | Watches `page.props.flash` and fires `toast[type](message)` on change                   |
+| `initializeFlashToast()` | `flash-handler.svelte.ts` | Wires `router.on('flash', ...)` at app boot                                             |
+| `useUrlHandler()`        | `url-handler.svelte.ts`   | Returns `currentUrl`, `isCurrentUrl()`, `isCurrentOrParentUrl()`, `whenCurrentUrl()`    |
 
 `useTheme()` and `useFlashToast()` are called inside `AppLayout` and `DashboardLayout` — do not call them again in individual page components.
 
@@ -774,16 +782,16 @@ export const sidebar = $state({
 
 Use existing components instead of raw HTML/CSS wherever possible:
 
-| Instead of                         | Use                                                             |
-| ---------------------------------- | --------------------------------------------------------------- |
-| `<button class="btn btn-primary">` | `<Button color="primary">`                                      |
-| `<a href>` / `<Link>`              | `<Button href="...">` (Inertia nav built in)                    |
-| `<div class="card">`               | `<Card title="...">`                                            |
-| `<fieldset>` + raw `<input>`       | `<FormGenerator formSchema={...} ...>`                          |
-| `<span class="badge">`             | `<Badge color="...">` or module badge component                 |
+| Instead of                         | Use                                                            |
+| ---------------------------------- | -------------------------------------------------------------- |
+| `<button class="btn btn-primary">` | `<Button color="primary">`                                     |
+| `<a href>` / `<Link>`              | `<Button href="...">` (Inertia nav built in)                   |
+| `<div class="card">`               | `<Card title="...">`                                           |
+| `<fieldset>` + raw `<input>`       | `<FormGenerator formSchema={...} ...>`                         |
+| `<span class="badge">`             | `<Badge color="...">` or module badge component                |
 | Manual key-value rows              | `<DataList data={DataComposer.from(schema).toDataDisplay(x)}>` |
-| `browser confirm()`                | `<ConfirmationModal bind:open onConfirm>`                       |
-| Raw `<form>`                       | `<Form form={...} action={...}>`                                |
+| `browser confirm()`                | `<ConfirmationModal bind:open onConfirm>`                      |
+| Raw `<form>`                       | `<Form form={...} action={...}>`                               |
 
 `<Link>` from `@inertiajs/svelte` and `use:inertia` on raw `<a>` tags both exist in the codebase (e.g. pagination links). Prefer `<Button href>` for new code; use `use:inertia` only when you need a non-button element.
 

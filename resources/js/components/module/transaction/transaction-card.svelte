@@ -3,8 +3,8 @@
     import type { App } from '@wayfinder/types';
 
     import CategoryBadge from '../category/category-badge.svelte';
-    
-import DateTimeHelper from '@utilities/date-time-helper';
+
+    import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
 

@@ -14,11 +14,11 @@
 
 <td
     bind:this={ref}
+    data-slot="table-cell"
     class={cn(
         'bg-clip-padding p-2.5 align-middle whitespace-nowrap first-of-type:pl-5 last-of-type:pr-5 [&:has([role=checkbox])]:pr-0',
         className
     )}
-    data-slot="table-cell"
     {...restProps}>
     {@render children?.()}
 </td>

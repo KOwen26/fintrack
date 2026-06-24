@@ -44,16 +44,16 @@
 
 <PopoverPrimitive.Root {...rootProps} bind:open>
     <PopoverPrimitive.Trigger
-        class={triggerClass}
         data-slot="popover-trigger"
+        class={triggerClass}
         bind:ref={triggerRef}>
         {@render trigger?.()}
     </PopoverPrimitive.Trigger>
     <PopoverPrimitive.Portal {...portalProps}>
         <PopoverPrimitive.Content
+            data-slot="popover-content"
             class={contentClass}
             {align}
-            data-slot="popover-content"
             {sideOffset}
             bind:ref={contentRef}
             {...restProps}>

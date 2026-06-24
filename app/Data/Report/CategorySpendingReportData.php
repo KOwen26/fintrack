@@ -7,7 +7,7 @@ use Spatie\LaravelData\Data;
 class CategorySpendingReportData extends Data
 {
     public function __construct(
-        /** @var CategorySpendingItemData[] */
+        /** @var ParentSpendingItemData[] */
         public array $categories,
         public float $period_total,
         public string $from,

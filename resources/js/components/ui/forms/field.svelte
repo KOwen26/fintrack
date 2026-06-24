@@ -48,16 +48,16 @@
     );
 </script>
 
-<fieldset class={['space-y-1.5', _class]} data-slot="field">
+<fieldset data-slot="field" class={['space-y-1.5', _class]}>
     {#if title}
-        <label class="inline-block text-sm font-medium text-black" data-slot="field-label" for={id}>
+        <label data-slot="field-label" class="inline-block text-sm font-medium text-black" for={id}>
             {title}
             {#if required}
                 <span class="text-error align-text-top">*</span>
             {/if}
         </label>
     {/if}
-    <div class={valueClass} data-slot="field-content">
+    <div data-slot="field-content" class={valueClass}>
         {#if formMode === 'form'}
             {@render children?.()}
         {:else if typeof value === 'function'}

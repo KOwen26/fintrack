@@ -84,13 +84,13 @@
     );
 </script>
 
-<nav bind:this={elementRef} aria-label="breadcrumb" data-slot="breadcrumb">
+<nav bind:this={elementRef} data-slot="breadcrumb" aria-label="breadcrumb">
     <ol
+        data-slot="breadcrumb-list"
         class={cn(
             'text-muted-foreground flex flex-wrap items-center gap-1 text-sm wrap-break-word',
             className
         )}
-        data-slot="breadcrumb-list"
         {...props}>
         {#if typeof children === 'function'}
             {@render children({ items, breadcrumbItem, breadcrumbSeparator })}
@@ -109,7 +109,7 @@
 
 {#snippet breadcrumbItem(item: BreadcrumbItem)}
     {@const hasLink = item?.href?.length > 0}
-    <li class={cn('inline-flex items-center gap-1.5', item.class)} data-slot="breadcrumb-item">
+    <li data-slot="breadcrumb-item" class={cn('inline-flex items-center gap-1.5', item.class)}>
         {#if hasLink}
             {@render breadcrumbLink(item)}
         {:else}
@@ -120,8 +120,8 @@
 
 {#snippet breadcrumbLink(item: BreadcrumbItem)}
     <a
-        class={cn('hover:text-primary-800 transition-colors')}
         data-slot="breadcrumb-link"
+        class={cn('hover:text-primary-800 transition-colors')}
         href={item.href}
         use:inertia>
         {@render breadcrumbIcon(item.icon)}
@@ -131,10 +131,10 @@
 
 {#snippet breadcrumbPage(item: BreadcrumbItem)}
     <span
+        data-slot="breadcrumb-page"
         class={cn('text-primary-600 font-normal')}
         aria-current="page"
         aria-disabled="true"
-        data-slot="breadcrumb-page"
         role="link">
         {@render breadcrumbIcon(item.icon)}
         {item.title}
@@ -143,9 +143,9 @@
 
 {#snippet breadcrumbSeparator()}
     <li
+        data-slot="breadcrumb-separator"
         class={cn('size-5 leading-none last-of-type:hidden [&>svg]:size-3.5', separatorClass)}
         aria-hidden="true"
-        data-slot="breadcrumb-separator"
         role="presentation">
         {#if typeof separator === 'function'}
             {@render separator?.()}
@@ -166,8 +166,8 @@
             <ul data-slot="breadcrumb-collapsed-items-content">
                 {#each items as item (item)}
                     <li
-                        class={cn('hover:bg-accent rounded-sm px-2 py-1', item.class)}
-                        data-slot="breadcrumb-collapsed-item">
+                        data-slot="breadcrumb-collapsed-item"
+                        class={cn('hover:bg-accent rounded-sm px-2 py-1', item.class)}>
                         {#if item.href}
                             {@render breadcrumbLink(item)}
                         {:else}
@@ -182,7 +182,7 @@
 
 {#snippet breadcrumbIcon(icon: BreadcrumbItem['icon'])}
     {#if icon}
-        <span class="ml-1" data-slot="breadcrumb-icon">
+        <span data-slot="breadcrumb-icon" class="ml-1">
             {#if typeof icon === 'function'}
                 {@render icon()}
             {:else}

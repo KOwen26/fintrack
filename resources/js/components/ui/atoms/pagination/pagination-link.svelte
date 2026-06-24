@@ -24,6 +24,7 @@
 {/snippet}
 
 <PaginationPrimitive.Page
+    data-slot="pagination-link"
     class={cn(
         buttonVariants({
             variant: isActive ? 'outline' : 'ghost',
@@ -34,7 +35,6 @@
     aria-current={isActive ? 'page' : undefined}
     children={children || Fallback}
     data-active={isActive}
-    data-slot="pagination-link"
     {page}
     bind:ref
     {...restProps} />

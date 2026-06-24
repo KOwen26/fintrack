@@ -21,6 +21,7 @@
 </script>
 
 <ToggleGroupPrimitive.Item
+    data-slot="toggle-group-item"
     class={cn(
         toggleVariants({
             variant: ctx.variant || variant,
@@ -30,7 +31,6 @@
         className
     )}
     data-size={ctx.size || size}
-    data-slot="toggle-group-item"
     data-variant={ctx.variant || variant}
     {value}
     bind:ref

@@ -14,6 +14,7 @@
 
 <div
     bind:this={ref}
+    data-slot="sidebar-menu-badge"
     class={cn(
         'text-sidebar-foreground pointer-events-none absolute right-1 flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-xs font-medium tabular-nums select-none',
         'peer-hover/menu-button:text-sidebar-accent-foreground peer-data-[active=true]/menu-button:text-sidebar-accent-foreground',
@@ -24,7 +25,6 @@
         className
     )}
     data-sidebar="menu-badge"
-    data-slot="sidebar-menu-badge"
     {...restProps}>
     {@render children?.()}
 </div>

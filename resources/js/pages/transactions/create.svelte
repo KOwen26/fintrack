@@ -9,8 +9,8 @@
     import TabsTrigger from '@components/ui/atoms/tabs/tabs-trigger.svelte';
     import Tabs from '@components/ui/atoms/tabs/tabs.svelte';
     import AccountSelect from '@components/ui/forms/account-select.svelte';
-    
-let {
+
+    let {
         account,
         categories,
         accounts,
@@ -37,12 +37,12 @@ let {
     {#key activeTab}
         <div class="mt-4">
             <TransactionForm
-                type={activeTab}
                 {account}
                 {accounts}
                 {categories}
                 onCancel={() =>
-                    router.visit(TransactionController.index.url({ account: account.id }))} />
+                    router.visit(TransactionController.index.url({ account: account.id }))}
+                type={activeTab} />
         </div>
     {/key}
 </div>

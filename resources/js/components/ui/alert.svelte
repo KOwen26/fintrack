@@ -73,17 +73,17 @@
     );
 </script>
 
-<div bind:this={ref} class={alertClass} data-slot="alert" role="alert" {...restProps}>
+<div bind:this={ref} data-slot="alert" class={alertClass} role="alert" {...restProps}>
     {#if icon}
         {@render icon?.()}
     {/if}
     {#if title}
         <div
+            data-slot="alert-title"
             class={cn(
                 'line-clamp-1 min-h-4 font-medium tracking-tight text-current',
                 icon && 'col-start-2'
-            )}
-            data-slot="alert-title">
+            )}>
             {#if typeof title === 'function'}
                 {@render title?.()}
             {:else}
@@ -93,11 +93,11 @@
     {/if}
     {#if description}
         <div
+            data-slot="alert-description"
             class={cn(
                 'text-base-content/80 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed',
                 icon && 'col-start-2'
-            )}
-            data-slot="alert-description">
+            )}>
             {#if typeof description === 'function'}
                 {@render description?.()}
             {:else}

@@ -99,12 +99,12 @@
 
 {#snippet FooterSnippet()}
     <div
+        data-slot="card-footer"
         class={cn(
             // 'flex items-center px-5 [.border-t]:pt-5',
             'card-footer',
             footerClass
         )}
-        data-slot="card-footer"
         {...footerProps}>
         {@render footer?.()}
     </div>

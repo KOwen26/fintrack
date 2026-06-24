@@ -19,8 +19,8 @@
 </script>
 
 <div
-    class="overflow-hidden"
     data-slot="carousel-content"
+    class="overflow-hidden"
     onemblaInit={emblaCtx.onInit}
     use:emblaCarouselSvelte={{
         options: {

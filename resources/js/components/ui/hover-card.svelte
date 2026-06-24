@@ -41,17 +41,17 @@
 
 <HoverCardPrimitive.Root bind:open {...rootProps}>
     <HoverCardPrimitive.Trigger
-        child={typeof trigger === 'function' && trigger}
         data-slot="hover-card-trigger"
+        child={typeof trigger === 'function' && trigger}
         bind:ref={triggerRef}>
         {trigger}
     </HoverCardPrimitive.Trigger>
 
     <HoverCardPrimitive.Portal {...portalProps}>
         <HoverCardPrimitive.Content
+            data-slot="hover-card-content"
             class={contentClass}
             {align}
-            data-slot="hover-card-content"
             {sideOffset}
             bind:ref={contentRef}
             {...restProps}>

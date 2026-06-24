@@ -55,12 +55,12 @@
 </script>
 
 <fieldset
+    data-slot="field-set"
     class={cn(
         'flex flex-col gap-6',
         'has-[>[data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3',
         className
     )}
-    data-slot="field-set"
     {...restProps}>
     {@render fieldLabel({ label })}
     {@render children?.()}
@@ -70,13 +70,13 @@
 
 {#snippet fieldLabelSnippet({ label })}
     <label
+        data-slot="field-label"
         class={cn(
             'group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50',
             'has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border [&>*]:data-[slot=field]:p-4',
             'has-data-[state=checked]:bg-primary/5 has-data-[state=checked]:border-primary dark:has-data-[state=checked]:bg-primary/10',
             className
         )}
-        data-slot="field-label"
         {...restProps}>
         {label}
     </label>
@@ -84,13 +84,13 @@
 
 {#snippet fieldDescriptionSnippet({ description })}
     <p
+        data-slot="field-description"
         class={cn(
             'text-muted-foreground text-sm leading-normal font-normal group-has-[[data-orientation=horizontal]]/field:text-balance',
             'last:mt-0 nth-last-2:-mt-1 [[data-variant=legend]+&]:-mt-1.5',
             '[&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4',
             className
         )}
-        data-slot="field-description"
         {...restProps}>
         {description}
     </p>
@@ -101,8 +101,8 @@
 
     {#if hasContent}
         <div
-            class={cn('text-destructive text-sm font-normal', className)}
             data-slot="field-error"
+            class={cn('text-destructive text-sm font-normal', className)}
             role="alert"
             {...restProps}>
             {#if children}

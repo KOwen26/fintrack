@@ -21,24 +21,24 @@
 
 <Card
     {...props}
-    wrapperProps={{ id }}
     titleClass="grow"
-    wrapperClass="p-4 md:p-6 border-y rounded-none">
+    wrapperClass="p-4 md:p-6 border-y rounded-none"
+    wrapperProps={{ id }}>
     {#snippet headerAction()}
         <div class="join border rounded overflow-clip">
             <Button
                 class={cn('size-8 p-1', mode === 'list' ? 'btn-active' : '')}
                 color="light"
-                variant="ghost"
-                onclick={() => (mode = 'list')}>
+                onclick={() => (mode = 'list')}
+                variant="ghost">
                 <i class="iconify size-6 ph--list-bold"></i>
             </Button>
 
             <Button
                 class={cn('size-8 p-1', mode === 'grid' ? 'btn-active' : '')}
                 color="light"
-                variant="ghost"
-                onclick={() => (mode = 'grid')}>
+                onclick={() => (mode = 'grid')}
+                variant="ghost">
                 <i class="iconify size-6 ph--text-columns-bold"></i>
             </Button>
         </div>

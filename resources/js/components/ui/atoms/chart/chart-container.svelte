@@ -32,6 +32,7 @@
 
 <div
     bind:this={ref}
+    data-slot="chart"
     class={cn(
         'flex aspect-video justify-center overflow-visible text-xs',
         // Overrides
@@ -76,7 +77,6 @@
         className
     )}
     data-chart={chartId}
-    data-slot="chart"
     {...restProps}>
     <ChartStyle id={chartId} {config} />
     {@render children?.()}

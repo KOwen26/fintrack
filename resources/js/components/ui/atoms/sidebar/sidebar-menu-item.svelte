@@ -14,9 +14,9 @@
 
 <li
     bind:this={ref}
+    data-slot="sidebar-menu-item"
     class={cn('group/menu-item relative', 'group-data-[collapsible=icon]:mx-auto', className)}
     data-sidebar="menu-item"
-    data-slot="sidebar-menu-item"
     {...restProps}>
     {@render children?.()}
 </li>

@@ -58,8 +58,8 @@
     </TooltipPrimitive.Trigger>
     <TooltipPrimitive.Portal>
         <TooltipPrimitive.Content
-            class={contentClass}
             data-slot="tooltip-content"
+            class={contentClass}
             {side}
             {sideOffset}
             bind:ref={contentRef}

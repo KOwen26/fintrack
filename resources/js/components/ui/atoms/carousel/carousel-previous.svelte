@@ -19,6 +19,7 @@
 </script>
 
 <Button
+    data-slot="carousel-previous"
     class={cn(
         'absolute size-8 rounded-full',
         emblaCtx.orientation === 'horizontal'
@@ -27,7 +28,6 @@
         className
     )}
     aria-disabled={!emblaCtx.canScrollPrev}
-    data-slot="carousel-previous"
     onclick={emblaCtx.scrollPrev}
     onkeydown={emblaCtx.handleKeyDown}
     {size}

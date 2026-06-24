@@ -10,7 +10,6 @@
     import { cn } from '@utilities/shadcn';
 
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
-    import Button from '@components/ui/button.svelte';
     import ToggleableCard from '@components/ui/cards/toggleable-card.svelte';
 
     interface Props {

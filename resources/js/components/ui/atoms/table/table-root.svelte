@@ -20,11 +20,11 @@
     }: TableProps = $props();
 </script>
 
-<div class={twMerge('relative w-full overflow-x-auto', wrapperClass)} data-slot="table-container">
+<div data-slot="table-container" class={twMerge('relative w-full overflow-x-auto', wrapperClass)}>
     <table
         bind:this={ref}
-        class={cn('w-full caption-bottom text-sm', _class)}
         data-slot="table"
+        class={cn('w-full caption-bottom text-sm', _class)}
         {...restProps}>
         {@render children?.()}
     </table>
