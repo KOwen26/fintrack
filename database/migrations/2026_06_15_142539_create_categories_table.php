@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()->constrained('categories')->cascadeOnDelete();
             $table->string('type')->default('output');
             $table->string('name');
-            $table->decimal('order', 3, 3)->default(0.000);
+            $table->decimal('order', 6, 3)->default(0.000);
             $table->boolean('is_fixed_cost')->default(false);
             $table->json('decorations')->nullable();
             $table->timestamps();

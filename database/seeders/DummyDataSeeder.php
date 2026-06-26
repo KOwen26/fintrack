@@ -7,12 +7,17 @@ use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Date;
 
 class DummyDataSeeder extends Seeder
 {
+    private Collection $coveredIncomeIds;
+
+    private Collection $coveredExpenseIds;
+
     public function run(): void
     {
         $incomeCategories = Category::whereNotNull('parent_id')
@@ -29,12 +34,20 @@ class DummyDataSeeder extends Seeder
         $this->seedUser('Bob Smith', 'bob@example.com', $incomeCategories, $expenseCategories);
     }
 
+    private function resetCoverage(): void
+    {
+        $this->coveredIncomeIds = collect();
+        $this->coveredExpenseIds = collect();
+    }
+
     private function seedUser(
         string $name,
         string $email,
         Collection $incomeCategories,
         Collection $expenseCategories,
     ): void {
+        $this->resetCoverage();
+
         $user = User::factory()->create(compact('name', 'email'));
 
         $accountIds = Account::factory()
@@ -74,12 +87,15 @@ class DummyDataSeeder extends Seeder
         $incomeCount = random_int(8, 15);
         $expenseCount = 50 - $incomeCount;
 
+        $incomePickList = $this->buildPickList($incomeCategories, $this->coveredIncomeIds, $incomeCount);
+        $expensePickList = $this->buildPickList($expenseCategories, $this->coveredExpenseIds, $expenseCount);
+
         Transaction::factory()
             ->count($incomeCount)
             ->income()
-            ->sequence(fn (): array => [
+            ->sequence(fn (Sequence $seq): array => [
                 'account_id' => $accountIds[array_rand($accountIds)],
-                'category_id' => $incomeCategories->random()->id,
+                'category_id' => $incomePickList[$seq->index % $incomePickList->count()]->id,
                 'created_by' => $user->id,
                 'transfer_link_id' => null,
                 'amount' => random_int(10, 500) * 1000,
@@ -91,9 +107,9 @@ class DummyDataSeeder extends Seeder
         Transaction::factory()
             ->count($expenseCount)
             ->expense()
-            ->sequence(fn (): array => [
+            ->sequence(fn (Sequence $seq): array => [
                 'account_id' => $accountIds[array_rand($accountIds)],
-                'category_id' => $expenseCategories->random()->id,
+                'category_id' => $expensePickList[$seq->index % $expensePickList->count()]->id,
                 'created_by' => $user->id,
                 'transfer_link_id' => null,
                 'amount' => random_int(10, 500) * 1000,
@@ -101,6 +117,28 @@ class DummyDataSeeder extends Seeder
                 'description' => fake()->sentence(3),
             ])
             ->create();
+    }
+
+    /**
+     * @param  Collection<int, Category>  $allCategories
+     * @param  Collection<int, int>  $coveredIds
+     *
+     * @return Collection<int, Category>
+     */
+    private function buildPickList(Collection $allCategories, Collection $coveredIds, int $count): Collection
+    {
+        $uncovered = $allCategories->reject(fn (Category $cat): bool => $coveredIds->contains($cat->id));
+
+        /** @var Collection<int, Category> $pickList */
+        $pickList = $uncovered->shuffle()
+            ->merge($allCategories->shuffle())
+            ->take($count);
+
+        $coveredIds->push(
+            ...$pickList->intersectByKeys($uncovered)->pluck('id'),
+        );
+
+        return $pickList;
     }
 
     private function randomAccountName(): string

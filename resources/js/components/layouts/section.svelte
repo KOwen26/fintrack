@@ -9,6 +9,6 @@
     let { breakMargin = false, children }: Props = $props();
 </script>
 
-<section class={breakMargin ? '-mx-5 md:-mx-6' : ''}>
+<section class={breakMargin ? '-mx-5 md:mx-0' : ''}>
     {@render children()}
 </section>

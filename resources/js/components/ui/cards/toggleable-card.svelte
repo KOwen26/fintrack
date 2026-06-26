@@ -22,7 +22,7 @@
 <Card
     {...props}
     titleClass="grow"
-    wrapperClass="p-4 md:p-6 border-y rounded-none"
+    wrapperClass="p-4 md:p-6 border-y border-x-none md:border rounded-none md:rounded"
     wrapperProps={{ id }}>
     {#snippet headerAction()}
         <div class="join border rounded overflow-clip">

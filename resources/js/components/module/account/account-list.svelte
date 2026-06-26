@@ -30,7 +30,10 @@
 {:else}
     <ToggleableCard title="Accounts" bind:mode>
         <div
-            class={cn('grid -mx-2.5', mode === 'list' ? 'grid-cols-1 gap-4' : 'grid-cols-2 gap-3')}>
+            class={cn(
+                'grid -mx-2.5 md:mx-0',
+                mode === 'list' ? 'grid-cols-1 gap-4' : 'grid-cols-2 gap-3'
+            )}>
             {#each accounts as account (account.id)}
                 <Link href={AccountController.show.url({ account: account.id })}>
                     <AccountCard {account} />

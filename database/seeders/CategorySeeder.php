@@ -12,124 +12,128 @@ class CategorySeeder extends Seeder
 {
     /** @var array<int, array{name: string, icon_slug: string, color_slug: string, fixed: bool, children: array<int, array{name: string, icon_slug: string, color_slug: string, fixed: bool}>}> */
     private array $structure = [
+        // Income - Green
         [
-            'name' => 'Income', 'icon_slug' => 'arrow-circle-down-bold', 'color_slug' => 'green-800', 'fixed' => false,
+            'name' => 'Income', 'order' => 1, 'icon_slug' => 'arrow-circle-down-bold', 'color_slug' => 'green-700', 'fixed' => false,
             'children' => [
-                ['name' => 'Salary', 'icon_slug' => 'briefcase-bold', 'color_slug' => 'green-300', 'fixed' => true],
-                ['name' => 'Freelance', 'icon_slug' => 'laptop-bold', 'color_slug' => 'green-400', 'fixed' => false],
-                ['name' => 'Business Revenue', 'icon_slug' => 'storefront-bold', 'color_slug' => 'green-400', 'fixed' => false],
+                ['name' => 'Salary', 'icon_slug' => 'briefcase-bold', 'color_slug' => 'green-700', 'fixed' => true],
+                ['name' => 'Freelance', 'icon_slug' => 'laptop-bold', 'color_slug' => 'green-700', 'fixed' => false],
+                ['name' => 'Business Revenue', 'icon_slug' => 'storefront-bold', 'color_slug' => 'green-700', 'fixed' => false],
                 ['name' => 'Grants & Stipends', 'icon_slug' => 'handshake-bold', 'color_slug' => 'green-500', 'fixed' => false],
-                ['name' => 'Investment Returns', 'icon_slug' => 'trend-up-bold', 'color_slug' => 'green-600', 'fixed' => false],
-                ['name' => 'Dividends', 'icon_slug' => 'trend-up-bold', 'color_slug' => 'green-600', 'fixed' => false],
-                ['name' => 'Other Income', 'icon_slug' => 'plus-circle-bold', 'color_slug' => 'green-700', 'fixed' => false],
+                ['name' => 'Investment Returns', 'icon_slug' => 'trend-up-bold', 'color_slug' => 'green-400', 'fixed' => false],
+                ['name' => 'Dividends', 'icon_slug' => 'trend-up-bold', 'color_slug' => 'green-400', 'fixed' => false],
+                ['name' => 'Other Income', 'icon_slug' => 'plus-circle-bold', 'color_slug' => 'green-200', 'fixed' => false],
             ],
         ],
+        // Finance - Green
         [
-            'name' => 'Food & Drinks', 'icon_slug' => 'fork-knife-bold', 'color_slug' => 'orange-800', 'fixed' => false,
+            'name' => 'Finance',  'order' => 99, 'icon_slug' => 'coins-bold', 'color_slug' => 'green-700', 'fixed' => true,
             'children' => [
-                ['name' => 'Groceries', 'icon_slug' => 'shopping-cart-bold', 'color_slug' => 'orange-300', 'fixed' => false],
-                ['name' => 'Dining Out', 'icon_slug' => 'hamburger-bold', 'color_slug' => 'orange-400', 'fixed' => false],
-                ['name' => 'Coffee & Snacks', 'icon_slug' => 'coffee-bold', 'color_slug' => 'orange-600', 'fixed' => false],
-                ['name' => 'Desserts & Drinks', 'icon_slug' => 'cup-bold', 'color_slug' => 'orange-700', 'fixed' => false],
+                ['name' => 'Admin Fees', 'icon_slug' => 'wallet-bold', 'color_slug' => 'green-700', 'fixed' => false],
+                ['name' => 'Taxes', 'icon_slug' => 'wallet-bold', 'color_slug' => 'green-700', 'fixed' => false],
+                ['name' => 'Interest', 'icon_slug' => 'wallet-bold', 'color_slug' => 'green-600', 'fixed' => false],
+                ['name' => 'Insurance', 'icon_slug' => 'shield-check-bold', 'color_slug' => 'green-500', 'fixed' => true],
             ],
         ],
+        // Food & Drinks - red
         [
-            'name' => 'Transport', 'icon_slug' => 'car-bold', 'color_slug' => 'blue-800', 'fixed' => false,
+            'name' => 'Food & Drinks',  'order' => 1, 'icon_slug' => 'fork-knife-bold', 'color_slug' => 'red-700',
             'children' => [
-                ['name' => 'Fuel', 'icon_slug' => 'gas-pump-bold', 'color_slug' => 'blue-300', 'fixed' => true],
-                ['name' => 'Public Transport', 'icon_slug' => 'bus-bold', 'color_slug' => 'blue-400', 'fixed' => true],
-                ['name' => 'Ride-hailing / Taxis', 'icon_slug' => 'motorcycle-bold', 'color_slug' => 'blue-500', 'fixed' => false],
-                ['name' => 'Travel Services', 'icon_slug' => 'train-bold', 'color_slug' => 'blue-500', 'fixed' => false],
-                ['name' => 'Bus / Trains', 'icon_slug' => 'train-bold', 'color_slug' => 'blue-600', 'fixed' => false],
-                ['name' => 'Flights / Ferries', 'icon_slug' => 'train-bold', 'color_slug' => 'blue-700', 'fixed' => false],
+                ['name' => 'Dining Out', 'icon_slug' => 'hamburger-bold', 'color_slug' => 'red-700'],
+                ['name' => 'Snacks & Drinks', 'icon_slug' => 'coffee-bold', 'color_slug' => 'red-600'],
+                ['name' => 'Coffee & Desserts ', 'icon_slug' => 'cup-bold', 'color_slug' => 'red-600'],
+                ['name' => 'Food Takeouts', 'icon_slug' => 'hamburger-bold', 'color_slug' => 'red-500'],
+                ['name' => 'Buffet / Fine Dining', 'icon_slug' => 'shopping-cart-bold', 'color_slug' => 'red-400'],
             ],
         ],
+        // Utilities - amber
         [
-            'name' => 'Housing', 'icon_slug' => 'house-bold', 'color_slug' => 'violet-800', 'fixed' => true,
+            'name' => 'Utilities',  'order' => 2, 'icon_slug' => 'lightning-bold', 'color_slug' => 'amber-600', 'fixed' => true,
             'children' => [
-                ['name' => 'Rent', 'icon_slug' => 'key-bold', 'color_slug' => 'violet-300', 'fixed' => true],
-                ['name' => 'Home Maintenance', 'icon_slug' => 'wrench-bold', 'color_slug' => 'violet-400', 'fixed' => false],
-                ['name' => 'Cleaning Services', 'icon_slug' => 'broom-bold', 'color_slug' => 'violet-600', 'fixed' => false],
-                ['name' => 'Property Services', 'icon_slug' => 'building-bold', 'color_slug' => 'violet-700', 'fixed' => false],
+                ['name' => 'Electricity', 'icon_slug' => 'lightning-bold', 'color_slug' => 'amber-600', 'fixed' => true],
+                ['name' => 'Water', 'icon_slug' => 'drop-bold', 'color_slug' => 'amber-500', 'fixed' => true],
+                ['name' => 'Gas & Cooking', 'icon_slug' => 'fire-bold', 'color_slug' => 'amber-500', 'fixed' => false],
+                ['name' => 'Internet', 'icon_slug' => 'wifi-bold', 'color_slug' => 'amber-400', 'fixed' => true],
+                ['name' => 'Mobile & Prepaid', 'icon_slug' => 'smartphone-bold', 'color_slug' => 'amber-400', 'fixed' => false],
             ],
         ],
+        // Service & Housing - yellow
         [
-            'name' => 'Utilities', 'icon_slug' => 'lightning-bold', 'color_slug' => 'yellow-800', 'fixed' => true,
+            'name' => 'Service & Housing',  'order' => 3, 'icon_slug' => 'house-bold', 'color_slug' => 'yellow-600', 'fixed' => true,
             'children' => [
-                ['name' => 'Electricity', 'icon_slug' => 'lightning-bold', 'color_slug' => 'yellow-300', 'fixed' => true],
-                ['name' => 'Water', 'icon_slug' => 'drop-bold', 'color_slug' => 'yellow-400', 'fixed' => true],
-                ['name' => 'Internet', 'icon_slug' => 'wifi-bold', 'color_slug' => 'yellow-500', 'fixed' => true],
-                ['name' => 'Mobile & Prepaid', 'icon_slug' => 'smartphone-bold', 'color_slug' => 'yellow-600', 'fixed' => false],
-                ['name' => 'Gas & Cooking', 'icon_slug' => 'fire-bold', 'color_slug' => 'yellow-700', 'fixed' => false],
+                ['name' => 'Rent', 'icon_slug' => 'key-bold', 'color_slug' => 'yellow-600', 'fixed' => true],
+                ['name' => 'Home Maintenance', 'icon_slug' => 'wrench-bold', 'color_slug' => 'yellow-500', 'fixed' => false],
+                ['name' => 'Cleaning Services', 'icon_slug' => 'broom-bold', 'color_slug' => 'yellow-400', 'fixed' => false],
+                ['name' => 'Property Services', 'icon_slug' => 'building-bold', 'color_slug' => 'yellow-400', 'fixed' => false],
             ],
         ],
+        // Shopping - Sky
         [
-            'name' => 'Health & Wellness', 'icon_slug' => 'heart-beat-bold', 'color_slug' => 'red-800', 'fixed' => false,
+            'name' => 'Shopping', 'order' => 4, 'icon_slug' => 'bag-bold', 'color_slug' => 'sky-600', 'fixed' => false,
             'children' => [
-                ['name' => 'Doctor Visits', 'icon_slug' => 'stethoscope-bold', 'color_slug' => 'red-300', 'fixed' => false],
-                ['name' => 'Medicine', 'icon_slug' => 'pill-bold', 'color_slug' => 'red-400', 'fixed' => false],
-                ['name' => 'Traditional Therapy', 'icon_slug' => 'leaf-bold', 'color_slug' => 'red-500', 'fixed' => false],
-                ['name' => 'Fitness & Gyms', 'icon_slug' => 'barbell-bold', 'color_slug' => 'red-600', 'fixed' => true],
-                ['name' => 'Family Care', 'icon_slug' => 'people-bold', 'color_slug' => 'red-700', 'fixed' => false],
+                ['name' => 'Groceries', 'icon_slug' => 'shopping-cart-bold', 'color_slug' => 'sky-600', 'fixed' => false],
+                ['name' => 'Clothing', 'icon_slug' => 'shopping-bags-bold', 'color_slug' => 'sky-500', 'fixed' => false],
+                ['name' => 'Beauty & Grooming', 'icon_slug' => 'scissors-bold', 'color_slug' => 'sky-500', 'fixed' => false],
+                ['name' => 'Electronics', 'icon_slug' => 'device-mobile-bold', 'color_slug' => 'sky-400', 'fixed' => false],
+                ['name' => 'Household Items', 'icon_slug' => 'lamp-bold', 'color_slug' => 'sky-400', 'fixed' => false],
             ],
         ],
+        // Entertainment & Leisure - cyan
         [
-            'name' => 'Shopping', 'icon_slug' => 'bag-bold', 'color_slug' => 'teal-800', 'fixed' => false,
+            'name' => 'Entertainment & Leisure', 'order' => 5, 'icon_slug' => 'game-controller-bold', 'color_slug' => 'cyan-600',
             'children' => [
-                ['name' => 'Groceries', 'icon_slug' => 'shopping-cart-bold', 'color_slug' => 'teal-300', 'fixed' => false],
-                ['name' => 'Clothing', 'icon_slug' => 'shopping-bags-bold', 'color_slug' => 'teal-400', 'fixed' => false],
-                ['name' => 'Beauty & Grooming', 'icon_slug' => 'scissors-bold', 'color_slug' => 'teal-500', 'fixed' => false],
-                ['name' => 'Electronics', 'icon_slug' => 'device-mobile-bold', 'color_slug' => 'teal-500', 'fixed' => false],
-                ['name' => 'Household Items', 'icon_slug' => 'lamp-bold', 'color_slug' => 'teal-600', 'fixed' => false],
-                ['name' => 'Gifts & Festivals', 'icon_slug' => 'gifts-bold', 'color_slug' => 'teal-700', 'fixed' => false],
+                ['name' => 'Hobbies', 'icon_slug' => 'paint-brush-bold', 'color_slug' => 'cyan-600'],
+                ['name' => 'Sports', 'icon_slug' => 'paint-brush-bold', 'color_slug' => 'cyan-500'],
+                ['name' => 'Games', 'icon_slug' => 'game-controller-bold', 'color_slug' => 'cyan-500'],
+                ['name' => 'Cinema & Shows', 'icon_slug' => 'television-bold', 'color_slug' => 'cyan-400'],
+                ['name' => 'Streaming', 'icon_slug' => 'television-bold', 'color_slug' => 'cyan-400'],
+                ['name' => 'Travel & Tourism', 'icon_slug' => 'airplane-bold', 'color_slug' => 'cyan-300'],
+                ['name' => 'Festivals / Events', 'icon_slug' => 'party-popper-bold', 'color_slug' => 'cyan-300'],
             ],
         ],
+        // Transport - Slate
         [
-            'name' => 'Education', 'icon_slug' => 'graduation-cap-bold', 'color_slug' => 'indigo-800', 'fixed' => false,
+            'name' => 'Transport', 'order' => 6, 'icon_slug' => 'car-bold', 'color_slug' => 'slate-900', 'fixed' => false,
             'children' => [
-                ['name' => 'Tuition', 'icon_slug' => 'book-open-bold', 'color_slug' => 'indigo-300', 'fixed' => false],
-                ['name' => 'University / School Fees', 'icon_slug' => 'student-bold', 'color_slug' => 'indigo-400', 'fixed' => true],
-                ['name' => 'Books & Stationery', 'icon_slug' => 'books-bold', 'color_slug' => 'indigo-500', 'fixed' => false],
-                ['name' => 'Courses', 'icon_slug' => 'computer-tower-bold', 'color_slug' => 'indigo-600', 'fixed' => false],
-                ['name' => 'Workshops', 'icon_slug' => 'lightbulb-bold', 'color_slug' => 'indigo-700', 'fixed' => false],
+                ['name' => 'Fuel', 'icon_slug' => 'gas-pump-bold', 'color_slug' => 'slate-900', 'fixed' => true],
+                ['name' => 'Public Transport', 'icon_slug' => 'bus-bold', 'color_slug' => 'slate-800', 'fixed' => true],
+                ['name' => 'Ride-hailing / Taxis', 'icon_slug' => 'motorcycle-bold', 'color_slug' => 'slate-800', 'fixed' => false],
+                ['name' => 'Bus / Trains', 'icon_slug' => 'train-bold', 'color_slug' => 'slate-700', 'fixed' => false],
+                ['name' => 'Flights / Ferries', 'icon_slug' => 'train-bold', 'color_slug' => 'slate-700', 'fixed' => false],
+                ['name' => 'Travel Services', 'icon_slug' => 'train-bold', 'color_slug' => 'slate-600', 'fixed' => false],
             ],
         ],
+        // Health & Wellness - Rose
         [
-            'name' => 'Entertainment & Leisure', 'icon_slug' => 'game-controller-bold', 'color_slug' => 'pink-800', 'fixed' => false,
+            'name' => 'Health & Wellness', 'order' => 7, 'icon_slug' => 'heart-beat-bold', 'color_slug' => 'rose-700', 'fixed' => false,
             'children' => [
-                ['name' => 'Games', 'icon_slug' => 'game-controller-bold', 'color_slug' => 'pink-300', 'fixed' => false],
-                ['name' => 'Streaming', 'icon_slug' => 'television-bold', 'color_slug' => 'pink-400', 'fixed' => true],
-                ['name' => 'Cinema & Shows', 'icon_slug' => 'television-bold', 'color_slug' => 'pink-500', 'fixed' => false],
-                ['name' => 'Hobbies', 'icon_slug' => 'paint-brush-bold', 'color_slug' => 'pink-500', 'fixed' => false],
-                ['name' => 'Travel & Tourism', 'icon_slug' => 'airplane-bold', 'color_slug' => 'pink-600', 'fixed' => false],
-                ['name' => 'Festivals / Events', 'icon_slug' => 'party-popper-bold', 'color_slug' => 'pink-700', 'fixed' => false],
+                ['name' => 'Medicine', 'icon_slug' => 'pill-bold', 'color_slug' => 'rose-400', 'fixed' => false],
+                ['name' => 'Doctor Visits', 'icon_slug' => 'stethoscope-bold', 'color_slug' => 'rose-300', 'fixed' => false],
+                ['name' => 'Traditional Therapy', 'icon_slug' => 'leaf-bold', 'color_slug' => 'rose-500', 'fixed' => false],
+                ['name' => 'Fitness & Gyms', 'icon_slug' => 'barbell-bold', 'color_slug' => 'rose-600', 'fixed' => true],
+                ['name' => 'Family Care', 'icon_slug' => 'people-bold', 'color_slug' => 'rose-700', 'fixed' => false],
             ],
         ],
+        // Education - lime
         [
-            'name' => 'Finance', 'icon_slug' => 'coins-bold', 'color_slug' => 'sky-800', 'fixed' => true,
+            'name' => 'Education', 'order' => 8, 'icon_slug' => 'graduation-cap-bold', 'color_slug' => 'lime-700',
             'children' => [
-                ['name' => 'Admin Fees', 'icon_slug' => 'wallet-bold', 'color_slug' => 'sky-300', 'fixed' => false],
-                ['name' => 'Taxes', 'icon_slug' => 'wallet-bold', 'color_slug' => 'sky-400', 'fixed' => false],
-                ['name' => 'Interest', 'icon_slug' => 'wallet-bold', 'color_slug' => 'sky-400', 'fixed' => false],
-                ['name' => 'Savings', 'icon_slug' => 'wallet-bold', 'color_slug' => 'sky-500', 'fixed' => true],
-                ['name' => 'Loans & Repayments', 'icon_slug' => 'receipt-bold', 'color_slug' => 'sky-500', 'fixed' => true],
-                ['name' => 'Insurance', 'icon_slug' => 'shield-check-bold', 'color_slug' => 'sky-600', 'fixed' => true],
-                ['name' => 'Investments', 'icon_slug' => 'chart-line-bold', 'color_slug' => 'sky-600', 'fixed' => false],
-                ['name' => 'Charity & Donations', 'icon_slug' => 'heart-plus-bold', 'color_slug' => 'sky-700', 'fixed' => false],
+                ['name' => 'Tuition', 'icon_slug' => 'book-open-bold', 'color_slug' => 'lime-700', 'fixed' => true],
+                ['name' => 'University / School Fees', 'icon_slug' => 'student-bold', 'color_slug' => 'lime-600', 'fixed' => true],
+                ['name' => 'Books & Stationery', 'icon_slug' => 'books-bold', 'color_slug' => 'lime-500'],
+                ['name' => 'Courses & Workshops', 'icon_slug' => 'computer-tower-bold', 'color_slug' => 'lime-400'],
+            ],
+        ],
+        // Socials - Violet
+        [
+            'name' => 'Socials', 'order' => 9, 'icon_slug' => 'graduation-cap-bold', 'color_slug' => 'violet-700', 'fixed' => false,
+            'children' => [
+                ['name' => 'Family & Friends', 'icon_slug' => 'heart-plus-bold', 'color_slug' => 'violet-700', 'fixed' => false],
+                ['name' => 'Gifts', 'icon_slug' => 'heart-plus-bold', 'color_slug' => 'violet-600', 'fixed' => false],
+                ['name' => 'Charity & Donations', 'icon_slug' => 'heart-plus-bold', 'color_slug' => 'violet-500', 'fixed' => false],
             ],
         ],
     ];
-
-    private function resolveDecoration(string $iconSlug, string $colorSlug): array
-    {
-        $icon = DecorationIcon::where('slug', $iconSlug)->firstOrFail();
-        $color = DecorationColor::where('slug', $colorSlug)->firstOrFail();
-
-        return DecorationData::from([
-            'icon' => ['id' => $icon->slug, 'value' => $icon->value],
-            'color' => ['id' => $color->slug, 'value' => $color->hex],
-        ])->toArray();
-    }
 
     public function run(): void
     {
@@ -144,9 +148,9 @@ class CategorySeeder extends Seeder
                 'parent_id' => null,
                 'name' => $group['name'],
                 'type' => $group['name'] === 'Income' ? 'input' : 'output',
-                'order' => $topOrder,
+                'order' => $group['order'] ?? $topOrder,
                 'decorations' => $this->resolveDecoration($group['icon_slug'], $group['color_slug']),
-                'is_fixed_cost' => $group['fixed'],
+                'is_fixed_cost' => $group['fixed'] ?? false,
             ]);
 
             foreach ($group['children'] as $childIndex => $child) {
@@ -157,9 +161,20 @@ class CategorySeeder extends Seeder
                     'type' => $group['name'] === 'Income' ? 'input' : 'output',
                     'order' => $childOrder,
                     'decorations' => $this->resolveDecoration($child['icon_slug'], $child['color_slug']),
-                    'is_fixed_cost' => $child['fixed'],
+                    'is_fixed_cost' => $child['fixed'] ?? false,
                 ]);
             }
         }
+    }
+
+    private function resolveDecoration(string $iconSlug, string $colorSlug): array
+    {
+        $icon = DecorationIcon::where('slug', $iconSlug)->firstOrFail();
+        $color = DecorationColor::where('slug', $colorSlug)->firstOrFail();
+
+        return DecorationData::from([
+            'icon' => ['id' => $icon->slug, 'value' => $icon->value],
+            'color' => ['id' => $color->slug, 'value' => $color->oklch],
+        ])->toArray();
     }
 }
