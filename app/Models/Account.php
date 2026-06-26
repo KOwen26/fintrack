@@ -15,10 +15,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Account extends Model
 {
+    public const string DEFAULT_CURRENCY = 'IDR';
+
     /** @use HasFactory<AccountFactory> */
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+
+    protected $attributes = [
+        'currency' => self::DEFAULT_CURRENCY,
+    ];
 
     protected function casts(): array
     {

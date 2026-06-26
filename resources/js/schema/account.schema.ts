@@ -57,31 +57,16 @@ export const accountSchema: DataSchema<App.Models.Account> = {
             inputProps: { inputmode: 'decimal', min: 0, step: 0.01 },
         }),
     },
-    credit_card_limit: {
-        label: 'Credit Limit',
-        show: (data) => data.type === AccountType.CreditCard,
-        value: (data) =>
-            data.credit_card_limit ? Number(data.credit_card_limit).toLocaleString('id-ID') : '-',
-        form: () => ({
-            type: 'number',
-            name: 'credit_card_limit',
-            show: (form: any) => form.type === AccountType.CreditCard,
-            inputProps: { inputmode: 'decimal', min: 0, step: 0.01 },
-        }),
-    },
-    currency: {
-        label: 'Currency',
-        table: true,
-        form: () => ({
-            type: 'text',
-            name: 'currency',
-            required: true,
-            inputProps: {
-                maxlength: 3,
-                placeholder: 'IDR',
-                autocorrect: 'off',
-                autocapitalize: 'characters',
-            },
-        }),
-    },
+    // credit_card_limit: {
+    //     label: 'Credit Limit',
+    //     show: (data) => data.type === AccountType.CreditCard,
+    //     value: (data) =>
+    //         data.credit_card_limit ? Number(data.credit_card_limit).toLocaleString('id-ID') : '-',
+    //     form: () => ({
+    //         type: 'number',
+    //         name: 'credit_card_limit',
+    //         show: (form: any) => form.type === AccountType.CreditCard,
+    //         inputProps: { inputmode: 'decimal', min: 0, step: 0.01 },
+    //     }),
+    // },
 };

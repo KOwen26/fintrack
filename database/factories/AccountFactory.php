@@ -24,7 +24,7 @@ class AccountFactory extends Factory
             'access_type' => AccountAccessType::Personal->value,
             'initial_balance' => 0,
             'credit_card_limit' => null,
-            'currency' => 'IDR',
+            'currency' => Account::DEFAULT_CURRENCY,
             'decorations' => function (array $attributes): array {
                 $color = DecorationColor::inRandomOrder()->first();
 

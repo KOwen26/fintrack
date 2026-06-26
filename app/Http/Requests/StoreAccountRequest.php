@@ -23,7 +23,7 @@ class StoreAccountRequest extends FormRequest
             'provider_id' => ['nullable', 'integer', 'exists:providers,id'],
             'initial_balance' => ['required', 'numeric', 'min:0'],
             'credit_card_limit' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['required', 'string', 'size:3'],
+            'currency' => ['nullable', 'string', 'size:3'],
             'decorations' => ['nullable', 'array'],
             'decorations.icon' => ['required_with:decorations', 'array'],
             'decorations.icon.id' => ['required_with:decorations.icon', 'string', 'max:100'],

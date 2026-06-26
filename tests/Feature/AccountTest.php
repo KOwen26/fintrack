@@ -29,7 +29,6 @@ it('stores a new account', function (): void {
         'type' => AccountType::DebitAccount->value,
         'access_type' => AccountAccessType::Personal->value,
         'initial_balance' => 1_000_000,
-        'currency' => 'IDR',
         'provider_id' => null,
         'credit_card_limit' => null,
         'decorations' => [

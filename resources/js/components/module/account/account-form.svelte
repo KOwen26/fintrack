@@ -47,7 +47,6 @@
                 credit_card_limit: account.credit_card_limit
                     ? Number(account.credit_card_limit)
                     : null,
-                currency: account.currency,
             });
         }
 
@@ -57,7 +56,6 @@
             provider_id: '',
             initial_balance: 0,
             credit_card_limit: null,
-            currency: 'IDR',
         });
     });
 
