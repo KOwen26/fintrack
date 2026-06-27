@@ -110,7 +110,7 @@ export default defineConfig([
                         'class',
                         // `class:` directives. (Alphabetical order within the same group.)
                         { match: '/^class:/u', sort: 'alphabetical' },
-                        // `labelClass, wrapperClass, etc.` directives. (Alphabetical order within the same group.)
+                        // `labelClass, contentClass, etc.` directives. (Alphabetical order within the same group.)
                         { match: '/.*Class$/u', sort: 'alphabetical' },
                         // other attributes. (Alphabetical order within the same group.)
                         {

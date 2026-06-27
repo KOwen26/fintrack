@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <Card wrapperClass="mb-4">
+    <Card class="mb-4">
         <CreditUtilizationGauge
             alert_level={credit_utilization.alert_level}
             available={credit_utilization.available}

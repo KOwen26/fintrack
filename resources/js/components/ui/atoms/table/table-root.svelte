@@ -8,23 +8,24 @@
     import { cn } from '@utilities/shadcn.js';
 
     interface TableProps extends Omit<RestProps, 'children'>, WithElementRef<HTMLTableAttributes> {
-        wrapperClass?: string;
+        class?: string;
+        tableClass?: string;
     }
 
     let {
         ref = $bindable(null),
-        wrapperClass = '',
         class: _class,
+        tableClass,
         children,
         ...restProps
     }: TableProps = $props();
 </script>
 
-<div data-slot="table-container" class={twMerge('relative w-full overflow-x-auto', wrapperClass)}>
+<div data-slot="table-container" class={twMerge('relative w-full overflow-x-auto', _class)}>
     <table
         bind:this={ref}
         data-slot="table"
-        class={cn('w-full caption-bottom text-sm', _class)}
+        class={cn('w-full caption-bottom text-sm', tableClass)}
         {...restProps}>
         {@render children?.()}
     </table>

@@ -643,8 +643,8 @@ Import `ColorVariant` from `@/data/theme` for badge config maps.
     content
 </Card>
 
-<!-- wrapperClass targets the outer div -->
-<Card wrapperClass="mb-4 bg-primary text-primary-content">content</Card>
+<!-- class targets the outer div -->
+<Card class="mb-4 bg-primary text-primary-content">content</Card>
 ```
 
 ### DataList

@@ -123,19 +123,19 @@
     <!-- Current month summary cards -->
     {#if latestMonth}
         <div class="mb-4 grid grid-cols-3 gap-3">
-            <Card wrapperClass="text-center">
+            <Card class="text-center">
                 <p class="text-xs text-base-content/50">Income</p>
                 <p class="font-mono text-sm font-bold text-success">
                     {formatIDR(latestMonth.income)}
                 </p>
             </Card>
-            <Card wrapperClass="text-center">
+            <Card class="text-center">
                 <p class="text-xs text-base-content/50">Expense</p>
                 <p class="font-mono text-sm font-bold text-error">
                     {formatIDR(latestMonth.expense)}
                 </p>
             </Card>
-            <Card wrapperClass="text-center">
+            <Card class="text-center">
                 <p class="text-xs text-base-content/50">Net</p>
                 <p
                     class="font-mono text-sm font-bold {latestMonth.net >= 0
@@ -148,7 +148,7 @@
     {/if}
 
     <!-- Trend chart card -->
-    <Card wrapperClass="mb-4" title="Income vs Expense">
+    <Card class="mb-4" title="Income vs Expense">
         {#snippet headerAction()}
             <Button
                 class="btn-xs"
@@ -162,7 +162,7 @@
     </Card>
 
     <!-- Category leak card -->
-    <Card wrapperClass="mb-4" title="Top Spending Categories">
+    <Card class="mb-4" title="Top Spending Categories">
         {#snippet headerAction()}
             <Button
                 class="btn-xs"

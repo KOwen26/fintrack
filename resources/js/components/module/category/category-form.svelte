@@ -50,7 +50,7 @@
     });
 </script>
 
-<Card wrapperClass="mb-4">
+<Card class="mb-4">
     <FormGenerator
         id="add-category"
         action={CategoryController.store.url()}

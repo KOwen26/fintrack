@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { App } from '@wayfinder/types';
+    import type { Data } from '@type/type';
 
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
@@ -10,7 +10,7 @@
     import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
 
     interface Props {
-        transaction: App.Data.TransactionDetailData;
+        transaction: Data.Transaction.TransactionDetailData;
     }
 
     let { transaction }: Props = $props();
@@ -45,7 +45,7 @@
     <!-- ════════════════════════════════════════════ -->
     <!--  HERO CARD                                  -->
     <!-- ════════════════════════════════════════════ -->
-    <ResponsiveCard wrapperClass="overflow-x-clip">
+    <ResponsiveCard class="overflow-x-clip">
         <!-- Colour-coded accent bar — the page's signature element -->
         <div class="-mx-5 md:-mx-6 h-1 {accentClass}"></div>
 
@@ -89,7 +89,7 @@
     <!-- ════════════════════════════════════════════ -->
     <!--  ACCOUNT SOURCE CARD                        -->
     <!-- ════════════════════════════════════════════ -->
-    <ResponsiveCard wrapperClass="space-y-3" class="p-2.5">
+    <ResponsiveCard class="p-2.5" contentClass="space-y-3">
         <div class="grid grid-cols-2 gap-5">
             <div class={['text-left', !isTransfer ? 'col-span-full' : '']}>
                 <p class=" font-semibold tracking-widest uppercase text-base-content/50">
@@ -133,7 +133,7 @@
     <!--  CATEGORY CARD                              -->
     <!-- ════════════════════════════════════════════ -->
     {#if transaction?.category}
-        <ResponsiveCard wrapperClass="space-y-5" class="p-2.5">
+        <ResponsiveCard class="p-2.5" contentClass="space-y-5">
             <p class=" font-semibold tracking-widest uppercase text-base-content/50">Category</p>
 
             <div class="flex items-center gap-3">
@@ -162,7 +162,7 @@
     <!-- ════════════════════════════════════════════ -->
     <!--  DETAIL FIELDS CARD                         -->
     <!-- ════════════════════════════════════════════ -->
-    <ResponsiveCard wrapperClass="space-y-5" class="p-2.5">
+    <ResponsiveCard class="p-2.5" contentClass="space-y-5">
         <p class=" font-semibold tracking-widest uppercase text-base-content/50">Details</p>
 
         <!-- Notes -->
@@ -222,7 +222,7 @@
     <!--  CREATOR INFO (if available)                -->
     <!-- ════════════════════════════════════════════ -->
     {#if transaction?.creator}
-        <ResponsiveCard wrapperClass=" space-y-3" class="p-2.5">
+        <ResponsiveCard class="p-2.5" contentClass=" space-y-3">
             <p class=" font-semibold tracking-widest uppercase text-base-content/50">Created by</p>
             <div class="flex items-center gap-3">
                 <div

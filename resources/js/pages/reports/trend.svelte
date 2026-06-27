@@ -80,21 +80,21 @@
     </div>
 
     <!-- Trend chart -->
-    <Card wrapperClass="mb-4">
+    <Card class="mb-4">
         <TrendChart months={trend.months} />
     </Card>
 
     <!-- Totals summary -->
     <div class="grid grid-cols-3 gap-3 mb-4">
-        <Card wrapperClass="text-center">
+        <Card class="text-center">
             <p class="text-xs text-base-content/50">Total Income</p>
             <p class="font-mono text-sm font-bold text-success">{formatIDR(totalIncome)}</p>
         </Card>
-        <Card wrapperClass="text-center">
+        <Card class="text-center">
             <p class="text-xs text-base-content/50">Total Expense</p>
             <p class="font-mono text-sm font-bold text-error">{formatIDR(totalExpense)}</p>
         </Card>
-        <Card wrapperClass="text-center">
+        <Card class="text-center">
             <p class="text-xs text-base-content/50">Net</p>
             <p class="font-mono text-sm font-bold {totalNet >= 0 ? 'text-success' : 'text-error'}">
                 {formatIDR(totalNet)}

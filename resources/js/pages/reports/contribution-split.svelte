@@ -102,7 +102,7 @@
             </Button>
         </div>
 
-        <Card wrapperClass="mb-4" title="Income by Member">
+        <Card class="mb-4" title="Income by Member">
             <ContributionGauge
                 members={contribution_split.members}
                 total={contribution_split.total} />

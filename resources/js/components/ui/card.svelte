@@ -6,7 +6,6 @@
     import { cn } from '@utilities/shadcn';
 
     interface Props extends RestProps {
-        wrapperClass?: string;
         wrapperProps?: HTMLAttributes<HTMLElement>;
 
         headerClass?: string;
@@ -21,10 +20,12 @@
         footerClass?: string;
         footerProps?: HTMLAttributes<HTMLElement>;
         footer?: Snippet;
+
+        class?: string;
+        contentClass?: string;
     }
 
     let {
-        wrapperClass,
         wrapperProps = {},
 
         headerClass,
@@ -40,6 +41,7 @@
         footerProps = {},
         footer,
 
+        contentClass,
         class: _class,
         children,
         ...props
@@ -51,13 +53,13 @@
     class={cn(
         // 'bg-card text-card-foreground flex flex-col gap-5 rounded-md border border-neutral-500 py-5',
         'card card-border @container/card gap-5 bg-white p-5',
-        wrapperClass
+        _class
     )}
     {...wrapperProps}>
     {#if title || header || headerAction}
         {@render HeaderSnippet()}
     {/if}
-    <div data-slot="card-content" class={cn('card-body p-0', _class)} {...props}>
+    <div data-slot="card-content" class={cn(contentClass)} {...props}>
         {@render children?.()}
     </div>
     {#if footer}

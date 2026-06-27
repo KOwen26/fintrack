@@ -3,21 +3,14 @@
 
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
-    import { accountSchema } from '@schema/account.schema';
-
-    import { DataComposer } from '@utilities/data-composer';
-
-    import DataList from '@components/data/data-list.svelte';
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
     import PageSection from '@components/layouts/page-section.svelte';
     import AccountAccessTypeBadge from '@components/module/account/account-access-type-badge.svelte';
     import AccountTypeBadge from '@components/module/account/account-type-badge.svelte';
-    import ProviderTypeBadge from '@components/module/provider/provider-type-badge.svelte';
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
     import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
     import Badge from '@components/ui/badge.svelte';
     import Button from '@components/ui/button.svelte';
-    import Card from '@components/ui/card.svelte';
 
     let { account }: { account: App.Models.Account } = $props();
 </script>
@@ -47,6 +40,6 @@
     {#if !account?.transactions}
         <EmptyItemPlaceholder label="No Transaction Yet" />
     {:else}
-        <TransactionList transactions={account.transactions} cardProps={{ withoutAccount: true }} />
+        <TransactionList cardProps={{ withoutAccount: true }} transactions={account.transactions} />
     {/if}
 </PageSection>

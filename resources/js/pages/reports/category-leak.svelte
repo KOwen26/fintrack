@@ -92,7 +92,7 @@
         </Button>
     </div>
 
-    <Card wrapperClass="mb-4">
+    <Card class="mb-4">
         <CategoryLeakChart
             categories={category_leak.categories}
             period_total={category_leak.period_total} />

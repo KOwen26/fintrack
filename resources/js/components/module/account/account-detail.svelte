@@ -344,7 +344,7 @@
     <!-- ════════════════════════════════════════════ -->
     <!--  HERO ACCOUNT CARD                         -->
     <!-- ════════════════════════════════════════════ -->
-    <ResponsiveCard wrapperClass="overflow-x-clip" class="p-0">
+    <ResponsiveCard class="overflow-x-clip" contentClass="p-0">
         <div
             style:background={bgColor}
             class="relative overflow-hidden px-5 pb-4 pt-5 md:px-6 md:pb-5">
@@ -509,7 +509,7 @@
     <!-- ════════════════════════════════════════════ -->
     <!--  QUICK ACTIONS                             -->
     <!-- ════════════════════════════════════════════ -->
-    <ResponsiveCard wrapperClass="space-y-0" class="p-0">
+    <ResponsiveCard class="space-y-0" contentClass="p-0">
         <div class="flex gap-2.5 p-4 pb-5">
             {#each quickActions as action (action.label)}
                 <button
@@ -531,7 +531,7 @@
     <!--  MONTHLY STATS (non-credit)                -->
     <!-- ════════════════════════════════════════════ -->
     {#if !isCreditCard && monthlyStats}
-        <ResponsiveCard wrapperClass="space-y-0" class="p-0">
+        <ResponsiveCard class="space-y-0" contentClass="p-0">
             <!-- Month header -->
             <div class="flex items-center justify-between px-5 pt-[18px] md:px-6">
                 <p class="text-[0.63rem] font-bold tracking-widest uppercase text-base-content/50">
@@ -612,7 +612,7 @@
     <!--  CREDIT CARD SECTION                       -->
     <!-- ════════════════════════════════════════════ -->
     {#if isCreditCard}
-        <ResponsiveCard wrapperClass="space-y-0" class="p-0">
+        <ResponsiveCard class="space-y-0" contentClass="p-0">
             <div class="px-5 pt-[18px] md:px-6">
                 <p class="text-[0.63rem] font-bold tracking-widest uppercase text-base-content/50">
                     Credit Usage
@@ -692,7 +692,7 @@
     <!-- ════════════════════════════════════════════ -->
     <!--  ACCOUNT INFO                              -->
     <!-- ════════════════════════════════════════════ -->
-    <ResponsiveCard wrapperClass="space-y-0" class="p-0">
+    <ResponsiveCard class="space-y-0" contentClass="p-0">
         <div class="px-5 pt-[18px] md:px-6">
             <p class="text-[0.63rem] font-bold tracking-widest uppercase text-base-content/50">
                 Account Info
@@ -724,7 +724,7 @@
     <!--  MEMBERS (joint accounts only)             -->
     <!-- ════════════════════════════════════════════ -->
     {#if members.length > 0}
-        <ResponsiveCard wrapperClass="space-y-0" class="p-0">
+        <ResponsiveCard class="space-y-0" contentClass="p-0">
             <div class="flex items-center justify-between px-5 pt-[18px] pb-[14px] md:px-6">
                 <p class="text-[0.63rem] font-bold tracking-widest uppercase text-base-content/50">
                     Members
@@ -770,7 +770,7 @@
     <!--  RECENT TRANSACTIONS                       -->
     <!-- ════════════════════════════════════════════ -->
     {#if recentTransactions.length > 0}
-        <ResponsiveCard wrapperClass="space-y-0" class="p-0">
+        <ResponsiveCard class="space-y-0" contentClass="p-0">
             <div class="flex items-center justify-between px-5 pt-[18px] pb-[14px] md:px-6">
                 <p class="text-[0.63rem] font-bold tracking-widest uppercase text-base-content/50">
                     Recent Transactions
@@ -818,7 +818,7 @@
     <!-- ════════════════════════════════════════════ -->
     <!--  DETAIL FIELDS (timestamps)                -->
     <!-- ════════════════════════════════════════════ -->
-    <ResponsiveCard wrapperClass="space-y-5" class="p-2.5">
+    <ResponsiveCard class="space-y-5" contentClass="p-2.5">
         <p class=" font-semibold tracking-widest uppercase text-base-content/50 text-xs">Details</p>
 
         <!-- Account number -->

@@ -107,7 +107,7 @@
         </div>
     {:else}
         <!-- Stacked bar -->
-        <Card wrapperClass="mb-4">
+        <Card class="mb-4">
             <p class="mb-3 text-sm font-medium">Spend composition</p>
             <div class="flex h-8 w-full overflow-hidden rounded-full">
                 <div

@@ -70,7 +70,7 @@
     {/if}
 
     <TableRoot
-        wrapperClass={twMerge(
+        class={twMerge(
             'border-neutral-400',
             withFilter || withPagination ? 'border-y' : 'rounded-sm border'
         )}>

@@ -22,7 +22,7 @@
     const color = $derived(isInflow ? 'text-success' : 'text-error');
 </script>
 
-<Card wrapperClass={cn('transition-transform active:scale-95', _class, 'p-3 rounded-md')}>
+<Card class={cn('transition-transform active:scale-95', _class, 'p-3 rounded-md')}>
     <div class="grid grid-cols-2 gap-y-2">
         {#if !withoutAccount}
             <div class="col-span-full">

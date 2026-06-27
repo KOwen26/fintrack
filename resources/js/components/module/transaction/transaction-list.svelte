@@ -8,7 +8,6 @@
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
-    import Card from '@components/ui/card.svelte';
     import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
     import ScrollArea from '@components/ui/scroll-area.svelte';
 

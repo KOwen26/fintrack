@@ -60,7 +60,7 @@
         {#each daisyThemes as theme (theme)}
             <button class="text-left transition-all" onclick={() => selectTheme(theme)}>
                 <Card
-                    wrapperClass="border-2 {currentTheme === theme
+                    class="border-2 {currentTheme === theme
                         ? 'border-primary'
                         : 'border-base-300'}">
                     <div class="mb-2 flex gap-1">

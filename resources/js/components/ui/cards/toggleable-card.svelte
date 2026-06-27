@@ -6,8 +6,6 @@
 
     import { cn } from 'tailwind-variants';
 
-    import Card from '@components/ui/card.svelte';
-
     interface Props extends RestProps {
         id?: string;
         mode?: 'list' | 'grid';
