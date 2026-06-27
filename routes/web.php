@@ -38,6 +38,7 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
     Route::prefix('transactions')->name('transactions.')->group(function (): void {
         Route::get('', [TransactionController::class, 'index'])->name('index');
         Route::get('create', [TransactionController::class, 'create'])->name('create');
+        Route::get('{transaction}', [TransactionController::class, 'show'])->name('show');
         Route::post('', [TransactionController::class, 'store'])->name('store');
         Route::put('{transaction}', [TransactionController::class, 'update'])->name('update');
         Route::delete('{transaction}', [TransactionController::class, 'destroy'])->name('destroy');

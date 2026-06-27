@@ -2,6 +2,7 @@
     import type { RestProps } from '@type/index';
 
     import Button from '../button.svelte';
+    import ResponsiveCard from './responsive-card.svelte';
 
     import { cn } from 'tailwind-variants';
 
@@ -19,11 +20,7 @@
     // Todo save mode to session storage based on the `'toggleable_card'_base64(user_id): { lowercased_id: mode }`
 </script>
 
-<Card
-    {...props}
-    titleClass="grow"
-    wrapperClass="p-4 md:p-6 border-y border-x-none md:border rounded-none md:rounded"
-    wrapperProps={{ id }}>
+<ResponsiveCard wrapperProps={{ id }} {...props}>
     {#snippet headerAction()}
         <div class="join border rounded overflow-clip">
             <Button
@@ -45,4 +42,4 @@
     {/snippet}
 
     {@render children?.()}
-</Card>
+</ResponsiveCard>

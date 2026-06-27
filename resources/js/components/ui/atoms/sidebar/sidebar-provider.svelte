@@ -30,8 +30,10 @@
     } = $props();
 
     const sidebarCookie = $derived.by(() => {
+        if (typeof document === 'undefined') return;
+
         // Will return 'sidebar:state={boolean}' or undefined
-        const cookie = document.cookie
+        const cookie = document?.cookie
             .split(';')
             .find((cookie) => cookie.startsWith(`${SIDEBAR_COOKIE_NAME}=`));
 

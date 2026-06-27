@@ -4,7 +4,9 @@
     import { router } from '@inertiajs/svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
+    import PageSection from '@components/layouts/page-section.svelte';
     import AccountForm from '@components/module/account/account-form.svelte';
+    import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
     import Button from '@components/ui/button.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
@@ -22,18 +24,9 @@
     }
 </script>
 
-<div class="p-4">
-    <div class="mb-4 flex items-center gap-3">
-        <Button
-            class="btn-circle btn-sm"
-            color="light"
-            href={AccountController.show.url({ account: account.id })}
-            variant="ghost">
-            <i class="iconify size-5 ph--arrow-left-bold"></i>
-        </Button>
-        <h1 class="text-xl font-bold">Edit Account</h1>
-    </div>
+<DashboardPageHeader title="Edit Account" />
 
+<PageSection>
     <AccountForm
         {account}
         onCancel={() => router.visit(AccountController.show.url({ account: account.id }))}
@@ -57,7 +50,7 @@
             Delete Account
         </Button>
     </div>
-</div>
+</PageSection>
 
 <ConfirmationModal
     cancelText="Cancel"

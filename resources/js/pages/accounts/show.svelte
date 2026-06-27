@@ -8,63 +8,45 @@
     import { DataComposer } from '@utilities/data-composer';
 
     import DataList from '@components/data/data-list.svelte';
+    import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
+    import PageSection from '@components/layouts/page-section.svelte';
     import AccountAccessTypeBadge from '@components/module/account/account-access-type-badge.svelte';
     import AccountTypeBadge from '@components/module/account/account-type-badge.svelte';
     import ProviderTypeBadge from '@components/module/provider/provider-type-badge.svelte';
+    import TransactionList from '@components/module/transaction/transaction-list.svelte';
+    import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
+    import Badge from '@components/ui/badge.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
 
     let { account }: { account: App.Models.Account } = $props();
-
-    const details = $derived(
-        DataComposer.from(accountSchema)
-            .except(['type', 'access_type', 'name'])
-            .toDataDisplay(account)
-    );
 </script>
 
-<div class="p-4">
-    <div class="mb-4 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <Button
-                class="btn-circle btn-sm"
-                color="light"
-                href={AccountController.index.url()}
-                variant="ghost">
-                <i class="iconify size-5 ph--arrow-left-bold"></i>
-            </Button>
-            <div>
-                <h1 class="text-xl font-bold">{account.name}</h1>
-                <div class="mt-1 flex items-center gap-1">
-                    <AccountTypeBadge type={account.type} />
-                    <AccountAccessTypeBadge type={account.access_type} />
-                </div>
-            </div>
+<DashboardPageHeader title="">
+    <div class="space-y-1.5">
+        <h1 class="text-xl font-bold">{account.name}</h1>
+        <div class="flex items-center gap-1.5">
+            <AccountTypeBadge type={account.type} />
+            <AccountAccessTypeBadge type={account.access_type} />
+            <Badge>{account?.provider?.name}</Badge>
         </div>
+    </div>
+
+    {#snippet actions()}
         <Button
-            class="btn-circle btn-sm"
             color="light"
             href={AccountController.edit.url({ account: account.id })}
-            variant="ghost">
+            variant="outline">
             <i class="iconify size-5 ph--pencil-simple-bold"></i>
+            Edit
         </Button>
-    </div>
+    {/snippet}
+</DashboardPageHeader>
 
-    <Card wrapperClass="mb-4">
-        <DataList data={details} />
-    </Card>
-
-    {#if account.provider}
-        <Card wrapperClass="mb-4">
-            <div class="flex items-center justify-between">
-                <p class="font-semibold">{account.provider.name}</p>
-                <ProviderTypeBadge type={account.provider.type} />
-            </div>
-        </Card>
+<PageSection breakMargin>
+    {#if !account?.transactions}
+        <EmptyItemPlaceholder label="No Transaction Yet" />
+    {:else}
+        <TransactionList transactions={account.transactions} cardProps={{ withoutAccount: true }} />
     {/if}
-
-    <div class="flex flex-col items-center py-10 text-base-content/40">
-        <i class="iconify mb-2 size-10 ph--receipt-bold"></i>
-        <p class="text-sm">Transactions will appear here</p>
-    </div>
-</div>
+</PageSection>

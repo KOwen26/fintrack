@@ -13,9 +13,10 @@
 
     interface Props extends RestProps {
         transaction: App.Models.Transaction;
+        withoutAccount?: boolean;
     }
 
-    let { transaction, class: _class }: Props = $props();
+    let { transaction, withoutAccount = false, class: _class }: Props = $props();
 
     const isInflow = $derived(['income', 'transfer_in'].includes(transaction.type));
     const color = $derived(isInflow ? 'text-success' : 'text-error');
@@ -23,13 +24,15 @@
 
 <Card wrapperClass={cn('transition-transform active:scale-95', _class, 'p-3 rounded-md')}>
     <div class="grid grid-cols-2 gap-y-2">
-        <div class="col-span-full">
-            <AccountBadge account={transaction.account} labelOnly />
-            <hr class="mt-1" />
-        </div>
+        {#if !withoutAccount}
+            <div class="col-span-full">
+                <AccountBadge account={transaction?.account} labelOnly />
+                <hr class="mt-1" />
+            </div>
+        {/if}
         <div class=" grow space-y-1">
             <div class="flex items-center gap-1.5">
-                <CategoryBadge category={transaction.category} />
+                <CategoryBadge category={transaction?.category} />
             </div>
 
             <p class="truncate text-sm">

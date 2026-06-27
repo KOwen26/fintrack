@@ -25,6 +25,20 @@ class AccountController extends Controller
         ]);
     }
 
+    public function show(Request $request, Account $account): Response
+    {
+        $this->authorize('view', $account);
+
+        $account->load([
+            'provider',
+            'transactions' => fn ($transaction) => $transaction->with(['category'])->take(10),
+        ]);
+
+        return Inertia::render('accounts/show', [
+            'account' => $account,
+        ]);
+    }
+
     public function create(Request $request): Response
     {
         return Inertia::render('accounts/create', [
@@ -37,15 +51,6 @@ class AccountController extends Controller
         $account = $this->accountService->create($request->user(), $request->validated());
 
         return to_route('accounts.show', $account)->flash('Account created.');
-    }
-
-    public function show(Request $request, Account $account): Response
-    {
-        $this->authorize('view', $account);
-
-        return Inertia::render('accounts/show', [
-            'account' => $account->load('provider'),
-        ]);
     }
 
     public function edit(Account $account): Response

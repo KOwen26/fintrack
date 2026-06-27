@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\Transaction\TransactionDetailData;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Account;
@@ -66,6 +67,17 @@ class TransactionController extends Controller
         }
 
         return to_route('transactions.index', $account)->flash('Transaction saved.');
+    }
+
+    public function show(Request $request, Transaction $transaction): Response
+    {
+        $this->authorize('view', $transaction);
+
+        $transaction->load(['account', 'category', 'creator']);
+
+        return Inertia::render('transactions/show', [
+            'transaction' => TransactionDetailData::from($transaction),
+        ]);
     }
 
     public function edit(Request $request, Account $account, Transaction $transaction): Response

@@ -19,6 +19,7 @@
         rootRef?: HTMLElement | null;
         viewportRef?: HTMLElement | null;
         orientation?: 'vertical' | 'horizontal' | 'both';
+        rootClass?: string;
         scrollbarXClasses?: string;
         scrollbarYClasses?: string;
         children?: Snippet;
@@ -33,7 +34,8 @@
     let {
         rootRef = $bindable(null),
         viewportRef = $bindable(null),
-        class: className,
+        rootClass: _rootClass,
+        class: _class,
         orientation = 'vertical',
         scrollbarXClasses = '',
         scrollbarYClasses = '',
@@ -42,7 +44,8 @@
         ...restProps
     }: ScrollAreaProps = $props();
 
-    const rootClass = $derived(cn(baseRootClass, className));
+    const rootClass = $derived(cn(baseRootClass, _rootClass));
+    const viewportClass = $derived(cn(baseViewportClass, _class));
     const scrollbarVerticalClass = $derived(
         cn(baseScrollbarClass, scrollbarOrientationClass.vertical, scrollbarYClasses)
     );
@@ -58,16 +61,19 @@
     {...restProps}>
     <ScrollAreaPrimitive.Viewport
         data-slot="scroll-area-viewport"
-        class={baseViewportClass}
+        class={viewportClass}
         bind:ref={viewportRef}>
         {@render children?.()}
     </ScrollAreaPrimitive.Viewport>
+
     {#if orientation === 'vertical' || orientation === 'both'}
         {@render scrollbar?.({ orientation: orientation === 'both' ? 'vertical' : orientation })}
     {/if}
+
     {#if orientation === 'horizontal' || orientation === 'both'}
         {@render scrollbar?.({ orientation: orientation === 'both' ? 'horizontal' : orientation })}
     {/if}
+
     <ScrollAreaPrimitive.Corner />
 </ScrollAreaPrimitive.Root>
 

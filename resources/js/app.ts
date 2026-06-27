@@ -7,7 +7,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
 import DashboardLayout from '@components/layouts/dashboard-layout.svelte';
 
-const appName = import.meta.env?.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env?.VITE_APP_NAME || 'Fintrack';
 
 createInertiaApp({
     progress: {
@@ -35,11 +35,4 @@ createInertiaApp({
                 return null;
         }
     },
-    // setup({ el, App, props }) {
-    //     if (el.dataset.serverRendered === 'true') {
-    //         hydrate(App, { target: el, props });
-    //     } else {
-    //         mount(App, { target: el, props });
-    //     }
-    // },
 });

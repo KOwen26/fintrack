@@ -1,0 +1,1365 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Detail Akun – FinTrack</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:wght@400;500&display=swap"
+            rel="stylesheet" />
+
+        <style>
+            :root {
+                --bg: #edf1ee;
+                --surface: #ffffff;
+                --border: #e2eae5;
+                --text-1: #1a2820;
+                --text-2: #5e706a;
+                --text-3: #96a8a2;
+                --sage: #4e7a5a;
+                --sage-lt: #dde9e1;
+                --teal: #29887c;
+                --teal-lt: #e3f5f2;
+                --red: #c24540;
+                --red-lt: #fbeeed;
+                --amber: #a07020;
+                --amber-lt: #fbf4e3;
+            }
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: 'DM Sans', sans-serif;
+                background: var(--bg);
+                color: var(--text-1);
+                min-height: 100vh;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            .shell {
+                max-width: 430px;
+                margin: 0 auto;
+                padding-bottom: 52px;
+            }
+            .mono {
+                font-family: 'DM Mono', monospace;
+            }
+            .card {
+                background: var(--surface);
+                border-radius: 18px;
+                overflow: hidden;
+            }
+            .mx {
+                margin-left: 16px;
+                margin-right: 16px;
+            }
+            .mt3 {
+                margin-top: 12px;
+            }
+
+            .sec-label {
+                font-size: 0.63rem;
+                font-weight: 700;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                color: var(--text-3);
+                margin: 0;
+            }
+            .f-div {
+                border-top: 1px solid var(--border);
+                margin: 0 20px;
+            }
+
+            /* ── ICON BTN ─────────────────────────────── */
+            .icon-btn {
+                width: 36px;
+                height: 36px;
+                border-radius: 11px;
+                background: var(--surface);
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                transition: background 0.15s;
+            }
+            .icon-btn:hover {
+                background: var(--sage-lt);
+            }
+
+            /* ── DEMO SWITCHER ────────────────────────── */
+            .switcher {
+                display: flex;
+                gap: 5px;
+                padding: 5px;
+                background: var(--surface);
+                border-radius: 13px;
+            }
+            .sw-btn {
+                flex: 1;
+                padding: 7px 4px;
+                border-radius: 9px;
+                border: none;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.69rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.18s;
+                color: var(--text-3);
+                background: transparent;
+                white-space: nowrap;
+            }
+            .sw-btn.active {
+                background: var(--sage);
+                color: #fff;
+            }
+
+            /* ── ACCOUNT HERO CARD ────────────────────── */
+            .acct-card {
+                border-radius: 20px;
+                padding: 22px 22px 20px;
+                position: relative;
+                overflow: hidden;
+            }
+            .acct-card .deco-a {
+                position: absolute;
+                top: -50px;
+                right: -50px;
+                width: 180px;
+                height: 180px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.06);
+                pointer-events: none;
+            }
+            .acct-card .deco-b {
+                position: absolute;
+                bottom: -30px;
+                right: 40px;
+                width: 110px;
+                height: 110px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.04);
+                pointer-events: none;
+            }
+
+            /* Balance display */
+            .bal-label {
+                font-size: 0.63rem;
+                font-weight: 600;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.45);
+                margin-bottom: 5px;
+            }
+            .bal-prefix {
+                font-family: 'DM Mono', monospace;
+                font-size: 0.85rem;
+                color: rgba(255, 255, 255, 0.4);
+            }
+            .bal-number {
+                font-family: 'DM Mono', monospace;
+                font-size: clamp(1.8rem, 8vw, 2.4rem);
+                font-weight: 500;
+                color: #fff;
+                letter-spacing: -0.025em;
+                line-height: 1;
+            }
+            .bal-currency {
+                font-size: 0.68rem;
+                color: rgba(255, 255, 255, 0.35);
+                margin-top: 4px;
+            }
+
+            /* Sparkline area */
+            .sparkline-wrap {
+                margin-top: 18px;
+                position: relative;
+            }
+
+            /* Hide balance */
+            .bal-hidden {
+                letter-spacing: 0.15em;
+                font-size: 1.6rem;
+                color: rgba(255, 255, 255, 0.6);
+            }
+
+            /* ── STAT ROW ─────────────────────────────── */
+            .stat-col {
+                flex: 1;
+                padding: 18px 20px;
+            }
+
+            /* ── RATIO BAR ────────────────────────────── */
+            .ratio-bar {
+                height: 6px;
+                border-radius: 9999px;
+                background: var(--red-lt);
+                overflow: hidden;
+            }
+            .ratio-fill {
+                height: 100%;
+                border-radius: 9999px;
+                background: var(--teal);
+                transition: width 0.5s ease;
+            }
+
+            /* ── CREDIT PROGRESS ──────────────────────── */
+            .credit-bar {
+                height: 8px;
+                border-radius: 9999px;
+                background: var(--border);
+                overflow: hidden;
+                margin-top: 10px;
+            }
+            .credit-fill {
+                height: 100%;
+                border-radius: 9999px;
+                background: var(--red);
+                transition: width 0.4s ease;
+            }
+
+            /* ── FIELD ROW ────────────────────────────── */
+            .field-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 13px 20px;
+                gap: 12px;
+            }
+            .field-label {
+                font-size: 0.8rem;
+                color: var(--text-2);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .field-val {
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: var(--text-1);
+                text-align: right;
+            }
+
+            /* ── MEMBER ROW ───────────────────────────── */
+            .member-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 20px;
+            }
+            .avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.82rem;
+                font-weight: 700;
+                color: #fff;
+                flex-shrink: 0;
+            }
+            .role-badge {
+                font-size: 0.65rem;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 9999px;
+                letter-spacing: 0.03em;
+                text-transform: uppercase;
+            }
+
+            /* ── TXN ROW ──────────────────────────────── */
+            .txn-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 20px;
+            }
+            .txn-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 11px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.1rem;
+                flex-shrink: 0;
+            }
+
+            /* ── QUICK ACTIONS ────────────────────────── */
+            .action-grid {
+                display: flex;
+                gap: 10px;
+                padding: 16px;
+                padding-bottom: 20px;
+            }
+            .act-btn {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                background: var(--surface);
+                border: none;
+                cursor: pointer;
+                border-radius: 16px;
+                padding: 16px 8px;
+                transition: background 0.15s;
+                text-decoration: none;
+            }
+            .act-btn:hover {
+                background: var(--sage-lt);
+            }
+            .act-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .act-label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: var(--text-2);
+                font-family: 'DM Sans', sans-serif;
+            }
+
+            /* ── BOTTOM ACTION BUTTONS ────────────────── */
+            .bottom-btns {
+                display: flex;
+                gap: 12px;
+                margin: 4px 16px 0;
+            }
+            .btn {
+                flex: 1;
+                padding: 15px;
+                border-radius: 14px;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.9rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.15s;
+                border: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+            }
+            .btn-edit {
+                background: var(--surface);
+                color: var(--sage);
+                border: 1.5px solid var(--sage-lt);
+            }
+            .btn-edit:hover {
+                background: var(--sage-lt);
+            }
+            .btn-archive {
+                background: var(--amber-lt);
+                color: var(--amber);
+            }
+            .btn-archive:hover {
+                opacity: 0.85;
+            }
+
+            /* ── REVEAL BTN ───────────────────────────── */
+            .reveal-btn {
+                border: none;
+                background: none;
+                cursor: pointer;
+                color: var(--teal);
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.75rem;
+                font-weight: 600;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- DEMO SWITCHER -->
+        <div class="shell" style="padding: 16px 16px 0">
+            <div class="switcher">
+                <button class="sw-btn active" onclick="setAccount('bank', this)">Tabungan</button>
+                <button class="sw-btn" onclick="setAccount('ewallet', this)">E-Wallet</button>
+                <button class="sw-btn" onclick="setAccount('cash', this)">Kas</button>
+                <button class="sw-btn" onclick="setAccount('credit', this)">Kartu Kredit</button>
+            </div>
+        </div>
+
+        <div class="shell">
+            <!-- ── NAV ──────────────────────────────────── -->
+            <div
+                style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 14px 16px;
+                ">
+                <button class="icon-btn" aria-label="Kembali">
+                    <svg
+                        width="17"
+                        height="17"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="var(--text-1)"
+                        stroke-width="2.3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M19 12H5M12 5l-7 7 7 7" />
+                    </svg>
+                </button>
+                <span style="font-size: 0.88rem; font-weight: 600; color: var(--text-1)"
+                    >Detail Akun</span
+                >
+                <button class="icon-btn" aria-label="Opsi">
+                    <svg
+                        width="17"
+                        height="17"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="var(--text-1)"
+                        stroke-width="2.3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="5" r="1.1" fill="var(--text-1)" stroke="none" />
+                        <circle cx="12" cy="12" r="1.1" fill="var(--text-1)" stroke="none" />
+                        <circle cx="12" cy="19" r="1.1" fill="var(--text-1)" stroke="none" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- ── HERO ACCOUNT CARD ────────────────────── -->
+            <div class="mx">
+                <div class="acct-card" id="acct-card" style="background: #1b4d45">
+                    <div class="deco-a"></div>
+                    <div class="deco-b"></div>
+
+                    <!-- Institution + name + hide balance -->
+                    <div
+                        style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            margin-bottom: 22px;
+                            position: relative;
+                            z-index: 1;
+                        ">
+                        <div style="display: flex; align-items: center; gap: 11px">
+                            <div
+                                id="card-icon"
+                                style="
+                                    width: 38px;
+                                    height: 38px;
+                                    border-radius: 11px;
+                                    background: rgba(255, 255, 255, 0.12);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 1.15rem;
+                                    flex-shrink: 0;
+                                ">
+                                🏦
+                            </div>
+                            <div>
+                                <p
+                                    id="card-provider"
+                                    style="
+                                        font-size: 0.68rem;
+                                        font-weight: 600;
+                                        color: rgba(255, 255, 255, 0.45);
+                                        letter-spacing: 0.06em;
+                                        text-transform: uppercase;
+                                        margin-bottom: 2px;
+                                    ">
+                                    BCA
+                                </p>
+                                <p
+                                    id="card-name"
+                                    style="
+                                        font-size: 0.93rem;
+                                        font-weight: 600;
+                                        color: #fff;
+                                        line-height: 1.2;
+                                    ">
+                                    Tabungan Utama
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            id="hide-btn"
+                            onclick="toggleBalance()"
+                            style="
+                                border: none;
+                                background: rgba(255, 255, 255, 0.1);
+                                border-radius: 8px;
+                                padding: 6px;
+                                cursor: pointer;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            "
+                            aria-label="Sembunyikan saldo">
+                            <svg
+                                id="eye-icon"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="rgba(255,255,255,0.6)"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Balance -->
+                    <div style="position: relative; z-index: 1">
+                        <p class="bal-label">Saldo</p>
+                        <div style="display: flex; align-items: flex-start; gap: 5px">
+                            <span class="bal-prefix" id="bal-prefix" style="margin-top: 4px"
+                                >Rp</span
+                            >
+                            <span class="bal-number" id="bal-display">4.742.000</span>
+                        </div>
+                        <p class="bal-currency" id="bal-currency">IDR</p>
+                    </div>
+
+                    <!-- Sparkline — 30-day balance trend -->
+                    <div class="sparkline-wrap" style="position: relative; z-index: 1">
+                        <svg
+                            id="sparkline"
+                            viewBox="0 0 360 52"
+                            preserveAspectRatio="none"
+                            style="width: 100%; height: 44px; display: block; margin-bottom: -4px">
+                            <defs>
+                                <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="rgba(255,255,255,0.18)" />
+                                    <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+                                </linearGradient>
+                            </defs>
+                            <polygon
+                                id="spark-area"
+                                points="0,40 30,38 60,36 90,30 120,32 150,22 180,26 210,16 240,20 270,12 300,9 330,6 360,4 360,52 0,52"
+                                fill="url(#sg)"
+                                stroke="none" />
+                            <polyline
+                                id="spark-line"
+                                points="0,40 30,38 60,36 90,30 120,32 150,22 180,26 210,16 240,20 270,12 300,9 330,6 360,4"
+                                fill="none"
+                                stroke="rgba(255,255,255,0.45)"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+
+                        <!-- Account number row -->
+                        <div
+                            style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                padding-top: 6px;
+                            ">
+                            <p
+                                class="mono"
+                                id="card-number"
+                                style="
+                                    font-size: 0.78rem;
+                                    color: rgba(255, 255, 255, 0.4);
+                                    letter-spacing: 0.12em;
+                                ">
+                                •••• •••• •••• 1234
+                            </p>
+                            <button
+                                class="reveal-btn"
+                                id="reveal-btn"
+                                onclick="toggleNumber()"
+                                style="
+                                    color: rgba(255, 255, 255, 0.45);
+                                    font-size: 0.72rem;
+                                    font-weight: 600;
+                                ">
+                                Tampilkan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── QUICK ACTIONS ──────────────────────── -->
+            <div class="mx mt3 card">
+                <div class="action-grid" id="action-grid">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+
+            <!-- ── MONTHLY STATS ──────────────────────── -->
+            <div class="mx mt3 card" id="stats-section">
+                <div
+                    style="
+                        padding: 18px 20px 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                    ">
+                    <p class="sec-label">Juni 2025</p>
+                    <span
+                        style="
+                            font-size: 0.75rem;
+                            color: var(--teal);
+                            font-weight: 600;
+                            cursor: pointer;
+                        "
+                        >Lihat laporan →</span
+                    >
+                </div>
+
+                <!-- In / Out -->
+                <div style="display: flex; gap: 0">
+                    <div class="stat-col" style="border-right: 1px solid var(--border)">
+                        <div
+                            style="
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                                margin-bottom: 6px;
+                            ">
+                            <span
+                                style="
+                                    width: 20px;
+                                    height: 20px;
+                                    border-radius: 6px;
+                                    background: var(--teal-lt);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 0.65rem;
+                                    font-weight: 700;
+                                    color: var(--teal);
+                                "
+                                >↑</span
+                            >
+                            <span style="font-size: 0.72rem; color: var(--text-3); font-weight: 600"
+                                >Masuk</span
+                            >
+                        </div>
+                        <p
+                            class="mono"
+                            style="font-size: 1rem; font-weight: 500; color: var(--teal)">
+                            Rp 5.000.000
+                        </p>
+                        <p style="font-size: 0.72rem; color: var(--text-3); margin-top: 3px">
+                            3 transaksi
+                        </p>
+                    </div>
+                    <div class="stat-col">
+                        <div
+                            style="
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                                margin-bottom: 6px;
+                            ">
+                            <span
+                                style="
+                                    width: 20px;
+                                    height: 20px;
+                                    border-radius: 6px;
+                                    background: var(--red-lt);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 0.65rem;
+                                    font-weight: 700;
+                                    color: var(--red);
+                                "
+                                >↓</span
+                            >
+                            <span style="font-size: 0.72rem; color: var(--text-3); font-weight: 600"
+                                >Keluar</span
+                            >
+                        </div>
+                        <p
+                            class="mono"
+                            style="font-size: 1rem; font-weight: 500; color: var(--red)">
+                            Rp 2.258.000
+                        </p>
+                        <p style="font-size: 0.72rem; color: var(--text-3); margin-top: 3px">
+                            12 transaksi
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Ratio bar -->
+                <div style="padding: 0 20px 14px">
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 7px;
+                        ">
+                        <span style="font-size: 0.69rem; color: var(--text-3)"
+                            >Rasio masuk/keluar</span
+                        >
+                        <span
+                            class="mono"
+                            style="font-size: 0.75rem; font-weight: 500; color: var(--teal)"
+                            >+Rp 2.742.000</span
+                        >
+                    </div>
+                    <div class="ratio-bar">
+                        <div class="ratio-fill" style="width: 68.9%"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px">
+                        <span style="font-size: 0.65rem; color: var(--teal); font-weight: 600"
+                            >69% masuk</span
+                        >
+                        <span style="font-size: 0.65rem; color: var(--red); font-weight: 600"
+                            >31% keluar</span
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── CREDIT CARD SECTION (hidden by default) ── -->
+            <div class="mx mt3 card" id="credit-section" style="display: none">
+                <div style="padding: 18px 20px 0">
+                    <p class="sec-label">Penggunaan Kredit</p>
+                </div>
+
+                <!-- Limit + used -->
+                <div style="padding: 14px 20px 0">
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: flex-end;
+                            margin-bottom: 4px;
+                        ">
+                        <span style="font-size: 0.78rem; color: var(--text-2)">Terpakai</span>
+                        <div style="text-align: right">
+                            <span
+                                class="mono"
+                                style="font-size: 0.9rem; font-weight: 600; color: var(--red)"
+                                >Rp 3.250.000</span
+                            >
+                            <span style="font-size: 0.75rem; color: var(--text-3)">
+                                / Rp 15.000.000</span
+                            >
+                        </div>
+                    </div>
+                    <div class="credit-bar">
+                        <div class="credit-fill" style="width: 21.7%"></div>
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            margin-top: 6px;
+                            margin-bottom: 14px;
+                        ">
+                        <span style="font-size: 0.69rem; color: var(--red); font-weight: 600"
+                            >21.7% terpakai</span
+                        >
+                        <span style="font-size: 0.69rem; color: var(--teal); font-weight: 600"
+                            >Tersedia Rp 11.750.000</span
+                        >
+                    </div>
+                </div>
+
+                <div class="f-div"></div>
+                <div class="field-row">
+                    <span class="field-label">
+                        <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--text-3)"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect x="1" y="4" width="22" height="16" rx="2" />
+                            <line x1="1" y1="10" x2="23" y2="10" />
+                        </svg>
+                        Jatuh Tempo
+                    </span>
+                    <span class="field-val" style="color: var(--amber)">15 Jul 2025</span>
+                </div>
+                <div class="f-div"></div>
+                <div class="field-row" style="padding-bottom: 16px">
+                    <span class="field-label">
+                        <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--text-3)"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23" />
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                        </svg>
+                        Min. Pembayaran
+                    </span>
+                    <span class="mono field-val">Rp 162.500</span>
+                </div>
+            </div>
+
+            <!-- ── ACCOUNT INFO ────────────────────────── -->
+            <div class="mx mt3 card" id="info-section">
+                <div style="padding: 18px 20px 0">
+                    <p class="sec-label">Informasi Akun</p>
+                </div>
+
+                <div id="info-rows">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+
+            <!-- ── MEMBERS ─────────────────────────────── -->
+            <div class="mx mt3 card" id="members-section">
+                <div
+                    style="
+                        padding: 18px 20px 14px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                    ">
+                    <p class="sec-label">Anggota</p>
+                    <span
+                        style="
+                            font-size: 0.75rem;
+                            color: var(--teal);
+                            font-weight: 600;
+                            cursor: pointer;
+                        "
+                        >+ Undang</span
+                    >
+                </div>
+
+                <!-- Member 1 -->
+                <div class="member-row">
+                    <div class="avatar" style="background: var(--teal)">KD</div>
+                    <div style="flex: 1">
+                        <p
+                            style="
+                                font-size: 0.88rem;
+                                font-weight: 600;
+                                color: var(--text-1);
+                                margin-bottom: 2px;
+                            ">
+                            Kevin Darma
+                        </p>
+                        <p style="font-size: 0.75rem; color: var(--text-2)">kevin@email.com</p>
+                    </div>
+                    <span class="role-badge" style="background: var(--teal-lt); color: var(--teal)"
+                        >Pemilik</span
+                    >
+                </div>
+
+                <div class="f-div"></div>
+
+                <!-- Member 2 -->
+                <div class="member-row" style="padding-bottom: 16px">
+                    <div class="avatar" style="background: #7a5cb8">AR</div>
+                    <div style="flex: 1">
+                        <p
+                            style="
+                                font-size: 0.88rem;
+                                font-weight: 600;
+                                color: var(--text-1);
+                                margin-bottom: 2px;
+                            ">
+                            Anisa Rahayu
+                        </p>
+                        <p style="font-size: 0.75rem; color: var(--text-2)">anisa@email.com</p>
+                    </div>
+                    <span class="role-badge" style="background: var(--sage-lt); color: var(--sage)"
+                        >Anggota</span
+                    >
+                </div>
+            </div>
+
+            <!-- ── RECENT TRANSACTIONS ─────────────────── -->
+            <div class="mx mt3 card">
+                <div
+                    style="
+                        padding: 18px 20px 14px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                    ">
+                    <p class="sec-label">Transaksi Terbaru</p>
+                    <span
+                        style="
+                            font-size: 0.75rem;
+                            color: var(--teal);
+                            font-weight: 600;
+                            cursor: pointer;
+                        "
+                        >Lihat Semua →</span
+                    >
+                </div>
+
+                <!-- Txn rows -->
+                <div style="padding: 0 0 6px">
+                    <div class="txn-row">
+                        <div class="txn-icon" style="background: #fff5e6">🍜</div>
+                        <div style="flex: 1; min-width: 0">
+                            <p
+                                style="
+                                    font-size: 0.87rem;
+                                    font-weight: 600;
+                                    color: var(--text-1);
+                                    margin-bottom: 2px;
+                                    white-space: nowrap;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                ">
+                                Warteg Bu Sri
+                            </p>
+                            <p style="font-size: 0.73rem; color: var(--text-3)">Sen, 23 Jun 2025</p>
+                        </div>
+                        <span
+                            class="mono"
+                            style="
+                                font-size: 0.88rem;
+                                font-weight: 500;
+                                color: var(--red);
+                                flex-shrink: 0;
+                            "
+                            >−Rp 258.000</span
+                        >
+                    </div>
+
+                    <div class="f-div"></div>
+
+                    <div class="txn-row">
+                        <div class="txn-icon" style="background: var(--teal-lt)">💼</div>
+                        <div style="flex: 1; min-width: 0">
+                            <p
+                                style="
+                                    font-size: 0.87rem;
+                                    font-weight: 600;
+                                    color: var(--text-1);
+                                    margin-bottom: 2px;
+                                ">
+                                Gaji Juni
+                            </p>
+                            <p style="font-size: 0.73rem; color: var(--text-3)">Sab, 21 Jun 2025</p>
+                        </div>
+                        <span
+                            class="mono"
+                            style="
+                                font-size: 0.88rem;
+                                font-weight: 500;
+                                color: var(--teal);
+                                flex-shrink: 0;
+                            "
+                            >+Rp 5.000.000</span
+                        >
+                    </div>
+
+                    <div class="f-div"></div>
+
+                    <div class="txn-row">
+                        <div class="txn-icon" style="background: var(--sage-lt)">🔄</div>
+                        <div style="flex: 1; min-width: 0">
+                            <p
+                                style="
+                                    font-size: 0.87rem;
+                                    font-weight: 600;
+                                    color: var(--text-1);
+                                    margin-bottom: 2px;
+                                ">
+                                Transfer ke GoPay
+                            </p>
+                            <p style="font-size: 0.73rem; color: var(--text-3)">Jum, 20 Jun 2025</p>
+                        </div>
+                        <span
+                            class="mono"
+                            style="
+                                font-size: 0.88rem;
+                                font-weight: 500;
+                                color: var(--sage);
+                                flex-shrink: 0;
+                            "
+                            >−Rp 1.000.000</span
+                        >
+                    </div>
+
+                    <div class="f-div"></div>
+
+                    <div class="txn-row" style="padding-bottom: 16px">
+                        <div class="txn-icon" style="background: #fff0f8">☕</div>
+                        <div style="flex: 1; min-width: 0">
+                            <p
+                                style="
+                                    font-size: 0.87rem;
+                                    font-weight: 600;
+                                    color: var(--text-1);
+                                    margin-bottom: 2px;
+                                ">
+                                Kopi Kenangan
+                            </p>
+                            <p style="font-size: 0.73rem; color: var(--text-3)">Kam, 19 Jun 2025</p>
+                        </div>
+                        <span
+                            class="mono"
+                            style="
+                                font-size: 0.88rem;
+                                font-weight: 500;
+                                color: var(--red);
+                                flex-shrink: 0;
+                            "
+                            >−Rp 45.000</span
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── BOTTOM ACTIONS ──────────────────────── -->
+            <div class="bottom-btns" style="margin-top: 16px">
+                <button class="btn-edit btn">
+                    <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
+                    Edit Akun
+                </button>
+                <button class="btn-archive btn">
+                    <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="21 8 21 21 3 21 3 8" />
+                        <rect x="1" y="3" width="22" height="5" />
+                        <line x1="10" y1="12" x2="14" y2="12" />
+                    </svg>
+                    Arsipkan
+                </button>
+            </div>
+        </div>
+        <!-- /shell -->
+
+        <script>
+            /* ─────────────────────────────────────────────────
+   Account type data
+───────────────────────────────────────────────── */
+            const ACCOUNTS = {
+                bank: {
+                    cardBg: '#1B4D45',
+                    icon: '🏦',
+                    provider: 'BCA',
+                    name: 'Tabungan Utama',
+                    balance: '4.742.000',
+                    number: '•••• •••• •••• 1234',
+                    numberFull: '0372 5819 4421 1234',
+                    currency: 'IDR',
+                    showCredit: false,
+                    showMembers: true,
+                    sparkPoints:
+                        'M0,40 30,38 60,36 90,30 120,32 150,22 180,26 210,16 240,20 270,12 300,9 330,6 360,4',
+                    actions: [
+                        { icon: '💸', label: 'Transfer', bg: '#E3F5F2', color: 'var(--teal)' },
+                        { icon: '➕', label: 'Top-up', bg: 'var(--sage-lt)', color: 'var(--sage)' },
+                        { icon: '📊', label: 'Laporan', bg: '#FBF4E3', color: 'var(--amber)' },
+                        { icon: '🔗', label: 'Hubungkan', bg: '#F0EAF8', color: '#7A5CB8' },
+                    ],
+                    infoRows: [
+                        { icon: '🏷️', label: 'Jenis Akun', val: 'Tabungan', mono: false },
+                        { icon: '🏦', label: 'Bank', val: 'BCA', mono: false },
+                        {
+                            icon: '#',
+                            label: 'No. Rekening',
+                            val: '•••• 1234',
+                            mono: true,
+                            reveal: true,
+                        },
+                        { icon: '💱', label: 'Mata Uang', val: 'IDR', mono: false },
+                        { icon: '📅', label: 'Ditambahkan', val: '1 Jan 2024', mono: false },
+                    ],
+                },
+                ewallet: {
+                    cardBg: '#273D2C',
+                    icon: '💚',
+                    provider: 'GoPay',
+                    name: 'GoPay Utama',
+                    balance: '1.258.000',
+                    number: '0812-3456-7890',
+                    numberFull: '0812-3456-7890',
+                    currency: 'IDR',
+                    showCredit: false,
+                    showMembers: false,
+                    sparkPoints:
+                        'M0,44 30,40 60,42 90,38 120,34 150,36 180,30 210,28 240,32 270,24 300,20 330,18 360,14',
+                    actions: [
+                        { icon: '💸', label: 'Transfer', bg: '#E3F5F2', color: 'var(--teal)' },
+                        { icon: '➕', label: 'Top-up', bg: 'var(--sage-lt)', color: 'var(--sage)' },
+                        { icon: '🧾', label: 'Tagihan', bg: '#FBF4E3', color: 'var(--amber)' },
+                        { icon: '📊', label: 'Laporan', bg: '#F0EAF8', color: '#7A5CB8' },
+                    ],
+                    infoRows: [
+                        { icon: '📱', label: 'Jenis Akun', val: 'E-Wallet', mono: false },
+                        { icon: '🏢', label: 'Penyedia', val: 'Gojek / GoPay', mono: false },
+                        { icon: '📞', label: 'No. Telepon', val: '0812-3456-7890', mono: true },
+                        { icon: '💱', label: 'Mata Uang', val: 'IDR', mono: false },
+                        { icon: '📅', label: 'Ditambahkan', val: '15 Mar 2024', mono: false },
+                    ],
+                },
+                cash: {
+                    cardBg: '#3D2F1A',
+                    icon: '💵',
+                    provider: 'Tunai',
+                    name: 'Dompet Harian',
+                    balance: '350.000',
+                    number: null,
+                    numberFull: null,
+                    currency: 'IDR',
+                    showCredit: false,
+                    showMembers: false,
+                    sparkPoints:
+                        'M0,30 30,28 60,34 90,32 120,36 150,28 180,30 210,38 240,32 270,36 300,34 330,30 360,28',
+                    actions: [
+                        { icon: '➕', label: 'Masukkan', bg: '#E3F5F2', color: 'var(--teal)' },
+                        {
+                            icon: '➖',
+                            label: 'Keluarkan',
+                            bg: 'var(--red-lt)',
+                            color: 'var(--red)',
+                        },
+                        { icon: '🔄', label: 'Sesuaikan', bg: '#FBF4E3', color: 'var(--amber)' },
+                        { icon: '📊', label: 'Laporan', bg: '#F0EAF8', color: '#7A5CB8' },
+                    ],
+                    infoRows: [
+                        { icon: '💵', label: 'Jenis Akun', val: 'Tunai / Cash', mono: false },
+                        { icon: '📍', label: 'Lokasi', val: 'Dompet Fisik', mono: false },
+                        { icon: '💱', label: 'Mata Uang', val: 'IDR', mono: false },
+                        { icon: '📅', label: 'Ditambahkan', val: '1 Jan 2024', mono: false },
+                    ],
+                },
+                credit: {
+                    cardBg: '#252B3B',
+                    icon: '💳',
+                    provider: 'BCA',
+                    name: 'Kartu Kredit Platinum',
+                    balance: '11.750.000', // available credit
+                    number: '•••• •••• •••• 5678',
+                    numberFull: '4178 8823 9912 5678',
+                    currency: 'IDR',
+                    showCredit: true,
+                    showMembers: false,
+                    sparkPoints:
+                        'M0,20 30,24 60,22 90,28 120,26 150,30 180,28 210,34 240,30 270,36 300,32 330,38 360,34',
+                    actions: [
+                        { icon: '💳', label: 'Bayar', bg: '#E3F5F2', color: 'var(--teal)' },
+                        { icon: '🔒', label: 'Kunci', bg: 'var(--red-lt)', color: 'var(--red)' },
+                        { icon: '📋', label: 'Tagihan', bg: '#FBF4E3', color: 'var(--amber)' },
+                        { icon: '📊', label: 'Laporan', bg: '#F0EAF8', color: '#7A5CB8' },
+                    ],
+                    infoRows: [
+                        { icon: '💳', label: 'Jenis Akun', val: 'Kartu Kredit', mono: false },
+                        { icon: '🏦', label: 'Bank', val: 'BCA', mono: false },
+                        {
+                            icon: '#',
+                            label: 'No. Kartu',
+                            val: '•••• 5678',
+                            mono: true,
+                            reveal: true,
+                        },
+                        { icon: '📅', label: 'Berlaku s/d', val: '12/28', mono: true },
+                        { icon: '💱', label: 'Mata Uang', val: 'IDR', mono: false },
+                    ],
+                },
+            };
+
+            /* ─────────────────────────────────────────────────
+   State
+───────────────────────────────────────────────── */
+            let balanceHidden = false;
+            let numberRevealed = false;
+            let currentAccount = 'bank';
+            let current = ACCOUNTS.bank;
+
+            /* ─────────────────────────────────────────────────
+   Set account type
+───────────────────────────────────────────────── */
+            function setAccount(type, btn) {
+                currentAccount = type;
+                current = ACCOUNTS[type];
+                balanceHidden = false;
+                numberRevealed = false;
+
+                // Switcher
+                document.querySelectorAll('.sw-btn').forEach((b) => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Card bg
+                document.getElementById('acct-card').style.background = current.cardBg;
+
+                // Card header
+                document.getElementById('card-icon').textContent = current.icon;
+                document.getElementById('card-provider').textContent = current.provider;
+                document.getElementById('card-name').textContent = current.name;
+
+                // Balance
+                const prefix = document.getElementById('bal-prefix');
+                const display = document.getElementById('bal-display');
+                prefix.style.display = 'inline';
+                display.className = 'bal-number';
+                display.textContent = current.balance;
+                document.getElementById('bal-currency').textContent = current.currency;
+
+                // Balance label: credit = "Tersedia"
+                document.querySelector('.bal-label').textContent =
+                    type === 'credit' ? 'Tersedia' : 'Saldo';
+
+                // Sparkline
+                const pts = current.sparkPoints;
+                const polyPts = pts.replace('M', '').replace(/([0-9]) /g, '$1 ');
+                document.getElementById('spark-line').setAttribute('points', polyPts);
+                document
+                    .getElementById('spark-area')
+                    .setAttribute('points', polyPts + ` 360,52 0,52`);
+
+                // Account number
+                const numEl = document.getElementById('card-number');
+                const revBtn = document.getElementById('reveal-btn');
+                if (current.number) {
+                    numEl.textContent = current.number;
+                    numEl.style.display = 'block';
+                    revBtn.style.display = current.numberFull ? 'block' : 'none';
+                } else {
+                    numEl.style.display = 'none';
+                    revBtn.style.display = 'none';
+                }
+
+                // Quick actions
+                const grid = document.getElementById('action-grid');
+                grid.innerHTML = current.actions
+                    .map(
+                        (a) => `
+    <button class="act-btn">
+      <div class="act-icon" style="background:${a.bg};">
+        <span style="font-size:1.2rem;">${a.icon}</span>
+      </div>
+      <span class="act-label">${a.label}</span>
+    </button>
+  `
+                    )
+                    .join('');
+
+                // Credit section
+                document.getElementById('credit-section').style.display = current.showCredit
+                    ? 'block'
+                    : 'none';
+                document.getElementById('stats-section').style.display = current.showCredit
+                    ? 'none'
+                    : 'block';
+
+                // Info rows
+                const infoEl = document.getElementById('info-rows');
+                infoEl.innerHTML = current.infoRows
+                    .map(
+                        (r, i) => `
+    ${i > 0 ? '<div class="f-div"></div>' : ''}
+    <div class="field-row" style="${i === current.infoRows.length - 1 ? 'padding-bottom:16px;' : ''}">
+      <span class="field-label" style="font-size:0.8rem; color:var(--text-2);">${r.label}</span>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="${r.mono ? 'mono' : ''} field-val">${r.val}</span>
+        ${r.reveal ? `<button class="reveal-btn" onclick="toggleInfoNumber(this, '${current.numberFull}', '${r.val}')">Tampilkan</button>` : ''}
+      </div>
+    </div>
+  `
+                    )
+                    .join('');
+
+                // Members section
+                document.getElementById('members-section').style.display = current.showMembers
+                    ? 'block'
+                    : 'none';
+            }
+
+            /* ─────────────────────────────────────────────────
+   Toggle balance visibility
+───────────────────────────────────────────────── */
+            function toggleBalance() {
+                balanceHidden = !balanceHidden;
+                const display = document.getElementById('bal-display');
+                const prefix = document.getElementById('bal-prefix');
+                const eye = document.getElementById('eye-icon');
+
+                if (balanceHidden) {
+                    display.textContent = '••••••';
+                    display.style.letterSpacing = '0.1em';
+                    display.style.fontSize = '1.8rem';
+                    prefix.style.display = 'none';
+                    eye.innerHTML =
+                        '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+                } else {
+                    display.textContent = current.balance;
+                    display.style.letterSpacing = '-0.025em';
+                    display.style.fontSize = '';
+                    prefix.style.display = 'inline';
+                    eye.innerHTML =
+                        '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+                }
+            }
+
+            /* ─────────────────────────────────────────────────
+   Toggle account number on hero card
+───────────────────────────────────────────────── */
+            function toggleNumber() {
+                numberRevealed = !numberRevealed;
+                const numEl = document.getElementById('card-number');
+                const revBtn = document.getElementById('reveal-btn');
+                numEl.textContent = numberRevealed ? current.numberFull : current.number;
+                revBtn.textContent = numberRevealed ? 'Sembunyikan' : 'Tampilkan';
+            }
+
+            /* ─────────────────────────────────────────────────
+   Toggle account number inside info section
+───────────────────────────────────────────────── */
+            function toggleInfoNumber(btn, full, masked) {
+                const valEl = btn.previousElementSibling;
+                const shown = btn.textContent === 'Sembunyikan';
+                valEl.textContent = shown ? masked : full;
+                btn.textContent = shown ? 'Tampilkan' : 'Sembunyikan';
+            }
+
+            /* ─────────────────────────────────────────────────
+   Init
+───────────────────────────────────────────────── */
+            setAccount('bank', document.querySelector('.sw-btn.active'));
+        </script>
+    </body>
+</html>

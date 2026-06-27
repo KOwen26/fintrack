@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\TypeScript\Writers\TypeDefinitionWriter as AppTypeDefinitionWriter;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
@@ -9,7 +10,6 @@ use Spatie\TypeScriptTransformer\Collectors\DefaultCollector;
 use Spatie\TypeScriptTransformer\Collectors\EnumCollector;
 use Spatie\TypeScriptTransformer\Formatters\PrettierFormatter;
 use Spatie\TypeScriptTransformer\Transformers\EnumTransformer;
-use Spatie\TypeScriptTransformer\Writers\TypeDefinitionWriter;
 
 return [
     /*
@@ -70,7 +70,7 @@ return [
      * But you can also use the `ModuleWriter` or implement your own.
      */
 
-    'writer' => TypeDefinitionWriter::class,
+    'writer' => AppTypeDefinitionWriter::class,
 
     /*
      * The generated TypeScript file can be formatted. We ship a Prettier formatter

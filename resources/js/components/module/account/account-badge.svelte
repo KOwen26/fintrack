@@ -6,9 +6,10 @@
     interface Props {
         account: App.Models.Account;
         labelOnly?: boolean;
+        class?: string;
     }
 
-    let { account, labelOnly = false }: Props = $props();
+    let { account, labelOnly = false, class: _class }: Props = $props();
 
     const color = $derived(account.decorations?.color);
 </script>
@@ -22,7 +23,8 @@
     class={cn(
         'font-semibold ',
         labelOnly ? '' : 'badge rounded border-none px-2',
-        'bg-(--bg-color) text-(--text-color)'
+        'bg-(--bg-color) text-(--text-color)',
+        _class
     )}>
     {account.name}
 </span>

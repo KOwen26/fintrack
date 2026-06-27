@@ -6,14 +6,14 @@
     interface Props {
         label: string;
         icon?: string;
-        ctaUrl: string;
+        ctaUrl?: string;
         ctaLabel?: string;
     }
 
     let { label, icon, ctaUrl, ctaLabel }: Props = $props();
 
     const hasIcon = $derived(!!icon?.length);
-    const hasCta = $derived(!!ctaUrl.length);
+    const hasCta = $derived(!!ctaUrl?.length);
 </script>
 
 <div class="flex flex-col items-center justify-center py-16 text-base-content/80 gap-6">

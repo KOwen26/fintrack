@@ -57,10 +57,12 @@
                 {@render children?.()}
             </div>
 
-            <BottomNav />
+            <div class="my-10"></div>
+
+            {@render footer()}
         </ErrorWrapper>
 
-        {@render footer()}
+        <BottomNav />
     </Sidebar.Inset>
 </Sidebar.Provider>
 
