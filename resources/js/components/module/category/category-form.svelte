@@ -38,8 +38,8 @@
             })
             .toFormGenerator({
                 name: '',
-                'decorations.icon': 'ph:tag',
-                'decorations.color': '#6366f1',
+                'decorations.icon': 'ph--tag',
+                'decorations.color': 'indigo-500',
                 type: 'output',
                 order: '0.100',
                 is_fixed_cost: false,

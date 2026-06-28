@@ -4,6 +4,8 @@ namespace Database\Factories;
 
 use App\Enums\CategoryType;
 use App\Models\Category;
+use App\Models\DecorationColor;
+use App\Models\DecorationIcon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,8 +21,8 @@ class CategoryFactory extends Factory
             'type' => fake()->randomElement(CategoryType::cases()),
             'order' => 0.100,
             'decorations' => [
-                'icon' => ['id' => 'tag', 'value' => 'ph:tag'],
-                'color' => ['id' => fake()->hexColor(), 'value' => fake()->hexColor()],
+                'icon' => DecorationIcon::inRandomOrder()->first()?->slug ?? 'tag',
+                'color' => DecorationColor::inRandomOrder()->first()?->slug ?? 'slate-500',
             ],
             'is_fixed_cost' => false,
         ];

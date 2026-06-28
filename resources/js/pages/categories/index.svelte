@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { App } from '@wayfinder/types';
 
+    import { getDecorationColor } from '@data/decoration-colors';
     import { router } from '@inertiajs/svelte';
     import CategoryController from '@wayfinder/App/Http/Controllers/CategoryController';
 
@@ -59,7 +60,8 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span
-                            style="background-color: {group.decorations?.color?.value}"
+                            style="background-color: {getDecorationColor(group.decorations?.color)
+                                ?.value}"
                             class="inline-block h-3 w-3 rounded-full"></span>
                         <span class="font-semibold text-sm">{group.name}</span>
                         {#if group.is_fixed_cost}
@@ -81,7 +83,9 @@
                             <li class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <span
-                                        style="background-color: {child.decorations?.color?.value}"
+                                        style="background-color: {getDecorationColor(
+                                            child.decorations?.color
+                                        )?.value}"
                                         class="inline-block h-2 w-2 rounded-full"></span>
                                     <span class="text-sm">{child.name}</span>
                                     {#if child.is_fixed_cost}

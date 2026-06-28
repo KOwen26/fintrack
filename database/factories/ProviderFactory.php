@@ -4,6 +4,8 @@ namespace Database\Factories;
 
 use App\Enums\ProviderStatus;
 use App\Enums\ProviderType;
+use App\Models\DecorationColor;
+use App\Models\DecorationIcon;
 use App\Models\Provider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,8 +23,8 @@ class ProviderFactory extends Factory
             'type' => fake()->randomElement(ProviderType::cases())->value,
             'status' => ProviderStatus::Active->value,
             'decorations' => [
-                'icon' => ['id' => 'building-bank-bold', 'value' => 'ph:building-bank-bold'],
-                'color' => ['id' => fake()->hexColor(), 'value' => fake()->hexColor()],
+                'icon' => DecorationIcon::inRandomOrder()->first()?->slug ?? 'building-bank-bold',
+                'color' => DecorationColor::inRandomOrder()->first()?->slug ?? 'slate-500',
             ],
         ];
     }

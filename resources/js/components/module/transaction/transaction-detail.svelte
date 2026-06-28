@@ -4,8 +4,8 @@
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
 
-    import AccountBadge from '@components/module/account/account-badge.svelte';
-    import AccountTypeBadge from '@components/module/account/account-type-badge.svelte';
+    import AccountInfo from '@components/module/account/account-info.svelte';
+    import CategoryInfo from '@components/module/category/category-info.svelte';
     import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
     import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
 
@@ -96,17 +96,7 @@
                     {isInflow ? 'Destination Account' : 'Source Account'}
                 </p>
 
-                <div class="flex items-center gap-3">
-                    <div
-                        class="size-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <i class="iconify size-5 text-primary ph--bank-bold"></i>
-                    </div>
-                    <div class="grow">
-                        <AccountBadge account={transaction.account} labelOnly />
-                        <p class="my-1"></p>
-                        <AccountTypeBadge type={transaction.account?.type} />
-                    </div>
-                </div>
+                <AccountInfo account={transaction.account} />
             </div>
 
             <div class={['text-right', !isTransfer ? 'hidden' : '']}>
@@ -114,50 +104,16 @@
                     {isInflow ? 'Destination Account' : 'Source Account'}
                 </p>
 
-                <div class="flex flex-row-reverse items-center gap-3">
-                    <div
-                        class="size-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <i class="iconify size-5 text-primary ph--bank-bold"></i>
-                    </div>
-                    <div class="grow">
-                        <AccountBadge account={transaction.account} labelOnly />
-                        <p class="my-1"></p>
-                        <AccountTypeBadge type={transaction.account?.type} />
-                    </div>
-                </div>
+                <AccountInfo account={transaction.account} reverse />
             </div>
         </div>
     </ResponsiveCard>
 
-    <!-- ════════════════════════════════════════════ -->
-    <!--  CATEGORY CARD                              -->
-    <!-- ════════════════════════════════════════════ -->
-    {#if transaction?.category}
-        <ResponsiveCard class="p-2.5" contentClass="space-y-5">
-            <p class=" font-semibold tracking-widest uppercase text-base-content/50">Category</p>
+    <ResponsiveCard class="p-2.5" contentClass="space-y-5">
+        <p class="font-semibold tracking-widest uppercase text-base-content/50">Category</p>
 
-            <div class="flex items-center gap-3">
-                <div
-                    style:background={transaction.category.decorations?.color?.value
-                        ? `${transaction.category.decorations.color.value}20`
-                        : undefined}
-                    style:color={transaction.category.decorations?.color?.value ?? undefined}
-                    class="size-10 rounded-xl bg-base-content/10 flex items-center justify-center shrink-0 text-lg">
-                    {#if transaction.category.decorations?.icon}
-                        <i class="iconify size-5 {transaction.category.decorations.icon}"></i>
-                    {:else}
-                        <i class="iconify size-5 ph--tag-bold"></i>
-                    {/if}
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="font-semibold text-sm text-base-content">
-                        {transaction.category.name}
-                    </p>
-                </div>
-                <i class="iconify size-5 text-base-content/20 ph--caret-right-bold"></i>
-            </div>
-        </ResponsiveCard>
-    {/if}
+        <CategoryInfo category={transaction.category} />
+    </ResponsiveCard>
 
     <!-- ════════════════════════════════════════════ -->
     <!--  DETAIL FIELDS CARD                         -->

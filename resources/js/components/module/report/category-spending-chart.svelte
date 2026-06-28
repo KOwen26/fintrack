@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { getDecorationColor } from '@data/decoration-colors';
+
     import Button from '@components/ui/button.svelte';
     import DonutChart from '@components/ui/charts/donut-chart.svelte';
 
@@ -42,8 +44,16 @@
 
     const currentSlices = $derived(
         view === 'parent'
-            ? categories.map((g) => ({ name: g.name, value: g.total, color: g.color }))
-            : selectedGroup!.children.map((c) => ({ name: c.name, value: c.total, color: c.color }))
+            ? categories.map((g) => ({
+                  name: g.name,
+                  value: g.total,
+                  color: getDecorationColor(g.color)?.value ?? g.color,
+              }))
+            : selectedGroup!.children.map((c) => ({
+                  name: c.name,
+                  value: c.total,
+                  color: getDecorationColor(c.color)?.value ?? c.color,
+              }))
     );
 
     const currentCenterTotal = $derived(
@@ -113,7 +123,8 @@
                             class="flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-left hover:opacity-80"
                             onclick={() => drillDown(group)}>
                             <span
-                                style="background-color: {group.color}"
+                                style="background-color: {getDecorationColor(group.color)?.value ??
+                                    group.color}"
                                 class="inline-block size-2.5 shrink-0 rounded-[2px]"></span>
                             <span class="truncate">{group.name}</span>
                         </button>
@@ -137,7 +148,8 @@
                     <li class="flex items-center justify-between text-sm">
                         <div class="flex min-w-0 items-center gap-2">
                             <span
-                                style="background-color: {item.color}"
+                                style="background-color: {getDecorationColor(item.color)?.value ??
+                                    item.color}"
                                 class="inline-block size-2.5 shrink-0 rounded-[2px]"></span>
                             <span class="truncate">{item.name}</span>
                         </div>

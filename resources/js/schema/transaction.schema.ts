@@ -1,6 +1,5 @@
 import type { DataSchema } from '@utilities/data-composer';
-
-import { App } from '@wayfinder/types';
+import type { App } from '@wayfinder/types';
 
 import { DataComposer } from '@utilities/data-composer';
 

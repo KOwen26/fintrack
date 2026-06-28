@@ -34,11 +34,14 @@
 
 {#if data.length === 0}
     <div
-        class={cn('flex aspect-video items-center justify-center text-base-content/40', className)}>
+        class={cn(
+            'flex aspect-square items-center justify-center text-base-content/40',
+            className
+        )}>
         <p class="text-sm">{emptyMessage}</p>
     </div>
 {:else}
-    <div class={cn('flex aspect-video justify-center overflow-visible text-xs', className)}>
+    <div class={cn('flex aspect-square justify-center overflow-visible text-xs', className)}>
         <PieChart
             c="color"
             {data}

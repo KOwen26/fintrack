@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use App\Data\DecorationData;
 use App\Models\Category;
-use App\Models\DecorationColor;
-use App\Models\DecorationIcon;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
@@ -169,12 +167,9 @@ class CategorySeeder extends Seeder
 
     private function resolveDecoration(string $iconSlug, string $colorSlug): array
     {
-        $icon = DecorationIcon::where('slug', $iconSlug)->firstOrFail();
-        $color = DecorationColor::where('slug', $colorSlug)->firstOrFail();
-
         return DecorationData::from([
-            'icon' => ['id' => $icon->slug, 'value' => $icon->value],
-            'color' => ['id' => $color->slug, 'value' => $color->oklch],
+            'icon' => $iconSlug,
+            'color' => $colorSlug,
         ])->toArray();
     }
 }

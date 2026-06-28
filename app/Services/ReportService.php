@@ -119,18 +119,18 @@ class ReportService
 
                 $rows = DB::table('transactions as t')
                     ->join('categories as c', 'c.id', '=', 't.category_id')
-                    ->selectRaw('
+                    ->selectRaw("
                         c.name,
-                        c.color,
-                        c.icon,
+                        c.decorations->>'$.color' AS color,
+                        c.decorations->>'$.icon' AS icon,
                         SUM(t.amount) AS total,
                         ROUND(SUM(t.amount) / ? * 100, 2) AS percentage
-                    ', [$periodTotal])
+                    ", [$periodTotal])
                     ->where('t.account_id', $account->id)
                     ->whereIn('t.type', ['expense', 'fee'])
                     ->whereBetween('t.transaction_date', [$from->toDateString(), $to->toDateString()])
                     ->whereNull('t.deleted_at')
-                    ->groupBy('t.category_id', 'c.name', 'c.color', 'c.icon')
+                    ->groupBy('t.category_id', 'c.name', 'color', 'icon')
                     ->orderByDesc('total')
                     ->get();
 

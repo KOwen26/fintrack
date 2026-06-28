@@ -18,7 +18,7 @@ it('groups a single top-level category without children', function (): void {
         new CategorySpendingItemData(
             name: 'Food',
             color: '#ff0000',
-            icon: 'ph:fork-knife',
+            icon: 'ph--fork-knife',
             total: 500.0,
             percentage: 50.0,
             categoryId: 1,
@@ -45,7 +45,7 @@ it('merges parent with its child into one group', function (): void {
         new CategorySpendingItemData(
             name: 'Transport',
             color: '#00ff00',
-            icon: 'ph:car',
+            icon: 'ph--car',
             total: 300.0,
             percentage: 30.0,
             categoryId: 1,
@@ -55,7 +55,7 @@ it('merges parent with its child into one group', function (): void {
         new CategorySpendingItemData(
             name: 'Gas',
             color: '#0000ff',
-            icon: 'ph:gas-pump',
+            icon: 'ph--gas-pump',
             total: 150.0,
             percentage: 15.0,
             categoryId: 2,
@@ -89,7 +89,7 @@ it('synthesises parent group from children when parent has no direct spending', 
         new CategorySpendingItemData(
             name: 'Restaurant',
             color: '#ff00ff',
-            icon: 'ph:utensils',
+            icon: 'ph--utensils',
             total: 200.0,
             percentage: 20.0,
             categoryId: 3,
@@ -99,7 +99,7 @@ it('synthesises parent group from children when parent has no direct spending', 
         new CategorySpendingItemData(
             name: 'Coffee',
             color: '#ffff00',
-            icon: 'ph:coffee',
+            icon: 'ph--coffee',
             total: 50.0,
             percentage: 5.0,
             categoryId: 4,
@@ -119,7 +119,7 @@ it('synthesises parent group from children when parent has no direct spending', 
 
     // Uses first child's color/icon as fallback
     expect($result[0]->color)->toBe('#ff00ff');
-    expect($result[0]->icon)->toBe('ph:utensils');
+    expect($result[0]->icon)->toBe('ph--utensils');
     expect($result[0]->children)->toHaveCount(2);
 });
 
@@ -130,7 +130,7 @@ it('handles multiple parent groups sorted by total descending', function (): voi
         new CategorySpendingItemData(
             name: 'Transport',
             color: '#00ff00',
-            icon: 'ph:car',
+            icon: 'ph--car',
             total: 100.0,
             percentage: 10.0,
             categoryId: 1,
@@ -140,7 +140,7 @@ it('handles multiple parent groups sorted by total descending', function (): voi
         new CategorySpendingItemData(
             name: 'Food',
             color: '#ff0000',
-            icon: 'ph:fork-knife',
+            icon: 'ph--fork-knife',
             total: 500.0,
             percentage: 50.0,
             categoryId: 2,
@@ -166,7 +166,7 @@ it('recalculates child percentages relative to parent subtotal', function (): vo
         new CategorySpendingItemData(
             name: 'Transport',
             color: '#00ff00',
-            icon: 'ph:car',
+            icon: 'ph--car',
             total: 300.0,
             percentage: 30.0,
             categoryId: 1,
@@ -176,7 +176,7 @@ it('recalculates child percentages relative to parent subtotal', function (): vo
         new CategorySpendingItemData(
             name: 'Gas',
             color: '#0000ff',
-            icon: 'ph:gas-pump',
+            icon: 'ph--gas-pump',
             total: 100.0,
             percentage: 10.0,
             categoryId: 2,
@@ -186,7 +186,7 @@ it('recalculates child percentages relative to parent subtotal', function (): vo
         new CategorySpendingItemData(
             name: 'Toll',
             color: '#ff00ff',
-            icon: 'ph:road',
+            icon: 'ph--road',
             total: 100.0,
             percentage: 10.0,
             categoryId: 3,

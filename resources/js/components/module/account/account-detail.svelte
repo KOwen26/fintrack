@@ -22,6 +22,8 @@
     import AccountAccessTypeBadge from './account-access-type-badge.svelte';
     import AccountTypeBadge from './account-type-badge.svelte';
 
+    import { getDecorationColor } from '@data/decoration-colors';
+    import { getDecorationIcon } from '@data/decoration-icons';
     import AccountType from '@wayfinder/App/Enums/AccountType';
 
     import DateTimeHelper from '@utilities/date-time-helper';
@@ -57,12 +59,15 @@
     let { account, monthlyStats = null, recentTransactions = [], members = [] }: Props = $props();
 
     // ── Derived state ─────────────────────────────────────────────
-    const color = $derived(account.decorations?.color);
-    const icon = $derived(account.decorations?.icon);
+    const colorSlug = $derived(account.decorations?.color);
+    const iconSlug = $derived(account.decorations?.icon);
 
-    const bgColor = $derived(color?.value ?? 'oklch(0.45 0.08 160)');
+    const colorObj = $derived(colorSlug ? getDecorationColor(colorSlug) : undefined);
+    const iconObj = $derived(iconSlug ? getDecorationIcon(iconSlug) : undefined);
 
-    const accentText = $derived(color?.text_color ?? '#FFFFFF');
+    const bgColor = $derived(colorObj?.value ?? 'oklch(0.45 0.08 160)');
+
+    const accentText = $derived(colorObj?.text_color ?? '#FFFFFF');
 
     const isCreditCard = $derived(account.type === AccountType.CreditCard);
 
@@ -364,8 +369,8 @@
                     <div
                         class="flex size-9 shrink-0 items-center justify-center rounded-xl"
                         style="background: rgba(255,255,255,0.12)">
-                        {#if icon?.value}
-                            <i class="iconify size-4.5 text-white {icon.value}"></i>
+                        {#if iconObj?.value}
+                            <i class="iconify size-4.5 text-white {iconObj.value}"></i>
                         {:else if account.type === AccountType.CreditCard}
                             <i class="iconify size-4.5 text-white ph--credit-card-bold"></i>
                         {:else if account.type === AccountType.EWallet}
@@ -791,8 +796,11 @@
                         class:pb-4={i === recentTransactions.length - 1}>
                         <div
                             class="flex size-[38px] shrink-0 items-center justify-center rounded-xl text-base">
-                            {#if txn.category?.decorations?.icon?.value}
-                                <i class="iconify {txn.category.decorations.icon.value}"></i>
+                            {#if txn.category?.decorations?.icon && getDecorationIcon(txn.category.decorations.icon)?.value}
+                                <i
+                                    class="iconify {getDecorationIcon(
+                                        txn.category.decorations.icon
+                                    )!.value}"></i>
                             {:else}
                                 <i class="iconify ph--receipt-bold"></i>
                             {/if}

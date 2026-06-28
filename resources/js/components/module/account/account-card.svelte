@@ -4,6 +4,8 @@
 
     import AccountTypeBadge from './account-type-badge.svelte';
 
+    import { getDecorationColor } from '@data/decoration-colors';
+
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
 
@@ -13,13 +15,15 @@
 
     let { account, class: _class }: Props = $props();
 
-    const color = $derived(account.decorations?.color);
+    const colorObj = $derived(
+        account.decorations?.color ? getDecorationColor(account.decorations.color) : undefined
+    );
 </script>
 
 <div class="@container/account-card">
     <div
-        style:--bg-color={color?.value}
-        style:--text-color={color?.text_color ?? '#FFFFFF'}
+        style:--bg-color={colorObj?.value}
+        style:--text-color={colorObj?.text_color ?? '#FFFFFF'}
         class={cn(
             'p-2.5 rounded @min-[12rem]:rounded-md',
             'bg-(--bg-color) text-(--text-color)',

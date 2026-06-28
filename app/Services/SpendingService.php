@@ -37,8 +37,8 @@ class SpendingService
             ->selectRaw("
                 c.id AS category_id,
                 c.name,
-                c.decorations->>'$.color.value' AS color,
-                c.decorations->>'$.icon.value' AS icon,
+                c.decorations->>'$.color' AS color,
+                c.decorations->>'$.icon' AS icon,
                 c.parent_id,
                 parent.name AS parent_name,
                 SUM(t.amount) AS total,

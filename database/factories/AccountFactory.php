@@ -6,6 +6,7 @@ use App\Enums\AccountAccessType;
 use App\Enums\AccountType;
 use App\Models\Account;
 use App\Models\DecorationColor;
+use App\Models\DecorationIcon;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -25,18 +26,10 @@ class AccountFactory extends Factory
             'initial_balance' => 0,
             'credit_card_limit' => null,
             'currency' => Account::DEFAULT_CURRENCY,
-            'decorations' => function (array $attributes): array {
-                $color = DecorationColor::inRandomOrder()->first();
-
-                return [
-                    'icon' => ['id' => 'wallet-bold', 'value' => 'ph:wallet-bold'],
-                    'color' => [
-                        'id' => $color->slug,
-                        'value' => $color->hex,
-                        'text_color' => $color->text_color,
-                    ],
-                ];
-            },
+            'decorations' => [
+                'icon' => DecorationIcon::inRandomOrder()->first()?->slug ?? 'wallet-bold',
+                'color' => DecorationColor::inRandomOrder()->first()?->slug ?? 'slate-500',
+            ],
             'archived_at' => null,
         ];
     }

@@ -8,13 +8,13 @@ uses(RefreshDatabase::class);
 it('stores provider decorations data when created', function (): void {
     $provider = Provider::factory()->create([
         'decorations' => [
-            'icon' => ['id' => 'bank-bold', 'value' => 'ph:bank-bold'],
-            'color' => ['id' => 'blue-600', 'value' => '#2563eb'],
+            'icon' => 'ph--bank-bold',
+            'color' => 'blue-600',
         ],
     ]);
 
     expect($provider->decorations)->toMatchArray([
-        'icon' => ['id' => 'bank-bold', 'value' => 'ph:bank-bold'],
-        'color' => ['id' => 'blue-600', 'value' => '#2563eb'],
+        'icon' => 'ph--bank-bold',
+        'color' => 'blue-600',
     ]);
 });

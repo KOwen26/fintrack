@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Data\DecorationData;
 use App\Models\Account;
-use App\Models\DecorationColor;
 use App\Models\User;
 use Illuminate\Support\Collection;
 
@@ -61,26 +60,9 @@ class AccountService
 
     private function normalizeDecorations(array $data): array
     {
-        if (! isset($data['decorations'])) {
-            return $data;
+        if (isset($data['decorations'])) {
+            $data['decorations'] = DecorationData::from($data['decorations'])->toArray();
         }
-
-        $decorationData = $data['decorations'];
-
-        if (isset($decorationData['icon']) && is_string($decorationData['icon'])) {
-            $decorationData['icon'] = ['id' => substr($decorationData['icon'], 3), 'value' => $decorationData['icon']];
-        }
-
-        if (isset($decorationData['color']) && is_string($decorationData['color'])) {
-            $color = DecorationColor::where('hex', $decorationData['color'])->first();
-            $decorationData['color'] = [
-                'id' => $color?->slug ?? $decorationData['color'],
-                'value' => $decorationData['color'],
-                'text_color' => $color?->text_color,
-            ];
-        }
-
-        $data['decorations'] = DecorationData::from($decorationData)->toArray();
 
         return $data;
     }
