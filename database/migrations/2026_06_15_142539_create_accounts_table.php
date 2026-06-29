@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('type');
             $table->string('access_type');
+            $table->decimal('current_balance', 15, 2)->default(0);
             $table->decimal('initial_balance', 15, 2)->default(0);
             $table->decimal('credit_card_limit', 15, 2)->nullable();
             $table->char('currency', 3)->default('IDR');

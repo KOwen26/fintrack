@@ -5,7 +5,9 @@ namespace App\Models;
 use App\Data\DecorationData;
 use App\Enums\AccountAccessType;
 use App\Enums\AccountType;
+use App\Observers\AccountObserver;
 use Database\Factories\AccountFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+#[ObservedBy([AccountObserver::class])]
 class Account extends Model
 {
     public const string DEFAULT_CURRENCY = 'IDR';
