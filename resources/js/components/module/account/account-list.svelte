@@ -28,7 +28,7 @@
         icon="ph--wallet-bold"
         label="No accounts yet" />
 {:else}
-    <ToggleableCard title="Accounts" bind:mode>
+    <ToggleableCard class="-mx-2.5" title="Accounts" bind:mode>
         <div class={cn('grid', mode === 'list' ? 'grid-cols-1 gap-4' : 'grid-cols-2 gap-3')}>
             {#each accounts as account (account.id)}
                 <Link href={AccountController.show.url({ account: account.id })}>

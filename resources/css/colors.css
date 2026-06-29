@@ -1,25 +1,25 @@
 :root {
     /* Background */
-    --color-base-100: oklch(96% 0.003 264.542);
     --color-base-content: oklch(12% 0.042 264.695);
-    --color-base-200: oklch(90% 0.004 286.32);
+    --color-base-100: oklch(0.9543 0.0058 153.77);
+    --color-base-200: oklch(0.9296 0.0108 158.83);
     --color-base-300: oklch(84% 0 0);
 
     /* Brand */
-    --color-primary: oklch(76% 0.177 163.223);
-    --color-primary-content: oklch(26% 0.051 172.552);
-    --color-secondary: oklch(67% 0.182 276.935);
-    --color-secondary-content: oklch(25% 0.09 281.288);
+    --color-primary: oklch(0.538 0.07 152.13);
+    --color-primary-content: oklch(0.2611 0.0244 159.1);
+    --color-secondary: oklch(0.5692 0.0885 183.02);
+    --color-secondary-content: oklch(12% 0.042 264.695);
     --color-accent: oklch(79% 0.209 151.711);
     --color-accent-content: oklch(26% 0.065 152.934);
 
     /* Status */
     --color-neutral: oklch(12% 0.042 264.695);
     --color-neutral-content: oklch(96% 0.003 247.858);
-    --color-info: oklch(78% 0.154 211.53);
-    --color-info-content: oklch(30% 0.056 229.695);
     --color-success: oklch(77% 0.152 181.912);
     --color-success-content: oklch(27% 0.046 192.524);
+    --color-info: oklch(78% 0.154 211.53);
+    --color-info-content: oklch(30% 0.056 229.695);
     --color-warning: oklch(82% 0.189 84.429);
     --color-warning-content: oklch(27% 0.077 45.635);
     --color-error: oklch(70% 0.191 22.216);

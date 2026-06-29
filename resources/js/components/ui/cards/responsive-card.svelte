@@ -11,7 +11,7 @@
 <Card
     {...props}
     class={cn(
-        '-mx-2.5 md:mx-0',
+        '',
         'p-5 md:p-6',
         'border-y border-x-none md:border rounded-none md:rounded-md',
         _class

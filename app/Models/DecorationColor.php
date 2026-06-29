@@ -21,4 +21,9 @@ class DecorationColor extends Model
     {
         $table->index('slug');
     }
+
+    protected function sushiShouldCache(): bool
+    {
+        return true;
+    }
 }

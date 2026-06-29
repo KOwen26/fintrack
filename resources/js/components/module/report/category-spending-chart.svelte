@@ -47,12 +47,12 @@
             ? categories.map((g) => ({
                   name: g.name,
                   value: g.total,
-                  color: getDecorationColor(g.color)?.value ?? g.color,
+                  color: getDecorationColor(g.color)?.oklch ?? g.color,
               }))
             : selectedGroup!.children.map((c) => ({
                   name: c.name,
                   value: c.total,
-                  color: getDecorationColor(c.color)?.value ?? c.color,
+                  color: getDecorationColor(c.color)?.oklch ?? c.color,
               }))
     );
 
@@ -123,7 +123,7 @@
                             class="flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-left hover:opacity-80"
                             onclick={() => drillDown(group)}>
                             <span
-                                style="background-color: {getDecorationColor(group.color)?.value ??
+                                style="background-color: {getDecorationColor(group.color)?.oklch ??
                                     group.color}"
                                 class="inline-block size-2.5 shrink-0 rounded-[2px]"></span>
                             <span class="truncate">{group.name}</span>
@@ -148,7 +148,7 @@
                     <li class="flex items-center justify-between text-sm">
                         <div class="flex min-w-0 items-center gap-2">
                             <span
-                                style="background-color: {getDecorationColor(item.color)?.value ??
+                                style="background-color: {getDecorationColor(item.color)?.oklch ??
                                     item.color}"
                                 class="inline-block size-2.5 shrink-0 rounded-[2px]"></span>
                             <span class="truncate">{item.name}</span>

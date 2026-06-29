@@ -51,8 +51,8 @@
 <div
     data-slot="card"
     class={cn(
-        // 'bg-card text-card-foreground flex flex-col gap-5 rounded-md border border-neutral-500 py-5',
-        'card card-border @container/card gap-5 bg-white p-5',
+        '@container/card bg-card text-card-foreground p-5',
+        'flex flex-col gap-5 rounded-md border border-base-content/25',
         _class
     )}
     {...wrapperProps}>

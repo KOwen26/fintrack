@@ -12,24 +12,20 @@ declare namespace App.Data.Transaction {
         id: number;
         type: App.Enums.TransactionType;
         amount: number;
-        description: string | null;
+        description: string;
         transaction_date: string;
-        created_at: string | null;
-        updated_at: string | null;
+        created_at: string;
+        updated_at: string;
         account: App.Models.Account;
-        category: App.Models.Category | null;
-        creator: App.Models.User | null;
+        category: App.Models.Category;
+        creator: App.Models.User;
     };
 }
 declare namespace App.Enums {
     export type AccountAccessType = 'personal' | 'joint';
 
     export type AccountType =
-        | 'debit_account'
-        | 'credit_card'
-        | 'cash_wallet'
-        | 'e_wallet'
-        | 'investment';
+        'debit_account' | 'credit_card' | 'cash_wallet' | 'e_wallet' | 'investment';
 
     export type AlertLevel = 'normal' | 'warning' | 'high_risk';
 

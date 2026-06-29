@@ -15,17 +15,26 @@ class TransactionDetailData extends Data
 {
     public function __construct(
         public int $id,
+
         public TransactionType $type,
+
         public float $amount,
-        public ?string $description,
+
+        public string $description,
+
         public string $transaction_date,
-        public ?string $created_at = null,
-        public ?string $updated_at = null,
+
+        public string $created_at,
+
+        public string $updated_at,
+
         #[TypeScriptModel(Account::class)]
-        public mixed $account = null,
-        #[TypeScriptModel(Category::class, nullable: true)]
-        public mixed $category = null,
-        #[TypeScriptModel(User::class, nullable: true)]
-        public mixed $creator = null,
+        public mixed $account,
+
+        #[TypeScriptModel(Category::class)]
+        public mixed $category,
+
+        #[TypeScriptModel(User::class)]
+        public mixed $creator,
     ) {}
 }

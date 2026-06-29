@@ -1,97 +1,660 @@
 [
-    { "value": "ph--t-shirt-bold", "slug": "t-shirt-bold", "label": "T-Shirt", "status": "Active", "group": "clothing" },
-    { "value": "ph--chat-circle-bold", "slug": "chat-circle-bold", "label": "Chat", "status": "Active", "group": "communication" },
-    { "value": "ph--envelope-bold", "slug": "envelope-bold", "label": "Envelope", "status": "Active", "group": "communication" },
-    { "value": "ph--phone-bold", "slug": "phone-bold", "label": "Phone", "status": "Active", "group": "communication" },
-    { "value": "ph--book-bold", "slug": "book-bold", "label": "Book", "status": "Active", "group": "education" },
-    { "value": "ph--book-open-bold", "slug": "book-open-bold", "label": "Book Open", "status": "Active", "group": "education" },
-    { "value": "ph--books-bold", "slug": "books-bold", "label": "Books", "status": "Active", "group": "education" },
-    { "value": "ph--graduation-cap-bold", "slug": "graduation-cap-bold", "label": "Graduation", "status": "Active", "group": "education" },
-    { "value": "ph--lightbulb-bold", "slug": "lightbulb-bold", "label": "Lightbulb", "status": "Active", "group": "education" },
-    { "value": "ph--student-bold", "slug": "student-bold", "label": "Student", "status": "Active", "group": "education" },
-    { "value": "ph--film-strip-bold", "slug": "film-strip-bold", "label": "Film", "status": "Active", "group": "entertainment" },
-    { "value": "ph--game-controller-bold", "slug": "game-controller-bold", "label": "Game", "status": "Active", "group": "entertainment" },
-    { "value": "ph--music-note-bold", "slug": "music-note-bold", "label": "Music", "status": "Active", "group": "entertainment" },
-    { "value": "ph--newspaper-bold", "slug": "newspaper-bold", "label": "Newspaper", "status": "Active", "group": "entertainment" },
-    { "value": "ph--paint-brush-bold", "slug": "paint-brush-bold", "label": "Paint Brush", "status": "Active", "group": "entertainment" },
-    { "value": "ph--party-popper-bold", "slug": "party-popper-bold", "label": "Party Popper", "status": "Active", "group": "entertainment" },
-    { "value": "ph--television-bold", "slug": "television-bold", "label": "Television", "status": "Active", "group": "entertainment" },
-    { "value": "ph--arrow-circle-down-bold", "slug": "arrow-circle-down-bold", "label": "Arrow Down", "status": "Active", "group": "finance" },
-    { "value": "ph--bank-bold", "slug": "bank-bold", "label": "Bank", "status": "Active", "group": "finance" },
-    { "value": "ph--calculator-bold", "slug": "calculator-bold", "label": "Calculator", "status": "Active", "group": "finance" },
-    { "value": "ph--chart-bar-bold", "slug": "chart-bar-bold", "label": "Chart Bar", "status": "Active", "group": "finance" },
-    { "value": "ph--chart-line-bold", "slug": "chart-line-bold", "label": "Chart Line", "status": "Active", "group": "finance" },
-    { "value": "ph--chart-pie-bold", "slug": "chart-pie-bold", "label": "Chart Pie", "status": "Active", "group": "finance" },
-    { "value": "ph--coin-bold", "slug": "coin-bold", "label": "Coin", "status": "Active", "group": "finance" },
-    { "value": "ph--coins-bold", "slug": "coins-bold", "label": "Coins", "status": "Active", "group": "finance" },
-    { "value": "ph--credit-card-bold", "slug": "credit-card-bold", "label": "Credit Card", "status": "Active", "group": "finance" },
-    { "value": "ph--currency-circle-dollar-bold", "slug": "currency-circle-dollar-bold", "label": "Dollar Circle", "status": "Active", "group": "finance" },
-    { "value": "ph--currency-dollar-bold", "slug": "currency-dollar-bold", "label": "Dollar", "status": "Active", "group": "finance" },
-    { "value": "ph--hand-coin-bold", "slug": "hand-coin-bold", "label": "Hand Coin", "status": "Active", "group": "finance" },
-    { "value": "ph--money-bold", "slug": "money-bold", "label": "Money", "status": "Active", "group": "finance" },
-    { "value": "ph--percent-bold", "slug": "percent-bold", "label": "Percent", "status": "Active", "group": "finance" },
-    { "value": "ph--piggy-bank-bold", "slug": "piggy-bank-bold", "label": "Piggy Bank", "status": "Active", "group": "finance" },
-    { "value": "ph--receipt-bold", "slug": "receipt-bold", "label": "Receipt", "status": "Active", "group": "finance" },
-    { "value": "ph--scales-bold", "slug": "scales-bold", "label": "Scales", "status": "Active", "group": "finance" },
-    { "value": "ph--shield-check-bold", "slug": "shield-check-bold", "label": "Shield Check", "status": "Active", "group": "finance" },
-    { "value": "ph--trend-down-bold", "slug": "trend-down-bold", "label": "Trend Down", "status": "Active", "group": "finance" },
-    { "value": "ph--trend-up-bold", "slug": "trend-up-bold", "label": "Trend Up", "status": "Active", "group": "finance" },
-    { "value": "ph--wallet-bold", "slug": "wallet-bold", "label": "Wallet", "status": "Active", "group": "finance" },
-    { "value": "ph--barbell-bold", "slug": "barbell-bold", "label": "Barbell", "status": "Active", "group": "health" },
-    { "value": "ph--first-aid-bold", "slug": "first-aid-bold", "label": "First Aid", "status": "Active", "group": "health" },
-    { "value": "ph--heart-beat-bold", "slug": "heart-beat-bold", "label": "Heart Beat", "status": "Active", "group": "health" },
-    { "value": "ph--heart-bold", "slug": "heart-bold", "label": "Heart", "status": "Active", "group": "health" },
-    { "value": "ph--heart-plus-bold", "slug": "heart-plus-bold", "label": "Heart Plus", "status": "Active", "group": "health" },
-    { "value": "ph--pill-bold", "slug": "pill-bold", "label": "Pill", "status": "Active", "group": "health" },
-    { "value": "ph--pills-bold", "slug": "pills-bold", "label": "Pills", "status": "Active", "group": "health" },
-    { "value": "ph--stethoscope-bold", "slug": "stethoscope-bold", "label": "Stethoscope", "status": "Active", "group": "health" },
-    { "value": "ph--broom-bold", "slug": "broom-bold", "label": "Broom", "status": "Active", "group": "housing" },
-    { "value": "ph--building-bold", "slug": "building-bold", "label": "Building", "status": "Active", "group": "housing" },
-    { "value": "ph--house-bold", "slug": "house-bold", "label": "House", "status": "Active", "group": "housing" },
-    { "value": "ph--key-bold", "slug": "key-bold", "label": "Key", "status": "Active", "group": "housing" },
-    { "value": "ph--lamp-bold", "slug": "lamp-bold", "label": "Lamp", "status": "Active", "group": "housing" },
-    { "value": "ph--coffee-bold", "slug": "coffee-bold", "label": "Coffee", "status": "Active", "group": "lifestyle" },
-    { "value": "ph--cup-bold", "slug": "cup-bold", "label": "Cup", "status": "Active", "group": "lifestyle" },
-    { "value": "ph--fork-knife-bold", "slug": "fork-knife-bold", "label": "Food", "status": "Active", "group": "lifestyle" },
-    { "value": "ph--hamburger-bold", "slug": "hamburger-bold", "label": "Hamburger", "status": "Active", "group": "lifestyle" },
-    { "value": "ph--pizza-bold", "slug": "pizza-bold", "label": "Pizza", "status": "Active", "group": "lifestyle" },
-    { "value": "ph--gear-bold", "slug": "gear-bold", "label": "Gear", "status": "Active", "group": "misc" },
-    { "value": "ph--people-bold", "slug": "people-bold", "label": "People", "status": "Active", "group": "misc" },
-    { "value": "ph--plus-circle-bold", "slug": "plus-circle-bold", "label": "Plus Circle", "status": "Active", "group": "misc" },
-    { "value": "ph--scissors-bold", "slug": "scissors-bold", "label": "Scissors", "status": "Active", "group": "misc" },
-    { "value": "ph--toolbox-bold", "slug": "toolbox-bold", "label": "Toolbox", "status": "Active", "group": "misc" },
-    { "value": "ph--wrench-bold", "slug": "wrench-bold", "label": "Wrench", "status": "Active", "group": "misc" },
-    { "value": "ph--flower-bold", "slug": "flower-bold", "label": "Flower", "status": "Active", "group": "nature" },
-    { "value": "ph--leaf-bold", "slug": "leaf-bold", "label": "Leaf", "status": "Active", "group": "nature" },
-    { "value": "ph--tree-bold", "slug": "tree-bold", "label": "Tree", "status": "Active", "group": "nature" },
-    { "value": "ph--cat-bold", "slug": "cat-bold", "label": "Cat", "status": "Active", "group": "pets" },
-    { "value": "ph--dog-bold", "slug": "dog-bold", "label": "Dog", "status": "Active", "group": "pets" },
-    { "value": "ph--bag-bold", "slug": "bag-bold", "label": "Bag", "status": "Active", "group": "shopping" },
-    { "value": "ph--gift-bold", "slug": "gift-bold", "label": "Gift", "status": "Active", "group": "shopping" },
-    { "value": "ph--gifts-bold", "slug": "gifts-bold", "label": "Gifts", "status": "Active", "group": "shopping" },
-    { "value": "ph--shopping-bag-bold", "slug": "shopping-bag-bold", "label": "Shopping Bag", "status": "Active", "group": "shopping" },
-    { "value": "ph--shopping-bags-bold", "slug": "shopping-bags-bold", "label": "Shopping Bags", "status": "Active", "group": "shopping" },
-    { "value": "ph--shopping-cart-bold", "slug": "shopping-cart-bold", "label": "Shopping Cart", "status": "Active", "group": "shopping" },
-    { "value": "ph--storefront-bold", "slug": "storefront-bold", "label": "Storefront", "status": "Active", "group": "shopping" },
-    { "value": "ph--tag-bold", "slug": "tag-bold", "label": "Tag", "status": "Active", "group": "shopping" },
-    { "value": "ph--computer-tower-bold", "slug": "computer-tower-bold", "label": "Computer Tower", "status": "Active", "group": "technology" },
-    { "value": "ph--device-mobile-bold", "slug": "device-mobile-bold", "label": "Mobile", "status": "Active", "group": "technology" },
-    { "value": "ph--device-tablet-bold", "slug": "device-tablet-bold", "label": "Tablet", "status": "Active", "group": "technology" },
-    { "value": "ph--laptop-bold", "slug": "laptop-bold", "label": "Laptop", "status": "Active", "group": "technology" },
-    { "value": "ph--monitor-bold", "slug": "monitor-bold", "label": "Monitor", "status": "Active", "group": "technology" },
-    { "value": "ph--smartphone-bold", "slug": "smartphone-bold", "label": "Smartphone", "status": "Active", "group": "technology" },
-    { "value": "ph--airplane-bold", "slug": "airplane-bold", "label": "Airplane", "status": "Active", "group": "transport" },
-    { "value": "ph--bus-bold", "slug": "bus-bold", "label": "Bus", "status": "Active", "group": "transport" },
-    { "value": "ph--car-bold", "slug": "car-bold", "label": "Car", "status": "Active", "group": "transport" },
-    { "value": "ph--gas-pump-bold", "slug": "gas-pump-bold", "label": "Gas Pump", "status": "Active", "group": "transport" },
-    { "value": "ph--motorcycle-bold", "slug": "motorcycle-bold", "label": "Motorcycle", "status": "Active", "group": "transport" },
-    { "value": "ph--train-bold", "slug": "train-bold", "label": "Train", "status": "Active", "group": "transport" },
-    { "value": "ph--backpack-bold", "slug": "backpack-bold", "label": "Backpack", "status": "Active", "group": "travel" },
-    { "value": "ph--suitcase-bold", "slug": "suitcase-bold", "label": "Suitcase", "status": "Active", "group": "travel" },
-    { "value": "ph--drop-bold", "slug": "drop-bold", "label": "Water", "status": "Active", "group": "utilities" },
-    { "value": "ph--fire-bold", "slug": "fire-bold", "label": "Fire", "status": "Active", "group": "utilities" },
-    { "value": "ph--lightning-bold", "slug": "lightning-bold", "label": "Lightning", "status": "Active", "group": "utilities" },
-    { "value": "ph--wifi-bold", "slug": "wifi-bold", "label": "WiFi", "status": "Active", "group": "utilities" },
-    { "value": "ph--briefcase-bold", "slug": "briefcase-bold", "label": "Briefcase", "status": "Active", "group": "work" },
-    { "value": "ph--handshake-bold", "slug": "handshake-bold", "label": "Handshake", "status": "Active", "group": "work" }
+    {
+        "slug": "t-shirt-bold",
+        "group": "clothing",
+        "label": "T-Shirt",
+        "value": "ph--t-shirt-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "chat-circle-bold",
+        "group": "communication",
+        "label": "Chat",
+        "value": "ph--chat-circle-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "envelope-bold",
+        "group": "communication",
+        "label": "Envelope",
+        "value": "ph--envelope-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "phone-bold",
+        "group": "communication",
+        "label": "Phone",
+        "value": "ph--phone-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "book-bold",
+        "group": "education",
+        "label": "Book",
+        "value": "ph--book-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "book-open-bold",
+        "group": "education",
+        "label": "Book Open",
+        "value": "ph--book-open-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "books-bold",
+        "group": "education",
+        "label": "Books",
+        "value": "ph--books-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "graduation-cap-bold",
+        "group": "education",
+        "label": "Graduation",
+        "value": "ph--graduation-cap-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "lightbulb-bold",
+        "group": "education",
+        "label": "Lightbulb",
+        "value": "ph--lightbulb-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "student-bold",
+        "group": "education",
+        "label": "Student",
+        "value": "ph--student-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "film-strip-bold",
+        "group": "entertainment",
+        "label": "Film",
+        "value": "ph--film-strip-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "game-controller-bold",
+        "group": "entertainment",
+        "label": "Game",
+        "value": "ph--game-controller-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "music-note-bold",
+        "group": "entertainment",
+        "label": "Music",
+        "value": "ph--music-note-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "newspaper-bold",
+        "group": "entertainment",
+        "label": "Newspaper",
+        "value": "ph--newspaper-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "paint-brush-bold",
+        "group": "entertainment",
+        "label": "Paint Brush",
+        "value": "ph--paint-brush-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "party-popper-bold",
+        "group": "entertainment",
+        "label": "Party Popper",
+        "value": "ph--party-popper-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "television-bold",
+        "group": "entertainment",
+        "label": "Television",
+        "value": "ph--television-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "arrow-circle-down-bold",
+        "group": "finance",
+        "label": "Arrow Down",
+        "value": "ph--arrow-circle-down-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "bank-bold",
+        "group": "finance",
+        "label": "Bank",
+        "value": "ph--bank-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "calculator-bold",
+        "group": "finance",
+        "label": "Calculator",
+        "value": "ph--calculator-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "chart-bar-bold",
+        "group": "finance",
+        "label": "Chart Bar",
+        "value": "ph--chart-bar-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "chart-line-bold",
+        "group": "finance",
+        "label": "Chart Line",
+        "value": "ph--chart-line-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "chart-pie-bold",
+        "group": "finance",
+        "label": "Chart Pie",
+        "value": "ph--chart-pie-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "coin-bold",
+        "group": "finance",
+        "label": "Coin",
+        "value": "ph--coin-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "coins-bold",
+        "group": "finance",
+        "label": "Coins",
+        "value": "ph--coins-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "credit-card-bold",
+        "group": "finance",
+        "label": "Credit Card",
+        "value": "ph--credit-card-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "currency-circle-dollar-bold",
+        "group": "finance",
+        "label": "Dollar Circle",
+        "value": "ph--currency-circle-dollar-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "currency-dollar-bold",
+        "group": "finance",
+        "label": "Dollar",
+        "value": "ph--currency-dollar-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "hand-coin-bold",
+        "group": "finance",
+        "label": "Hand Coin",
+        "value": "ph--hand-coin-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "money-bold",
+        "group": "finance",
+        "label": "Money",
+        "value": "ph--money-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "percent-bold",
+        "group": "finance",
+        "label": "Percent",
+        "value": "ph--percent-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "piggy-bank-bold",
+        "group": "finance",
+        "label": "Piggy Bank",
+        "value": "ph--piggy-bank-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "receipt-bold",
+        "group": "finance",
+        "label": "Receipt",
+        "value": "ph--receipt-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "scales-bold",
+        "group": "finance",
+        "label": "Scales",
+        "value": "ph--scales-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "shield-check-bold",
+        "group": "finance",
+        "label": "Shield Check",
+        "value": "ph--shield-check-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "trend-down-bold",
+        "group": "finance",
+        "label": "Trend Down",
+        "value": "ph--trend-down-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "trend-up-bold",
+        "group": "finance",
+        "label": "Trend Up",
+        "value": "ph--trend-up-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "wallet-bold",
+        "group": "finance",
+        "label": "Wallet",
+        "value": "ph--wallet-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "barbell-bold",
+        "group": "health",
+        "label": "Barbell",
+        "value": "ph--barbell-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "first-aid-bold",
+        "group": "health",
+        "label": "First Aid",
+        "value": "ph--first-aid-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "heart-beat-bold",
+        "group": "health",
+        "label": "Heart Beat",
+        "value": "ph--heart-beat-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "heart-bold",
+        "group": "health",
+        "label": "Heart",
+        "value": "ph--heart-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "heart-plus-bold",
+        "group": "health",
+        "label": "Heart Plus",
+        "value": "ph--heart-plus-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "pill-bold",
+        "group": "health",
+        "label": "Pill",
+        "value": "ph--pill-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "pills-bold",
+        "group": "health",
+        "label": "Pills",
+        "value": "ph--pills-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "stethoscope-bold",
+        "group": "health",
+        "label": "Stethoscope",
+        "value": "ph--stethoscope-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "broom-bold",
+        "group": "housing",
+        "label": "Broom",
+        "value": "ph--broom-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "building-bold",
+        "group": "housing",
+        "label": "Building",
+        "value": "ph--building-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "house-bold",
+        "group": "housing",
+        "label": "House",
+        "value": "ph--house-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "key-bold",
+        "group": "housing",
+        "label": "Key",
+        "value": "ph--key-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "lamp-bold",
+        "group": "housing",
+        "label": "Lamp",
+        "value": "ph--lamp-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "coffee-bold",
+        "group": "lifestyle",
+        "label": "Coffee",
+        "value": "ph--coffee-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "cup-bold",
+        "group": "lifestyle",
+        "label": "Cup",
+        "value": "ph--cup-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "fork-knife-bold",
+        "group": "lifestyle",
+        "label": "Food",
+        "value": "ph--fork-knife-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "hamburger-bold",
+        "group": "lifestyle",
+        "label": "Hamburger",
+        "value": "ph--hamburger-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "pizza-bold",
+        "group": "lifestyle",
+        "label": "Pizza",
+        "value": "ph--pizza-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "gear-bold",
+        "group": "misc",
+        "label": "Gear",
+        "value": "ph--gear-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "people-bold",
+        "group": "misc",
+        "label": "People",
+        "value": "ph--people-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "plus-circle-bold",
+        "group": "misc",
+        "label": "Plus Circle",
+        "value": "ph--plus-circle-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "scissors-bold",
+        "group": "misc",
+        "label": "Scissors",
+        "value": "ph--scissors-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "toolbox-bold",
+        "group": "misc",
+        "label": "Toolbox",
+        "value": "ph--toolbox-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "wrench-bold",
+        "group": "misc",
+        "label": "Wrench",
+        "value": "ph--wrench-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "flower-bold",
+        "group": "nature",
+        "label": "Flower",
+        "value": "ph--flower-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "leaf-bold",
+        "group": "nature",
+        "label": "Leaf",
+        "value": "ph--leaf-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "tree-bold",
+        "group": "nature",
+        "label": "Tree",
+        "value": "ph--tree-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "cat-bold",
+        "group": "pets",
+        "label": "Cat",
+        "value": "ph--cat-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "dog-bold",
+        "group": "pets",
+        "label": "Dog",
+        "value": "ph--dog-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "bag-bold",
+        "group": "shopping",
+        "label": "Bag",
+        "value": "ph--bag-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "gift-bold",
+        "group": "shopping",
+        "label": "Gift",
+        "value": "ph--gift-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "gifts-bold",
+        "group": "shopping",
+        "label": "Gifts",
+        "value": "ph--gifts-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "shopping-bag-bold",
+        "group": "shopping",
+        "label": "Shopping Bag",
+        "value": "ph--shopping-bag-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "shopping-cart-bold",
+        "group": "shopping",
+        "label": "Shopping Cart",
+        "value": "ph--shopping-cart-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "storefront-bold",
+        "group": "shopping",
+        "label": "Storefront",
+        "value": "ph--storefront-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "tag-bold",
+        "group": "shopping",
+        "label": "Tag",
+        "value": "ph--tag-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "computer-tower-bold",
+        "group": "technology",
+        "label": "Computer Tower",
+        "value": "ph--computer-tower-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "device-mobile-bold",
+        "group": "technology",
+        "label": "Mobile",
+        "value": "ph--device-mobile-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "device-tablet-bold",
+        "group": "technology",
+        "label": "Tablet",
+        "value": "ph--device-tablet-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "laptop-bold",
+        "group": "technology",
+        "label": "Laptop",
+        "value": "ph--laptop-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "monitor-bold",
+        "group": "technology",
+        "label": "Monitor",
+        "value": "ph--monitor-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "smartphone-bold",
+        "group": "technology",
+        "label": "Smartphone",
+        "value": "ph--smartphone-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "airplane-bold",
+        "group": "transport",
+        "label": "Airplane",
+        "value": "ph--airplane-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "bus-bold",
+        "group": "transport",
+        "label": "Bus",
+        "value": "ph--bus-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "car-bold",
+        "group": "transport",
+        "label": "Car",
+        "value": "ph--car-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "gas-pump-bold",
+        "group": "transport",
+        "label": "Gas Pump",
+        "value": "ph--gas-pump-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "motorcycle-bold",
+        "group": "transport",
+        "label": "Motorcycle",
+        "value": "ph--motorcycle-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "train-bold",
+        "group": "transport",
+        "label": "Train",
+        "value": "ph--train-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "backpack-bold",
+        "group": "travel",
+        "label": "Backpack",
+        "value": "ph--backpack-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "suitcase-bold",
+        "group": "travel",
+        "label": "Suitcase",
+        "value": "ph--suitcase-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "drop-bold",
+        "group": "utilities",
+        "label": "Water",
+        "value": "ph--drop-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "fire-bold",
+        "group": "utilities",
+        "label": "Fire",
+        "value": "ph--fire-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "lightning-bold",
+        "group": "utilities",
+        "label": "Lightning",
+        "value": "ph--lightning-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "wifi-bold",
+        "group": "utilities",
+        "label": "WiFi",
+        "value": "ph--wifi-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "briefcase-bold",
+        "group": "work",
+        "label": "Briefcase",
+        "value": "ph--briefcase-bold",
+        "status": "Active"
+    },
+    {
+        "slug": "handshake-bold",
+        "group": "work",
+        "label": "Handshake",
+        "value": "ph--handshake-bold",
+        "status": "Active"
+    }
 ]

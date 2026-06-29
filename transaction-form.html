@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tambah Transaksi – FinTrack</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:wght@400;500&display=swap"
+            rel="stylesheet" />
+
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['DM Sans', 'sans-serif'],
+                            mono: ['DM Mono', 'monospace'],
+                        },
+                    },
+                },
+            };
+        </script>
+
+        <style>
+            :root {
+                --bg: #edf1ee;
+                --surface: #ffffff;
+                --border: #e2eae5;
+                --text-1: #1a2820;
+                --text-2: #5e706a;
+                --text-3: #96a8a2;
+                --sage: #4e7a5a;
+                --sage-dk: #3a6044;
+                --sage-lt: #dde9e1;
+                --teal: #29887c;
+                --teal-lt: #e3f5f2;
+                --red: #c24540;
+                --red-lt: #fbeeed;
+                --amber: #a07020;
+                --amber-lt: #fbf4e3;
+            }
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: 'DM Sans', sans-serif;
+                background: var(--bg);
+                color: var(--text-1);
+                min-height: 100vh;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            /* ── LAYOUT ─────────────────────────────────── */
+            .shell {
+                max-width: 430px;
+                margin: 0 auto;
+                padding-bottom: 48px;
+            }
+
+            .card {
+                background: var(--surface);
+                border-radius: 18px;
+                overflow: hidden;
+            }
+
+            .f-divider {
+                border-top: 1px solid var(--border);
+                margin: 0 20px;
+            }
+
+            /* ── SECTION LABEL ──────────────────────────── */
+            .sec-label {
+                font-size: 0.63rem;
+                font-weight: 700;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                color: var(--text-3);
+                margin-bottom: 4px;
+            }
+
+            /* ── FORM CONTROL & INPUTS ──────────────────── */
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                padding: 13px 20px;
+            }
+            .form-group-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 13px 20px;
+                gap: 12px;
+            }
+
+            .input-field {
+                width: 100%;
+                border: none;
+                outline: none;
+                background: transparent;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.9rem;
+                color: var(--text-1);
+                font-weight: 500;
+                margin-top: 4px;
+            }
+            .input-field::placeholder {
+                color: var(--text-3);
+                font-weight: 400;
+            }
+
+            .select-field {
+                border: none;
+                outline: none;
+                background: transparent;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.9rem;
+                color: var(--text-1);
+                font-weight: 500;
+                cursor: pointer;
+                padding-right: 20px;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2396A8A2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right center;
+            }
+
+            /* ── DYNAMIC AMOUNT INPUT ───────────────────── */
+            .amt-prefix {
+                font-family: 'DM Mono', monospace;
+                font-size: 1.1rem;
+                font-weight: 500;
+                color: var(--text-3);
+                margin-top: 8px;
+            }
+            .amt-input {
+                font-family: 'DM Mono', monospace;
+                font-size: clamp(2rem, 9vw, 2.6rem);
+                font-weight: 500;
+                width: 100%;
+                border: none;
+                outline: none;
+                background: transparent;
+                line-height: 1;
+                letter-spacing: -0.025em;
+            }
+            .amt-expense {
+                color: var(--red);
+            }
+            .amt-income {
+                color: var(--teal);
+            }
+            .amt-transfer {
+                color: var(--sage);
+            }
+
+            .accent {
+                height: 4px;
+                width: 100%;
+                transition: background 0.2s;
+            }
+            .accent-expense {
+                background: var(--red);
+            }
+            .accent-income {
+                background: var(--teal);
+            }
+            .accent-transfer {
+                background: var(--sage);
+            }
+
+            /* ── SWITCHER segmented controller ─────────── */
+            .switcher {
+                display: flex;
+                gap: 5px;
+                padding: 5px;
+                background: var(--surface);
+                border-radius: 13px;
+            }
+            .sw-btn {
+                flex: 1;
+                padding: 8px 4px;
+                border-radius: 9px;
+                border: none;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.72rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.18s;
+                color: var(--text-3);
+                background: transparent;
+            }
+            .sw-btn.active {
+                background: var(--sage);
+                color: #fff;
+            }
+
+            /* ── ATTACHMENT / THUMB ─────────────────────── */
+            .thumb-slot {
+                width: 62px;
+                height: 62px;
+                border-radius: 12px;
+                background: var(--bg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.3rem;
+                cursor: pointer;
+                border: 1.5px dashed var(--border);
+                transition: background 0.15s;
+            }
+            .thumb-slot:hover {
+                background: var(--sage-lt);
+                border-color: var(--text-3);
+            }
+
+            /* ── TAG INPUT CHIPS ────────────────────────── */
+            .tag-pills {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-top: 8px;
+            }
+            .tag-chip {
+                font-family: 'DM Mono', monospace;
+                font-size: 0.71rem;
+                font-weight: 500;
+                padding: 4px 10px;
+                border-radius: 9999px;
+                background: var(--sage-lt);
+                color: var(--sage);
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                cursor: pointer;
+            }
+
+            /* ── ACTION BUTTONS ────────────────────────── */
+            .btn {
+                flex: 1;
+                padding: 15px;
+                border-radius: 14px;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.9rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.15s ease;
+                border: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+            }
+            .btn-submit {
+                background: var(--sage);
+                color: #fff;
+            }
+            .btn-submit:hover {
+                background: var(--sage-dk);
+            }
+            .btn-cancel {
+                background: var(--surface);
+                color: var(--text-2);
+                border: 1.5px solid var(--border);
+            }
+            .btn-cancel:hover {
+                background: var(--bg);
+            }
+
+            .icon-btn {
+                width: 36px;
+                height: 36px;
+                border-radius: 11px;
+                background: var(--surface);
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .icon-btn:hover {
+                background: var(--sage-lt);
+            }
+
+            .mono {
+                font-family: 'DM Mono', monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="shell">
+            <div
+                style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 14px 16px;
+                ">
+                <button class="icon-btn" aria-label="Kembali" onclick="window.history.back()">
+                    <svg
+                        width="17"
+                        height="17"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="var(--text-1)"
+                        stroke-width="2.3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M19 12H5M12 5l-7 7 7 7" />
+                    </svg>
+                </button>
+                <span
+                    id="form-title"
+                    style="
+                        font-size: 0.88rem;
+                        font-weight: 600;
+                        color: var(--text-1);
+                        letter-spacing: -0.01em;
+                    "
+                    >Tambah Transaksi</span
+                >
+                <div style="width: 36px"></div>
+            </div>
+
+            <div class="mx-4 mb-3">
+                <div class="switcher">
+                    <button
+                        class="sw-btn active"
+                        id="sw-expense"
+                        onclick="changeFormType('expense')">
+                        Pengeluaran
+                    </button>
+                    <button class="sw-btn" id="sw-income" onclick="changeFormType('income')">
+                        Pemasukan
+                    </button>
+                    <button class="sw-btn" id="sw-transfer" onclick="changeFormType('transfer')">
+                        Transfer
+                    </button>
+                </div>
+            </div>
+
+            <div class="card mx-4">
+                <div class="accent accent-expense" id="form-accent-bar"></div>
+                <div style="padding: 20px 20px 22px">
+                    <p class="sec-label">Nominal Transaksi</p>
+                    <div style="display: flex; align-items: center; gap: 6px">
+                        <span class="amt-prefix">Rp</span>
+                        <input
+                            type="text"
+                            pattern="[0-9.]*"
+                            class="amt-input amt-expense"
+                            id="amount-input"
+                            placeholder="0"
+                            value="258.000"
+                            oninput="formatCurrency(this)" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mx-4 mt-3">
+                <div class="form-group">
+                    <label class="sec-label" id="label-merchant" for="in-merchant"
+                        >Merchant / Penerima</label
+                    >
+                    <input
+                        type="text"
+                        id="in-merchant"
+                        class="input-field"
+                        placeholder="Contoh: Warteg Bu Sri, Kopi Kenangan"
+                        value="Warteg Bu Sri" />
+                </div>
+
+                <div class="f-divider"></div>
+
+                <div class="form-group-row">
+                    <div style="flex: 1">
+                        <label class="sec-label" id="label-account-from">Akun Sumber</label>
+                        <div style="margin-top: 2px">
+                            <select class="select-field w-full" id="select-source">
+                                <option value="bca">🏦 BCA Tabungan</option>
+                                <option value="gopay">💚 GoPay Utama</option>
+                                <option value="cash">💵 Dompet Harian</option>
+                                <option value="credit">💳 BCA Kartu Kredit</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="transfer-destination-wrapper" style="display: none">
+                    <div class="f-divider"></div>
+                    <div class="form-group-row">
+                        <div style="flex: 1">
+                            <label class="sec-label">Akun Tujuan</label>
+                            <div style="margin-top: 2px">
+                                <select class="select-field w-full" id="select-destination">
+                                    <option value="gopay" selected>💚 GoPay Utama</option>
+                                    <option value="bca">🏦 BCA Tabungan</option>
+                                    <option value="cash">💵 Dompet Harian</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="f-divider"></div>
+
+                <div class="form-group-row" id="category-row">
+                    <div style="flex: 1">
+                        <label class="sec-label">Kategori</label>
+                        <div style="margin-top: 2px">
+                            <select class="select-field w-full" id="select-category">
+                                <option value="food">🍜 Makanan & Minuman</option>
+                                <option value="transport">🛵 Transportasi</option>
+                                <option value="shopping">🛒 Belanja</option>
+                                <option value="salary">💼 Gaji & Pendapatan</option>
+                                <option value="utilities">⚡ Utilitas & Tagihan</option>
+                                <option value="transfer">🔄 Transfer Antar Rekening</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="f-divider"></div>
+
+                <div style="display: flex; width: 100%">
+                    <div class="form-group" style="flex: 1; padding-right: 10px">
+                        <label class="sec-label" for="in-date">Tanggal</label>
+                        <input
+                            type="date"
+                            id="in-date"
+                            class="input-field text-sm font-normal"
+                            value="2025-06-23" />
+                    </div>
+                    <div style="border-left: 1px solid var(--border); margin: 12px 0"></div>
+                    <div class="form-group" style="flex: 1; padding-left: 20px">
+                        <label class="sec-label" for="in-time">Waktu</label>
+                        <input
+                            type="time"
+                            id="in-time"
+                            class="input-field text-sm font-normal"
+                            value="12:47" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mx-4 mt-3">
+                <div class="form-group">
+                    <label class="sec-label" for="in-notes">Catatan</label>
+                    <textarea
+                        id="in-notes"
+                        rows="2"
+                        class="input-field resize-none text-sm leading-relaxed font-normal"
+                        placeholder="Tambahkan catatan detail transaksi di sini..."></textarea>
+                </div>
+
+                <div class="f-divider"></div>
+
+                <div class="form-group">
+                    <label class="sec-label" for="in-tags">Tag</label>
+                    <input
+                        type="text"
+                        id="in-tags"
+                        class="input-field text-sm font-normal"
+                        placeholder="Ketik tag lalu tekan enter..."
+                        onkeydown="handleTagInput(event)" />
+                    <div class="tag-pills" id="tags-container">
+                        <span class="tag-chip" onclick="this.remove()"
+                            >#kantor <span class="ml-1 opacity-60">×</span></span
+                        >
+                        <span class="tag-chip" onclick="this.remove()"
+                            >#makan <span class="ml-1 opacity-60">×</span></span
+                        >
+                        <span class="tag-chip" onclick="this.remove()"
+                            >#tim <span class="ml-1 opacity-60">×</span></span
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mx-4 mt-3">
+                <div style="padding: 16px 20px 12px">
+                    <p class="sec-label">Lampiran Struk / Nota</p>
+                </div>
+                <div style="padding: 0 20px 20px; display: flex; gap: 12px; align-items: center">
+                    <div class="thumb-slot" id="receipt-slot" title="Tambah Lampiran">
+                        <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--text-3)"
+                            stroke-width="2.2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                    </div>
+                    <div class="text-text-3 text-xs leading-normal" style="max-width: 240px">
+                        Format gambar JPG, PNG. Maksimal ukuran berkas file 5MB.
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin: 20px 16px 0">
+                <button class="btn-cancel btn" type="button" onclick="window.history.back()">
+                    Batal
+                </button>
+                <button class="btn-submit btn" type="button" onclick="saveTransaction()">
+                    Simpan Transaksi
+                </button>
+            </div>
+        </div>
+
+        <script>
+            // State definitions matching target financial types
+            const SYSTEM_SCHEMAS = {
+                expense: {
+                    accent: 'accent-expense',
+                    inputColor: 'amt-expense',
+                    merchantLabel: 'Merchant / Penerima',
+                    merchantPlaceholder: 'Contoh: Warteg Bu Sri, Tokopedia',
+                    accountLabel: 'Akun Sumber',
+                    defaultCategory: 'food',
+                    showDestination: false,
+                },
+                income: {
+                    accent: 'accent-income',
+                    inputColor: 'amt-income',
+                    merchantLabel: 'Pemberi Kerja / Sumber',
+                    merchantPlaceholder: 'Contoh: Gaji Bulanan PT Teknologi, Freelance',
+                    accountLabel: 'Akun Tujuan Penerimaan',
+                    defaultCategory: 'salary',
+                    showDestination: false,
+                },
+                transfer: {
+                    accent: 'accent-transfer',
+                    inputColor: 'amt-transfer',
+                    merchantLabel: 'Deskripsi Transfer',
+                    merchantPlaceholder: 'Contoh: Kirim uang bulanan, Top-up wallet',
+                    accountLabel: 'Akun Asal (Dari)',
+                    defaultCategory: 'transfer',
+                    showDestination: true,
+                },
+            };
+
+            let currentSchemaType = 'expense';
+
+            /**
+             * Orchestrates visual updates and modifications based on chosen transaction parameter context
+             * @param {string} type - System mode context ('expense' | 'income' | 'transfer')
+             */
+            function changeFormType(type) {
+                currentSchemaType = type;
+                const schema = SYSTEM_SCHEMAS[type];
+
+                // Toggle segment switch configurations
+                document
+                    .querySelectorAll('.sw-btn')
+                    .forEach((btn) => btn.classList.remove('active'));
+                document.getElementById(`sw-${type}`).classList.add('active');
+
+                // Morph color layouts dynamically
+                const accentBar = document.getElementById('form-accent-bar');
+                accentBar.className = `accent ${schema.accent}`;
+
+                const amountInput = document.getElementById('amount-input');
+                amountInput.className = `amt-input ${schema.inputColor}`;
+
+                // Transform structural textual context metrics
+                document.getElementById('label-merchant').textContent = schema.merchantLabel;
+                document.getElementById('in-merchant').placeholder = schema.merchantPlaceholder;
+                document.getElementById('label-account-from').textContent = schema.accountLabel;
+
+                // Shift operational visibility factors cleanly
+                document.getElementById('transfer-destination-wrapper').style.display =
+                    schema.showDestination ? 'block' : 'none';
+
+                // Automatically match appropriate structural selections logic
+                document.getElementById('select-category').value = schema.defaultCategory;
+            }
+
+            /**
+             * Standardizes user typing flow to generate neat Indonesian financial thousand-separator masks
+             * @param {HTMLInputElement} inputElement - Target input framework container
+             */
+            function formatCurrency(inputElement) {
+                // Isolate raw numerical inputs
+                let continuousDigits = inputElement.value.replace(/\D/g, '');
+
+                if (continuousDigits === '') {
+                    inputElement.value = '';
+                    return;
+                }
+
+                // Convert digits stream smoothly to regional Indonesian punctuation splits
+                let calibratedString = parseInt(continuousDigits, 10).toLocaleString('id-ID');
+                inputElement.value = calibratedString;
+            }
+
+            /**
+             * Catches Keydown flows to instantly craft dynamic search/categorization filter tags
+             * @param {KeyboardEvent} eventTrigger - Operational input browser interface parameters
+             */
+            function handleTagInput(eventTrigger) {
+                if (eventTrigger.key === 'Enter' && eventTrigger.target.value.trim() !== '') {
+                    eventTrigger.preventDefault();
+                    let dynamicTextValue = eventTrigger.target.value.trim().toLowerCase();
+
+                    // Prevent duplicating leading hash strings if already typed natively by users
+                    if (!dynamicTextValue.startsWith('#')) {
+                        dynamicTextValue = '#' + dynamicTextValue;
+                    }
+
+                    const compositePillWrapper = document.createElement('span');
+                    compositePillWrapper.className = 'tag-chip';
+                    compositePillWrapper.innerHTML = `${dynamicTextValue} <span class="ml-1 opacity-60">×</span>`;
+                    compositePillWrapper.onclick = function () {
+                        this.remove();
+                    };
+
+                    document.getElementById('tags-container').appendChild(compositePillWrapper);
+                    eventTrigger.target.value = '';
+                }
+            }
+
+            /**
+             * Finalizes interface verification protocols mimicking standard enterprise data layer operations
+             */
+            function saveTransaction() {
+                const rawNominalValue = document.getElementById('amount-input').value;
+                const trackingMerchantName = document.getElementById('in-merchant').value;
+
+                if (!rawNominalValue || rawNominalValue === '0') {
+                    alert('Mohon masukkan nominal transaksi yang valid.');
+                    return;
+                }
+
+                if (!trackingMerchantName.trim()) {
+                    alert('Mohon isi kolom deskripsi / nama merchant.');
+                    return;
+                }
+
+                alert(
+                    `Transaksi ${SYSTEM_SCHEMAS[currentSchemaType].merchantLabel} berhasil disimpan!`
+                );
+                window.history.back();
+            }
+        </script>
+    </body>
+</html>

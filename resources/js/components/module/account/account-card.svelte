@@ -22,7 +22,7 @@
 
 <div class="@container/account-card">
     <div
-        style:--bg-color={colorObj?.value}
+        style:--bg-color={colorObj?.hex}
         style:--text-color={colorObj?.text_color ?? '#FFFFFF'}
         class={cn(
             'p-2.5 rounded @min-[12rem]:rounded-md',

@@ -29,27 +29,14 @@
 
     const createdAt = $derived(DateTimeHelper.format(transaction.created_at, 'datetime'));
     const updatedAt = $derived(DateTimeHelper.format(transaction.updated_at, 'datetime'));
-
-    let txIdCopied = $state(false);
-
-    function copyTransactionId(): void {
-        const id = String(transaction.id);
-        navigator.clipboard?.writeText(id).then(() => {
-            txIdCopied = true;
-            setTimeout(() => (txIdCopied = false), 1600);
-        });
-    }
 </script>
 
 <div class="space-y-5">
-    <!-- ════════════════════════════════════════════ -->
-    <!--  HERO CARD                                  -->
-    <!-- ════════════════════════════════════════════ -->
     <ResponsiveCard class="overflow-x-clip">
         <!-- Colour-coded accent bar — the page's signature element -->
         <div class="-mx-5 md:-mx-6 h-1 {accentClass}"></div>
 
-        <div class="p-2.5 pt-5 md:p-0 space-y-5">
+        <div class="pt-5 md:p-0 space-y-5">
             <!-- Type badge row -->
             <div>
                 <TransactionTypeBadge type={transaction.type} />
@@ -86,90 +73,69 @@
         </div>
     </ResponsiveCard>
 
-    <!-- ════════════════════════════════════════════ -->
-    <!--  ACCOUNT SOURCE CARD                        -->
-    <!-- ════════════════════════════════════════════ -->
-    <ResponsiveCard class="p-2.5" contentClass="space-y-3">
+    <ResponsiveCard>
         <div class="grid grid-cols-2 gap-5">
             <div class={['text-left', !isTransfer ? 'col-span-full' : '']}>
-                <p class=" font-semibold tracking-widest uppercase text-base-content/50">
+                <h4
+                    class="text-sm mb-1.5 font-semibold tracking-widest uppercase text-base-content/50">
                     {isInflow ? 'Destination Account' : 'Source Account'}
-                </p>
+                </h4>
 
                 <AccountInfo account={transaction.account} />
             </div>
 
             <div class={['text-right', !isTransfer ? 'hidden' : '']}>
-                <p class=" font-semibold tracking-widest uppercase text-base-content/50">
+                <h4
+                    class="text-sm mb-1.5 font-semibold tracking-widest uppercase text-base-content/50">
                     {isInflow ? 'Destination Account' : 'Source Account'}
-                </p>
+                </h4>
 
                 <AccountInfo account={transaction.account} reverse />
             </div>
         </div>
     </ResponsiveCard>
 
-    <ResponsiveCard class="p-2.5" contentClass="space-y-5">
-        <p class="font-semibold tracking-widest uppercase text-base-content/50">Category</p>
+    <ResponsiveCard>
+        <h4 class="text-sm mb-1.5 font-semibold tracking-widest uppercase text-base-content/50">
+            Category
+        </h4>
 
         <CategoryInfo category={transaction.category} />
     </ResponsiveCard>
 
-    <!-- ════════════════════════════════════════════ -->
-    <!--  DETAIL FIELDS CARD                         -->
-    <!-- ════════════════════════════════════════════ -->
-    <ResponsiveCard class="p-2.5" contentClass="space-y-5">
-        <p class=" font-semibold tracking-widest uppercase text-base-content/50">Details</p>
+    <ResponsiveCard>
+        <h4 class="text-sm mb-1.5 font-semibold tracking-widest uppercase text-base-content/50">
+            Details
+        </h4>
 
-        <!-- Notes -->
-        {#if transaction.description}
-            <div class="flex items-start gap-3">
-                <i class="iconify size-5 text-base-content/50 shrink-0 mt-0.5 ph--note-bold"></i>
-                <div>
-                    <p class="text-xs text-base-content/50 mb-0.5">Notes</p>
-                    <p class="text-sm text-base-content leading-relaxed text-pretty">
-                        {transaction.description}
-                    </p>
+        <div class="space-y-3">
+            <!-- Notes -->
+            {#if transaction.description}
+                <div class="flex items-start gap-3">
+                    <i class="iconify size-5 text-base-content/50 shrink mt-0.5 ph--note-bold"></i>
+                    <div>
+                        <p class="text-sm text-base-content/50 mb-0.5">Notes</p>
+                        <p class="text-sm font-medium leading-relaxed text-pretty">
+                            {transaction.description}
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            <hr class="border-base-content/10" />
-        {/if}
-
-        <!-- Transaction ID -->
-        <!-- <div class="flex items-center gap-3">
-            <i class="iconify size-5 text-base-content/50 shrink-0 ph--identification-badge-bold"
-            ></i>
-            <div class="flex-1 min-w-0">
-                <p class="text-xs text-base-content/50 mb-0.5">Transaction ID</p>
-                <p class="font-mono text-sm text-base-content">#{transaction.id}</p>
-            </div>
-            <button
-                onclick={copyTransactionId}
-                class="btn btn-ghost btn-xs text-base-content/60 hover:text-base-content"
-                aria-label="Copy transaction ID">
-                {#if txIdCopied}
-                    <i class="iconify size-5 ph--check-bold text-success"></i>
-                {:else}
-                    <i class="iconify size-5 ph--copy-bold"></i>
-                {/if}
-            </button>
-        </div>
-
-        <hr class="border-base-content/10" /> -->
-
-        <!-- Created / Updated -->
-        <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-3">
-                <i class="iconify size-5 text-base-content/50 shrink-0 mt-0.5 ph--clock-bold"></i>
-                <div>
-                    <p class="text-xs text-base-content/50 mb-0.5">Created</p>
-                    <p class="text-sm text-base-content">{createdAt}</p>
+                <hr class="border-base-content/25" />
+            {/if}
+            <!-- Created / Updated -->
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                    <i class="iconify size-5 text-base-content/50 shrink mt-0.5 ph--clock-bold"></i>
+                    <div>
+                        <p class="text-sm text-base-content/50 mb-0.5">Created</p>
+                        <p class="text-sm font-medium">{createdAt}</p>
+                    </div>
                 </div>
-            </div>
-            <div class="text-right">
-                <p class="text-xs text-base-content/50 mb-0.5">Updated</p>
-                <p class="text-sm text-base-content">{updatedAt}</p>
+                <div class="text-right">
+                    <p class="text-sm text-base-content/50 mb-0.5">Updated</p>
+                    <p class="text-sm font-medium">{updatedAt}</p>
+                </div>
             </div>
         </div>
     </ResponsiveCard>
@@ -178,15 +144,18 @@
     <!--  CREATOR INFO (if available)                -->
     <!-- ════════════════════════════════════════════ -->
     {#if transaction?.creator}
-        <ResponsiveCard class="p-2.5" contentClass=" space-y-3">
-            <p class=" font-semibold tracking-widest uppercase text-base-content/50">Created by</p>
+        <ResponsiveCard>
+            <h4 class="text-sm mb-1.5 font-semibold tracking-widest uppercase text-base-content/50">
+                Created by
+            </h4>
+
             <div class="flex items-center gap-3">
                 <div
-                    class="size-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
+                    class="size-10 rounded-xl bg-accent/10 flex items-center justify-center shrink">
                     <i class="iconify size-5 text-accent ph--user-bold"></i>
                 </div>
                 <div>
-                    <p class="font-semibold text-base text-base-content">
+                    <p class="font-semibold">
                         {transaction.creator.name}
                     </p>
                 </div>

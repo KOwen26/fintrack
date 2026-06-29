@@ -9,6 +9,7 @@ use App\Models\Account;
 use App\Models\Transaction;
 use App\Services\AccountService;
 use App\Services\BalanceService;
+use App\Services\CategoryService;
 use App\Services\TransactionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,7 +40,7 @@ class TransactionController extends Controller
 
         return Inertia::render('transactions/create', [
             'account' => $account,
-            'categories' => $this->transactionService->getCategories(),
+            'categories' => CategoryService::getCategories(),
             'accounts' => $this->accountService->getTransferEligibleAccounts($account),
         ]);
     }
