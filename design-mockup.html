@@ -1,0 +1,1285 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>FinTrack — Verdant Mockup</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap"
+            rel="stylesheet" />
+        <style>
+            /* ── Verdant Palette ── */
+            :root {
+                --base-100: oklch(0.98 0.012 85);
+                --base-200: oklch(0.94 0.018 85);
+                --base-300: oklch(0.88 0.022 85);
+                --base-content: oklch(0.18 0.02 160);
+                --primary: oklch(0.42 0.11 160);
+                --primary-content: oklch(0.95 0.01 160);
+                --secondary: oklch(0.62 0.07 175);
+                --accent: oklch(0.72 0.14 85);
+                --neutral: oklch(0.18 0.02 160);
+                --success: oklch(0.55 0.12 150);
+                --error: oklch(0.55 0.12 30);
+                --warning: oklch(0.72 0.14 85);
+
+                --radius-box: 0.5rem;
+            }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: 'Figtree', system-ui, sans-serif;
+                background: var(--base-200);
+                color: var(--base-content);
+                -webkit-font-smoothing: antialiased;
+            }
+            .card-shadow {
+                box-shadow:
+                    0 1px 3px rgba(0, 0, 0, 0.06),
+                    0 1px 2px rgba(0, 0, 0, 0.04);
+            }
+
+            /* Category colors — Verdant accent-derived */
+            .cat-food {
+                color: #d97706;
+            }
+            .cat-transport {
+                color: #2563eb;
+            }
+            .cat-housing {
+                color: #7c3aed;
+            }
+            .cat-entertainment {
+                color: #db2777;
+            }
+            .cat-utilities {
+                color: #0891b2;
+            }
+            .cat-shopping {
+                color: #0d9488;
+            }
+            .cat-health {
+                color: #dc2626;
+            }
+            .cat-salary {
+                color: oklch(0.55 0.12 150);
+            }
+            .cat-investment {
+                color: #4f46e5;
+            }
+
+            .bg-cat-food {
+                background: #d97706;
+            }
+            .bg-cat-transport {
+                background: #2563eb;
+            }
+            .bg-cat-housing {
+                background: #7c3aed;
+            }
+            .bg-cat-entertainment {
+                background: #db2777;
+            }
+            .bg-cat-utilities {
+                background: #0891b2;
+            }
+            .bg-cat-shopping {
+                background: #0d9488;
+            }
+            .bg-cat-health {
+                background: #dc2626;
+            }
+            .bg-cat-salary {
+                background: oklch(0.55 0.12 150);
+            }
+            .bg-cat-investment {
+                background: #4f46e5;
+            }
+
+            .bg-cat-food-subtle {
+                background: #fef3c7;
+            }
+            .bg-cat-transport-subtle {
+                background: #dbeafe;
+            }
+            .bg-cat-housing-subtle {
+                background: #ede9fe;
+            }
+            .bg-cat-entertainment-subtle {
+                background: #fce7f3;
+            }
+            .bg-cat-utilities-subtle {
+                background: #cffafe;
+            }
+            .bg-cat-shopping-subtle {
+                background: #ccfbf1;
+            }
+            .bg-cat-health-subtle {
+                background: #fee2e2;
+            }
+            .bg-cat-salary-subtle {
+                background: #dcfce7;
+            }
+            .bg-cat-investment-subtle {
+                background: #e0e7ff;
+            }
+
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+            ::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: var(--secondary);
+                border-radius: 3px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="flex min-h-dvh">
+            <!-- =============================== -->
+            <!-- DESKTOP SIDEBAR -->
+            <!-- =============================== -->
+            <aside
+                class="hidden lg:flex lg:w-64 lg:flex-col"
+                style="background: var(--base-100); border-right: 1px solid oklch(0.88 0.022 85)">
+                <div
+                    class="flex h-16 items-center gap-2.5 border-b px-6"
+                    style="border-color: oklch(0.88 0.022 85)">
+                    <div
+                        class="flex h-8 w-8 items-center justify-center rounded-lg"
+                        style="background: var(--primary)">
+                        <svg
+                            class="h-5 w-5"
+                            style="color: var(--primary-content)"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <span
+                        class="text-lg font-semibold tracking-tight"
+                        style="color: var(--base-content)"
+                        >FinTrack</span
+                    >
+                </div>
+
+                <nav class="flex-1 space-y-1 p-3">
+                    <a
+                        href="#"
+                        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors"
+                        style="background: var(--primary); color: var(--primary-content)">
+                        <svg
+                            class="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="1.5">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a
+                        href="#"
+                        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-base-200"
+                        style="color: oklch(0.5 0.03 160)">
+                        <svg
+                            class="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="1.5">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                        Transactions
+                    </a>
+                    <a
+                        href="#"
+                        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-base-200"
+                        style="color: oklch(0.5 0.03 160)">
+                        <svg
+                            class="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="1.5">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                        </svg>
+                        Accounts
+                    </a>
+                    <a
+                        href="#"
+                        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-base-200"
+                        style="color: oklch(0.5 0.03 160)">
+                        <svg
+                            class="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="1.5">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                        </svg>
+                        Reports
+                    </a>
+                    <a
+                        href="#"
+                        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-base-200"
+                        style="color: oklch(0.5 0.03 160)">
+                        <svg
+                            class="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="1.5">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Budget
+                    </a>
+                </nav>
+
+                <div class="border-t p-3" style="border-color: oklch(0.88 0.022 85)">
+                    <div class="flex items-center gap-3 rounded-lg px-3 py-2.5">
+                        <div
+                            class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold"
+                            style="background: var(--secondary); color: var(--base-100)">
+                            JD
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p
+                                class="truncate text-sm font-medium"
+                                style="color: var(--base-content)">
+                                John Doe
+                            </p>
+                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                john@example.com
+                            </p>
+                        </div>
+                        <svg
+                            class="h-4 w-4 shrink-0"
+                            style="color: oklch(0.6 0.03 160)"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM19.5 21a7.5 7.5 0 00-15 0" />
+                        </svg>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- =============================== -->
+            <!-- MAIN -->
+            <!-- =============================== -->
+            <main class="flex min-h-dvh flex-1 flex-col">
+                <!-- DESKTOP HEADER -->
+                <header
+                    class="hidden h-16 items-center justify-between px-6 lg:flex"
+                    style="
+                        background: var(--base-100);
+                        border-bottom: 1px solid oklch(0.88 0.022 85);
+                    ">
+                    <div>
+                        <h1
+                            class="text-lg font-semibold tracking-tight"
+                            style="color: var(--base-content)">
+                            Dashboard
+                        </h1>
+                        <p class="text-xs" style="color: oklch(0.6 0.03 160)">June 30, 2026</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button
+                            class="rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
+                            style="border-color: oklch(0.85 0.025 85); color: var(--base-content)">
+                            Export
+                        </button>
+                        <button
+                            class="rounded-lg px-4 py-2 text-sm font-medium text-white transition-all hover:brightness-110"
+                            style="background: var(--primary)">
+                            + Add Transaction
+                        </button>
+                    </div>
+                </header>
+
+                <!-- PAGE CONTENT -->
+                <div class="flex-1 overflow-y-auto p-4 pb-24 lg:p-6 lg:pb-6">
+                    <!-- ── Balance Hero ── -->
+                    <section
+                        class="card-shadow mb-4 rounded-xl p-5 text-white lg:mb-6 lg:p-6"
+                        style="
+                            background: linear-gradient(
+                                135deg,
+                                var(--primary) 0%,
+                                oklch(0.35 0.1 165) 100%
+                            );
+                        ">
+                        <div class="mb-1 flex items-center justify-between">
+                            <span class="text-sm font-medium opacity-85">Total Balance</span>
+                            <span
+                                class="rounded-full bg-white/20 px-2 py-0.5 text-[10px] tracking-wider uppercase"
+                                >All Accounts</span
+                            >
+                        </div>
+                        <p class="text-3xl font-bold tracking-tight lg:text-4xl">$24,568.42</p>
+                        <div class="mt-3 flex items-center gap-4 text-sm">
+                            <span class="flex items-center gap-1">
+                                <svg
+                                    class="h-4 w-4"
+                                    style="color: oklch(0.72 0.14 150)"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                                </svg>
+                                <span class="opacity-85">+$3,420</span>
+                                <span class="opacity-60">this month</span>
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <svg
+                                    class="h-4 w-4"
+                                    style="color: oklch(0.72 0.14 40)"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0l-5.94-2.28m5.94 2.28l2.28-5.941" />
+                                </svg>
+                                <span class="opacity-85">-$1,890</span>
+                                <span class="opacity-60">this month</span>
+                            </span>
+                        </div>
+                    </section>
+
+                    <!-- ── Quick Stats ── -->
+                    <section class="mb-4 grid grid-cols-2 gap-3 lg:mb-6 lg:gap-4">
+                        <div class="card-shadow rounded-xl p-4" style="background: var(--base-100)">
+                            <div class="mb-3 flex items-center justify-between">
+                                <span
+                                    class="text-xs font-medium tracking-wider uppercase"
+                                    style="color: oklch(0.6 0.03 160)"
+                                    >Income</span
+                                >
+                                <div
+                                    class="bg-cat-salary-subtle flex h-8 w-8 items-center justify-center rounded-lg">
+                                    <svg
+                                        class="h-4 w-4"
+                                        style="color: var(--success)"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <p
+                                class="text-xl font-bold tracking-tight"
+                                style="color: var(--base-content)">
+                                $5,420
+                            </p>
+                            <p class="mt-1 text-xs" style="color: var(--success)">
+                                ↑ 12% vs last month
+                            </p>
+                        </div>
+                        <div class="card-shadow rounded-xl p-4" style="background: var(--base-100)">
+                            <div class="mb-3 flex items-center justify-between">
+                                <span
+                                    class="text-xs font-medium tracking-wider uppercase"
+                                    style="color: oklch(0.6 0.03 160)"
+                                    >Expenses</span
+                                >
+                                <div
+                                    class="bg-cat-health-subtle flex h-8 w-8 items-center justify-center rounded-lg">
+                                    <svg
+                                        class="h-4 w-4"
+                                        style="color: var(--error)"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <p
+                                class="text-xl font-bold tracking-tight"
+                                style="color: var(--base-content)">
+                                $3,890
+                            </p>
+                            <p class="mt-1 text-xs" style="color: var(--error)">
+                                ↑ 5% vs last month
+                            </p>
+                        </div>
+                        <div class="card-shadow rounded-xl p-4" style="background: var(--base-100)">
+                            <div class="mb-3 flex items-center justify-between">
+                                <span
+                                    class="text-xs font-medium tracking-wider uppercase"
+                                    style="color: oklch(0.6 0.03 160)"
+                                    >Savings</span
+                                >
+                                <div
+                                    class="bg-cat-investment-subtle flex h-8 w-8 items-center justify-center rounded-lg">
+                                    <svg
+                                        class="cat-investment h-4 w-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <p
+                                class="text-xl font-bold tracking-tight"
+                                style="color: var(--base-content)">
+                                $1,530
+                            </p>
+                            <p class="mt-1 text-xs" style="color: var(--success)">
+                                ↑ 8% vs last month
+                            </p>
+                        </div>
+                        <div class="card-shadow rounded-xl p-4" style="background: var(--base-100)">
+                            <div class="mb-3 flex items-center justify-between">
+                                <span
+                                    class="text-xs font-medium tracking-wider uppercase"
+                                    style="color: oklch(0.6 0.03 160)"
+                                    >Left to Spend</span
+                                >
+                                <div
+                                    class="bg-cat-utilities-subtle flex h-8 w-8 items-center justify-center rounded-lg">
+                                    <svg
+                                        class="cat-utilities h-4 w-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <p
+                                class="text-xl font-bold tracking-tight"
+                                style="color: var(--base-content)">
+                                $1,110
+                            </p>
+                            <p class="mt-1 text-xs" style="color: var(--warning)">
+                                15 days remaining
+                            </p>
+                        </div>
+                    </section>
+
+                    <!-- ── Spend Trend ── -->
+                    <section
+                        class="card-shadow mb-4 rounded-xl p-5 lg:mb-6"
+                        style="background: var(--base-100)">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h2 class="text-sm font-semibold" style="color: var(--base-content)">
+                                Spend Trend
+                            </h2>
+                            <select
+                                class="rounded-lg border px-2 py-1.5 text-xs"
+                                style="
+                                    border-color: oklch(0.85 0.025 85);
+                                    color: oklch(0.5 0.03 160);
+                                    background: var(--base-100);
+                                ">
+                                <option>This Month</option>
+                                <option>Last Month</option>
+                                <option>Last 3 Months</option>
+                            </select>
+                        </div>
+                        <div class="flex h-24 items-end gap-1.5 lg:h-28">
+                            <div class="flex flex-1 flex-col items-center gap-1">
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="
+                                        height: 40%;
+                                        background: var(--primary);
+                                        opacity: 0.2;
+                                    "></div>
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="height: 55%; background: var(--success)"></div>
+                                <span class="mt-1 text-[10px]" style="color: oklch(0.6 0.03 160)"
+                                    >Mon</span
+                                >
+                            </div>
+                            <div class="flex flex-1 flex-col items-center gap-1">
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="
+                                        height: 55%;
+                                        background: var(--primary);
+                                        opacity: 0.2;
+                                    "></div>
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="height: 45%; background: var(--success)"></div>
+                                <span class="mt-1 text-[10px]" style="color: oklch(0.6 0.03 160)"
+                                    >Tue</span
+                                >
+                            </div>
+                            <div class="flex flex-1 flex-col items-center gap-1">
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="
+                                        height: 35%;
+                                        background: var(--primary);
+                                        opacity: 0.2;
+                                    "></div>
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="height: 60%; background: var(--success)"></div>
+                                <span class="mt-1 text-[10px]" style="color: oklch(0.6 0.03 160)"
+                                    >Wed</span
+                                >
+                            </div>
+                            <div class="flex flex-1 flex-col items-center gap-1">
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="
+                                        height: 70%;
+                                        background: var(--primary);
+                                        opacity: 0.2;
+                                    "></div>
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="height: 40%; background: var(--success)"></div>
+                                <span class="mt-1 text-[10px]" style="color: oklch(0.6 0.03 160)"
+                                    >Thu</span
+                                >
+                            </div>
+                            <div class="flex flex-1 flex-col items-center gap-1">
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="
+                                        height: 50%;
+                                        background: var(--primary);
+                                        opacity: 0.2;
+                                    "></div>
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="height: 70%; background: var(--success)"></div>
+                                <span class="mt-1 text-[10px]" style="color: oklch(0.6 0.03 160)"
+                                    >Fri</span
+                                >
+                            </div>
+                            <div class="flex flex-1 flex-col items-center gap-1">
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="
+                                        height: 45%;
+                                        background: var(--primary);
+                                        opacity: 0.2;
+                                    "></div>
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="height: 40%; background: var(--success)"></div>
+                                <span class="mt-1 text-[10px]" style="color: oklch(0.6 0.03 160)"
+                                    >Sat</span
+                                >
+                            </div>
+                            <div class="flex flex-1 flex-col items-center gap-1">
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="
+                                        height: 30%;
+                                        background: var(--primary);
+                                        opacity: 0.2;
+                                    "></div>
+                                <div
+                                    class="w-full rounded-t-sm"
+                                    style="height: 50%; background: var(--success)"></div>
+                                <span class="mt-1 text-[10px]" style="color: oklch(0.6 0.03 160)"
+                                    >Sun</span
+                                >
+                            </div>
+                        </div>
+                        <div
+                            class="mt-3 flex items-center gap-4 text-xs"
+                            style="color: oklch(0.6 0.03 160)">
+                            <span class="flex items-center gap-1.5"
+                                ><span
+                                    class="h-2.5 w-2.5 rounded-sm"
+                                    style="background: var(--success)"></span>
+                                Income</span
+                            >
+                            <span class="flex items-center gap-1.5"
+                                ><span
+                                    class="h-2.5 w-2.5 rounded-sm"
+                                    style="background: var(--primary); opacity: 0.2"></span>
+                                Expenses</span
+                            >
+                        </div>
+                    </section>
+
+                    <!-- ── Budget Overview ── -->
+                    <section
+                        class="card-shadow mb-4 rounded-xl p-5 lg:mb-6"
+                        style="background: var(--base-100)">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h2 class="text-sm font-semibold" style="color: var(--base-content)">
+                                Monthly Budget
+                            </h2>
+                            <a href="#" class="text-xs font-medium" style="color: var(--primary)"
+                                >View All</a
+                            >
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="mb-1.5 flex items-center justify-between text-sm">
+                                    <span class="font-medium" style="color: var(--base-content)"
+                                        >Food & Dining</span
+                                    >
+                                    <span class="text-xs" style="color: oklch(0.6 0.03 160)"
+                                        >$380 / $500</span
+                                    >
+                                </div>
+                                <div
+                                    class="h-2 w-full rounded-full"
+                                    style="background: var(--base-200)">
+                                    <div
+                                        class="h-full rounded-full transition-all"
+                                        style="width: 76%; background: var(--success)"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="mb-1.5 flex items-center justify-between text-sm">
+                                    <span class="font-medium" style="color: var(--base-content)"
+                                        >Transportation</span
+                                    >
+                                    <span class="text-xs" style="color: oklch(0.6 0.03 160)"
+                                        >$120 / $200</span
+                                    >
+                                </div>
+                                <div
+                                    class="h-2 w-full rounded-full"
+                                    style="background: var(--base-200)">
+                                    <div
+                                        class="h-full rounded-full transition-all"
+                                        style="width: 60%; background: var(--accent)"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="mb-1.5 flex items-center justify-between text-sm">
+                                    <span class="font-medium" style="color: var(--base-content)"
+                                        >Shopping</span
+                                    >
+                                    <span class="text-xs font-medium" style="color: var(--error)"
+                                        >$210 / $150</span
+                                    >
+                                </div>
+                                <div
+                                    class="h-2 w-full rounded-full"
+                                    style="background: var(--base-200)">
+                                    <div
+                                        class="h-full rounded-full transition-all"
+                                        style="width: 100%; background: var(--error)"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="mb-1.5 flex items-center justify-between text-sm">
+                                    <span class="font-medium" style="color: var(--base-content)"
+                                        >Entertainment</span
+                                    >
+                                    <span class="text-xs" style="color: oklch(0.6 0.03 160)"
+                                        >$65 / $100</span
+                                    >
+                                </div>
+                                <div
+                                    class="h-2 w-full rounded-full"
+                                    style="background: var(--base-200)">
+                                    <div
+                                        class="h-full rounded-full transition-all"
+                                        style="width: 65%; background: var(--secondary)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ── Recent Transactions ── -->
+                    <section
+                        class="card-shadow mb-4 rounded-xl p-5 lg:mb-6"
+                        style="background: var(--base-100)">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h2 class="text-sm font-semibold" style="color: var(--base-content)">
+                                Recent Transactions
+                            </h2>
+                            <a href="#" class="text-xs font-medium" style="color: var(--primary)"
+                                >View All</a
+                            >
+                        </div>
+                        <div class="-mx-5 divide-y" style="border-color: oklch(0.9 0.02 85)">
+                            <div
+                                class="flex cursor-pointer items-center gap-3 px-5 py-3 transition-colors hover:bg-base-200/50">
+                                <div
+                                    class="bg-cat-food-subtle flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+                                    <svg
+                                        class="cat-food h-4 w-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="1.5">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p
+                                        class="text-sm font-medium"
+                                        style="color: var(--base-content)">
+                                        Pizza Hut
+                                    </p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 28 • Food & Dining
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-$24.50</span
+                                >
+                            </div>
+                            <div
+                                class="flex cursor-pointer items-center gap-3 px-5 py-3 transition-colors hover:bg-base-200/50">
+                                <div
+                                    class="bg-cat-salary-subtle flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+                                    <svg
+                                        class="h-4 w-4"
+                                        style="color: var(--success)"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="1.5">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l3-3m-3 3l-3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p
+                                        class="text-sm font-medium"
+                                        style="color: var(--base-content)">
+                                        Salary Deposit
+                                    </p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 27 • Income
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--success)"
+                                    >+$3,200.00</span
+                                >
+                            </div>
+                            <div
+                                class="flex cursor-pointer items-center gap-3 px-5 py-3 transition-colors hover:bg-base-200/50">
+                                <div
+                                    class="bg-cat-transport-subtle flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+                                    <svg
+                                        class="cat-transport h-4 w-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="1.5">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p
+                                        class="text-sm font-medium"
+                                        style="color: var(--base-content)">
+                                        Uber Ride
+                                    </p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 26 • Transportation
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-$12.75</span
+                                >
+                            </div>
+                            <div
+                                class="flex cursor-pointer items-center gap-3 px-5 py-3 transition-colors hover:bg-base-200/50">
+                                <div
+                                    class="bg-cat-shopping-subtle flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+                                    <svg
+                                        class="cat-shopping h-4 w-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="1.5">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p
+                                        class="text-sm font-medium"
+                                        style="color: var(--base-content)">
+                                        Amazon Order
+                                    </p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 25 • Shopping
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-$89.99</span
+                                >
+                            </div>
+                            <div
+                                class="flex cursor-pointer items-center gap-3 px-5 py-3 transition-colors hover:bg-base-200/50">
+                                <div
+                                    class="bg-cat-utilities-subtle flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+                                    <svg
+                                        class="cat-utilities h-4 w-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="1.5">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878M12 12v4.5m0 0h.007M12 16.5V12m-6 7.5h12a2.25 2.25 0 002.25-2.25V9.75a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 9.75v4.5A2.25 2.25 0 006 16.5z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p
+                                        class="text-sm font-medium"
+                                        style="color: var(--base-content)">
+                                        Electric Bill
+                                    </p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 24 • Utilities
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-$95.00</span
+                                >
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ── Accounts Overview ── -->
+                    <section
+                        class="card-shadow mb-4 rounded-xl p-5 lg:mb-6"
+                        style="background: var(--base-100)">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h2 class="text-sm font-semibold" style="color: var(--base-content)">
+                                Accounts
+                            </h2>
+                            <a href="#" class="text-xs font-medium" style="color: var(--primary)"
+                                >Manage</a
+                            >
+                        </div>
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <div
+                                class="card-shadow cursor-pointer rounded-xl p-4 transition-all hover:shadow-md"
+                                style="border: 1px solid oklch(0.88 0.022 85)">
+                                <div class="mb-3 flex items-center justify-between">
+                                    <div>
+                                        <p
+                                            class="text-sm font-medium"
+                                            style="color: var(--base-content)">
+                                            Checking Account
+                                        </p>
+                                        <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                            Chime • ...4829
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="flex h-8 w-8 items-center justify-center rounded-lg"
+                                        style="background: var(--base-200)">
+                                        <svg
+                                            class="h-4 w-4"
+                                            style="color: var(--success)"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="1.5">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p
+                                    class="text-lg font-bold tracking-tight"
+                                    style="color: var(--base-content)">
+                                    $4,250.80
+                                </p>
+                                <p class="mt-1 text-xs" style="color: var(--success)">
+                                    ↑ $320 this month
+                                </p>
+                            </div>
+                            <div
+                                class="card-shadow cursor-pointer rounded-xl p-4 transition-all hover:shadow-md"
+                                style="border: 1px solid oklch(0.88 0.022 85)">
+                                <div class="mb-3 flex items-center justify-between">
+                                    <div>
+                                        <p
+                                            class="text-sm font-medium"
+                                            style="color: var(--base-content)">
+                                            Savings
+                                        </p>
+                                        <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                            Ally Bank • ...7712
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="flex h-8 w-8 items-center justify-center rounded-lg"
+                                        style="background: var(--base-200)">
+                                        <svg
+                                            class="cat-investment h-4 w-4"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="1.5">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p
+                                    class="text-lg font-bold tracking-tight"
+                                    style="color: var(--base-content)">
+                                    $12,800.00
+                                </p>
+                                <p class="mt-1 text-xs" style="color: var(--success)">
+                                    ↑ $500 this month
+                                </p>
+                            </div>
+                            <div
+                                class="card-shadow cursor-pointer rounded-xl p-4 transition-all hover:shadow-md"
+                                style="border: 1px solid oklch(0.88 0.022 85)">
+                                <div class="mb-3 flex items-center justify-between">
+                                    <div>
+                                        <p
+                                            class="text-sm font-medium"
+                                            style="color: var(--base-content)">
+                                            Credit Card
+                                        </p>
+                                        <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                            Visa • ...3351
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="flex h-8 w-8 items-center justify-center rounded-lg"
+                                        style="background: var(--base-200)">
+                                        <svg
+                                            class="h-4 w-4"
+                                            style="color: var(--error)"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="1.5">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0019.5 3h-15a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 004.5 21z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p
+                                    class="text-lg font-bold tracking-tight"
+                                    style="color: var(--error)">
+                                    -$890.30
+                                </p>
+                                <p class="mt-1 text-xs" style="color: oklch(0.6 0.03 160)">
+                                    $5,000 limit • 82% available
+                                </p>
+                            </div>
+                            <div
+                                class="flex min-h-[88px] cursor-pointer items-center justify-center rounded-xl p-4 transition-all hover:shadow-md"
+                                style="border: 1.5px dashed oklch(0.82 0.025 85)">
+                                <div class="text-center">
+                                    <svg
+                                        class="mx-auto mb-1 h-5 w-5"
+                                        style="color: oklch(0.7 0.03 160)"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="1.5">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <p
+                                        class="text-xs font-medium"
+                                        style="color: oklch(0.6 0.03 160)">
+                                        Add Account
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ── Category Spending ── -->
+                    <section class="card-shadow rounded-xl p-5" style="background: var(--base-100)">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h2 class="text-sm font-semibold" style="color: var(--base-content)">
+                                Spending by Category
+                            </h2>
+                            <a href="#" class="text-xs font-medium" style="color: var(--primary)"
+                                >Details</a
+                            >
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="h-2.5 w-2.5 shrink-0 rounded-full"
+                                    style="background: #d97706"></div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="mb-0.5 flex items-center justify-between text-sm">
+                                        <span style="color: var(--base-content)"
+                                            >Food & Dining</span
+                                        >
+                                        <span class="font-medium" style="color: var(--base-content)"
+                                            >$380</span
+                                        >
+                                    </div>
+                                    <div class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        24% of total expenses
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="h-2.5 w-2.5 shrink-0 rounded-full"
+                                    style="background: #7c3aed"></div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="mb-0.5 flex items-center justify-between text-sm">
+                                        <span style="color: var(--base-content)">Housing</span>
+                                        <span class="font-medium" style="color: var(--base-content)"
+                                            >$1,200</span
+                                        >
+                                    </div>
+                                    <div class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        31% of total expenses
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="h-2.5 w-2.5 shrink-0 rounded-full"
+                                    style="background: #0d9488"></div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="mb-0.5 flex items-center justify-between text-sm">
+                                        <span style="color: var(--base-content)">Shopping</span>
+                                        <span class="font-medium" style="color: var(--base-content)"
+                                            >$210</span
+                                        >
+                                    </div>
+                                    <div class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        13% of total expenses
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="h-2.5 w-2.5 shrink-0 rounded-full"
+                                    style="background: #2563eb"></div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="mb-0.5 flex items-center justify-between text-sm">
+                                        <span style="color: var(--base-content)"
+                                            >Transportation</span
+                                        >
+                                        <span class="font-medium" style="color: var(--base-content)"
+                                            >$120</span
+                                        >
+                                    </div>
+                                    <div class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        8% of total expenses
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="h-2.5 w-2.5 shrink-0 rounded-full"
+                                    style="background: #db2777"></div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="mb-0.5 flex items-center justify-between text-sm">
+                                        <span style="color: var(--base-content)"
+                                            >Entertainment</span
+                                        >
+                                        <span class="font-medium" style="color: var(--base-content)"
+                                            >$65</span
+                                        >
+                                    </div>
+                                    <div class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        4% of total expenses
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- =============================== -->
+                <!-- MOBILE BOTTOM NAV -->
+                <!-- =============================== -->
+                <nav
+                    class="fixed inset-x-0 bottom-0 z-50 lg:hidden"
+                    style="background: var(--base-100); border-top: 1px solid oklch(0.88 0.022 85)">
+                    <div class="flex h-16 items-center justify-around px-2">
+                        <a
+                            href="#"
+                            class="flex min-w-0 flex-col items-center gap-0.5 rounded-lg px-2 py-1">
+                            <svg
+                                class="h-5 w-5"
+                                style="color: var(--primary)"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="1.5">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                            </svg>
+                            <span class="text-[10px] font-medium" style="color: var(--primary)"
+                                >Home</span
+                            >
+                        </a>
+                        <a
+                            href="#"
+                            class="flex min-w-0 flex-col items-center gap-0.5 rounded-lg px-2 py-1"
+                            style="color: oklch(0.55 0.03 160)">
+                            <svg
+                                class="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="1.5">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                            </svg>
+                            <span class="text-[10px] font-medium">Transactions</span>
+                        </a>
+                        <!-- FAB -->
+                        <div class="relative -mt-4">
+                            <div
+                                class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full shadow-lg transition-all hover:brightness-110 active:scale-95"
+                                style="background: var(--primary)">
+                                <svg
+                                    class="h-6 w-6"
+                                    style="color: var(--primary-content)"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                            </div>
+                        </div>
+                        <a
+                            href="#"
+                            class="flex min-w-0 flex-col items-center gap-0.5 rounded-lg px-2 py-1"
+                            style="color: oklch(0.55 0.03 160)">
+                            <svg
+                                class="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="1.5">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                            </svg>
+                            <span class="text-[10px] font-medium">Accounts</span>
+                        </a>
+                        <a
+                            href="#"
+                            class="flex min-w-0 flex-col items-center gap-0.5 rounded-lg px-2 py-1"
+                            style="color: oklch(0.55 0.03 160)">
+                            <svg
+                                class="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="1.5">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                            </svg>
+                            <span class="text-[10px] font-medium">Reports</span>
+                        </a>
+                    </div>
+                </nav>
+            </main>
+        </div>
+    </body>
+</html>

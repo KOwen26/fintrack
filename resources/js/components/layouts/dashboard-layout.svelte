@@ -53,7 +53,7 @@
         {@render header()}
 
         <ErrorWrapper>
-            <div class="flex h-full flex-col gap-6 p-5 md:p-6">
+            <div class="flex h-full flex-col gap-6 p-3 md:p-5">
                 {@render children?.()}
             </div>
 

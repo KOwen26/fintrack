@@ -10,12 +10,13 @@
         actions?: Snippet;
     }
 
-    const { title, description, actions, children, ...props }: Props = $props();
+    const { title, description, class: _class, actions, children, ...props }: Props = $props();
 </script>
 
 <header
     class={[
         'flex items-center gap-5 md:flex-row ',
+        _class,
         // "flex-col md:justify-between"
     ]}>
     {#if !children}

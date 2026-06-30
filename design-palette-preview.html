@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>FinTrack — Palette Preview</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet" />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: 'Figtree', system-ui, sans-serif;
+                background: #f3f4f6;
+            }
+
+            /* ── PALETTE THEMES ── */
+
+            /* Verdant — Refined Forest Green */
+            .theme-verdant {
+                --primary: oklch(0.42 0.11 160);
+                --primary-hover: oklch(0.38 0.11 160);
+                --secondary: oklch(0.62 0.07 175);
+                --accent: oklch(0.72 0.14 85);
+                --base-100: oklch(0.98 0.012 85);
+                --base-200: oklch(0.94 0.018 85);
+                --base-content: oklch(0.18 0.02 160);
+                --income: oklch(0.55 0.12 150);
+                --expense: oklch(0.55 0.12 30);
+                --gradient: linear-gradient(135deg, oklch(0.42 0.11 160), oklch(0.35 0.1 165));
+            }
+
+            /* Cobalt — Warm Trust Blue */
+            .theme-cobalt {
+                --primary: oklch(0.38 0.12 268);
+                --primary-hover: oklch(0.34 0.12 268);
+                --secondary: oklch(0.62 0.06 255);
+                --accent: oklch(0.72 0.16 78);
+                --base-100: oklch(0.98 0.008 80);
+                --base-200: oklch(0.93 0.012 80);
+                --base-content: oklch(0.18 0.02 268);
+                --income: oklch(0.52 0.12 162);
+                --expense: oklch(0.55 0.12 28);
+                --gradient: linear-gradient(135deg, oklch(0.38 0.12 268), oklch(0.3 0.1 270));
+            }
+
+            /* Ember — Warm & Approachable */
+            .theme-ember {
+                --primary: oklch(0.42 0.12 40);
+                --primary-hover: oklch(0.38 0.12 40);
+                --secondary: oklch(0.68 0.06 65);
+                --accent: oklch(0.74 0.14 90);
+                --base-100: oklch(0.97 0.018 70);
+                --base-200: oklch(0.92 0.022 70);
+                --base-content: oklch(0.2 0.02 40);
+                --income: oklch(0.48 0.08 145);
+                --expense: oklch(0.45 0.1 35);
+                --gradient: linear-gradient(135deg, oklch(0.42 0.12 40), oklch(0.38 0.12 50));
+            }
+
+            /* Amethyst — Premium & Modern */
+            .theme-amethyst {
+                --primary: oklch(0.38 0.13 280);
+                --primary-hover: oklch(0.34 0.13 280);
+                --secondary: oklch(0.64 0.07 285);
+                --accent: oklch(0.72 0.16 350);
+                --base-100: oklch(0.99 0.004 280);
+                --base-200: oklch(0.95 0.008 280);
+                --base-content: oklch(0.18 0.02 280);
+                --income: oklch(0.55 0.1 165);
+                --expense: oklch(0.58 0.12 18);
+                --gradient: linear-gradient(135deg, oklch(0.38 0.13 280), oklch(0.32 0.15 285));
+            }
+
+            .theme-card {
+                background: var(--base-100);
+                color: var(--base-content);
+                border-radius: 0.75rem;
+                padding: 1.25rem;
+            }
+
+            .theme-gradient-card {
+                background: var(--gradient);
+                color: white;
+                border-radius: 0.75rem;
+                padding: 1.25rem;
+            }
+
+            .tab-active {
+                background: var(--primary);
+                color: white;
+            }
+            .tab-inactive {
+                background: var(--base-200);
+                color: var(--base-content);
+                opacity: 0.6;
+            }
+
+            .swatch {
+                width: 100%;
+                height: 2.5rem;
+                border-radius: 0.375rem;
+            }
+            .swatch-sm {
+                width: 1.5rem;
+                height: 1.5rem;
+                border-radius: 0.25rem;
+                flex-shrink: 0;
+            }
+            .badge-primary {
+                background: var(--primary);
+                color: white;
+                font-size: 0.7rem;
+                padding: 0.15rem 0.5rem;
+                border-radius: 999px;
+                font-weight: 600;
+            }
+
+            .pill {
+                font-size: 0.75rem;
+                padding: 0.2rem 0.6rem;
+                border-radius: 999px;
+                font-weight: 600;
+            }
+            .pill-green {
+                background: var(--income);
+                color: white;
+            }
+            .pill-red {
+                background: var(--expense);
+                color: white;
+            }
+
+            .bar-track {
+                background: var(--base-200);
+                border-radius: 999px;
+                height: 0.5rem;
+                overflow: hidden;
+            }
+            .bar-fill {
+                height: 100%;
+                border-radius: 999px;
+                transition: width 0.5s;
+            }
+            .bar-fill-green {
+                background: var(--income);
+            }
+            .bar-fill-red {
+                background: var(--expense);
+            }
+            .bar-fill-accent {
+                background: var(--accent);
+            }
+            .bar-fill-primary {
+                background: var(--primary);
+            }
+
+            .btn-primary {
+                background: var(--primary);
+                color: white;
+                border: none;
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                font-weight: 600;
+                font-size: 0.85rem;
+                cursor: pointer;
+                transition: filter 0.15s;
+            }
+            .btn-primary:hover {
+                filter: brightness(1.1);
+            }
+            .btn-outline {
+                background: transparent;
+                color: var(--primary);
+                border: 1.5px solid var(--primary);
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                font-weight: 600;
+                font-size: 0.85rem;
+                cursor: pointer;
+            }
+
+            /* Layout for compare */
+            .compare-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .taxo-list {
+                list-style: none;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.35rem;
+            }
+            .taxo-list li {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.5rem;
+                border-radius: 999px;
+                font-weight: 500;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="mx-auto max-w-7xl p-4 lg:p-8">
+            <!-- Header -->
+            <div class="mb-8 text-center">
+                <h1 class="text-2xl font-bold tracking-tight text-gray-800">
+                    🎨 FinTrack Palette Explorer
+                </h1>
+                <p class="mt-1 text-sm text-gray-400">
+                    Four color directions — scroll to compare all palettes applied to the same UI
+                    components
+                </p>
+            </div>
+
+            <!-- ─────────────────────────────────────── -->
+            <!-- VERDANT -->
+            <!-- ─────────────────────────────────────── -->
+            <section class="theme-verdant mb-8">
+                <div class="mb-4 flex items-center gap-3">
+                    <div class="h-4 w-4 rounded-full" style="background: var(--primary)"></div>
+                    <h2 class="text-xl font-bold tracking-tight">🌿 Verdant</h2>
+                    <span class="badge-primary">Recommended</span>
+                    <span class="text-xs text-gray-400">— Refined Forest Green</span>
+                </div>
+                <div class="theme-card">
+                    <!-- Swatches -->
+                    <div class="mb-5 grid grid-cols-5 gap-2">
+                        <div>
+                            <div class="swatch" style="background: var(--primary)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Primary</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--secondary)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Secondary</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--accent)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Accent</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--income)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Income</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--expense)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Expense</p>
+                        </div>
+                    </div>
+                    <div class="mb-5 grid grid-cols-2 gap-2">
+                        <div>
+                            <div
+                                class="swatch"
+                                style="background: var(--base-100); border: 1px solid #ddd"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Base-100</p>
+                        </div>
+                        <div>
+                            <div
+                                class="swatch"
+                                style="background: var(--base-200); border: 1px solid #ddd"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Base-200</p>
+                        </div>
+                    </div>
+
+                    <!-- UI Preview -->
+                    <p class="mb-3 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                        UI Preview
+                    </p>
+
+                    <!-- Balance hero -->
+                    <div class="theme-gradient-card mb-3">
+                        <p class="text-xs font-medium opacity-80">Total Balance</p>
+                        <p class="text-2xl font-bold">$24,568.42</p>
+                        <div class="mt-2 flex gap-3 text-xs">
+                            <span>↑ <span class="font-semibold">+$3,420</span> this month</span>
+                            <span>↓ <span class="font-semibold">-$1,890</span> this month</span>
+                        </div>
+                    </div>
+
+                    <!-- Stat cards -->
+                    <div class="mb-3 grid grid-cols-2 gap-2">
+                        <div class="rounded-lg p-3" style="background: var(--base-200)">
+                            <p class="text-xs text-gray-400">Income</p>
+                            <p class="text-lg font-bold" style="color: var(--income)">$5,420</p>
+                        </div>
+                        <div class="rounded-lg p-3" style="background: var(--base-200)">
+                            <p class="text-xs text-gray-400">Expenses</p>
+                            <p class="text-lg font-bold" style="color: var(--expense)">$3,890</p>
+                        </div>
+                    </div>
+
+                    <!-- Transactions -->
+                    <div class="mb-3 divide-y divide-gray-100 border-t border-b border-gray-100">
+                        <div class="flex items-center gap-3 py-2.5">
+                            <div
+                                class="swatch-sm shrink-0 opacity-80"
+                                style="background: var(--accent)"></div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium">Pizza Hut</p>
+                                <p class="text-xs opacity-60">Food & Dining</p>
+                            </div>
+                            <span class="text-sm font-semibold" style="color: var(--expense)"
+                                >-$24.50</span
+                            >
+                        </div>
+                        <div class="flex items-center gap-3 py-2.5">
+                            <div
+                                class="swatch-sm shrink-0 opacity-80"
+                                style="background: var(--income)"></div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium">Salary Deposit</p>
+                                <p class="text-xs opacity-60">Income</p>
+                            </div>
+                            <span class="text-sm font-semibold" style="color: var(--income)"
+                                >+$3,200</span
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Budget bars -->
+                    <div class="mb-3 space-y-2">
+                        <div>
+                            <div class="mb-1 flex justify-between text-xs">
+                                <span class="font-medium">Food & Dining</span
+                                ><span class="opacity-60">$380 / $500</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill bar-fill-green" style="width: 76%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="mb-1 flex justify-between text-xs">
+                                <span class="font-medium">Shopping</span
+                                ><span class="font-semibold" style="color: var(--expense)"
+                                    >$210 / $150</span
+                                >
+                            </div>
+                            <div class="bar-track">
+                                <div
+                                    class="bar-fill"
+                                    style="width: 100%; background: var(--expense)"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex gap-2">
+                        <button class="btn-primary">+ Add Transaction</button>
+                        <button class="btn-outline">Export</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─────────────────────────────────────── -->
+            <!-- COBALT -->
+            <!-- ─────────────────────────────────────── -->
+            <section class="theme-cobalt mb-8">
+                <div class="mb-4 flex items-center gap-3">
+                    <div class="h-4 w-4 rounded-full" style="background: var(--primary)"></div>
+                    <h2 class="text-xl font-bold tracking-tight">🔷 Cobalt</h2>
+                    <span class="text-xs text-gray-400">— Warm Trust Blue</span>
+                </div>
+                <div class="theme-card">
+                    <div class="mb-5 grid grid-cols-5 gap-2">
+                        <div>
+                            <div class="swatch" style="background: var(--primary)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Primary</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--secondary)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Secondary</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--accent)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Accent</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--income)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Income</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--expense)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Expense</p>
+                        </div>
+                    </div>
+                    <div class="mb-5 grid grid-cols-2 gap-2">
+                        <div>
+                            <div
+                                class="swatch"
+                                style="background: var(--base-100); border: 1px solid #ddd"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Base-100</p>
+                        </div>
+                        <div>
+                            <div
+                                class="swatch"
+                                style="background: var(--base-200); border: 1px solid #ddd"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Base-200</p>
+                        </div>
+                    </div>
+
+                    <p class="mb-3 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                        UI Preview
+                    </p>
+
+                    <div class="theme-gradient-card mb-3">
+                        <p class="text-xs font-medium opacity-80">Total Balance</p>
+                        <p class="text-2xl font-bold">$24,568.42</p>
+                        <div class="mt-2 flex gap-3 text-xs">
+                            <span>↑ <span class="font-semibold">+$3,420</span> this month</span>
+                            <span>↓ <span class="font-semibold">-$1,890</span> this month</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 grid grid-cols-2 gap-2">
+                        <div class="rounded-lg p-3" style="background: var(--base-200)">
+                            <p class="text-xs text-gray-400">Income</p>
+                            <p class="text-lg font-bold" style="color: var(--income)">$5,420</p>
+                        </div>
+                        <div class="rounded-lg p-3" style="background: var(--base-200)">
+                            <p class="text-xs text-gray-400">Expenses</p>
+                            <p class="text-lg font-bold" style="color: var(--expense)">$3,890</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 divide-y divide-gray-100 border-t border-b border-gray-100">
+                        <div class="flex items-center gap-3 py-2.5">
+                            <div
+                                class="swatch-sm shrink-0 opacity-80"
+                                style="background: var(--accent)"></div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium">Pizza Hut</p>
+                                <p class="text-xs opacity-60">Food & Dining</p>
+                            </div>
+                            <span class="text-sm font-semibold" style="color: var(--expense)"
+                                >-$24.50</span
+                            >
+                        </div>
+                        <div class="flex items-center gap-3 py-2.5">
+                            <div
+                                class="swatch-sm shrink-0 opacity-80"
+                                style="background: var(--income)"></div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium">Salary Deposit</p>
+                                <p class="text-xs opacity-60">Income</p>
+                            </div>
+                            <span class="text-sm font-semibold" style="color: var(--income)"
+                                >+$3,200</span
+                            >
+                        </div>
+                    </div>
+
+                    <div class="mb-3 space-y-2">
+                        <div>
+                            <div class="mb-1 flex justify-between text-xs">
+                                <span class="font-medium">Food & Dining</span
+                                ><span class="opacity-60">$380 / $500</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill bar-fill-green" style="width: 76%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="mb-1 flex justify-between text-xs">
+                                <span class="font-medium">Shopping</span
+                                ><span class="font-semibold" style="color: var(--expense)"
+                                    >$210 / $150</span
+                                >
+                            </div>
+                            <div class="bar-track">
+                                <div
+                                    class="bar-fill"
+                                    style="width: 100%; background: var(--expense)"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button class="btn-primary">+ Add Transaction</button>
+                        <button class="btn-outline">Export</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─────────────────────────────────────── -->
+            <!-- EMBER -->
+            <!-- ─────────────────────────────────────── -->
+            <section class="theme-ember mb-8">
+                <div class="mb-4 flex items-center gap-3">
+                    <div class="h-4 w-4 rounded-full" style="background: var(--primary)"></div>
+                    <h2 class="text-xl font-bold tracking-tight">🔥 Ember</h2>
+                    <span class="text-xs text-gray-400">— Warm & Approachable</span>
+                </div>
+                <div class="theme-card">
+                    <div class="mb-5 grid grid-cols-5 gap-2">
+                        <div>
+                            <div class="swatch" style="background: var(--primary)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Primary</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--secondary)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Secondary</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--accent)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Accent</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--income)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Income</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--expense)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Expense</p>
+                        </div>
+                    </div>
+                    <div class="mb-5 grid grid-cols-2 gap-2">
+                        <div>
+                            <div
+                                class="swatch"
+                                style="background: var(--base-100); border: 1px solid #ddd"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Base-100</p>
+                        </div>
+                        <div>
+                            <div
+                                class="swatch"
+                                style="background: var(--base-200); border: 1px solid #ddd"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Base-200</p>
+                        </div>
+                    </div>
+
+                    <p class="mb-3 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                        UI Preview
+                    </p>
+
+                    <div class="theme-gradient-card mb-3">
+                        <p class="text-xs font-medium opacity-80">Total Balance</p>
+                        <p class="text-2xl font-bold">$24,568.42</p>
+                        <div class="mt-2 flex gap-3 text-xs">
+                            <span>↑ <span class="font-semibold">+$3,420</span> this month</span>
+                            <span>↓ <span class="font-semibold">-$1,890</span> this month</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 grid grid-cols-2 gap-2">
+                        <div class="rounded-lg p-3" style="background: var(--base-200)">
+                            <p class="text-xs text-gray-400">Income</p>
+                            <p class="text-lg font-bold" style="color: var(--income)">$5,420</p>
+                        </div>
+                        <div class="rounded-lg p-3" style="background: var(--base-200)">
+                            <p class="text-xs text-gray-400">Expenses</p>
+                            <p class="text-lg font-bold" style="color: var(--expense)">$3,890</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 divide-y divide-gray-100 border-t border-b border-gray-100">
+                        <div class="flex items-center gap-3 py-2.5">
+                            <div
+                                class="swatch-sm shrink-0 opacity-80"
+                                style="background: var(--accent)"></div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium">Pizza Hut</p>
+                                <p class="text-xs opacity-60">Food & Dining</p>
+                            </div>
+                            <span class="text-sm font-semibold" style="color: var(--expense)"
+                                >-$24.50</span
+                            >
+                        </div>
+                        <div class="flex items-center gap-3 py-2.5">
+                            <div
+                                class="swatch-sm shrink-0 opacity-80"
+                                style="background: var(--income)"></div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium">Salary Deposit</p>
+                                <p class="text-xs opacity-60">Income</p>
+                            </div>
+                            <span class="text-sm font-semibold" style="color: var(--income)"
+                                >+$3,200</span
+                            >
+                        </div>
+                    </div>
+
+                    <div class="mb-3 space-y-2">
+                        <div>
+                            <div class="mb-1 flex justify-between text-xs">
+                                <span class="font-medium">Food & Dining</span
+                                ><span class="opacity-60">$380 / $500</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill bar-fill-green" style="width: 76%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="mb-1 flex justify-between text-xs">
+                                <span class="font-medium">Shopping</span
+                                ><span class="font-semibold" style="color: var(--expense)"
+                                    >$210 / $150</span
+                                >
+                            </div>
+                            <div class="bar-track">
+                                <div
+                                    class="bar-fill"
+                                    style="width: 100%; background: var(--expense)"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button class="btn-primary">+ Add Transaction</button>
+                        <button class="btn-outline">Export</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─────────────────────────────────────── -->
+            <!-- AMETHYST -->
+            <!-- ─────────────────────────────────────── -->
+            <section class="theme-amethyst mb-8">
+                <div class="mb-4 flex items-center gap-3">
+                    <div class="h-4 w-4 rounded-full" style="background: var(--primary)"></div>
+                    <h2 class="text-xl font-bold tracking-tight">💎 Amethyst</h2>
+                    <span class="text-xs text-gray-400">— Premium & Modern</span>
+                </div>
+                <div class="theme-card">
+                    <div class="mb-5 grid grid-cols-5 gap-2">
+                        <div>
+                            <div class="swatch" style="background: var(--primary)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Primary</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--secondary)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Secondary</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--accent)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Accent</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--income)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Income</p>
+                        </div>
+                        <div>
+                            <div class="swatch" style="background: var(--expense)"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Expense</p>
+                        </div>
+                    </div>
+                    <div class="mb-5 grid grid-cols-2 gap-2">
+                        <div>
+                            <div
+                                class="swatch"
+                                style="background: var(--base-100); border: 1px solid #ddd"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Base-100</p>
+                        </div>
+                        <div>
+                            <div
+                                class="swatch"
+                                style="background: var(--base-200); border: 1px solid #ddd"></div>
+                            <p class="mt-0.5 text-center text-[10px] font-medium">Base-200</p>
+                        </div>
+                    </div>
+
+                    <p class="mb-3 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                        UI Preview
+                    </p>
+
+                    <div class="theme-gradient-card mb-3">
+                        <p class="text-xs font-medium opacity-80">Total Balance</p>
+                        <p class="text-2xl font-bold">$24,568.42</p>
+                        <div class="mt-2 flex gap-3 text-xs">
+                            <span>↑ <span class="font-semibold">+$3,420</span> this month</span>
+                            <span>↓ <span class="font-semibold">-$1,890</span> this month</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 grid grid-cols-2 gap-2">
+                        <div class="rounded-lg p-3" style="background: var(--base-200)">
+                            <p class="text-xs text-gray-400">Income</p>
+                            <p class="text-lg font-bold" style="color: var(--income)">$5,420</p>
+                        </div>
+                        <div class="rounded-lg p-3" style="background: var(--base-200)">
+                            <p class="text-xs text-gray-400">Expenses</p>
+                            <p class="text-lg font-bold" style="color: var(--expense)">$3,890</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 divide-y divide-gray-100 border-t border-b border-gray-100">
+                        <div class="flex items-center gap-3 py-2.5">
+                            <div
+                                class="swatch-sm shrink-0 opacity-80"
+                                style="background: var(--accent)"></div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium">Pizza Hut</p>
+                                <p class="text-xs opacity-60">Food & Dining</p>
+                            </div>
+                            <span class="text-sm font-semibold" style="color: var(--expense)"
+                                >-$24.50</span
+                            >
+                        </div>
+                        <div class="flex items-center gap-3 py-2.5">
+                            <div
+                                class="swatch-sm shrink-0 opacity-80"
+                                style="background: var(--income)"></div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium">Salary Deposit</p>
+                                <p class="text-xs opacity-60">Income</p>
+                            </div>
+                            <span class="text-sm font-semibold" style="color: var(--income)"
+                                >+$3,200</span
+                            >
+                        </div>
+                    </div>
+
+                    <div class="mb-3 space-y-2">
+                        <div>
+                            <div class="mb-1 flex justify-between text-xs">
+                                <span class="font-medium">Food & Dining</span
+                                ><span class="opacity-60">$380 / $500</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill bar-fill-green" style="width: 76%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="mb-1 flex justify-between text-xs">
+                                <span class="font-medium">Shopping</span
+                                ><span class="font-semibold" style="color: var(--expense)"
+                                    >$210 / $150</span
+                                >
+                            </div>
+                            <div class="bar-track">
+                                <div
+                                    class="bar-fill"
+                                    style="width: 100%; background: var(--expense)"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button class="btn-primary">+ Add Transaction</button>
+                        <button class="btn-outline">Export</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Side-by-side comparison -->
+            <div class="mt-12">
+                <h2 class="mb-6 text-center text-xl font-bold tracking-tight text-gray-800">
+                    📊 Side by Side: Gradient Cards
+                </h2>
+                <div class="compare-grid">
+                    <div class="theme-verdant theme-gradient-card p-5">
+                        <p class="text-xs font-medium opacity-80">Verdant</p>
+                        <p class="text-xl font-bold">$24,568.42</p>
+                        <div class="mt-2 flex gap-3 text-xs">
+                            <span>↑ +$3,420</span><span>↓ -$1,890</span>
+                        </div>
+                    </div>
+                    <div class="theme-cobalt theme-gradient-card p-5">
+                        <p class="text-xs font-medium opacity-80">Cobalt</p>
+                        <p class="text-xl font-bold">$24,568.42</p>
+                        <div class="mt-2 flex gap-3 text-xs">
+                            <span>↑ +$3,420</span><span>↓ -$1,890</span>
+                        </div>
+                    </div>
+                    <div class="theme-ember theme-gradient-card p-5">
+                        <p class="text-xs font-medium opacity-80">Ember</p>
+                        <p class="text-xl font-bold">$24,568.42</p>
+                        <div class="mt-2 flex gap-3 text-xs">
+                            <span>↑ +$3,420</span><span>↓ -$1,890</span>
+                        </div>
+                    </div>
+                    <div class="theme-amethyst theme-gradient-card p-5">
+                        <p class="text-xs font-medium opacity-80">Amethyst</p>
+                        <p class="text-xl font-bold">$24,568.42</p>
+                        <div class="mt-2 flex gap-3 text-xs">
+                            <span>↑ +$3,420</span><span>↓ -$1,890</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 flex justify-center">
+                <div
+                    class="theme-verdant max-w-md rounded-xl p-6"
+                    style="background: var(--base-200)">
+                    <p class="text-center text-sm text-gray-500">
+                        Open <strong>design-palette-preview.html</strong> in your browser to see all
+                        four palettes rendered on actual UI components.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
