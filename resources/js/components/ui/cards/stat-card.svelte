@@ -6,7 +6,7 @@
 
     interface Props extends RestProps {
         label: string;
-        value: number | null;
+        value: number | string | null;
         color:
             | 'primary'
             | 'secondary'
@@ -17,7 +17,8 @@
             | 'error'
             | 'light'
             | 'dark';
-        icon: 'trending-up' | 'trending-down' | 'piggy-bank' | 'clock';
+        icon: string;
+        format?: 'currency' | 'number';
 
         trend?: {
             direction: 'up' | 'down';
@@ -33,6 +34,7 @@
         value,
         color,
         icon,
+        format = 'currency',
         trend = null,
         loading = false,
         class: _class,
@@ -52,12 +54,22 @@
         dark: { bg: 'bg-base-300/10', fg: 'text-base-content' },
     };
 
-    const ICON_MAP: Record<string, string> = {
+    const KNOWN_ICONS: Record<string, string> = {
         'trending-up': 'ph--trend-up-bold',
         'trending-down': 'ph--trend-down-bold',
         'piggy-bank': 'ph--piggy-bank-bold',
         clock: 'ph--clock-bold',
     };
+
+    let iconClass = $derived(() => KNOWN_ICONS[icon] ?? icon);
+
+    let formattedValue = $derived(() => {
+        if (value === null || value === undefined) return null;
+        if (typeof value === 'string') return value;
+        if (format === 'number') return value.toLocaleString();
+
+        return Formatter.currency(value);
+    });
 </script>
 
 <div
@@ -72,15 +84,15 @@
     {#if loading}
         <div class="animate-pulse space-y-3">
             <div class="flex items-center justify-between">
-                <div class="h-3 w-16 rounded bg-base-content/10">&nbsp;</div>
-                <div class="h-8 w-8 rounded-lg bg-base-content/10">&nbsp;</div>
+                <div class="h-3 w-16 rounded bg-base-content/10"></div>
+                <div class="h-8 w-8 rounded-lg bg-base-content/10"></div>
             </div>
-            <div class="h-7 w-28 rounded bg-base-content/10">&nbsp;</div>
-            <div class="h-3 w-24 rounded bg-base-content/10">&nbsp;</div>
+            <div class="h-7 w-28 rounded bg-base-content/10"></div>
+            <div class="h-3 w-24 rounded bg-base-content/10"></div>
         </div>
     {:else}
         <div class="flex items-center justify-between">
-            <span class="text-xs font-medium uppercase tracking-wider text-base-content/60">
+            <span class="text-xs font-medium tracking-wider text-base-content/60 uppercase">
                 {label}
             </span>
             <div
@@ -88,17 +100,12 @@
                     'flex size-8 items-center justify-center rounded-lg',
                     COLOR_STYLES[color].bg
                 )}>
-                <i
-                    class={cn(
-                        'iconify shrink-0 size-4',
-                        ICON_MAP[icon] ?? ICON_MAP['clock'],
-                        COLOR_STYLES[color].fg
-                    )}></i>
+                <i class={cn('iconify size-4 shrink-0', iconClass(), COLOR_STYLES[color].fg)}></i>
             </div>
         </div>
 
         <p class="mt-3 text-xl font-bold tracking-tight text-base-content">
-            {Formatter.currency(value ?? 0)}
+            {formattedValue() ?? '—'}
         </p>
 
         {#if trend}

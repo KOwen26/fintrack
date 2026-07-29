@@ -1,0 +1,2314 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>FinTrack — Account Detail · Mobile-First</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap"
+            rel="stylesheet" />
+        <style>
+            :root {
+                --base-100: oklch(0.98 0.012 85);
+                --base-200: oklch(0.94 0.018 85);
+                --base-300: oklch(0.88 0.022 85);
+                --base-content: oklch(0.18 0.02 160);
+                --primary: oklch(0.42 0.11 160);
+                --primary-content: oklch(0.95 0.01 160);
+                --accent: oklch(0.72 0.14 85);
+                --success: oklch(0.55 0.12 150);
+                --error: oklch(0.55 0.12 30);
+            }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: 'Figtree', system-ui, sans-serif;
+                background: var(--base-200);
+                color: var(--base-content);
+                -webkit-font-smoothing: antialiased;
+                padding: 0;
+            }
+            .card-shadow {
+                box-shadow:
+                    0 1px 3px rgba(0, 0, 0, 0.06),
+                    0 1px 2px rgba(0, 0, 0, 0.04);
+            }
+
+            /* Direction label chip */
+            .dir-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.375rem;
+                font-size: 0.625rem;
+                font-weight: 600;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                padding: 0.1875rem 0.625rem;
+                border-radius: 999px;
+                background: var(--primary);
+                color: var(--primary-content);
+            }
+
+            /* ── Donut Chart ── */
+            .donut {
+                --d-1: #059669;
+                --p-1: 24;
+                --d-2: #6366f1;
+                --p-2: 31;
+                --d-3: #f59e0b;
+                --p-3: 20;
+                --d-4: #0d9488;
+                --p-4: 13;
+                --d-5: #0ea5e9;
+                --p-5: 8;
+                --d-6: #e11d48;
+                --p-6: 4;
+            }
+            .donut-ring {
+                background: conic-gradient(
+                    var(--d-1) 0% calc(var(--p-1) * 1%),
+                    var(--d-2) calc(var(--p-1) * 1%) calc((var(--p-1) + var(--p-2)) * 1%),
+                    var(--d-3) calc((var(--p-1) + var(--p-2)) * 1%)
+                        calc((var(--p-1) + var(--p-2) + var(--p-3)) * 1%),
+                    var(--d-4) calc((var(--p-1) + var(--p-2) + var(--p-3)) * 1%)
+                        calc((var(--p-1) + var(--p-2) + var(--p-3) + var(--p-4)) * 1%),
+                    var(--d-5) calc((var(--p-1) + var(--p-2) + var(--p-3) + var(--p-4)) * 1%)
+                        calc((var(--p-1) + var(--p-2) + var(--p-3) + var(--p-4) + var(--p-5)) * 1%),
+                    var(--d-6)
+                        calc((var(--p-1) + var(--p-2) + var(--p-3) + var(--p-4) + var(--p-5)) * 1%)
+                        100%
+                );
+            }
+
+            /* ── Direction 2: Tab system ── */
+            .d2-tab-content {
+                display: none;
+            }
+            #d2-tab-spending:checked ~ #d2-content-spending,
+            #d2-tab-transactions:checked ~ #d2-content-transactions,
+            #d2-tab-details:checked ~ #d2-content-details {
+                display: block;
+            }
+            .d2-tab-label {
+                position: relative;
+                cursor: pointer;
+                transition: color 0.2s;
+                color: oklch(0.6 0.03 160);
+                white-space: nowrap;
+            }
+            .d2-tab-label::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 2px;
+                border-radius: 1px;
+                background: transparent;
+                transition: background 0.2s;
+            }
+            #d2-tab-spending:checked ~ .d2-tab-bar label[for='d2-tab-spending'],
+            #d2-tab-transactions:checked ~ .d2-tab-bar label[for='d2-tab-transactions'],
+            #d2-tab-details:checked ~ .d2-tab-bar label[for='d2-tab-details'] {
+                color: var(--base-content);
+            }
+            #d2-tab-spending:checked ~ .d2-tab-bar label[for='d2-tab-spending']::after,
+            #d2-tab-transactions:checked ~ .d2-tab-bar label[for='d2-tab-transactions']::after,
+            #d2-tab-details:checked ~ .d2-tab-bar label[for='d2-tab-details']::after {
+                background: var(--primary);
+            }
+
+            /* ── Direction 3: Drawer ── */
+            .d3-drawer {
+                position: fixed;
+                inset: 0;
+                z-index: 50;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+            .d3-drawer-overlay {
+                position: absolute;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.35);
+            }
+            .d3-drawer-panel {
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                width: min(85vw, 24rem);
+                background: white;
+                padding: 1.25rem;
+                transform: translateX(100%);
+                transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+                overflow-y: auto;
+            }
+            #d3-drawer-toggle:checked ~ .d3-drawer {
+                pointer-events: auto;
+                opacity: 1;
+            }
+            #d3-drawer-toggle:checked ~ .d3-drawer .d3-drawer-panel {
+                transform: translateX(0);
+            }
+
+            /* ── Scrollbar ── */
+            ::-webkit-scrollbar {
+                width: 5px;
+                height: 5px;
+            }
+            ::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: oklch(0.78 0.03 160);
+                border-radius: 3px;
+            }
+
+            /* ── Quick actions horizontal scroll ── */
+            .scroll-x {
+                overflow-x: auto;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            .scroll-x::-webkit-scrollbar {
+                display: none;
+            }
+
+            /* ── Responsive: Tablet ── */
+            @media (min-width: 768px) {
+                .d2-tab-content {
+                    display: block !important;
+                }
+                .d2-tab-bar {
+                    display: none;
+                }
+                .d3-drawer-panel {
+                    width: 20rem;
+                }
+            }
+
+            /* ── Responsive: Desktop ── */
+            @media (min-width: 1024px) {
+                .d3-drawer {
+                    position: static;
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+                .d3-drawer-overlay {
+                    display: none;
+                }
+                .d3-drawer-panel {
+                    position: static;
+                    transform: none;
+                    width: auto;
+                    padding: 0;
+                    background: transparent;
+                    overflow: visible;
+                }
+                #d3-drawer-toggle {
+                    display: none;
+                }
+                #d3-drawer-toggle ~ .d3-drawer-btn {
+                    display: none;
+                }
+            }
+
+            /* ── Responsive helper classes ── */
+            .show-at-md {
+                display: none;
+            }
+            @media (min-width: 768px) {
+                .show-at-md {
+                    display: revert;
+                }
+            }
+            .hide-at-md {
+                display: revert;
+            }
+            @media (min-width: 768px) {
+                .hide-at-md {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="mx-auto max-w-6xl px-4 py-6 lg:px-8">
+            <!-- ═══ INTRO ═══ -->
+            <div class="mb-6 text-center md:mb-8">
+                <h1 class="text-xl font-bold tracking-tight md:text-2xl">Account Detail Page</h1>
+                <p class="mt-0.5 text-xs md:text-sm" style="color: oklch(0.6 0.03 160)">
+                    Three mobile-first layout explorations
+                </p>
+            </div>
+
+            <!-- ████████████████████████████████████████████████████████████████ -->
+            <!-- ██  DIRECTION 1: "CARD STACK" — Clean Vertical Scroll        ██ -->
+            <!-- ████████████████████████████████████████████████████████████████ -->
+            <div class="mb-2 flex items-center gap-2">
+                <span class="dir-chip"
+                    ><i class="iconify size-3 ph--stack-bold"></i> Direction 1</span
+                >
+                <span class="text-sm font-semibold">Card Stack</span>
+                <span class="hidden text-[11px] md:inline" style="color: oklch(0.6 0.03 160)"
+                    >Hero → quick actions → categories → transactions</span
+                >
+            </div>
+
+            <!-- Direction 1 page mockup — mobile phone frame -->
+            <div
+                class="overflow-hidden rounded-2xl border"
+                style="background: var(--base-200); border-color: oklch(0.85 0.025 85)">
+                <!-- ── MOBILE VIEWPORT INDICATOR ── -->
+                <div
+                    class="flex items-center gap-2 border-b bg-white/60 px-4 py-1.5 text-[10px] tracking-wider uppercase"
+                    style="border-color: oklch(0.85 0.025 85); color: oklch(0.55 0.03 160)">
+                    <i class="iconify size-3.5 ph--device-mobile-bold"></i>
+                    <span>360px mobile view</span>
+                    <span class="ml-auto flex items-center gap-2">
+                        <i class="hide-at-md iconify size-3 ph--arrow-right-bold"></i>
+                        <span class="hide-at-md">scroll down</span>
+                        <span class="show-at-md flex items-center gap-1"
+                            ><i class="iconify size-3 ph--monitor-bold"></i> 768px+ enhanced</span
+                        >
+                    </span>
+                </div>
+
+                <div class="p-4 md:p-6 lg:p-8">
+                    <!-- Breadcrumb -->
+                    <div
+                        class="mb-3 flex items-center gap-1.5 text-[11px]"
+                        style="color: oklch(0.6 0.03 160)">
+                        <i class="iconify size-3 ph--house-bold"></i>
+                        <span>Home</span>
+                        <span>/</span>
+                        <span>Accounts</span>
+                        <span>/</span>
+                        <span class="font-medium" style="color: var(--base-content)">Checking</span>
+                    </div>
+
+                    <!-- ── Hero Card ── -->
+                    <div class="card-shadow overflow-hidden rounded-xl" style="background: white">
+                        <div
+                            style="
+                                background: linear-gradient(135deg, #059669 0%, #047857 100%);
+                                color: white;
+                            ">
+                            <div class="p-5 md:p-6">
+                                <!-- Account name + type row -->
+                                <div class="flex items-center gap-2">
+                                    <div
+                                        class="flex h-8 w-8 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                        style="background: rgba(255, 255, 255, 0.18)">
+                                        <i class="iconify size-4 ph--bank-bold md:size-4.5"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-sm font-semibold md:text-base"
+                                                >Checking Account</span
+                                            >
+                                            <span
+                                                class="rounded-full px-1.5 py-0.5 text-[9px] font-medium tracking-wider uppercase"
+                                                style="background: rgba(255, 255, 255, 0.18)"
+                                                >Debit</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="flex items-center gap-2 text-xs"
+                                            style="color: rgba(255, 255, 255, 0.7)">
+                                            <span>Chime</span>
+                                            <span>•</span>
+                                            <span>Personal</span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        class="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-white/15"
+                                        style="background: rgba(255, 255, 255, 0.1)">
+                                        <i class="iconify size-4 ph--dots-three-bold"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Balance — this is the hero thesis -->
+                                <div class="mt-4 md:mt-5">
+                                    <div
+                                        class="flex items-center gap-1.5 text-[11px] font-medium tracking-wider uppercase"
+                                        style="color: rgba(255, 255, 255, 0.7)">
+                                        Current Balance
+                                        <button
+                                            class="opacity-60 transition-opacity hover:opacity-100">
+                                            <i class="iconify size-3.5 ph--eye-bold"></i>
+                                        </button>
+                                    </div>
+                                    <p
+                                        class="mt-0.5 text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
+                                        Rp 4.250.800
+                                    </p>
+                                    <div class="mt-1.5 flex items-center gap-1.5 text-sm">
+                                        <i
+                                            class="iconify size-4 ph--trend-up-bold"
+                                            style="color: oklch(0.75 0.15 145)"></i>
+                                        <span style="color: rgba(255, 255, 255, 0.85)"
+                                            >+Rp 2.340.000</span
+                                        >
+                                        <span style="color: rgba(255, 255, 255, 0.55)"
+                                            >this month</span
+                                        >
+                                    </div>
+                                </div>
+
+                                <!-- Quick actions — horizontal scroll on mobile, static row on desktop -->
+                                <div class="scroll-x -mx-5 mt-5 px-5 pb-1 md:mx-0 md:px-0">
+                                    <div class="flex gap-2 md:flex-wrap">
+                                        <button
+                                            class="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors hover:bg-white/25 md:shrink"
+                                            style="background: rgba(255, 255, 255, 0.13)">
+                                            <i class="iconify size-4 ph--arrow-up-right-bold"></i>
+                                            Transfer
+                                        </button>
+                                        <button
+                                            class="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors hover:bg-white/25 md:shrink"
+                                            style="background: rgba(255, 255, 255, 0.13)">
+                                            <i class="iconify size-4 ph--plus-bold"></i>
+                                            Top Up
+                                        </button>
+                                        <button
+                                            class="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors hover:bg-white/25 md:shrink"
+                                            style="background: rgba(255, 255, 255, 0.13)">
+                                            <i class="iconify size-4 ph--arrow-down-bold"></i>
+                                            Withdraw
+                                        </button>
+                                        <button
+                                            class="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors hover:bg-white/25 md:shrink"
+                                            style="background: rgba(255, 255, 255, 0.13)">
+                                            <i class="iconify size-4 ph--file-text-bold"></i>
+                                            Report
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detail badges row — wraps on mobile, inline on desktop -->
+                        <div
+                            class="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t px-5 py-3 text-xs"
+                            style="border-color: var(--base-300); background: white">
+                            <span class="flex items-center gap-1">
+                                <i
+                                    class="iconify size-3 ph--identification-card-bold"
+                                    style="color: oklch(0.6 0.03 160)"></i>
+                                <span style="color: oklch(0.5 0.03 160)">•••• •••• •••• 4829</span>
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <i
+                                    class="iconify size-3 ph--calendar-bold"
+                                    style="color: oklch(0.6 0.03 160)"></i>
+                                <span style="color: oklch(0.5 0.03 160)">Since Jun 2022</span>
+                            </span>
+                            <button
+                                class="ml-auto text-xs font-medium transition-colors"
+                                style="color: var(--primary)">
+                                Edit
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ── Category Spending + Donut ── -->
+                    <div
+                        class="card-shadow mt-4 overflow-hidden rounded-xl border md:mt-5"
+                        style="background: white; border-color: var(--base-300)">
+                        <div
+                            class="flex items-center justify-between border-b px-5 py-3.5"
+                            style="border-color: var(--base-300)">
+                            <h2 class="text-sm font-semibold">Spending by Category</h2>
+                            <span class="text-xs" style="color: oklch(0.6 0.03 160)"
+                                >June 2026</span
+                            >
+                        </div>
+                        <div class="p-5">
+                            <!-- Mobile: stacked (center donut, then list below) -->
+                            <!-- md+: side-by-side -->
+                            <div
+                                class="flex flex-col items-center gap-5 md:flex-row md:items-start md:gap-6">
+                                <!-- Donut -->
+                                <div
+                                    class="donut donut-ring relative h-36 w-36 shrink-0 rounded-full md:h-40 md:w-40">
+                                    <div
+                                        class="absolute inset-[15px] flex items-center justify-center rounded-full"
+                                        style="background: white">
+                                        <div class="text-center">
+                                            <p class="text-base font-bold md:text-lg">Rp 2,2jt</p>
+                                            <p
+                                                class="text-[10px] md:text-xs"
+                                                style="color: oklch(0.6 0.03 160)">
+                                                Total spent
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Category list -->
+                                <div class="w-full space-y-2.5 md:flex-1">
+                                    <div class="flex items-center gap-2.5">
+                                        <span
+                                            class="h-3 w-3 shrink-0 rounded-full"
+                                            style="background: #059669"></span>
+                                        <span class="flex-1 text-sm">Food & Dining</span>
+                                        <span class="text-sm font-semibold">Rp 380.000</span>
+                                        <span
+                                            class="w-8 text-right text-[11px]"
+                                            style="color: oklch(0.6 0.03 160)"
+                                            >24%</span
+                                        >
+                                    </div>
+                                    <div class="flex items-center gap-2.5">
+                                        <span
+                                            class="h-3 w-3 shrink-0 rounded-full"
+                                            style="background: #6366f1"></span>
+                                        <span class="flex-1 text-sm">Housing</span>
+                                        <span class="text-sm font-semibold">Rp 1.200.000</span>
+                                        <span
+                                            class="w-8 text-right text-[11px]"
+                                            style="color: oklch(0.6 0.03 160)"
+                                            >31%</span
+                                        >
+                                    </div>
+                                    <div class="flex items-center gap-2.5">
+                                        <span
+                                            class="h-3 w-3 shrink-0 rounded-full"
+                                            style="background: #f59e0b"></span>
+                                        <span class="flex-1 text-sm">Bills & Utilities</span>
+                                        <span class="text-sm font-semibold">Rp 315.000</span>
+                                        <span
+                                            class="w-8 text-right text-[11px]"
+                                            style="color: oklch(0.6 0.03 160)"
+                                            >20%</span
+                                        >
+                                    </div>
+                                    <div class="flex items-center gap-2.5">
+                                        <span
+                                            class="h-3 w-3 shrink-0 rounded-full"
+                                            style="background: #0d9488"></span>
+                                        <span class="flex-1 text-sm">Shopping</span>
+                                        <span class="text-sm font-semibold">Rp 210.000</span>
+                                        <span
+                                            class="w-8 text-right text-[11px]"
+                                            style="color: oklch(0.6 0.03 160)"
+                                            >13%</span
+                                        >
+                                    </div>
+                                    <div class="flex items-center gap-2.5">
+                                        <span
+                                            class="h-3 w-3 shrink-0 rounded-full"
+                                            style="background: #0ea5e9"></span>
+                                        <span class="flex-1 text-sm">Transport</span>
+                                        <span class="text-sm font-semibold">Rp 120.000</span>
+                                        <span
+                                            class="w-8 text-right text-[11px]"
+                                            style="color: oklch(0.6 0.03 160)"
+                                            >8%</span
+                                        >
+                                    </div>
+                                    <div class="flex items-center gap-2.5">
+                                        <span
+                                            class="h-3 w-3 shrink-0 rounded-full"
+                                            style="background: #e11d48"></span>
+                                        <span class="flex-1 text-sm">Entertainment</span>
+                                        <span class="text-sm font-semibold">Rp 65.000</span>
+                                        <span
+                                            class="w-8 text-right text-[11px]"
+                                            style="color: oklch(0.6 0.03 160)"
+                                            >4%</span
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Recent Transactions ── -->
+                    <div
+                        class="card-shadow mt-4 overflow-hidden rounded-xl border md:mt-5"
+                        style="background: white; border-color: var(--base-300)">
+                        <div
+                            class="flex items-center justify-between border-b px-5 py-3.5"
+                            style="border-color: var(--base-300)">
+                            <h2 class="text-sm font-semibold">Recent Transactions</h2>
+                            <a href="#" class="text-xs font-medium" style="color: var(--primary)"
+                                >View All</a
+                            >
+                        </div>
+                        <div class="divide-y" style="border-color: var(--base-300)">
+                            <div
+                                class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                style="cursor: default">
+                                <div
+                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                    style="background: #fef3c7">
+                                    <i
+                                        class="iconify size-3.5 ph--fork-knife-bold md:size-4"
+                                        style="color: #d97706"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium">Pizza Hut</p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 28 · Food
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-Rp 24.500</span
+                                >
+                            </div>
+                            <div
+                                class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                style="cursor: default">
+                                <div
+                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                    style="background: #dcfce7">
+                                    <i
+                                        class="iconify size-3.5 ph--arrow-down-bold md:size-4"
+                                        style="color: var(--success)"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium">Salary Deposit</p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 27 · Income
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--success)"
+                                    >+Rp 3.200.000</span
+                                >
+                            </div>
+                            <div
+                                class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                style="cursor: default">
+                                <div
+                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                    style="background: #dbeafe">
+                                    <i
+                                        class="iconify size-3.5 ph--car-bold md:size-4"
+                                        style="color: #2563eb"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium">Uber Ride</p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 26 · Transport
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-Rp 12.750</span
+                                >
+                            </div>
+                            <div
+                                class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                style="cursor: default">
+                                <div
+                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                    style="background: #ccfbf1">
+                                    <i
+                                        class="iconify size-3.5 ph--shopping-bag-bold md:size-4"
+                                        style="color: #0d9488"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium">Amazon Order</p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 25 · Shopping
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-Rp 89.990</span
+                                >
+                            </div>
+                            <div
+                                class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                style="cursor: default">
+                                <div
+                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                    style="background: #cffafe">
+                                    <i
+                                        class="iconify size-3.5 ph--lightning-bold md:size-4"
+                                        style="color: #0891b2"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium">Electric Bill</p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 24 · Utilities
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-Rp 95.000</span
+                                >
+                            </div>
+                            <div
+                                class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                style="cursor: default">
+                                <div
+                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                    style="background: #fce7f3">
+                                    <i
+                                        class="iconify size-3.5 ph--play-bold md:size-4"
+                                        style="color: #db2777"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium">Netflix</p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 23 · Entertainment
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-Rp 9.990</span
+                                >
+                            </div>
+                            <div
+                                class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                style="cursor: default">
+                                <div
+                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                    style="background: #fef3c7">
+                                    <i
+                                        class="iconify size-3.5 ph--basket-bold md:size-4"
+                                        style="color: #d97706"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium">Groceries</p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 22 · Food
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-Rp 156.000</span
+                                >
+                            </div>
+                            <div
+                                class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                style="cursor: default">
+                                <div
+                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                    style="background: #dbeafe">
+                                    <i
+                                        class="iconify size-3.5 ph--gas-pump-bold md:size-4"
+                                        style="color: #2563eb"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium">Gas Station</p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 21 · Transport
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-Rp 45.000</span
+                                >
+                            </div>
+                            <div
+                                class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                style="cursor: default">
+                                <div
+                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                    style="background: #e0e7ff">
+                                    <i
+                                        class="iconify size-3.5 ph--swap-bold md:size-4"
+                                        style="color: #4f46e5"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium">Transfer to Savings</p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 20 · Transfer
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-Rp 500.000</span
+                                >
+                            </div>
+                            <div
+                                class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                style="cursor: default">
+                                <div
+                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                    style="background: #fef3c7">
+                                    <i
+                                        class="iconify size-3.5 ph--coffee-bold md:size-4"
+                                        style="color: #d97706"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium">Coffee Shop</p>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Jun 19 · Food
+                                    </p>
+                                </div>
+                                <span
+                                    class="shrink-0 text-sm font-semibold"
+                                    style="color: var(--error)"
+                                    >-Rp 4.500</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Desktop-only: quick summary stat cards ── -->
+                    <div class="show-at-md mt-5 grid grid-cols-3 gap-4">
+                        <div
+                            class="card-shadow rounded-xl border p-4"
+                            style="background: white; border-color: var(--base-300)">
+                            <div class="flex items-center gap-2">
+                                <div
+                                    class="flex h-7 w-7 items-center justify-center rounded-lg"
+                                    style="background: oklch(0.55 0.12 150 / 0.12)">
+                                    <i
+                                        class="iconify size-3.5 ph--trend-up-bold"
+                                        style="color: var(--success)"></i>
+                                </div>
+                                <span
+                                    class="text-xs font-medium tracking-wider uppercase"
+                                    style="color: oklch(0.6 0.03 160)"
+                                    >Income</span
+                                >
+                            </div>
+                            <p class="mt-2 text-lg font-bold">Rp 3.200.000</p>
+                            <div
+                                class="mt-0.5 flex items-center gap-0.5 text-[11px]"
+                                style="color: var(--success)">
+                                <i class="iconify size-2.5 ph--arrow-up-bold"></i> 12% vs last month
+                            </div>
+                        </div>
+                        <div
+                            class="card-shadow rounded-xl border p-4"
+                            style="background: white; border-color: var(--base-300)">
+                            <div class="flex items-center gap-2">
+                                <div
+                                    class="flex h-7 w-7 items-center justify-center rounded-lg"
+                                    style="background: oklch(0.55 0.12 30 / 0.12)">
+                                    <i
+                                        class="iconify size-3.5 ph--trend-down-bold"
+                                        style="color: var(--error)"></i>
+                                </div>
+                                <span
+                                    class="text-xs font-medium tracking-wider uppercase"
+                                    style="color: oklch(0.6 0.03 160)"
+                                    >Expenses</span
+                                >
+                            </div>
+                            <p class="mt-2 text-lg font-bold">Rp 2.190.240</p>
+                            <div
+                                class="mt-0.5 flex items-center gap-0.5 text-[11px]"
+                                style="color: var(--error)">
+                                <i class="iconify size-2.5 ph--arrow-up-bold"></i> 5% vs last month
+                            </div>
+                        </div>
+                        <div
+                            class="card-shadow rounded-xl border p-4"
+                            style="background: white; border-color: var(--base-300)">
+                            <div class="flex items-center gap-2">
+                                <div
+                                    class="flex h-7 w-7 items-center justify-center rounded-lg"
+                                    style="background: oklch(0.42 0.11 160 / 0.12)">
+                                    <i
+                                        class="iconify size-3.5 ph--piggy-bank-bold"
+                                        style="color: var(--primary)"></i>
+                                </div>
+                                <span
+                                    class="text-xs font-medium tracking-wider uppercase"
+                                    style="color: oklch(0.6 0.03 160)"
+                                    >Savings</span
+                                >
+                            </div>
+                            <p class="mt-2 text-lg font-bold">Rp 1.009.760</p>
+                            <div
+                                class="mt-0.5 flex items-center gap-0.5 text-[11px]"
+                                style="color: var(--primary)">
+                                <i class="iconify size-2.5 ph--check-bold"></i> Net positive
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="
+                    height: 1px;
+                    background: linear-gradient(
+                        to right,
+                        transparent,
+                        oklch(0.8 0.02 85),
+                        transparent
+                    );
+                    margin: 2.5rem 0;
+                "></div>
+
+            <!-- ████████████████████████████████████████████████████████████████ -->
+            <!-- ██  DIRECTION 2: "BOTTOM NAV SECTIONS" — Tab-like on page    ██ -->
+            <!-- ████████████████████████████████████████████████████████████████ -->
+            <div class="mb-2 flex items-center gap-2">
+                <span class="dir-chip"
+                    ><i class="iconify size-3 ph--sidebar-bold"></i> Direction 2</span
+                >
+                <span class="text-sm font-semibold">Bottom Nav Sections</span>
+                <span class="hidden text-[11px] md:inline" style="color: oklch(0.6 0.03 160)"
+                    >Mobile: sticky tabs · Desktop: all sections visible</span
+                >
+            </div>
+
+            <div
+                class="overflow-hidden rounded-2xl border"
+                style="background: var(--base-200); border-color: oklch(0.85 0.025 85)">
+                <div
+                    class="flex items-center gap-2 border-b bg-white/60 px-4 py-1.5 text-[10px] tracking-wider uppercase"
+                    style="border-color: oklch(0.85 0.025 85); color: oklch(0.55 0.03 160)">
+                    <i class="iconify size-3.5 ph--device-mobile-bold"></i>
+                    <span>360px mobile view</span>
+                    <span class="ml-auto flex items-center gap-2">
+                        <span class="hide-at-md text-[9px]" style="color: oklch(0.55 0.03 160)"
+                            >tap tabs below</span
+                        >
+                        <span class="show-at-md flex items-center gap-1"
+                            ><i class="iconify size-3 ph--layout-bold"></i> 768px: all inline</span
+                        >
+                    </span>
+                </div>
+
+                <div class="p-4 md:p-6 lg:p-8">
+                    <!-- Breadcrumb -->
+                    <div
+                        class="mb-3 flex items-center gap-1.5 text-[11px]"
+                        style="color: oklch(0.6 0.03 160)">
+                        <i class="iconify size-3 ph--house-bold"></i>
+                        <span>Home</span>
+                        <span>/</span>
+                        <span>Accounts</span>
+                        <span>/</span>
+                        <span class="font-medium" style="color: var(--base-content)">Checking</span>
+                    </div>
+
+                    <!-- ── Compact Hero Card (not full-bleed) ── -->
+                    <div class="card-shadow overflow-hidden rounded-xl" style="background: white">
+                        <div class="h-1.5" style="background: var(--primary)"></div>
+                        <div class="p-4 md:p-5">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                                    style="background: oklch(0.42 0.11 160 / 0.1)">
+                                    <i
+                                        class="iconify size-5 ph--bank-bold"
+                                        style="color: var(--primary)"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-1.5">
+                                        <p class="truncate text-sm font-semibold">
+                                            Checking Account
+                                        </p>
+                                        <span
+                                            class="shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-medium uppercase"
+                                            style="
+                                                background: oklch(0.42 0.11 160 / 0.1);
+                                                color: var(--primary);
+                                            "
+                                            >Debit</span
+                                        >
+                                    </div>
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Chime · Personal · •••• 4829
+                                    </p>
+                                </div>
+                                <span class="shrink-0 text-right">
+                                    <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                        Balance
+                                    </p>
+                                    <p class="text-lg font-bold tracking-tight md:text-xl">
+                                        Rp 4.250.800
+                                    </p>
+                                </span>
+                            </div>
+                            <div
+                                class="mt-3 flex items-center gap-3 text-xs"
+                                style="color: oklch(0.6 0.03 160)">
+                                <span class="flex items-center gap-1">
+                                    <i class="iconify size-3 ph--calendar-bold"></i>
+                                    Since Jun 2022
+                                </span>
+                                <span class="flex items-center gap-1" style="color: var(--success)">
+                                    <i class="iconify size-3 ph--trend-up-bold"></i>
+                                    +Rp 2.340.000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Tab System (mobile) / Section Headers (desktop) ── -->
+                    <div class="mt-4 md:mt-6">
+                        <input
+                            type="radio"
+                            name="d2-tab"
+                            id="d2-tab-spending"
+                            class="hidden"
+                            checked />
+                        <input type="radio" name="d2-tab" id="d2-tab-transactions" class="hidden" />
+                        <input type="radio" name="d2-tab" id="d2-tab-details" class="hidden" />
+
+                        <!-- Tab bar — visible on mobile, hidden on desktop -->
+                        <div
+                            class="d2-tab-bar -mx-4 mb-0 flex border-b px-4 md:hidden"
+                            style="border-color: var(--base-300); background: var(--base-200)">
+                            <label
+                                for="d2-tab-spending"
+                                class="d2-tab-label px-3 py-3 text-xs font-medium">
+                                <i class="mr-1 iconify inline size-3.5 ph--chart-pie-bold"></i>
+                                Spending
+                            </label>
+                            <label
+                                for="d2-tab-transactions"
+                                class="d2-tab-label px-3 py-3 text-xs font-medium">
+                                <i
+                                    class="mr-1 iconify inline size-3.5 ph--arrows-left-right-bold"></i>
+                                Transactions
+                                <span
+                                    class="ml-1 rounded-full px-1.5 py-0.5 text-[9px] font-medium"
+                                    style="background: var(--base-300); color: oklch(0.6 0.03 160)"
+                                    >10</span
+                                >
+                            </label>
+                            <label
+                                for="d2-tab-details"
+                                class="d2-tab-label px-3 py-3 text-xs font-medium">
+                                <i class="mr-1 iconify inline size-3.5 ph--info-bold"></i>
+                                Details
+                            </label>
+                        </div>
+
+                        <!-- Desktop section labels (always visible) -->
+                        <div class="hidden md:mb-4 md:flex md:items-center md:gap-3">
+                            <span
+                                class="flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase"
+                                style="color: var(--primary)">
+                                <i class="iconify size-4 ph--chart-pie-bold"></i> Spending
+                            </span>
+                            <span class="h-3 w-px" style="background: var(--base-300)"></span>
+                            <span
+                                class="flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase"
+                                style="color: oklch(0.6 0.03 160)">
+                                <i class="iconify size-4 ph--arrows-left-right-bold"></i>
+                                Transactions
+                            </span>
+                            <span class="h-3 w-px" style="background: var(--base-300)"></span>
+                            <span
+                                class="flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase"
+                                style="color: oklch(0.6 0.03 160)">
+                                <i class="iconify size-4 ph--info-bold"></i> Details
+                            </span>
+                        </div>
+
+                        <!-- ── Tab: Spending ── -->
+                        <div id="d2-content-spending" class="d2-tab-content">
+                            <div
+                                class="card-shadow rounded-xl border"
+                                style="background: white; border-color: var(--base-300)">
+                                <div class="p-4 md:p-5">
+                                    <div class="flex items-center justify-between md:hidden">
+                                        <h2 class="text-sm font-semibold">Spending by Category</h2>
+                                        <span class="text-xs" style="color: oklch(0.6 0.03 160)"
+                                            >June 2026</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex flex-col items-center gap-5 md:flex-row md:items-start md:gap-6">
+                                        <div
+                                            class="donut donut-ring relative h-36 w-36 shrink-0 rounded-full md:h-40 md:w-40">
+                                            <div
+                                                class="absolute inset-[15px] flex items-center justify-center rounded-full"
+                                                style="background: white">
+                                                <div class="text-center">
+                                                    <p class="text-base font-bold md:text-lg">
+                                                        Rp 2,2jt
+                                                    </p>
+                                                    <p
+                                                        class="text-[10px] md:text-xs"
+                                                        style="color: oklch(0.6 0.03 160)">
+                                                        Total spent
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="w-full space-y-2.5 md:flex-1">
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="h-3 w-3 shrink-0 rounded-full"
+                                                    style="background: #059669"></span>
+                                                <span class="flex-1 text-sm">Food & Dining</span>
+                                                <span class="text-sm font-semibold"
+                                                    >Rp 380.000</span
+                                                >
+                                                <span
+                                                    class="w-8 text-right text-[11px]"
+                                                    style="color: oklch(0.6 0.03 160)"
+                                                    >24%</span
+                                                >
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="h-3 w-3 shrink-0 rounded-full"
+                                                    style="background: #6366f1"></span>
+                                                <span class="flex-1 text-sm">Housing</span>
+                                                <span class="text-sm font-semibold"
+                                                    >Rp 1.200.000</span
+                                                >
+                                                <span
+                                                    class="w-8 text-right text-[11px]"
+                                                    style="color: oklch(0.6 0.03 160)"
+                                                    >31%</span
+                                                >
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="h-3 w-3 shrink-0 rounded-full"
+                                                    style="background: #f59e0b"></span>
+                                                <span class="flex-1 text-sm"
+                                                    >Bills & Utilities</span
+                                                >
+                                                <span class="text-sm font-semibold"
+                                                    >Rp 315.000</span
+                                                >
+                                                <span
+                                                    class="w-8 text-right text-[11px]"
+                                                    style="color: oklch(0.6 0.03 160)"
+                                                    >20%</span
+                                                >
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="h-3 w-3 shrink-0 rounded-full"
+                                                    style="background: #0d9488"></span>
+                                                <span class="flex-1 text-sm">Shopping</span>
+                                                <span class="text-sm font-semibold"
+                                                    >Rp 210.000</span
+                                                >
+                                                <span
+                                                    class="w-8 text-right text-[11px]"
+                                                    style="color: oklch(0.6 0.03 160)"
+                                                    >13%</span
+                                                >
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="h-3 w-3 shrink-0 rounded-full"
+                                                    style="background: #0ea5e9"></span>
+                                                <span class="flex-1 text-sm">Transport</span>
+                                                <span class="text-sm font-semibold"
+                                                    >Rp 120.000</span
+                                                >
+                                                <span
+                                                    class="w-8 text-right text-[11px]"
+                                                    style="color: oklch(0.6 0.03 160)"
+                                                    >8%</span
+                                                >
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="h-3 w-3 shrink-0 rounded-full"
+                                                    style="background: #e11d48"></span>
+                                                <span class="flex-1 text-sm">Entertainment</span>
+                                                <span class="text-sm font-semibold">Rp 65.000</span>
+                                                <span
+                                                    class="w-8 text-right text-[11px]"
+                                                    style="color: oklch(0.6 0.03 160)"
+                                                    >4%</span
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Tab: Transactions ── -->
+                        <div id="d2-content-transactions" class="d2-tab-content">
+                            <div
+                                class="card-shadow rounded-xl border"
+                                style="background: white; border-color: var(--base-300)">
+                                <div
+                                    class="flex items-center justify-between border-b px-4 py-3"
+                                    style="border-color: var(--base-300)">
+                                    <h2 class="text-sm font-semibold">Recent Transactions</h2>
+                                    <a
+                                        href="#"
+                                        class="text-xs font-medium"
+                                        style="color: var(--primary)"
+                                        >View All</a
+                                    >
+                                </div>
+                                <div class="divide-y" style="border-color: var(--base-300)">
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-base-200/30 md:py-3"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                                            style="background: #fef3c7">
+                                            <i
+                                                class="iconify size-3.5 ph--fork-knife-bold"
+                                                style="color: #d97706"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Pizza Hut</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 28 · Food
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 24.500</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-base-200/30 md:py-3"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                                            style="background: #dcfce7">
+                                            <i
+                                                class="iconify size-3.5 ph--arrow-down-bold"
+                                                style="color: var(--success)"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Salary Deposit</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 27 · Income
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--success)"
+                                            >+Rp 3.200.000</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-base-200/30 md:py-3"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                                            style="background: #dbeafe">
+                                            <i
+                                                class="iconify size-3.5 ph--car-bold"
+                                                style="color: #2563eb"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Uber Ride</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 26 · Transport
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 12.750</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-base-200/30 md:py-3"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                                            style="background: #ccfbf1">
+                                            <i
+                                                class="iconify size-3.5 ph--shopping-bag-bold"
+                                                style="color: #0d9488"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Amazon Order</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 25 · Shopping
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 89.990</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-base-200/30 md:py-3"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                                            style="background: #cffafe">
+                                            <i
+                                                class="iconify size-3.5 ph--lightning-bold"
+                                                style="color: #0891b2"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Electric Bill</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 24 · Utilities
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 95.000</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-base-200/30 md:py-3"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                                            style="background: #fce7f3">
+                                            <i
+                                                class="iconify size-3.5 ph--play-bold"
+                                                style="color: #db2777"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Netflix</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 23 · Entertainment
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 9.990</span
+                                        >
+                                    </div>
+                                    <details class="group">
+                                        <summary
+                                            class="flex cursor-pointer items-center gap-2 px-4 py-2.5 text-xs font-medium transition-colors hover:bg-base-200/30"
+                                            style="color: var(--primary)">
+                                            <i
+                                                class="iconify size-3.5 transition-transform ph--caret-down-bold group-open:rotate-180"></i>
+                                            Show 4 more
+                                        </summary>
+                                        <div class="divide-y" style="border-color: var(--base-300)">
+                                            <div
+                                                class="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-base-200/30 md:py-3"
+                                                style="cursor: default">
+                                                <div
+                                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                                                    style="background: #fef3c7">
+                                                    <i
+                                                        class="iconify size-3.5 ph--basket-bold"
+                                                        style="color: #d97706"></i>
+                                                </div>
+                                                <div class="min-w-0 flex-1">
+                                                    <p class="text-sm font-medium">Groceries</p>
+                                                    <p
+                                                        class="text-xs"
+                                                        style="color: oklch(0.6 0.03 160)">
+                                                        Jun 22 · Food
+                                                    </p>
+                                                </div>
+                                                <span
+                                                    class="shrink-0 text-sm font-semibold"
+                                                    style="color: var(--error)"
+                                                    >-Rp 156.000</span
+                                                >
+                                            </div>
+                                            <div
+                                                class="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-base-200/30 md:py-3"
+                                                style="cursor: default">
+                                                <div
+                                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                                                    style="background: #dbeafe">
+                                                    <i
+                                                        class="iconify size-3.5 ph--gas-pump-bold"
+                                                        style="color: #2563eb"></i>
+                                                </div>
+                                                <div class="min-w-0 flex-1">
+                                                    <p class="text-sm font-medium">Gas Station</p>
+                                                    <p
+                                                        class="text-xs"
+                                                        style="color: oklch(0.6 0.03 160)">
+                                                        Jun 21 · Transport
+                                                    </p>
+                                                </div>
+                                                <span
+                                                    class="shrink-0 text-sm font-semibold"
+                                                    style="color: var(--error)"
+                                                    >-Rp 45.000</span
+                                                >
+                                            </div>
+                                            <div
+                                                class="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-base-200/30 md:py-3"
+                                                style="cursor: default">
+                                                <div
+                                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                                                    style="background: #e0e7ff">
+                                                    <i
+                                                        class="iconify size-3.5 ph--swap-bold"
+                                                        style="color: #4f46e5"></i>
+                                                </div>
+                                                <div class="min-w-0 flex-1">
+                                                    <p class="text-sm font-medium">
+                                                        Transfer to Savings
+                                                    </p>
+                                                    <p
+                                                        class="text-xs"
+                                                        style="color: oklch(0.6 0.03 160)">
+                                                        Jun 20 · Transfer
+                                                    </p>
+                                                </div>
+                                                <span
+                                                    class="shrink-0 text-sm font-semibold"
+                                                    style="color: var(--error)"
+                                                    >-Rp 500.000</span
+                                                >
+                                            </div>
+                                            <div
+                                                class="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-base-200/30 md:py-3"
+                                                style="cursor: default">
+                                                <div
+                                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                                                    style="background: #fef3c7">
+                                                    <i
+                                                        class="iconify size-3.5 ph--coffee-bold"
+                                                        style="color: #d97706"></i>
+                                                </div>
+                                                <div class="min-w-0 flex-1">
+                                                    <p class="text-sm font-medium">Coffee Shop</p>
+                                                    <p
+                                                        class="text-xs"
+                                                        style="color: oklch(0.6 0.03 160)">
+                                                        Jun 19 · Food
+                                                    </p>
+                                                </div>
+                                                <span
+                                                    class="shrink-0 text-sm font-semibold"
+                                                    style="color: var(--error)"
+                                                    >-Rp 4.500</span
+                                                >
+                                            </div>
+                                        </div>
+                                    </details>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Tab: Details ── -->
+                        <div id="d2-content-details" class="d2-tab-content">
+                            <div
+                                class="card-shadow rounded-xl border"
+                                style="background: white; border-color: var(--base-300)">
+                                <div class="p-4 md:p-5">
+                                    <div
+                                        class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                                        <div>
+                                            <p
+                                                class="mb-2.5 text-xs font-semibold tracking-wider uppercase"
+                                                style="color: oklch(0.6 0.03 160)">
+                                                Account Info
+                                            </p>
+                                            <div class="space-y-2.5 text-sm">
+                                                <div class="flex items-center justify-between">
+                                                    <span style="color: oklch(0.6 0.03 160)"
+                                                        >Name</span
+                                                    >
+                                                    <span class="font-medium"
+                                                        >Checking Account</span
+                                                    >
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span style="color: oklch(0.6 0.03 160)"
+                                                        >Type</span
+                                                    >
+                                                    <span class="font-medium">Debit Account</span>
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span style="color: oklch(0.6 0.03 160)"
+                                                        >Provider</span
+                                                    >
+                                                    <span class="font-medium">Chime</span>
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span style="color: oklch(0.6 0.03 160)"
+                                                        >Access</span
+                                                    >
+                                                    <span class="font-medium">Personal</span>
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span style="color: oklch(0.6 0.03 160)"
+                                                        >Currency</span
+                                                    >
+                                                    <span class="font-medium">IDR</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p
+                                                class="mb-2.5 text-xs font-semibold tracking-wider uppercase"
+                                                style="color: oklch(0.6 0.03 160)">
+                                                Account Numbers
+                                            </p>
+                                            <div class="space-y-2.5 text-sm">
+                                                <div class="flex items-center justify-between">
+                                                    <span style="color: oklch(0.6 0.03 160)"
+                                                        >Number</span
+                                                    >
+                                                    <span class="font-medium tracking-wider"
+                                                        >•••• •••• •••• 4829</span
+                                                    >
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span style="color: oklch(0.6 0.03 160)"
+                                                        >Created</span
+                                                    >
+                                                    <span class="font-medium">June 2022</span>
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span style="color: oklch(0.6 0.03 160)"
+                                                        >Deco Color</span
+                                                    >
+                                                    <span class="flex items-center gap-1.5">
+                                                        <span
+                                                            class="h-3 w-3 rounded-full"
+                                                            style="background: #059669"></span>
+                                                        <span class="font-medium">Emerald</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="sm:col-span-2 lg:col-span-1">
+                                            <p
+                                                class="mb-2.5 text-xs font-semibold tracking-wider uppercase"
+                                                style="color: oklch(0.6 0.03 160)">
+                                                Actions
+                                            </p>
+                                            <div class="grid grid-cols-2 gap-2">
+                                                <button
+                                                    class="flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors hover:bg-base-200/50"
+                                                    style="border-color: var(--base-300)">
+                                                    <i
+                                                        class="iconify size-4 ph--arrow-up-right-bold"
+                                                        style="color: var(--primary)"></i>
+                                                    Transfer
+                                                </button>
+                                                <button
+                                                    class="flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors hover:bg-base-200/50"
+                                                    style="border-color: var(--base-300)">
+                                                    <i
+                                                        class="iconify size-4 ph--plus-bold"
+                                                        style="color: var(--primary)"></i>
+                                                    Top Up
+                                                </button>
+                                                <button
+                                                    class="flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors hover:bg-base-200/50"
+                                                    style="border-color: var(--base-300)">
+                                                    <i
+                                                        class="iconify size-4 ph--file-text-bold"
+                                                        style="color: var(--primary)"></i>
+                                                    Report
+                                                </button>
+                                                <button
+                                                    class="flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors hover:bg-base-200/50"
+                                                    style="border-color: var(--base-300)">
+                                                    <i
+                                                        class="iconify size-4 ph--pencil-simple-bold"
+                                                        style="color: var(--primary)"></i>
+                                                    Edit
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="
+                    height: 1px;
+                    background: linear-gradient(
+                        to right,
+                        transparent,
+                        oklch(0.8 0.02 85),
+                        transparent
+                    );
+                    margin: 2.5rem 0;
+                "></div>
+
+            <!-- ████████████████████████████████████████████████████████████████ -->
+            <!-- ██  DIRECTION 3: "DRAWER DETAIL" — Slide-out Info            ██ -->
+            <!-- ████████████████████████████████████████████████████████████████ -->
+            <div class="mb-2 flex items-center gap-2">
+                <span class="dir-chip"
+                    ><i class="iconify size-3 ph--squares-four-bold"></i> Direction 3</span
+                >
+                <span class="text-sm font-semibold">Drawer Detail</span>
+                <span class="hidden text-[11px] md:inline" style="color: oklch(0.6 0.03 160)"
+                    >Mobile: drawer overlay · Desktop: always-visible sidebar</span
+                >
+            </div>
+
+            <div
+                class="overflow-hidden rounded-2xl border"
+                style="background: var(--base-200); border-color: oklch(0.85 0.025 85)">
+                <div
+                    class="flex items-center gap-2 border-b bg-white/60 px-4 py-1.5 text-[10px] tracking-wider uppercase"
+                    style="border-color: oklch(0.85 0.025 85); color: oklch(0.55 0.03 160)">
+                    <i class="iconify size-3.5 ph--device-mobile-bold"></i>
+                    <span>360px mobile view</span>
+                    <span class="ml-auto flex items-center gap-2">
+                        <span class="hide-at-md text-[9px]" style="color: oklch(0.55 0.03 160)"
+                            >tap "More Info"</span
+                        >
+                        <span class="show-at-md flex items-center gap-1"
+                            ><i class="iconify size-3 ph--sidebar-simple-bold"></i> 1024px:
+                            sidebar</span
+                        >
+                    </span>
+                </div>
+
+                <div class="p-4 md:p-6 lg:p-8">
+                    <!-- Breadcrumb -->
+                    <div
+                        class="mb-3 flex items-center gap-1.5 text-[11px]"
+                        style="color: oklch(0.6 0.03 160)">
+                        <i class="iconify size-3 ph--house-bold"></i>
+                        <span>Home</span>
+                        <span>/</span>
+                        <span>Accounts</span>
+                        <span>/</span>
+                        <span class="font-medium" style="color: var(--base-content)">Checking</span>
+                    </div>
+
+                    <!-- Desktop: flex row -->
+                    <div class="lg:flex lg:gap-6">
+                        <!-- Main content area -->
+                        <div class="min-w-0 flex-1">
+                            <!-- ── Balance hero (compact, transaction-focused) ── -->
+                            <div
+                                class="card-shadow rounded-xl border"
+                                style="background: white; border-color: var(--base-300)">
+                                <div class="p-5">
+                                    <div class="flex items-start justify-between">
+                                        <div>
+                                            <div
+                                                class="flex items-center gap-1.5 text-xs font-medium tracking-wider uppercase"
+                                                style="color: oklch(0.6 0.03 160)">
+                                                <i
+                                                    class="iconify size-3.5 ph--bank-bold"
+                                                    style="color: var(--primary)"></i>
+                                                Checking Account
+                                                <span
+                                                    class="rounded-full px-1.5 py-0.5 text-[9px] font-medium uppercase"
+                                                    style="
+                                                        background: oklch(0.42 0.11 160 / 0.1);
+                                                        color: var(--primary);
+                                                    "
+                                                    >Debit</span
+                                                >
+                                            </div>
+                                            <p
+                                                class="mt-1.5 text-3xl font-bold tracking-tight md:text-4xl">
+                                                Rp 4.250.800
+                                            </p>
+                                            <div class="mt-1 flex items-center gap-3 text-xs">
+                                                <span
+                                                    class="flex items-center gap-1"
+                                                    style="color: var(--success)">
+                                                    <i
+                                                        class="iconify size-3.5 ph--trend-up-bold"></i>
+                                                    +Rp 2.340.000 this month
+                                                </span>
+                                                <span style="color: oklch(0.6 0.03 160)"
+                                                    >Chime</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-1.5">
+                                            <button
+                                                class="flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:bg-base-200/50"
+                                                style="border-color: var(--base-300)">
+                                                <i
+                                                    class="iconify size-4 ph--arrow-up-right-bold"
+                                                    style="color: var(--primary)"></i>
+                                            </button>
+                                            <button
+                                                class="flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:bg-base-200/50"
+                                                style="border-color: var(--base-300)">
+                                                <i
+                                                    class="iconify size-4 ph--plus-bold"
+                                                    style="color: var(--primary)"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ── Collapsible Category Spending ── -->
+                            <details
+                                class="card-shadow group mt-4 overflow-hidden rounded-xl border md:mt-5"
+                                style="background: white; border-color: var(--base-300)"
+                                open>
+                                <summary
+                                    class="flex cursor-pointer items-center justify-between px-5 py-3.5 text-sm font-semibold transition-colors hover:bg-base-200/30">
+                                    <span>Spending by Category</span>
+                                    <span class="flex items-center gap-2">
+                                        <span
+                                            class="text-xs font-normal"
+                                            style="color: oklch(0.6 0.03 160)"
+                                            >June 2026</span
+                                        >
+                                        <i
+                                            class="iconify size-4 transition-transform ph--caret-down-bold group-open:rotate-180"
+                                            style="color: oklch(0.6 0.03 160)"></i>
+                                    </span>
+                                </summary>
+                                <div
+                                    class="border-t px-5 py-4"
+                                    style="border-color: var(--base-300)">
+                                    <div
+                                        class="flex flex-col items-center gap-5 md:flex-row md:items-start md:gap-6">
+                                        <div
+                                            class="donut donut-ring relative h-36 w-36 shrink-0 rounded-full md:h-40 md:w-40">
+                                            <div
+                                                class="absolute inset-[14px] flex items-center justify-center rounded-full"
+                                                style="background: white">
+                                                <div class="text-center">
+                                                    <p class="text-base font-bold md:text-lg">
+                                                        Rp 2,2jt
+                                                    </p>
+                                                    <p
+                                                        class="text-[10px] md:text-xs"
+                                                        style="color: oklch(0.6 0.03 160)">
+                                                        total spent
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="w-full space-y-2 md:flex-1">
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="h-3 w-3 shrink-0 rounded-full"
+                                                    style="background: #059669"></span>
+                                                <span class="flex-1 text-sm">Food & Dining</span>
+                                                <span class="text-sm font-semibold"
+                                                    >Rp 380.000</span
+                                                >
+                                                <span
+                                                    class="w-8 text-right text-[11px]"
+                                                    style="color: oklch(0.6 0.03 160)"
+                                                    >24%</span
+                                                >
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="h-3 w-3 shrink-0 rounded-full"
+                                                    style="background: #6366f1"></span>
+                                                <span class="flex-1 text-sm">Housing</span>
+                                                <span class="text-sm font-semibold"
+                                                    >Rp 1.200.000</span
+                                                >
+                                                <span
+                                                    class="w-8 text-right text-[11px]"
+                                                    style="color: oklch(0.6 0.03 160)"
+                                                    >31%</span
+                                                >
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="h-3 w-3 shrink-0 rounded-full"
+                                                    style="background: #f59e0b"></span>
+                                                <span class="flex-1 text-sm"
+                                                    >Bills & Utilities</span
+                                                >
+                                                <span class="text-sm font-semibold"
+                                                    >Rp 315.000</span
+                                                >
+                                                <span
+                                                    class="w-8 text-right text-[11px]"
+                                                    style="color: oklch(0.6 0.03 160)"
+                                                    >20%</span
+                                                >
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="h-3 w-3 shrink-0 rounded-full"
+                                                    style="background: #0d9488"></span>
+                                                <span class="flex-1 text-sm">Shopping</span>
+                                                <span class="text-sm font-semibold"
+                                                    >Rp 210.000</span
+                                                >
+                                                <span
+                                                    class="w-8 text-right text-[11px]"
+                                                    style="color: oklch(0.6 0.03 160)"
+                                                    >13%</span
+                                                >
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="h-3 w-3 shrink-0 rounded-full"
+                                                    style="background: #0ea5e9"></span>
+                                                <span class="flex-1 text-sm">Transport</span>
+                                                <span class="text-sm font-semibold"
+                                                    >Rp 120.000</span
+                                                >
+                                                <span
+                                                    class="w-8 text-right text-[11px]"
+                                                    style="color: oklch(0.6 0.03 160)"
+                                                    >8%</span
+                                                >
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    class="h-3 w-3 shrink-0 rounded-full"
+                                                    style="background: #e11d48"></span>
+                                                <span class="flex-1 text-sm">Entertainment</span>
+                                                <span class="text-sm font-semibold">Rp 65.000</span>
+                                                <span
+                                                    class="w-8 text-right text-[11px]"
+                                                    style="color: oklch(0.6 0.03 160)"
+                                                    >4%</span
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <!-- ── Recent Transactions (primary content) ── -->
+                            <div
+                                class="card-shadow mt-4 overflow-hidden rounded-xl border md:mt-5"
+                                style="background: white; border-color: var(--base-300)">
+                                <div
+                                    class="flex items-center justify-between border-b px-5 py-3.5"
+                                    style="border-color: var(--base-300)">
+                                    <h2 class="text-sm font-semibold">Recent Transactions</h2>
+                                    <a
+                                        href="#"
+                                        class="text-xs font-medium"
+                                        style="color: var(--primary)"
+                                        >View All</a
+                                    >
+                                </div>
+                                <div class="divide-y" style="border-color: var(--base-300)">
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                            style="background: #fef3c7">
+                                            <i
+                                                class="iconify size-3.5 ph--fork-knife-bold md:size-4"
+                                                style="color: #d97706"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Pizza Hut</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 28 · Food
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 24.500</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                            style="background: #dcfce7">
+                                            <i
+                                                class="iconify size-3.5 ph--arrow-down-bold md:size-4"
+                                                style="color: var(--success)"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Salary Deposit</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 27 · Income
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--success)"
+                                            >+Rp 3.200.000</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                            style="background: #dbeafe">
+                                            <i
+                                                class="iconify size-3.5 ph--car-bold md:size-4"
+                                                style="color: #2563eb"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Uber Ride</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 26 · Transport
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 12.750</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                            style="background: #ccfbf1">
+                                            <i
+                                                class="iconify size-3.5 ph--shopping-bag-bold md:size-4"
+                                                style="color: #0d9488"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Amazon Order</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 25 · Shopping
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 89.990</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                            style="background: #cffafe">
+                                            <i
+                                                class="iconify size-3.5 ph--lightning-bold md:size-4"
+                                                style="color: #0891b2"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Electric Bill</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 24 · Utilities
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 95.000</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                            style="background: #fce7f3">
+                                            <i
+                                                class="iconify size-3.5 ph--play-bold md:size-4"
+                                                style="color: #db2777"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Netflix</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 23 · Entertainment
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 9.990</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                            style="background: #fef3c7">
+                                            <i
+                                                class="iconify size-3.5 ph--basket-bold md:size-4"
+                                                style="color: #d97706"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Groceries</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 22 · Food
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 156.000</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                            style="background: #dbeafe">
+                                            <i
+                                                class="iconify size-3.5 ph--gas-pump-bold md:size-4"
+                                                style="color: #2563eb"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Gas Station</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 21 · Transport
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 45.000</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                            style="background: #e0e7ff">
+                                            <i
+                                                class="iconify size-3.5 ph--swap-bold md:size-4"
+                                                style="color: #4f46e5"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Transfer to Savings</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 20 · Transfer
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 500.000</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/30 md:px-5 md:py-3.5"
+                                        style="cursor: default">
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
+                                            style="background: #fef3c7">
+                                            <i
+                                                class="iconify size-3.5 ph--coffee-bold md:size-4"
+                                                style="color: #d97706"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">Coffee Shop</p>
+                                            <p class="text-xs" style="color: oklch(0.6 0.03 160)">
+                                                Jun 19 · Food
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="shrink-0 text-sm font-semibold"
+                                            style="color: var(--error)"
+                                            >-Rp 4.500</span
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- "More Info" button — visible only on mobile -->
+                            <div class="mt-4 md:mt-5">
+                                <label
+                                    for="d3-drawer-toggle"
+                                    class="d3-drawer-btn flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-semibold transition-colors hover:bg-base-200/50 md:hidden"
+                                    style="border-color: var(--primary); color: var(--primary)">
+                                    <i class="iconify size-4 ph--info-bold"></i>
+                                    More Account Info
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- ── Toggle checkbox (sits before both button and drawer for :checked ~ sibling) ── -->
+                        <input type="checkbox" id="d3-drawer-toggle" class="hidden" />
+
+                        <!-- ── Drawer (mobile overlay) / Sidebar (desktop) ── -->
+
+                        <!-- Drawer overlay + panel — mobile: fixed overlay, desktop: static -->
+                        <div class="d3-drawer">
+                            <label
+                                for="d3-drawer-toggle"
+                                class="d3-drawer-overlay cursor-pointer"></label>
+                            <div class="d3-drawer-panel">
+                                <div class="flex items-center justify-between lg:hidden">
+                                    <p class="text-sm font-semibold">Account Details</p>
+                                    <label
+                                        for="d3-drawer-toggle"
+                                        class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-base-200/50">
+                                        <i class="iconify size-4 ph--x-bold"></i>
+                                    </label>
+                                </div>
+
+                                <div class="mt-4 space-y-5 lg:mt-0">
+                                    <!-- Detail: Account Info -->
+                                    <div>
+                                        <p
+                                            class="mb-3 text-xs font-semibold tracking-wider uppercase"
+                                            style="color: oklch(0.6 0.03 160)">
+                                            Account Info
+                                        </p>
+                                        <div class="space-y-3 text-sm">
+                                            <div class="flex items-center justify-between">
+                                                <span style="color: oklch(0.6 0.03 160)">Name</span>
+                                                <span class="font-medium">Checking Account</span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span style="color: oklch(0.6 0.03 160)">Type</span>
+                                                <span
+                                                    class="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase"
+                                                    style="
+                                                        background: oklch(0.42 0.11 160 / 0.1);
+                                                        color: var(--primary);
+                                                    "
+                                                    >Debit</span
+                                                >
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span style="color: oklch(0.6 0.03 160)"
+                                                    >Provider</span
+                                                >
+                                                <span class="font-medium">Chime</span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span style="color: oklch(0.6 0.03 160)"
+                                                    >Access</span
+                                                >
+                                                <span class="font-medium">Personal</span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span style="color: oklch(0.6 0.03 160)"
+                                                    >Currency</span
+                                                >
+                                                <span class="font-medium">IDR (Rp)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr style="border-color: var(--base-300)" />
+
+                                    <!-- Detail: Numbers & Dates -->
+                                    <div>
+                                        <p
+                                            class="mb-3 text-xs font-semibold tracking-wider uppercase"
+                                            style="color: oklch(0.6 0.03 160)">
+                                            Numbers & Dates
+                                        </p>
+                                        <div class="space-y-3 text-sm">
+                                            <div class="flex items-center justify-between">
+                                                <span style="color: oklch(0.6 0.03 160)"
+                                                    >Account Number</span
+                                                >
+                                                <span class="font-medium tracking-wider"
+                                                    >•••• •••• •••• 4829</span
+                                                >
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span style="color: oklch(0.6 0.03 160)"
+                                                    >Created</span
+                                                >
+                                                <span class="font-medium">June 2022</span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span style="color: oklch(0.6 0.03 160)"
+                                                    >Decoration</span
+                                                >
+                                                <span class="flex items-center gap-1.5">
+                                                    <span
+                                                        class="h-3 w-3 rounded-full"
+                                                        style="background: #059669"></span>
+                                                    <span class="font-medium">Emerald</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr style="border-color: var(--base-300)" />
+
+                                    <!-- Detail: Monthly Summary -->
+                                    <div>
+                                        <p
+                                            class="mb-3 text-xs font-semibold tracking-wider uppercase"
+                                            style="color: oklch(0.6 0.03 160)">
+                                            This Month
+                                        </p>
+                                        <div class="space-y-3">
+                                            <div
+                                                class="flex items-center gap-3 rounded-lg p-3"
+                                                style="background: oklch(0.55 0.12 150 / 0.06)">
+                                                <div
+                                                    class="flex h-8 w-8 items-center justify-center rounded-lg"
+                                                    style="background: oklch(0.55 0.12 150 / 0.12)">
+                                                    <i
+                                                        class="iconify size-4 ph--trend-up-bold"
+                                                        style="color: var(--success)"></i>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <p
+                                                        class="text-[11px] font-medium tracking-wider uppercase"
+                                                        style="color: oklch(0.6 0.03 160)">
+                                                        Income
+                                                    </p>
+                                                    <p class="text-sm font-bold">Rp 3.200.000</p>
+                                                </div>
+                                                <span class="text-xs" style="color: var(--success)"
+                                                    >+12%</span
+                                                >
+                                            </div>
+                                            <div
+                                                class="flex items-center gap-3 rounded-lg p-3"
+                                                style="background: oklch(0.55 0.12 30 / 0.06)">
+                                                <div
+                                                    class="flex h-8 w-8 items-center justify-center rounded-lg"
+                                                    style="background: oklch(0.55 0.12 30 / 0.12)">
+                                                    <i
+                                                        class="iconify size-4 ph--trend-down-bold"
+                                                        style="color: var(--error)"></i>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <p
+                                                        class="text-[11px] font-medium tracking-wider uppercase"
+                                                        style="color: oklch(0.6 0.03 160)">
+                                                        Expenses
+                                                    </p>
+                                                    <p class="text-sm font-bold">Rp 2.190.240</p>
+                                                </div>
+                                                <span class="text-xs" style="color: var(--error)"
+                                                    >+5%</span
+                                                >
+                                            </div>
+                                            <div
+                                                class="flex items-center gap-3 rounded-lg p-3"
+                                                style="background: oklch(0.42 0.11 160 / 0.06)">
+                                                <div
+                                                    class="flex h-8 w-8 items-center justify-center rounded-lg"
+                                                    style="background: oklch(0.42 0.11 160 / 0.12)">
+                                                    <i
+                                                        class="iconify size-4 ph--piggy-bank-bold"
+                                                        style="color: var(--primary)"></i>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <p
+                                                        class="text-[11px] font-medium tracking-wider uppercase"
+                                                        style="color: oklch(0.6 0.03 160)">
+                                                        Net Savings
+                                                    </p>
+                                                    <p class="text-sm font-bold">Rp 1.009.760</p>
+                                                </div>
+                                                <span class="text-xs" style="color: var(--primary)"
+                                                    >✓</span
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr style="border-color: var(--base-300)" />
+
+                                    <!-- Quick Actions -->
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button
+                                            class="flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors hover:bg-base-200/50"
+                                            style="border-color: var(--base-300)">
+                                            <i
+                                                class="iconify size-4 ph--pencil-simple-bold"
+                                                style="color: var(--primary)"></i>
+                                            Edit
+                                        </button>
+                                        <button
+                                            class="flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors hover:bg-base-200/50"
+                                            style="border-color: var(--base-300)">
+                                            <i
+                                                class="iconify size-4 ph--file-text-bold"
+                                                style="color: var(--primary)"></i>
+                                            PDF
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="
+                    height: 1px;
+                    background: linear-gradient(
+                        to right,
+                        transparent,
+                        oklch(0.8 0.02 85),
+                        transparent
+                    );
+                    margin: 2.5rem 0;
+                "></div>
+
+            <!-- ═══ SUMMARY & RECOMMENDATION ═══ -->
+            <div
+                class="card-shadow rounded-xl border p-5"
+                style="background: white; border-color: var(--base-300)">
+                <h2 class="mb-3 text-sm font-semibold">Summary & Recommendation</h2>
+                <div class="space-y-2 text-sm" style="color: oklch(0.6 0.03 160)">
+                    <p>
+                        <strong style="color: var(--base-content)"
+                            >Direction 1 — Card Stack:</strong
+                        >
+                        Best for primary checking/savings accounts. The emerald hero anchors the
+                        page; everything scrolls vertically in a natural narrative flow.
+                        Horizontal-scroll quick actions feel native on mobile. Stat cards only
+                        appear on desktop, keeping mobile lean. Strong choice when the balance is
+                        the hero.
+                    </p>
+                    <p>
+                        <strong style="color: var(--base-content)"
+                            >Direction 2 — Bottom Nav Sections:</strong
+                        >
+                        Best when the page has multiple distinct concerns (spending breakdown,
+                        transaction history, account details). Mobile tabs keep vertical space
+                        efficient. On desktop the tabs collapse into visible section headers — all
+                        content visible at once. The collapsible transaction list ("Show 4 more")
+                        keeps the default view compact.
+                    </p>
+                    <p>
+                        <strong style="color: var(--base-content)"
+                            >Direction 3 — Drawer Detail:</strong
+                        >
+                        Best when transactions are the primary concern and account details are
+                        secondary. The drawer pattern is familiar from mobile OSes. Categories are
+                        collapsible (default open). Desktop upgrades to a permanent sidebar — the
+                        same content, no overlay. Cleanest mobile experience since the main view is
+                        just balance + transactions.
+                    </p>
+                    <p class="mt-3 font-medium" style="color: var(--base-content)">
+                        Recommendation: Use Direction 1 for account overview pages (balance-first
+                        narrative). Use Direction 3 for transaction-heavy views where users spend
+                        most time scrolling the list. Direction 2 is a middle ground — use when
+                        content sections are equally important and you want to avoid vertical scroll
+                        fatigue on mobile.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            if (window.Iconify) Iconify.scan();
+        </script>
+    </body>
+</html>

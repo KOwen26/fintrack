@@ -1,17 +1,16 @@
 <script lang="ts">
     import type { RestProps } from '@type/index';
 
-    import Button from '../button.svelte';
     import ResponsiveCard from './responsive-card.svelte';
 
-    import { cn } from 'tailwind-variants';
+    import ToggleableGrid from '@components/data/toggleable-grid.svelte';
 
     interface Props extends RestProps {
         id?: string;
         mode?: 'list' | 'grid';
     }
 
-    let { id: _id, mode = $bindable('list'), children, ...props }: Props = $props();
+    let { id: _id, mode = $bindable('grid'), children, ...props }: Props = $props();
 
     let cid = $props.id();
     let id = $derived(`toggleable-card-${_id ?? cid}`);
@@ -20,23 +19,7 @@
 
 <ResponsiveCard wrapperProps={{ id }} {...props}>
     {#snippet headerAction()}
-        <div class="join border rounded overflow-clip">
-            <Button
-                class={cn('size-8 p-1', mode === 'list' ? 'btn-active' : '')}
-                color="light"
-                onclick={() => (mode = 'list')}
-                variant="ghost">
-                <i class="iconify size-6 ph--list-bold"></i>
-            </Button>
-
-            <Button
-                class={cn('size-8 p-1', mode === 'grid' ? 'btn-active' : '')}
-                color="light"
-                onclick={() => (mode = 'grid')}
-                variant="ghost">
-                <i class="iconify size-6 ph--text-columns-bold"></i>
-            </Button>
-        </div>
+        <ToggleableGrid bind:mode />
     {/snippet}
 
     {@render children?.()}

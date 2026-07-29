@@ -20,8 +20,18 @@ class AccountController extends Controller
 
     public function index(Request $request): Response
     {
+        $accounts = $this->accountService->getAccountsByUser(auth()->user());
+
+        $archivedAccounts = Account::query()
+            ->where('owner_id', auth()->id())
+            ->whereNotNull('archived_at')
+            ->with('provider')
+            ->get();
+
         return Inertia::render('accounts/index', [
-            'accounts' => $this->accountService->getAccountsByUser(auth()->user()),
+            'accounts' => $accounts,
+            'archived_accounts' => $archivedAccounts,
+            'summary' => AccountService::summarize($accounts),
         ]);
     }
 

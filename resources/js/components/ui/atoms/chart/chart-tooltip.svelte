@@ -6,7 +6,7 @@
 
     import { getPayloadConfigFromPayload, useChart } from './chart-utils.js';
 
-    import { getTooltipContext, Tooltip as TooltipPrimitive } from 'layerchart';
+    import { Tooltip as TooltipPrimitive } from 'layerchart';
 
     import { cn } from '@utilities/shadcn.js';
 
@@ -37,8 +37,7 @@
         hideIndicator?: boolean;
         labelClassName?: string;
         labelFormatter?:
-            | ((value: any, payload: TooltipPayload[]) => string | number | Snippet)
-            | null;
+            ((value: any, payload: TooltipPayload[]) => string | number | Snippet) | null;
         formatter?: Snippet<
             [
                 {
@@ -92,7 +91,7 @@
 <TooltipPrimitive.Root variant="none">
     <div
         class={cn(
-            'border-border/50 bg-background grid min-w-[9rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl',
+            'grid min-w-[9rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl',
             className
         )}
         {...restProps}>
@@ -106,7 +105,7 @@
                 {@const indicatorColor = color || item.payload?.color || item.color}
                 <div
                     class={cn(
-                        '[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:size-2.5',
+                        'flex w-full flex-wrap items-stretch gap-2 [&>svg]:size-2.5 [&>svg]:text-muted-foreground',
                         indicator === 'dot' && 'items-center'
                     )}>
                     {#if formatter && item.value !== undefined && item.name}
@@ -149,7 +148,7 @@
                                 </span>
                             </div>
                             {#if item.value !== undefined}
-                                <span class="text-foreground font-mono font-medium tabular-nums">
+                                <span class="font-mono font-medium text-foreground tabular-nums">
                                     {item.value.toLocaleString()}
                                 </span>
                             {/if}

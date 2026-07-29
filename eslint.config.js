@@ -82,7 +82,7 @@ export default defineConfig([
             },
         },
         rules: {
-            'svelte/no-unused-props': 'warn',
+            'svelte/no-unused-props': 'off',
             'svelte/no-unused-svelte-ignore': 'warn',
             'svelte/no-at-html-tags': 'warn',
             'svelte/sort-attributes': [
