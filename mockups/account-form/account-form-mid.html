@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>fintrack · Account Form — Middle Ground</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&family=DM+Mono:wght@400;500&display=swap"
+            rel="stylesheet" />
+
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            'base-100': 'oklch(0.98 0.012 85)',
+                            'base-200': 'oklch(0.94 0.018 85)',
+                            'base-300': 'oklch(0.88 0.022 85)',
+                            'base-content': 'oklch(0.18 0.02 160)',
+                            primary: 'oklch(0.42 0.11 160)',
+                            'primary-content': 'oklch(0.95 0.01 160)',
+                            secondary: 'oklch(0.62 0.07 175)',
+                            accent: 'oklch(0.72 0.14 85)',
+                            card: 'oklch(0.99 0.01 85)',
+                            'card-foreground': 'oklch(0.18 0.02 160)',
+                            error: 'oklch(0.55 0.12 30)',
+                        },
+                        fontFamily: {
+                            sans: ['Figtree', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                            mono: ['"DM Mono"', 'ui-monospace', 'monospace'],
+                        },
+                        borderRadius: { md: '0.375rem' },
+                    },
+                },
+            };
+        </script>
+
+        <style>
+            /* Respect reduced-motion preferences */
+            @media (prefers-reduced-motion: reduce) {
+                * {
+                    transition: none !important;
+                    animation: none !important;
+                }
+            }
+            /* Hide number input spinners for a cleaner look */
+            input[type='number']::-webkit-outer-spin-button,
+            input[type='number']::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            input[type='number'] {
+                -moz-appearance: textfield;
+            }
+        </style>
+    </head>
+
+    <body class="bg-base-200 font-sans text-base-content antialiased">
+        <div class="mx-auto min-h-screen max-w-[390px] px-4 pb-10">
+            <!-- Header -->
+            <header class="flex items-center justify-between pt-5 pb-4">
+                <button
+                    type="button"
+                    aria-label="Back"
+                    class="flex h-9 w-9 items-center justify-center rounded-md border border-base-content/20 bg-card text-base-content/70 transition hover:bg-base-100">
+                    <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M19 12H5M12 5l-7 7 7 7" />
+                    </svg>
+                </button>
+                <h1 id="pageTitle" class="text-base font-semibold tracking-tight">Add Account</h1>
+                <div class="w-9"></div>
+            </header>
+
+            <!-- Mode toggle: Create / Edit -->
+            <div class="mb-4 flex rounded-md bg-base-300 p-1">
+                <button
+                    id="mode-create"
+                    type="button"
+                    onclick="setMode('create')"
+                    class="flex-1 rounded-md bg-primary py-2 text-sm font-medium text-primary-content transition">
+                    Create
+                </button>
+                <button
+                    id="mode-edit"
+                    type="button"
+                    onclick="setMode('edit')"
+                    class="flex-1 rounded-md py-2 text-sm font-medium text-base-content/60 transition">
+                    Edit
+                </button>
+            </div>
+
+            <!-- LIVE PREVIEW ACCOUNT CARD (borrowed idea, fintrack verdant surface) -->
+            <div
+                id="previewCard"
+                class="relative overflow-hidden rounded-md p-5 text-primary-content shadow-sm"
+                style="background: oklch(0.42 0.11 160)">
+                <div
+                    class="pointer-events-none absolute -top-12 -right-12 h-44 w-44 rounded-full bg-white/10"></div>
+                <div
+                    class="pointer-events-none absolute right-14 -bottom-10 h-28 w-28 rounded-full bg-white/5"></div>
+
+                <div class="relative z-10">
+                    <div class="mb-6 flex items-start justify-between">
+                        <div class="flex items-center gap-3">
+                            <div
+                                id="previewIcon"
+                                class="flex h-10 w-10 items-center justify-center rounded-md bg-white/15 text-lg">
+                                🏦
+                            </div>
+                            <div>
+                                <p
+                                    id="previewProvider"
+                                    class="text-[0.6rem] font-semibold tracking-[0.12em] text-primary-content/60 uppercase">
+                                    No Provider
+                                </p>
+                                <p id="previewName" class="text-sm leading-tight font-semibold">
+                                    Your Account
+                                </p>
+                            </div>
+                        </div>
+                        <span
+                            id="previewTypeBadge"
+                            class="rounded bg-white/15 px-2 py-1 text-[0.58rem] font-semibold tracking-wide uppercase"
+                            >Debit / Savings</span
+                        >
+                    </div>
+
+                    <p
+                        id="previewBalanceLabel"
+                        class="mb-1 text-[0.6rem] font-semibold tracking-[0.12em] text-primary-content/60 uppercase">
+                        Initial Balance
+                    </p>
+                    <div class="flex items-start gap-1.5">
+                        <span class="mt-1.5 font-mono text-sm text-primary-content/70">Rp</span>
+                        <span
+                            id="previewBalance"
+                            class="font-mono text-3xl font-medium tracking-tight"
+                            >0</span
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEGMENTED TYPE SWITCHER (borrowed idea) -->
+            <section
+                class="mt-4 rounded-md border border-base-content/25 bg-card p-4 text-card-foreground">
+                <p
+                    class="mb-3 text-[0.65rem] font-semibold tracking-wider text-base-content/50 uppercase">
+                    Account Type
+                </p>
+                <div class="flex gap-1 rounded-md bg-base-300 p-1">
+                    <button
+                        type="button"
+                        data-type="debit"
+                        onclick="selectType('debit')"
+                        class="type-btn flex flex-1 flex-col items-center gap-1 rounded-md py-2 text-[0.6rem] font-medium text-base-content/60 transition">
+                        <span class="text-base leading-none">🏦</span><span>Debit</span>
+                    </button>
+                    <button
+                        type="button"
+                        data-type="credit"
+                        onclick="selectType('credit')"
+                        class="type-btn flex flex-1 flex-col items-center gap-1 rounded-md py-2 text-[0.6rem] font-medium text-base-content/60 transition">
+                        <span class="text-base leading-none">💳</span><span>Credit</span>
+                    </button>
+                    <button
+                        type="button"
+                        data-type="cash"
+                        onclick="selectType('cash')"
+                        class="type-btn flex flex-1 flex-col items-center gap-1 rounded-md py-2 text-[0.6rem] font-medium text-base-content/60 transition">
+                        <span class="text-base leading-none">💵</span><span>Cash</span>
+                    </button>
+                    <button
+                        type="button"
+                        data-type="ewallet"
+                        onclick="selectType('ewallet')"
+                        class="type-btn flex flex-1 flex-col items-center gap-1 rounded-md py-2 text-[0.6rem] font-medium text-base-content/60 transition">
+                        <span class="text-base leading-none">📱</span><span>E-Wallet</span>
+                    </button>
+                    <button
+                        type="button"
+                        data-type="invest"
+                        onclick="selectType('invest')"
+                        class="type-btn flex flex-1 flex-col items-center gap-1 rounded-md py-2 text-[0.6rem] font-medium text-base-content/60 transition">
+                        <span class="text-base leading-none">📈</span><span>Invest</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- CARD-COLOR THEME PICKER (borrowed idea, verdant-family only) -->
+            <section
+                class="mt-3 rounded-md border border-base-content/25 bg-card p-4 text-card-foreground">
+                <p
+                    class="mb-3 text-[0.65rem] font-semibold tracking-wider text-base-content/50 uppercase">
+                    Card Color
+                </p>
+                <div class="flex gap-3">
+                    <button
+                        type="button"
+                        onclick="selectColor('oklch(0.42 0.11 160)', this)"
+                        class="color-dot h-8 w-8 rounded-full ring-2 ring-base-content ring-offset-2 ring-offset-base-200 transition"
+                        style="background: oklch(0.42 0.11 160)"
+                        aria-label="Verdant"></button>
+                    <button
+                        type="button"
+                        onclick="selectColor('oklch(0.30 0.08 160)', this)"
+                        class="color-dot h-8 w-8 rounded-full transition"
+                        style="background: oklch(0.3 0.08 160)"
+                        aria-label="Forest"></button>
+                    <button
+                        type="button"
+                        onclick="selectColor('oklch(0.50 0.07 175)', this)"
+                        class="color-dot h-8 w-8 rounded-full transition"
+                        style="background: oklch(0.5 0.07 175)"
+                        aria-label="Teal"></button>
+                    <button
+                        type="button"
+                        onclick="selectColor('oklch(0.45 0.09 185)', this)"
+                        class="color-dot h-8 w-8 rounded-full transition"
+                        style="background: oklch(0.45 0.09 185)"
+                        aria-label="Sea"></button>
+                    <button
+                        type="button"
+                        onclick="selectColor('oklch(0.48 0.08 130)', this)"
+                        class="color-dot h-8 w-8 rounded-full transition"
+                        style="background: oklch(0.48 0.08 130)"
+                        aria-label="Leaf"></button>
+                    <button
+                        type="button"
+                        onclick="selectColor('oklch(0.40 0.10 200)', this)"
+                        class="color-dot h-8 w-8 rounded-full transition"
+                        style="background: oklch(0.4 0.1 200)"
+                        aria-label="Pine"></button>
+                </div>
+            </section>
+
+            <!-- DATA FIELDS (fintrack surface card, divider-separated rows) -->
+            <section
+                class="mt-3 rounded-md border border-base-content/25 bg-card text-card-foreground">
+                <!-- Name -->
+                <div class="px-4 py-3">
+                    <label
+                        for="f-name"
+                        class="mb-1.5 block text-[0.65rem] font-semibold tracking-wider text-base-content/50 uppercase"
+                        >Account Name</label
+                    >
+                    <input
+                        id="f-name"
+                        type="text"
+                        required
+                        placeholder="e.g. BCA Savings"
+                        oninput="updatePreview()"
+                        class="w-full rounded-md border border-base-content/20 bg-base-100 px-3 py-2 text-sm placeholder:text-base-content/40 focus:ring-2 focus:ring-primary/40 focus:outline-none" />
+                </div>
+
+                <div class="border-t border-base-content/10"></div>
+
+                <!-- Provider -->
+                <div class="px-4 py-3">
+                    <label
+                        for="f-provider"
+                        class="mb-1.5 block text-[0.65rem] font-semibold tracking-wider text-base-content/50 uppercase"
+                        >Provider</label
+                    >
+                    <div class="relative">
+                        <select
+                            id="f-provider"
+                            onchange="updatePreview()"
+                            class="w-full appearance-none rounded-md border border-base-content/20 bg-base-100 px-3 py-2 text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none">
+                            <option value="">— None —</option>
+                            <option value="Bank Central Asia">Bank Central Asia</option>
+                            <option value="GoPay">GoPay</option>
+                            <option value="OVO">OVO</option>
+                            <option value="Securities XYZ">Securities XYZ</option>
+                        </select>
+                        <svg
+                            class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-base-content/40"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Credit Card Limit (conditional) -->
+                <div
+                    id="row-credit-limit"
+                    class="border-t border-base-content/10"
+                    style="display: none">
+                    <div class="px-4 py-3">
+                        <label
+                            for="f-limit"
+                            class="mb-1.5 block text-[0.65rem] font-semibold tracking-wider text-base-content/50 uppercase"
+                            >Credit Card Limit</label
+                        >
+                        <div class="relative">
+                            <span
+                                class="absolute top-1/2 left-3 -translate-y-1/2 font-mono text-sm text-base-content/40"
+                                >Rp</span
+                            >
+                            <input
+                                id="f-limit"
+                                type="number"
+                                min="0"
+                                placeholder="0"
+                                class="w-full rounded-md border border-base-content/20 bg-base-100 py-2 pr-3 pl-9 font-mono text-sm placeholder:text-base-content/40 focus:ring-2 focus:ring-primary/40 focus:outline-none" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CREATE-ONLY block: access type + initial balance -->
+                <div id="createOnly">
+                    <div class="border-t border-base-content/10"></div>
+
+                    <!-- Access Type -->
+                    <div class="px-4 py-3">
+                        <span
+                            class="mb-2 block text-[0.65rem] font-semibold tracking-wider text-base-content/50 uppercase"
+                            >Access Type</span
+                        >
+                        <div class="flex gap-5">
+                            <label class="flex cursor-pointer items-center gap-2 text-sm">
+                                <input
+                                    type="radio"
+                                    name="access"
+                                    value="personal"
+                                    checked
+                                    class="h-4 w-4 accent-primary" />
+                                Personal
+                            </label>
+                            <label class="flex cursor-pointer items-center gap-2 text-sm">
+                                <input
+                                    type="radio"
+                                    name="access"
+                                    value="joint"
+                                    class="h-4 w-4 accent-primary" />
+                                Joint
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-base-content/10"></div>
+
+                    <!-- Initial Balance -->
+                    <div class="px-4 py-3">
+                        <label
+                            for="f-balance"
+                            class="mb-1.5 block text-[0.65rem] font-semibold tracking-wider text-base-content/50 uppercase"
+                            >Initial Balance</label
+                        >
+                        <div class="relative">
+                            <span
+                                class="absolute top-1/2 left-3 -translate-y-1/2 font-mono text-sm text-base-content/40"
+                                >Rp</span
+                            >
+                            <input
+                                id="f-balance"
+                                type="number"
+                                min="0"
+                                placeholder="0"
+                                oninput="onBalanceInput(this)"
+                                class="w-full rounded-md border border-base-content/20 bg-base-100 py-2 pr-3 pl-9 font-mono text-sm placeholder:text-base-content/40 focus:ring-2 focus:ring-primary/40 focus:outline-none" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action row -->
+            <div class="mt-5 flex gap-3">
+                <button
+                    type="button"
+                    class="flex-1 rounded-md border border-base-content/25 py-3 text-sm font-medium text-base-content/70 transition hover:bg-base-100">
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    onclick="submitForm()"
+                    class="flex flex-[1.4] items-center justify-center gap-2 rounded-md bg-primary py-3 text-sm font-semibold text-primary-content transition hover:opacity-90">
+                    <span id="submitIcon">➕</span><span id="submitLabel">Create Account</span>
+                </button>
+            </div>
+        </div>
+
+        <script>
+            const TYPES = {
+                debit: { label: 'Debit / Savings', icon: '🏦' },
+                credit: { label: 'Credit Card', icon: '💳' },
+                cash: { label: 'Cash Wallet', icon: '💵' },
+                ewallet: { label: 'E-Wallet', icon: '📱' },
+                invest: { label: 'Investment', icon: '📈' },
+            };
+            const PROVIDER_ICONS = {
+                'Bank Central Asia': '🏦',
+                GoPay: '💚',
+                OVO: '💜',
+                'Securities XYZ': '📈',
+            };
+
+            let mode = 'create';
+            let currentType = 'debit';
+
+            function setMode(m) {
+                mode = m;
+                const c = document.getElementById('mode-create');
+                const e = document.getElementById('mode-edit');
+                c.classList.toggle('bg-primary', m === 'create');
+                c.classList.toggle('text-primary-content', m === 'create');
+                c.classList.toggle('text-base-content/60', m !== 'create');
+                e.classList.toggle('bg-primary', m === 'edit');
+                e.classList.toggle('text-primary-content', m === 'edit');
+                e.classList.toggle('text-base-content/60', m !== 'edit');
+
+                document.getElementById('pageTitle').textContent =
+                    m === 'create' ? 'Add Account' : 'Edit Account';
+                document.getElementById('submitLabel').textContent =
+                    m === 'create' ? 'Create Account' : 'Save Changes';
+                document.getElementById('submitIcon').textContent = m === 'create' ? '➕' : '✓';
+                document.getElementById('previewBalanceLabel').textContent =
+                    m === 'create' ? 'Initial Balance' : 'Balance';
+
+                document.getElementById('createOnly').style.display = m === 'create' ? '' : 'none';
+
+                if (m === 'edit') {
+                    document.getElementById('f-name').value = 'BCA Savings';
+                    document.getElementById('f-provider').value = 'Bank Central Asia';
+                    selectType('debit');
+                    renderBalance(8250000);
+                } else {
+                    document.getElementById('f-name').value = '';
+                    document.getElementById('f-provider').value = '';
+                    document.querySelector('input[name="access"][value="personal"]').checked = true;
+                    document.getElementById('f-balance').value = '';
+                    selectType('debit');
+                    renderBalance(0);
+                }
+                updatePreview();
+            }
+
+            function selectType(key) {
+                currentType = key;
+                document.querySelectorAll('.type-btn').forEach((b) => {
+                    const active = b.dataset.type === key;
+                    b.classList.toggle('bg-primary', active);
+                    b.classList.toggle('text-primary-content', active);
+                    b.classList.toggle('text-base-content/60', !active);
+                });
+                document.getElementById('row-credit-limit').style.display =
+                    key === 'credit' ? '' : 'none';
+                updatePreview();
+            }
+
+            function selectColor(c, el) {
+                document.getElementById('previewCard').style.background = c;
+                document
+                    .querySelectorAll('.color-dot')
+                    .forEach((d) =>
+                        d.classList.remove(
+                            'ring-2',
+                            'ring-base-content',
+                            'ring-offset-2',
+                            'ring-offset-base-200'
+                        )
+                    );
+                el.classList.add(
+                    'ring-2',
+                    'ring-base-content',
+                    'ring-offset-2',
+                    'ring-offset-base-200'
+                );
+            }
+
+            function onBalanceInput(el) {
+                const raw = el.value.replace(/\D/g, '');
+                const n = raw ? parseInt(raw, 10) : 0;
+                el.value = raw ? n.toLocaleString('id-ID') : '';
+                renderBalance(n);
+            }
+
+            function renderBalance(n) {
+                document.getElementById('previewBalance').textContent = n
+                    ? n.toLocaleString('id-ID')
+                    : '0';
+            }
+
+            function updatePreview() {
+                const name = document.getElementById('f-name').value.trim();
+                const provider = document.getElementById('f-provider').value;
+                const t = TYPES[currentType];
+                document.getElementById('previewName').textContent =
+                    name || (mode === 'edit' ? 'Account Name' : 'Your Account');
+                document.getElementById('previewProvider').textContent = provider || 'No Provider';
+                document.getElementById('previewTypeBadge').textContent = t.label;
+                const icon =
+                    provider && PROVIDER_ICONS[provider] ? PROVIDER_ICONS[provider] : t.icon;
+                document.getElementById('previewIcon').textContent = icon;
+            }
+
+            function submitForm() {
+                const name = document.getElementById('f-name').value.trim();
+                if (!name) {
+                    alert('Please enter an account name.');
+                    return;
+                }
+                alert((mode === 'create' ? 'Account created' : 'Changes saved') + ': ' + name);
+            }
+
+            document.addEventListener('DOMContentLoaded', () => setMode('create'));
+        </script>
+    </body>
+</html>

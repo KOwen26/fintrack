@@ -2,28 +2,53 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasSushiJsonSource;
+use App\Observers\SushiJsonObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Schema\Blueprint;
 use Sushi\Sushi;
 
+#[ObservedBy([SushiJsonObserver::class])]
 class DecorationIcon extends Model
 {
+    use HasSushiJsonSource;
     use Sushi;
+
+    protected $primaryKey = 'slug';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
+    protected $fillable = [
+        'slug', 'group', 'label', 'value', 'status',
+    ];
 
     public function getRows(): array
     {
-        $path = resource_path('js/data/decoration-icons.json');
-
-        return json_decode(file_get_contents($path), true) ?? [];
-    }
-
-    protected function afterMigrate(Blueprint $table)
-    {
-        $table->index('slug');
+        return $this->getJsonRows();
     }
 
     protected function sushiShouldCache(): bool
     {
-        return true;
+        return $this->jsonShouldCache();
+    }
+
+    protected function sushiCacheReferencePath(): ?string
+    {
+        return $this->jsonCacheReferencePath();
+    }
+
+    public function jsonSourcePath(): string
+    {
+        return resource_path('js/data/decoration-icons.json');
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function jsonColumns(): array
+    {
+        return ['slug', 'group', 'label', 'value', 'status'];
     }
 }

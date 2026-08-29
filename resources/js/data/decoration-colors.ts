@@ -6,6 +6,10 @@ export type DecorationColorGroup = DecorationColor['group'];
 
 export const decorationColors = colors as readonly DecorationColor[];
 
+export function getActiveDecorationColors(): DecorationColor[] {
+    return decorationColors.filter((color) => color.status === 'Active');
+}
+
 export function getDecorationColor(slug: string): DecorationColor | undefined {
     return decorationColors.find((color) => color.slug === slug);
 }

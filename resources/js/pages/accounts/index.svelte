@@ -80,6 +80,18 @@
 <PageSection>
     <AccountList {accounts} />
 
+    <!-- Add Account Placeholder -->
+    <div class="col-span-full">
+        <Link
+            class="flex min-h-25 cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-base-200 bg-card transition-colors hover:border-primary/50 hover:bg-primary/5"
+            href={AccountController.create.url()}>
+            <div class="text-center">
+                <i class="mx-auto mb-1 iconify block size-5 text-base-content/50 ph--plus-bold"></i>
+                <span class="text-sm font-medium text-base-content/50">Add Account</span>
+            </div>
+        </Link>
+    </div>
+
     {#if archived_accounts.length > 0}
         {@render ArchivedAccounts()}
     {/if}

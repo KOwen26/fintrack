@@ -17,7 +17,8 @@
     --color-foreground: var(--color-base-content);
 
     /* Card */
-    --color-card: var(--color-base-100);
+    --color-card: var(--color-white);
+    /* --color-card: var(--color-base-100); */
     --color-card-foreground: var(--color-base-content);
 
     /* Popover */

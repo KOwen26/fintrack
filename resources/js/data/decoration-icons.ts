@@ -6,6 +6,10 @@ export type DecorationIconGroup = DecorationIcon['group'];
 
 export const decorationIcons = icons as readonly DecorationIcon[];
 
+export function getActiveDecorationIcons(): DecorationIcon[] {
+    return decorationIcons.filter((icon) => icon.status === 'Active');
+}
+
 export function getDecorationIcon(slug: string): DecorationIcon | undefined {
     return decorationIcons.find((icon) => icon.slug === slug);
 }

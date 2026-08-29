@@ -74,7 +74,7 @@
 
 <div
     class={cn(
-        'stat-card rounded-xl p-4',
+        'rounded-xl p-4',
         'bg-card text-card-foreground',
         'border border-base-content/25',
         'transition-shadow hover:shadow-sm',
@@ -104,7 +104,7 @@
             </div>
         </div>
 
-        <p class="mt-3 text-xl font-bold tracking-tight text-base-content">
+        <p class="mt-3 text-2xl font-bold tracking-tight text-base-content">
             {formattedValue() ?? '—'}
         </p>
 
@@ -116,8 +116,6 @@
                 )}>
                 {trend.label}
             </p>
-        {:else}
-            <p class="mt-1 text-xs text-base-content/40">&nbsp;</p>
         {/if}
     {/if}
 </div>

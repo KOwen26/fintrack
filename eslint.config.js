@@ -85,6 +85,7 @@ export default defineConfig([
             'svelte/no-unused-props': 'off',
             'svelte/no-unused-svelte-ignore': 'warn',
             'svelte/no-at-html-tags': 'warn',
+            'svelte/no-useless-children-snippet': 'warn',
             'svelte/sort-attributes': [
                 'warn',
                 {
