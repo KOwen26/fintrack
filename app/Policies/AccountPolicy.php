@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\AccountAccessType;
 use App\Models\Account;
 use App\Models\User;
 
@@ -14,7 +15,7 @@ class AccountPolicy
 
     public function view(User $user, Account $account): bool
     {
-        return true;
+        return $account->owner_id === $user->id || $account->access_type === AccountAccessType::Joint;
     }
 
     public function create(User $user): bool

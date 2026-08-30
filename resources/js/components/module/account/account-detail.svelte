@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script lang="ts" module>
     /** Mask an account number for display: "1234567890" => "•••• •••• •••• 1234" */
     function maskAccountNumber(num: string): string {
         if (num.length <= 4) return num;

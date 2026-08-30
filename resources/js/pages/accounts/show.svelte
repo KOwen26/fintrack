@@ -2,8 +2,8 @@
     import type { App } from '@wayfinder/types';
 
     import { getDecorationColor } from '@data/decoration-colors';
-    import { Link } from '@inertiajs/svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
+    import { Collapsible } from 'bits-ui';
     import { SvelteMap } from 'svelte/reactivity';
 
     import DateTimeHelper from '@utilities/date-time-helper';
@@ -16,7 +16,6 @@
     import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
     import StatCard from '@components/ui/cards/stat-card.svelte';
     import DonutChart from '@components/ui/charts/donut-chart.svelte';
 
@@ -27,6 +26,8 @@
     );
 
     let showDetail = $state(false);
+    let transactionsOpen = $state(true);
+    let categoryOpen = $state(true);
 
     // ── Category spending from transactions ────────────────────
 
@@ -226,71 +227,61 @@
         <!-- ════════════════════════════════════════════ -->
         <!--  ACCOUNT INFO                              -->
         <!-- ════════════════════════════════════════════ -->
-        <ResponsiveCard class="space-y-0" contentClass="p-0">
-            <div class="px-5 pt-[18px] md:px-6">
-                <p class="text-[0.63rem] font-bold tracking-widest text-base-content/50 uppercase">
-                    Account Info
-                </p>
-            </div>
+        <Card contentClass="space-y-3">
+            <h5 class="text-sm font-bold tracking-wider text-base-content/80 uppercase">
+                Account Info
+            </h5>
 
-            <div>
+            <ul>
+                <hr class="border-base-content/20" />
                 {#each infoRows as row, i (row.label)}
-                    <hr class="mx-5 border-base-content/10 md:mx-6" />
-
-                    <div
-                        class="flex items-center justify-between gap-3 px-5 py-3 md:px-6"
-                        class:pb-4={i === infoRows.length - 1}>
-                        <span class="flex items-center gap-2 text-[0.8rem] text-base-content/60">
-                            <i class="iconify size-3.5 text-base-content/50 {row.icon}"></i>
+                    <li class="flex items-center justify-between gap-3 py-3">
+                        <span class="flex items-center gap-2 text-sm text-base-content/80">
+                            <i class="iconify size-4 text-base-content/80 {row.icon}"></i>
                             {row.label}
                         </span>
-                        <span
-                            class="text-[0.85rem] font-semibold text-base-content"
-                            class:font-mono={row.mono}>
+                        <span class="text-sm font-medium text-base-content">
                             {row.value}
                         </span>
-                    </div>
+                    </li>
+
+                    <hr class="border-base-content/20" />
                 {/each}
-            </div>
-        </ResponsiveCard>
+            </ul>
+        </Card>
 
         <!-- ════════════════════════════════════════════ -->
         <!--  MEMBERS (joint accounts only)             -->
         <!-- ════════════════════════════════════════════ -->
         {#if members.length > 0}
-            <ResponsiveCard class="space-y-0" contentClass="p-0">
-                <div class="flex items-center justify-between px-5 pt-[18px] pb-[14px] md:px-6">
-                    <p
-                        class="text-[0.63rem] font-bold tracking-widest text-base-content/50 uppercase">
-                        Members
-                    </p>
-                    <span class="text-teal cursor-pointer text-[0.75rem] font-semibold">
-                        + Invite
-                    </span>
-                </div>
+            <Card contentClass="space-y-3">
+                <h5 class="text-sm font-bold tracking-wider text-base-content/80 uppercase">
+                    Members
+                </h5>
 
-                {#each members as member, i (member.name + member.email)}
-                    {#if i > 0}
-                        <hr class="mx-5 border-base-content/10 md:mx-6" />
-                    {/if}
+                <ul>
+                    {#each members as member, i (member.name + member.email)}
+                        {#if i > 0}
+                            <hr class="border-base-content/20" />
+                        {/if}
 
-                    <div
-                        class="flex items-center gap-3 px-5 py-3 md:px-6"
-                        class:pb-4={i === members.length - 1}>
-                        <div
-                            style:background={i === 0 ? bgColor : '#7A5CB8'}
-                            class="avatar flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white">
-                            {getMemberInitials(member.name)}
-                        </div>
-                        <div class="flex-1">
-                            <p class="mb-0.5 text-sm font-semibold text-base-content">
-                                {member.name}
-                            </p>
-                            <p class="text-[0.75rem] text-base-content/60">{member.email}</p>
-                        </div>
-                    </div>
-                {/each}
-            </ResponsiveCard>
+                        <li class="flex items-center gap-3 py-3">
+                            <div
+                                style:background={bgColor}
+                                class="avatar flex size-10 shrink-0 items-center justify-center rounded-md text-sm font-bold text-white">
+                                {getMemberInitials(member.name)}
+                            </div>
+
+                            <div class="flex-1">
+                                <p class="mb-0.5 text-sm font-semibold text-base-content">
+                                    {member.name}
+                                </p>
+                                <p class="text-sm text-base-content/80">{member.email}</p>
+                            </div>
+                        </li>
+                    {/each}
+                </ul>
+            </Card>
         {/if}
     {:else}
         <!-- ════════════════════════════════════════════ -->
@@ -298,47 +289,60 @@
         <!-- ════════════════════════════════════════════ -->
         {#if categorySpending.length > 0}
             <PageSection>
-                <Card class="p-5">
-                    {#snippet header()}
-                        <h2 class="text-sm font-semibold">Spending by Category</h2>
-                    {/snippet}
-                    {#snippet headerAction()}
-                        <span class="text-xs text-base-content/50">{currentMonthLabel}</span>
-                    {/snippet}
-
-                    <div
-                        class="flex flex-col items-center gap-5 md:flex-row md:items-start md:gap-6">
-                        <div class="w-36 shrink-0 md:w-40">
-                            <DonutChart
-                                centerSubtext="Total spent"
-                                centerText={Formatter.currency(totalSpent, true)}
-                                data={categorySpending.map((c) => ({
-                                    name: c.name,
-                                    value: c.amount,
-                                    color: c.color,
-                                }))}
-                                innerRadius={0.6} />
-                        </div>
-                        <div class="w-full space-y-2.5 md:flex-1">
-                            {#each categorySpending as item (item.name)}
-                                <div class="flex items-center gap-2.5">
-                                    <span
-                                        style:background={item.color}
-                                        class="size-3 shrink-0 rounded-full">
-                                    </span>
-                                    <span class="flex-1 text-sm text-base-content"
-                                        >{item.name}</span>
-                                    <span class="text-sm font-semibold text-base-content">
-                                        {Formatter.currency(item.amount, true)}
-                                    </span>
-                                    <span class="w-8 text-right text-sm text-base-content/50">
-                                        {item.percentage}%
-                                    </span>
+                <Collapsible.Root bind:open={categoryOpen}>
+                    <Card class=" {!transactionsOpen ? 'gap-0' : ''}">
+                        {#snippet header()}
+                            <Collapsible.Trigger
+                                class="flex w-full cursor-pointer items-center justify-between">
+                                <p class="text-sm font-bold tracking-wide uppercase">
+                                    Spending Category {currentMonthLabel}
+                                </p>
+                                <div class="flex items-center gap-2">
+                                    <i
+                                        class="iconify size-4 {categoryOpen
+                                            ? 'ph--caret-up-bold'
+                                            : 'ph--caret-down-bold'}"></i>
                                 </div>
-                            {/each}
-                        </div>
-                    </div>
-                </Card>
+                            </Collapsible.Trigger>
+                        {/snippet}
+
+                        <Collapsible.Content>
+                            <div
+                                class="flex flex-col items-center gap-5 px-5 pb-5 md:flex-row md:items-start md:gap-6 md:px-6">
+                                <div class="w-36 shrink-0 md:w-40">
+                                    <DonutChart
+                                        centerSubtext="Total spent"
+                                        centerText={Formatter.currency(totalSpent, true)}
+                                        data={categorySpending.map((c) => ({
+                                            name: c.name,
+                                            value: c.amount,
+                                            color: c.color,
+                                        }))}
+                                        innerRadius={0.6} />
+                                </div>
+                                <div class="w-full space-y-2.5 md:flex-1">
+                                    {#each categorySpending as item (item.name)}
+                                        <div class="flex items-center gap-2.5">
+                                            <span
+                                                style:background={item.color}
+                                                class="size-3 shrink-0 rounded-full">
+                                            </span>
+                                            <span class="flex-1 text-sm text-base-content"
+                                                >{item.name}</span>
+                                            <span class="text-sm font-semibold text-base-content">
+                                                {Formatter.currency(item.amount, true)}
+                                            </span>
+                                            <span
+                                                class="w-8 text-right text-sm text-base-content/50">
+                                                {item.percentage}%
+                                            </span>
+                                        </div>
+                                    {/each}
+                                </div>
+                            </div>
+                        </Collapsible.Content>
+                    </Card>
+                </Collapsible.Root>
             </PageSection>
         {/if}
 
@@ -346,23 +350,31 @@
         <!--  RECENT TRANSACTIONS                         -->
         <!-- ════════════════════════════════════════════ -->
         <PageSection>
-            {#if transactions.length > 0}
-                <Card class="p-5">
+            <Collapsible.Root bind:open={transactionsOpen}>
+                <Card class=" {!transactionsOpen ? 'gap-0' : ''}">
                     {#snippet header()}
-                        <h2 class="text-sm font-semibold">Recent Transactions</h2>
+                        <Collapsible.Trigger
+                            class="flex w-full cursor-pointer items-center justify-between">
+                            <p class="text-sm font-bold tracking-wide uppercase">
+                                Recent Transactions
+                            </p>
+                            <i
+                                class="iconify size-4 {transactionsOpen
+                                    ? 'ph--caret-up-bold'
+                                    : 'ph--caret-down-bold'}"></i>
+                        </Collapsible.Trigger>
                     {/snippet}
-                    {#snippet headerAction()}
-                        <Link
-                            class="text-xs font-medium text-primary transition-colors hover:text-primary/80"
-                            href="/transactions">
-                            View All
-                        </Link>
-                    {/snippet}
-                    <TransactionList {transactions} />
+                    <Collapsible.Content>
+                        <div>
+                            {#if transactions.length > 0}
+                                <TransactionList {transactions} />
+                            {:else}
+                                <EmptyItemPlaceholder label="No Transaction Yet" />
+                            {/if}
+                        </div>
+                    </Collapsible.Content>
                 </Card>
-            {:else}
-                <EmptyItemPlaceholder label="No Transaction Yet" />
-            {/if}
+            </Collapsible.Root>
         </PageSection>
 
         <!-- ════════════════════════════════════════════ -->

@@ -16,12 +16,14 @@
         account: App.Models.Account;
         hideActions?: boolean;
         hideEdit?: boolean;
+        hideMask?: boolean;
     }
 
     let {
         account,
         hideActions = false,
         hideEdit = false,
+        hideMask = false,
         class: _class,
         children,
         ...props
@@ -83,7 +85,8 @@
         style:color={colorObj?.text_color}
         class="relative overflow-hidden p-5 md:px-6 md:pb-5">
         <!-- Decorative circles -->
-        <div class="pointer-events-none absolute -top-12 -right-12 size-44 rounded-full bg-white/5">
+        <div
+            class="pointer-events-none absolute -top-12 -right-12 size-44 rounded-full bg-white/10">
         </div>
         <div
             class="pointer-events-none absolute right-10 -bottom-8 size-28 rounded-full bg-white/5">
@@ -125,39 +128,18 @@
                     <span>{account.access_type === 'personal' ? 'Personal' : 'Joint'}</span>
                 </div>
             </div>
-            <button
-                class="flex size-8 cursor-pointer items-center justify-center rounded-lg border-none bg-white/10 transition-colors hover:bg-white/15"
-                aria-label="Toggle balance visibility"
-                onclick={toggleBalance}>
-                {#if balanceHidden}
-                    <svg
-                        fill="none"
-                        height="16"
-                        stroke="rgba(255,255,255,0.6)"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        viewBox="0 0 24 24"
-                        width="16">
-                        <path
-                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                        <line x1="1" x2="23" y1="1" y2="23" />
-                    </svg>
-                {:else}
-                    <svg
-                        fill="none"
-                        height="16"
-                        stroke="rgba(255,255,255,0.6)"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        viewBox="0 0 24 24"
-                        width="16">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                {/if}
-            </button>
+            {#if !hideMask}
+                <button
+                    class="flex size-8 cursor-pointer items-center justify-center rounded-lg border-none bg-white/10 transition-colors hover:bg-white/15"
+                    aria-label="Toggle balance visibility"
+                    onclick={toggleBalance}>
+                    <i
+                        class="iconify size-4 text-white/80 {balanceHidden
+                            ? 'ph--eye-slash-bold'
+                            : 'ph--eye-bold'}">
+                    </i>
+                </button>
+            {/if}
         </div>
 
         <!-- Balance -->
@@ -171,7 +153,7 @@
                 {#if balanceHidden}
                     ••••••
                 {:else}
-                    {Formatter.currency(account.current_balance ?? account.initial_balance ?? 0)}
+                    {Formatter.currency(account.current_balance ?? 0)}
                 {/if}
             </p>
         </div>
@@ -199,16 +181,16 @@
     {#if !hideEdit}
         <div
             class="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-base-300 bg-card px-5 py-3 text-xs">
-            {#if account.account_number}
+            {#if account?.account_number}
                 <span class="flex items-center gap-1">
-                    <i class="iconify size-3 text-base-content/40 ph--identification-card-bold"></i>
-                    <span class="text-base-content/50">{account.account_number}</span>
+                    <i class="iconify size-3 text-base-content/60 ph--identification-card-bold"></i>
+                    <span class="text-base-content/60">{account?.account_number}</span>
                 </span>
             {/if}
             {#if account.created_at}
                 <span class="flex items-center gap-1">
-                    <i class="iconify size-3 text-base-content/40 ph--calendar-bold"></i>
-                    <span class="text-base-content/50"
+                    <i class="iconify size-3 text-base-content/60 ph--calendar-bold"></i>
+                    <span class="text-base-content/60"
                         >Since {DateTimeHelper.format(account.created_at, 'date')}</span>
                 </span>
             {/if}
