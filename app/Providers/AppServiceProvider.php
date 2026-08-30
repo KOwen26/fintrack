@@ -2,10 +2,17 @@
 
 namespace App\Providers;
 
+use App\Events\TransactionDeleted;
+use App\Events\TransactionSaved;
+use App\Helpers\TypeScript\TypeScriptTransformer;
+use App\Listeners\InvalidateAccountBalanceCache;
+use App\Listeners\InvalidateAccountReportCache;
+use Exception;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
@@ -13,9 +20,9 @@ use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 
 /**
- * @method \Illuminate\Http\RedirectResponse flash(string $message, string $type = 'success', array|null $meta = [])
+ * @method RedirectResponse flash(string $message, string $type = 'success', array|null $meta = [])
  * @method \Illuminate\Http\Route getPreviousName()
- * @method \Inertia\Inertia mergeWithShared(string $key, $value)
+ * @method Inertia mergeWithShared(string $key, $value)
  */
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }
+
+        $this->app->bind(
+            \Spatie\TypeScriptTransformer\TypeScriptTransformer::class,
+            TypeScriptTransformer::class,
+        );
     }
 
     /**
@@ -54,8 +66,8 @@ class AppServiceProvider extends ServiceProvider
 
             // Try to match the request to a route
             try {
-                return app('router')->getRoutes()->match($request)->getName();
-            } catch (\Exception $e) {
+                return resolve('router')->getRoutes()->match($request)->getName();
+            } catch (Exception) {
                 // Return null or a fallback if the previous URL
                 // doesn't match a route in your app (e.g. it was an external link)
                 return null;
@@ -63,13 +75,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Use auth.verification.verify since all auth routes are under the auth. name prefix
-        VerifyEmail::createUrlUsing(function ($notifiable) {
-            return URL::temporarySignedRoute(
-                'auth.verification.verify',
-                Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
-                ['id' => $notifiable->getKey(), 'hash' => sha1($notifiable->getEmailForVerification())]
-            );
-        });
+        VerifyEmail::createUrlUsing(fn ($notifiable) => URL::temporarySignedRoute(
+            'auth.verification.verify',
+            Date::now()->addMinutes(Config::get('auth.verification.expire', 60)),
+            ['id' => $notifiable->getKey(), 'hash' => sha1((string) $notifiable->getEmailForVerification())]
+        ));
 
         Inertia::macro('mergeWithShared', function ($key, $value) {
             $shared = Inertia::getShared($key, []);
@@ -77,5 +87,10 @@ class AppServiceProvider extends ServiceProvider
             // Merge with the new items
             return array_merge($shared, $value);
         });
+
+        Event::listen(TransactionSaved::class, InvalidateAccountBalanceCache::class);
+        Event::listen(TransactionDeleted::class, InvalidateAccountBalanceCache::class);
+        Event::listen(TransactionSaved::class, InvalidateAccountReportCache::class);
+        Event::listen(TransactionDeleted::class, InvalidateAccountReportCache::class);
     }
 }

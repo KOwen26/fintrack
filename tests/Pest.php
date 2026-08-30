@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Account;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Pest\Expectation;
 use Tests\TestCase;
@@ -32,9 +34,7 @@ pest()->browser()->timeout(5000);
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
+expect()->extend('toBeOne', fn () => $this->toBe(1));
 
 /*
 |--------------------------------------------------------------------------
@@ -47,7 +47,19 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function something(): void
 {
     // ..
+}
+
+/**
+ * Create a user and account for testing.
+ * Returns [user, null, account] — null in position 1 for backwards compatibility.
+ */
+function createUserWithAccountAndHousehold(array $accountAttributes = []): array
+{
+    $user = User::factory()->create();
+    $account = Account::factory()->create(array_merge(['owner_id' => $user->id], $accountAttributes));
+
+    return [$user, null, $account];
 }

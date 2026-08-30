@@ -13,7 +13,7 @@
 </script>
 
 <AlertDialogPrimitive.Action
-    class={cn(buttonVariants(), className)}
     data-slot="alert-dialog-action"
+    class={cn(buttonVariants(), className)}
     bind:ref
     {...restProps} />

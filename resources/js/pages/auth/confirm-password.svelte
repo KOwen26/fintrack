@@ -26,7 +26,7 @@
     <h1>Confirm Password</h1>
     <p class="text-base-content/70 text-sm">Please confirm your password before continuing.</p>
     <form class="mt-6 space-y-4" {onsubmit}>
-        <Field title="Password" error={form.errors.password}>
+        <Field error={form.errors.password} title="Password">
             <PasswordInput name="password" bind:value={form.password} />
         </Field>
 

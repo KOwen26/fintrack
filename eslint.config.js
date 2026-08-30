@@ -57,7 +57,7 @@ export default defineConfig([
             'no-undef': 'off',
             'no-useless-assignment': 'warn',
             'no-unused-vars': 'warn',
-            'unused-imports/no-unused-imports': 'error',
+            'unused-imports/no-unused-imports': 'warn',
             '@stylistic/padding-line-between-statements': [
                 'warn',
                 { blankLine: 'always', prev: '*', next: 'return' }, //Give a blank line before return statement
@@ -82,9 +82,10 @@ export default defineConfig([
             },
         },
         rules: {
-            'svelte/no-unused-props': 'warn',
+            'svelte/no-unused-props': 'off',
             'svelte/no-unused-svelte-ignore': 'warn',
             'svelte/no-at-html-tags': 'warn',
+            'svelte/no-useless-children-snippet': 'warn',
             'svelte/sort-attributes': [
                 'warn',
                 {
@@ -101,6 +102,7 @@ export default defineConfig([
                         'maskName',
                         // `slot` attribute.
                         'slot',
+                        'data-slot',
                         // `--style-props` (Alphabetical order within the same group.)
                         { match: '/^--/u', sort: 'alphabetical' },
                         // `style` attribute, and `style:` directives.
@@ -109,7 +111,7 @@ export default defineConfig([
                         'class',
                         // `class:` directives. (Alphabetical order within the same group.)
                         { match: '/^class:/u', sort: 'alphabetical' },
-                        // `labelClass, wrapperClass, etc.` directives. (Alphabetical order within the same group.)
+                        // `labelClass, contentClass, etc.` directives. (Alphabetical order within the same group.)
                         { match: '/.*Class$/u', sort: 'alphabetical' },
                         // other attributes. (Alphabetical order within the same group.)
                         {
@@ -117,7 +119,7 @@ export default defineConfig([
                             sort: 'alphabetical',
                         },
                         // `bind:` directives (other then `bind:this`), and `on:` directives.
-                        ['/^bind:/u', '!bind:this', '/^on:/u'],
+                        ['/^on/u', '/^on:/u', '/^bind:/u', '!bind:this'],
                         // `use:` directives. (Alphabetical order within the same group.)
                         { match: '/^use:/u', sort: 'alphabetical' },
                         // `transition:` directive.

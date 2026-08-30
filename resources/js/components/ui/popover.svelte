@@ -13,6 +13,7 @@
         rootProps?: Partial<PopoverPrimitive.RootProps>;
         portalProps?: PopoverPrimitive.PortalProps;
         triggerClass?: string;
+        triggerProps?: PopoverPrimitive.TriggerProps;
     } & PopoverPrimitive.ContentProps &
         HTMLAttributes<HTMLDivElement> &
         Pick<PopoverPrimitive.RootProps, 'open'>;
@@ -27,10 +28,11 @@
     let {
         triggerRef = $bindable(null),
         contentRef = $bindable(null),
-        open = $bindable(null),
+        open = $bindable(false),
         rootProps,
         class: className,
         triggerClass = '',
+        triggerProps,
         sideOffset = 6,
         align = 'center',
         portalProps,
@@ -44,16 +46,17 @@
 
 <PopoverPrimitive.Root {...rootProps} bind:open>
     <PopoverPrimitive.Trigger
-        class={triggerClass}
         data-slot="popover-trigger"
-        bind:ref={triggerRef}>
+        class={triggerClass}
+        bind:ref={triggerRef}
+        {...triggerProps}>
         {@render trigger?.()}
     </PopoverPrimitive.Trigger>
     <PopoverPrimitive.Portal {...portalProps}>
         <PopoverPrimitive.Content
+            data-slot="popover-content"
             class={contentClass}
             {align}
-            data-slot="popover-content"
             {sideOffset}
             bind:ref={contentRef}
             {...restProps}>

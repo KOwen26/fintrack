@@ -58,14 +58,14 @@
     {...restProps}>
     {#each items as { value, trigger, content, disabled: itemDisabled, headerLevel = 3 } (value)}
         <AccordionPrimitive.Item
-            class={baseItemClass}
             data-slot="accordion-item"
+            class={baseItemClass}
             {disabled}
             {value}>
             <AccordionPrimitive.Header class="flex" level={headerLevel}>
                 <AccordionPrimitive.Trigger
-                    class={baseTriggerClass}
                     data-slot="accordion-trigger"
+                    class={baseTriggerClass}
                     {disabled}>
                     {#if typeof trigger === 'string'}
                         {trigger}
@@ -80,7 +80,7 @@
                     <i class="iconify ph--caret-down-duotone {baseChevronClass}"></i>
                 </AccordionPrimitive.Trigger>
             </AccordionPrimitive.Header>
-            <AccordionPrimitive.Content class={baseContentClass} data-slot="accordion-content">
+            <AccordionPrimitive.Content data-slot="accordion-content" class={baseContentClass}>
                 <div class={baseContentInnerClass}>
                     {#if typeof content === 'function'}
                         {@render content?.()}

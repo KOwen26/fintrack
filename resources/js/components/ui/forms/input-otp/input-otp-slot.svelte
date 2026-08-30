@@ -12,6 +12,7 @@
 </script>
 
 <InputOTPPrimitive.Cell
+    data-slot="input-otp-slot"
     class={cn(
         'border-input aria-invalid:border-destructive dark:bg-input/30 relative flex size-10 items-center justify-center border-y border-r text-sm transition-all outline-none first:rounded-l-md first:border-l last:rounded-r-md',
         cell.isActive &&
@@ -19,7 +20,6 @@
         className
     )}
     {cell}
-    data-slot="input-otp-slot"
     bind:ref
     {...restProps}>
     {cell.char}

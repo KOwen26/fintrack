@@ -17,7 +17,6 @@ type Page = {
     meta: Partial<{
         title: string;
         app_name: string;
-
         current_route: string;
     }>;
 };

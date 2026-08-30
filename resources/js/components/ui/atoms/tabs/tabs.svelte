@@ -12,8 +12,8 @@
 </script>
 
 <TabsPrimitive.Root
-    class={cn('flex flex-col gap-2', className)}
     data-slot="tabs"
+    class={cn('flex flex-col gap-2', className)}
     bind:ref
     bind:value
     {...restProps} />

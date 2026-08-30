@@ -14,8 +14,8 @@
 
 <p
     bind:this={ref}
-    class={cn('text-muted-foreground text-sm', className)}
     data-slot="card-description"
+    class={cn('text-muted-foreground text-sm', className)}
     {...restProps}>
     {@render children?.()}
 </p>

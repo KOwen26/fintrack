@@ -18,6 +18,7 @@
 
 <div
     bind:this={ref}
+    data-slot="carousel-item"
     class={cn(
         'min-w-0 shrink-0 grow-0 basis-full',
         emblaCtx.orientation === 'horizontal' ? 'pl-4' : 'pt-4',
@@ -25,7 +26,6 @@
     )}
     aria-roledescription="slide"
     data-embla-slide=""
-    data-slot="carousel-item"
     role="group"
     {...restProps}>
     {@render children?.()}

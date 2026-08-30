@@ -17,6 +17,9 @@
         onCancel?: (e: MouseEvent) => void;
         withoutCancel?: boolean;
         labelCancel?: string;
+
+        cancelClass?: string;
+        submitClass?: string;
     }
 
     let {
@@ -29,6 +32,8 @@
         },
         withoutCancel = false,
         labelCancel = 'Batal',
+        cancelClass,
+        submitClass,
         class: _class,
         ...props
     }: Props = $props();
@@ -36,12 +41,20 @@
 
 <div class={cn('flex flex-row flex-wrap justify-end gap-3', _class)}>
     {#if !withoutCancel}
-        <Button class="min-w-25" color="secondary" onclick={onCancel} variant="outline">
+        <Button
+            class={cn('min-w-25', cancelClass)}
+            color="secondary"
+            onclick={onCancel}
+            variant="outline">
             {labelCancel}
         </Button>
     {/if}
 
-    <SubmitButton class="min-w-25" form={formId} onclick={onSubmit} submitting={form.processing}>
+    <SubmitButton
+        class={cn('min-w-25', submitClass)}
+        form={formId}
+        onclick={onSubmit}
+        submitting={form.processing}>
         {#snippet icon()}
             <i class="iconify solar--add-square-bold-duotone"></i>
         {/snippet}

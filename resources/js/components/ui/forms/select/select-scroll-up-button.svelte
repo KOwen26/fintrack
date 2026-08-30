@@ -13,8 +13,8 @@
 </script>
 
 <SelectPrimitive.ScrollUpButton
-    class={cn('flex cursor-default items-center justify-center py-1', className)}
     data-slot="select-scroll-up-button"
+    class={cn('flex cursor-default items-center justify-center py-1', className)}
     bind:ref
     {...restProps}>
     <i class="iconify ph--caret-up-duotone size-4"></i>

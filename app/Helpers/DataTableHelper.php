@@ -21,12 +21,12 @@ class DataTableHelper
         $original = $query->clone()->count();
 
         $data = $query
-            ->when($payload->has_sort, function ($query) use ($payload) {
+            ->when($payload->has_sort, function ($query) use ($payload): void {
                 foreach ($payload->sort as $sort) {
                     $query->orderBy($sort->id, $sort->direction);
                 }
             })
-            ->when($payload->has_filters, function ($query) use ($payload) {
+            ->when($payload->has_filters, function ($query) use ($payload): void {
                 foreach ($payload->filters as $filter) {
                     $query->whereLike($filter->id, "%{$filter->value}%");
                 }

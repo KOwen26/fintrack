@@ -1,0 +1,1936 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Transaksi – FinTrack</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:wght@400;500&display=swap"
+            rel="stylesheet" />
+
+        <style>
+            :root {
+                --bg: #edf1ee;
+                --surface: #ffffff;
+                --border: #e2eae5;
+                --text-1: #1a2820;
+                --text-2: #5e706a;
+                --text-3: #96a8a2;
+                --sage: #4e7a5a;
+                --sage-dk: #3a6044;
+                --sage-lt: #dde9e1;
+                --teal: #29887c;
+                --teal-lt: #e3f5f2;
+                --red: #c24540;
+                --red-lt: #fbeeed;
+                --amber: #a07020;
+                --amber-lt: #fbf4e3;
+            }
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: 'DM Sans', sans-serif;
+                background: var(--bg);
+                color: var(--text-1);
+                min-height: 100vh;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            .shell {
+                max-width: 430px;
+                margin: 0 auto;
+            }
+            .mono {
+                font-family: 'DM Mono', monospace;
+            }
+
+            /* ── STICKY HEADER ────────────────────────── */
+            .sticky-hdr {
+                position: sticky;
+                top: 0;
+                z-index: 40;
+                background: var(--bg);
+            }
+
+            /* App bar */
+            .app-bar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 14px 16px 10px;
+            }
+            .avatar-pill {
+                width: 34px;
+                height: 34px;
+                border-radius: 11px;
+                background: var(--sage);
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.72rem;
+                font-weight: 700;
+                flex-shrink: 0;
+                cursor: pointer;
+            }
+            .page-title {
+                font-size: 1.05rem;
+                font-weight: 700;
+                color: var(--text-1);
+            }
+
+            .icon-btn {
+                width: 34px;
+                height: 34px;
+                border-radius: 10px;
+                background: var(--surface);
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                transition: background 0.14s;
+                position: relative;
+            }
+            .icon-btn:hover {
+                background: var(--sage-lt);
+            }
+
+            /* Search bar */
+            .search-wrap {
+                padding: 0 16px 8px;
+            }
+            .search-inner {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                background: var(--surface);
+                border-radius: 13px;
+                padding: 10px 14px;
+            }
+            .search-input {
+                flex: 1;
+                border: none;
+                outline: none;
+                background: transparent;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.875rem;
+                color: var(--text-1);
+            }
+            .search-input::placeholder {
+                color: var(--text-3);
+            }
+            .search-clear {
+                border: none;
+                background: none;
+                cursor: pointer;
+                color: var(--text-3);
+                font-size: 1.1rem;
+                line-height: 1;
+                padding: 0;
+                display: none;
+            }
+
+            /* Filter row */
+            .filter-row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 0 16px 12px;
+            }
+            .chips-track {
+                display: flex;
+                gap: 7px;
+                flex: 1;
+                overflow-x: auto;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+            .chips-track::-webkit-scrollbar {
+                display: none;
+            }
+
+            .chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                padding: 7px 12px;
+                border-radius: 9999px;
+                border: 1.5px solid var(--border);
+                background: var(--surface);
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.77rem;
+                font-weight: 600;
+                color: var(--text-2);
+                cursor: pointer;
+                white-space: nowrap;
+                transition: all 0.15s;
+                flex-shrink: 0;
+            }
+            .chip:hover {
+                border-color: var(--sage);
+                color: var(--sage);
+            }
+            .chip.active {
+                background: var(--sage);
+                border-color: var(--sage);
+                color: #fff;
+            }
+
+            .sort-btn {
+                width: 34px;
+                height: 34px;
+                border-radius: 10px;
+                flex-shrink: 0;
+                border: 1.5px solid var(--border);
+                background: var(--surface);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.15s;
+            }
+            .sort-btn:hover {
+                border-color: var(--sage);
+            }
+            .sort-btn.active {
+                background: var(--sage);
+                border-color: var(--sage);
+            }
+            .sort-btn.active svg {
+                stroke: #fff;
+            }
+
+            /* ── CONTENT ──────────────────────────────── */
+            .content {
+                padding-bottom: 100px;
+            }
+
+            /* Summary strip */
+            .summary {
+                margin: 0 16px;
+                background: var(--surface);
+                border-radius: 16px;
+                overflow: hidden;
+            }
+            .sum-cols {
+                display: flex;
+            }
+            .sum-col {
+                flex: 1;
+                padding: 14px 16px;
+            }
+            .sum-col + .sum-col {
+                border-left: 1px solid var(--border);
+            }
+            .sum-lbl {
+                font-size: 0.64rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: var(--text-3);
+                margin-bottom: 5px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .sum-val {
+                font-family: 'DM Mono', monospace;
+                font-size: 0.88rem;
+                font-weight: 500;
+            }
+
+            /* ── DATE GROUP ───────────────────────────── */
+            .group {
+                margin: 10px 16px 0;
+            }
+
+            /* Day header — the signature element */
+            .day-hdr {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 4px 8px;
+            }
+            .day-left {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .day-label {
+                font-size: 0.78rem;
+                font-weight: 700;
+                color: var(--text-2);
+            }
+            .day-count {
+                font-size: 0.65rem;
+                font-weight: 600;
+                color: var(--text-3);
+                background: var(--border);
+                padding: 2px 7px;
+                border-radius: 9999px;
+            }
+            .day-net {
+                font-family: 'DM Mono', monospace;
+                font-size: 0.78rem;
+                font-weight: 500;
+            }
+
+            /* Group card */
+            .group-card {
+                background: var(--surface);
+                border-radius: 16px;
+                overflow: hidden;
+            }
+
+            /* Transaction row */
+            .txn-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                cursor: pointer;
+                transition: background 0.1s;
+            }
+            .txn-row:hover {
+                background: #f8faf8;
+            }
+            .txn-row + .txn-row {
+                border-top: 1px solid var(--border);
+            }
+
+            .txn-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.1rem;
+                flex-shrink: 0;
+            }
+            .txn-main {
+                flex: 1;
+                min-width: 0;
+            }
+            .txn-name {
+                font-size: 0.875rem;
+                font-weight: 600;
+                color: var(--text-1);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .txn-sub {
+                font-size: 0.72rem;
+                color: var(--text-3);
+                margin-top: 2px;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+            .sub-dot {
+                width: 3px;
+                height: 3px;
+                border-radius: 50%;
+                background: var(--border);
+                flex-shrink: 0;
+            }
+            .txn-right {
+                text-align: right;
+                flex-shrink: 0;
+            }
+            .txn-amt {
+                font-family: 'DM Mono', monospace;
+                font-size: 0.87rem;
+                font-weight: 500;
+            }
+            .txn-acct-lbl {
+                font-size: 0.69rem;
+                color: var(--text-3);
+                margin-top: 2px;
+            }
+
+            .c-income {
+                color: var(--teal);
+            }
+            .c-expense {
+                color: var(--red);
+            }
+            .c-transfer {
+                color: var(--sage);
+            }
+
+            /* Pending badge */
+            .pending-dot {
+                display: inline-block;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--amber);
+                margin-left: 4px;
+                vertical-align: middle;
+            }
+
+            /* ── EMPTY STATE ──────────────────────────── */
+            .empty {
+                text-align: center;
+                padding: 56px 24px;
+                color: var(--text-3);
+            }
+            .empty-icon {
+                font-size: 2.8rem;
+                margin-bottom: 14px;
+            }
+            .empty-title {
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: var(--text-2);
+                margin-bottom: 6px;
+            }
+            .empty-body {
+                font-size: 0.82rem;
+                line-height: 1.6;
+            }
+            .empty-reset {
+                margin-top: 16px;
+                padding: 9px 20px;
+                border-radius: 9999px;
+                background: var(--sage);
+                color: #fff;
+                border: none;
+                cursor: pointer;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.82rem;
+                font-weight: 600;
+            }
+
+            /* ── LOAD MORE ────────────────────────────── */
+            .load-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                width: calc(100% - 32px);
+                margin: 10px 16px 0;
+                padding: 13px;
+                border-radius: 14px;
+                background: var(--surface);
+                border: none;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: var(--sage);
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+            .load-btn:hover {
+                background: var(--sage-lt);
+            }
+            .load-btn:disabled {
+                color: var(--text-3);
+                cursor: default;
+            }
+            .load-btn:disabled:hover {
+                background: var(--surface);
+            }
+
+            /* ── FAB ──────────────────────────────────── */
+            .fab {
+                position: fixed;
+                bottom: 24px;
+                right: 16px;
+                z-index: 30;
+                width: 56px;
+                height: 56px;
+                border-radius: 18px;
+                background: var(--sage);
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 18px rgba(78, 122, 90, 0.42);
+                transition:
+                    transform 0.15s,
+                    box-shadow 0.15s;
+            }
+            .fab:hover {
+                transform: scale(1.06);
+                box-shadow: 0 6px 24px rgba(78, 122, 90, 0.52);
+            }
+
+            /* ── ACTIVE FILTERS BAR ───────────────────── */
+            .active-filters {
+                display: flex;
+                gap: 6px;
+                align-items: center;
+                padding: 0 16px 8px;
+                flex-wrap: wrap;
+            }
+            .af-tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                padding: 4px 10px 4px 12px;
+                border-radius: 9999px;
+                background: var(--sage-lt);
+                color: var(--sage-dk);
+                font-size: 0.72rem;
+                font-weight: 600;
+                cursor: pointer;
+                border: none;
+                font-family: 'DM Sans', sans-serif;
+                transition: background 0.12s;
+            }
+            .af-tag:hover {
+                background: #cde0d5;
+            }
+            .af-tag-x {
+                font-size: 0.8rem;
+                color: var(--sage);
+                line-height: 1;
+            }
+
+            /* ── BOTTOM SHEET ──────────────────────────── */
+            .overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(10, 20, 15, 0.42);
+                z-index: 50;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.25s;
+                backdrop-filter: blur(1.5px);
+            }
+            .overlay.open {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+            .sheet {
+                position: fixed;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%) translateY(calc(100% + 16px));
+                width: 100%;
+                max-width: 430px;
+                background: var(--surface);
+                border-radius: 24px 24px 0 0;
+                z-index: 51;
+                transition: transform 0.3s cubic-bezier(0.3, 0.72, 0, 1);
+                display: flex;
+                flex-direction: column;
+                max-height: 82vh;
+            }
+            .sheet.open {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            .handle {
+                width: 36px;
+                height: 4px;
+                border-radius: 9999px;
+                background: var(--border);
+                margin: 12px auto 4px;
+            }
+            .sheet-hdr {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px 20px 12px;
+                border-bottom: 1px solid var(--border);
+                flex-shrink: 0;
+            }
+            .sheet-title {
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--text-1);
+            }
+            .sheet-close {
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                border: none;
+                background: var(--bg);
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--text-2);
+            }
+            .sheet-body {
+                overflow-y: auto;
+                flex: 1;
+                -webkit-overflow-scrolling: touch;
+            }
+            .sheet-foot {
+                padding: 12px 20px 28px;
+                border-top: 1px solid var(--border);
+                flex-shrink: 0;
+            }
+            .apply-btn {
+                width: 100%;
+                padding: 15px;
+                border-radius: 14px;
+                border: none;
+                background: var(--sage);
+                color: #fff;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.9rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+            .apply-btn:hover {
+                background: var(--sage-dk);
+            }
+
+            /* Option rows */
+            .opt-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 13px 20px;
+                cursor: pointer;
+                transition: background 0.1s;
+                border: none;
+                background: transparent;
+                width: 100%;
+                text-align: left;
+                font-family: 'DM Sans', sans-serif;
+            }
+            .opt-row:hover {
+                background: #f6faf7;
+            }
+            .opt-row.sel-row {
+                background: var(--teal-lt);
+            }
+            .opt-label {
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: var(--text-1);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .opt-sub {
+                font-size: 0.73rem;
+                color: var(--text-3);
+            }
+
+            .radio {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                border: 2px solid var(--border);
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .radio.on {
+                border-color: var(--teal);
+                background: var(--teal);
+            }
+            .radio.on::after {
+                content: '';
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #fff;
+            }
+
+            .checkbox {
+                width: 20px;
+                height: 20px;
+                border-radius: 6px;
+                border: 2px solid var(--border);
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .checkbox.on {
+                border-color: var(--teal);
+                background: var(--teal);
+            }
+            .checkbox.on::after {
+                content: '✓';
+                color: #fff;
+                font-size: 0.72rem;
+                font-weight: 700;
+            }
+
+            /* Account rows in sheet */
+            .acct-opt {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 20px;
+                cursor: pointer;
+                transition: background 0.1s;
+            }
+            .acct-opt:hover {
+                background: #f6faf7;
+            }
+            .acct-opt.sel-row {
+                background: var(--teal-lt);
+            }
+            .acct-chip {
+                width: 38px;
+                height: 38px;
+                border-radius: 11px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.05rem;
+                flex-shrink: 0;
+            }
+
+            /* Category grid in sheet */
+            .cat-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 9px;
+                padding: 12px 20px 16px;
+            }
+            .cat-tile {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+                padding: 13px 6px;
+                border-radius: 14px;
+                border: 1.5px solid var(--border);
+                background: transparent;
+                cursor: pointer;
+                transition: all 0.14s;
+                font-family: 'DM Sans', sans-serif;
+            }
+            .cat-tile:hover {
+                border-color: var(--sage);
+            }
+            .cat-tile.on {
+                border-color: var(--teal);
+                background: var(--teal-lt);
+            }
+            .cat-tile-icon {
+                font-size: 1.3rem;
+            }
+            .cat-tile-name {
+                font-size: 0.67rem;
+                font-weight: 600;
+                color: var(--text-2);
+                text-align: center;
+                line-height: 1.3;
+            }
+            .cat-tile.on .cat-tile-name {
+                color: var(--teal);
+            }
+
+            /* Custom date range */
+            .date-range-row {
+                display: flex;
+                gap: 10px;
+                padding: 4px 20px 16px;
+            }
+            .date-field {
+                flex: 1;
+            }
+            .date-field label {
+                font-size: 0.69rem;
+                font-weight: 700;
+                color: var(--text-3);
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                display: block;
+                margin-bottom: 5px;
+            }
+            .date-field input {
+                width: 100%;
+                padding: 9px 12px;
+                border: 1.5px solid var(--border);
+                border-radius: 10px;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.83rem;
+                color: var(--text-1);
+                outline: none;
+                background: var(--bg);
+            }
+            .date-field input:focus {
+                border-color: var(--teal);
+            }
+
+            /* Type option */
+            .type-icon-pill {
+                width: 28px;
+                height: 28px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.8rem;
+                font-weight: 700;
+            }
+
+            /* Divider in sheet */
+            .sh-div {
+                border-top: 1px solid var(--border);
+                margin: 0 20px;
+            }
+
+            /* Sheet section header */
+            .sh-sec {
+                padding: 12px 20px 6px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .sh-sec-lbl {
+                font-size: 0.65rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: var(--text-3);
+            }
+            .sh-sec-act {
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: var(--teal);
+                background: none;
+                border: none;
+                cursor: pointer;
+                font-family: 'DM Sans', sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ── STICKY HEADER ─────────────────────────────── -->
+        <div class="sticky-hdr shell">
+            <!-- App bar -->
+            <div class="app-bar">
+                <div style="display: flex; align-items: center; gap: 10px">
+                    <div class="avatar-pill">KD</div>
+                    <div>
+                        <p class="page-title">Transaksi</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 7px">
+                    <button class="icon-btn" aria-label="Notifikasi" style="position: relative">
+                        <svg
+                            width="15"
+                            height="15"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--text-2)"
+                            stroke-width="2.2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                        <span
+                            style="
+                                position: absolute;
+                                top: 7px;
+                                right: 8px;
+                                width: 6px;
+                                height: 6px;
+                                border-radius: 50%;
+                                background: var(--red);
+                                border: 1.5px solid var(--bg);
+                            "></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search bar -->
+            <div class="search-wrap">
+                <div class="search-inner">
+                    <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="var(--text-3)"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input
+                        class="search-input"
+                        type="text"
+                        id="search-inp"
+                        placeholder="Cari transaksi atau merchant…"
+                        oninput="onSearch(this.value)" />
+                    <button class="search-clear" id="search-clr" onclick="clearSearch()">×</button>
+                </div>
+            </div>
+
+            <!-- Filter chips -->
+            <div class="filter-row">
+                <div class="chips-track">
+                    <button class="chip active" id="chip-period" onclick="openSheet('period')">
+                        <svg
+                            width="10"
+                            height="10"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        <span id="lbl-period">Jun 2025</span>
+                        <svg
+                            width="8"
+                            height="8"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </button>
+                    <button class="chip" id="chip-account" onclick="openSheet('account')">
+                        <svg
+                            width="10"
+                            height="10"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="2" />
+                            <line x1="2" y1="10" x2="22" y2="10" />
+                        </svg>
+                        <span id="lbl-account">Semua Akun</span>
+                        <svg
+                            width="8"
+                            height="8"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </button>
+                    <button class="chip" id="chip-category" onclick="openSheet('category')">
+                        <svg
+                            width="10"
+                            height="10"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path
+                                d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                            <line x1="7" y1="7" x2="7.01" y2="7" />
+                        </svg>
+                        <span id="lbl-category">Semua Kategori</span>
+                        <svg
+                            width="8"
+                            height="8"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </button>
+                    <button class="chip" id="chip-type" onclick="openSheet('type')">
+                        <svg
+                            width="10"
+                            height="10"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <polyline points="17 1 21 5 17 9" />
+                            <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                            <polyline points="7 23 3 19 7 15" />
+                            <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                        </svg>
+                        <span id="lbl-type">Semua Tipe</span>
+                        <svg
+                            width="8"
+                            height="8"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </button>
+                </div>
+                <button
+                    class="sort-btn"
+                    id="sort-btn"
+                    onclick="openSheet('sort')"
+                    aria-label="Urutkan">
+                    <svg
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="var(--text-2)"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        id="sort-icon">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="15" y2="12" />
+                        <line x1="3" y1="18" x2="10" y2="18" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Active filter tags (shown when non-default filters are active) -->
+            <div class="active-filters" id="af-bar" style="display: none"></div>
+        </div>
+        <!-- /sticky-hdr -->
+
+        <!-- ── MAIN CONTENT ───────────────────────────────── -->
+        <div class="content shell">
+            <!-- Summary strip -->
+            <div class="summary">
+                <div class="sum-cols">
+                    <div class="sum-col">
+                        <div class="sum-lbl"><span style="color: var(--teal)">↑</span> Masuk</div>
+                        <div class="sum-val c-income" id="sum-in">—</div>
+                    </div>
+                    <div class="sum-col">
+                        <div class="sum-lbl"><span style="color: var(--red)">↓</span> Keluar</div>
+                        <div class="sum-val c-expense" id="sum-out">—</div>
+                    </div>
+                    <div class="sum-col">
+                        <div class="sum-lbl">↕ Net</div>
+                        <div class="sum-val" id="sum-net">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction list -->
+            <div id="txn-list"></div>
+
+            <!-- Load more -->
+            <button class="load-btn" id="load-btn" onclick="loadMore()">
+                <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+                Muat lebih banyak
+            </button>
+        </div>
+        <!-- /content -->
+
+        <!-- FAB -->
+        <button class="fab" aria-label="Tambah transaksi">
+            <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#fff"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+        </button>
+
+        <!-- ── BOTTOM SHEET ───────────────────────────────── -->
+        <div class="overlay" id="overlay" onclick="closeSheet()"></div>
+        <div class="sheet" id="sheet">
+            <div class="handle"></div>
+            <div class="sheet-hdr">
+                <span class="sheet-title" id="sheet-title">Filter</span>
+                <button class="sheet-close" onclick="closeSheet()">
+                    <svg
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+            <div class="sheet-body" id="sheet-body"></div>
+            <div class="sheet-foot">
+                <button class="apply-btn" onclick="applyFilter()">Terapkan Filter</button>
+            </div>
+        </div>
+
+        <!-- ── SCRIPT ─────────────────────────────────────── -->
+        <script>
+            /* ═══════════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════════ */
+            const TRANSACTIONS = [
+                {
+                    id: 1,
+                    date: '2025-06-23',
+                    merchant: 'Warteg Bu Sri',
+                    cat: 'Makanan & Minuman',
+                    icon: '🍜',
+                    bg: '#FFF5E6',
+                    acct: 'BCA Tabungan',
+                    acctIcon: '🏦',
+                    type: 'expense',
+                    amount: 258000,
+                    pending: false,
+                },
+                {
+                    id: 2,
+                    date: '2025-06-23',
+                    merchant: 'Kopi Kenangan Kemang',
+                    cat: 'Makanan & Minuman',
+                    icon: '☕',
+                    bg: '#FFF0E6',
+                    acct: 'GoPay',
+                    acctIcon: '💚',
+                    type: 'expense',
+                    amount: 45000,
+                    pending: false,
+                },
+                {
+                    id: 3,
+                    date: '2025-06-21',
+                    merchant: 'Gaji Juni 2025',
+                    cat: 'Gaji & Pendapatan',
+                    icon: '💼',
+                    bg: '#E3F5F2',
+                    acct: 'BCA Tabungan',
+                    acctIcon: '🏦',
+                    type: 'income',
+                    amount: 5000000,
+                    pending: false,
+                },
+                {
+                    id: 4,
+                    date: '2025-06-20',
+                    merchant: 'Transfer ke GoPay',
+                    cat: 'Transfer',
+                    icon: '🔄',
+                    bg: '#DDE9E1',
+                    acct: 'BCA Tabungan',
+                    acctIcon: '🏦',
+                    type: 'transfer',
+                    amount: 1000000,
+                    pending: false,
+                },
+                {
+                    id: 5,
+                    date: '2025-06-20',
+                    merchant: 'Indomaret Kemang Raya',
+                    cat: 'Belanja',
+                    icon: '🛒',
+                    bg: '#F0EAF8',
+                    acct: 'GoPay',
+                    acctIcon: '💚',
+                    type: 'expense',
+                    amount: 127500,
+                    pending: false,
+                },
+                {
+                    id: 6,
+                    date: '2025-06-19',
+                    merchant: 'Gojek',
+                    cat: 'Transport',
+                    icon: '🛵',
+                    bg: '#FFF5E6',
+                    acct: 'GoPay',
+                    acctIcon: '💚',
+                    type: 'expense',
+                    amount: 35000,
+                    pending: false,
+                },
+                {
+                    id: 7,
+                    date: '2025-06-19',
+                    merchant: 'KFC Kemang Village',
+                    cat: 'Makanan & Minuman',
+                    icon: '🍗',
+                    bg: '#FFF5E6',
+                    acct: 'BCA Kredit',
+                    acctIcon: '💳',
+                    type: 'expense',
+                    amount: 89000,
+                    pending: false,
+                },
+                {
+                    id: 8,
+                    date: '2025-06-19',
+                    merchant: 'Spotify Premium',
+                    cat: 'Hiburan',
+                    icon: '🎵',
+                    bg: '#F0EAF8',
+                    acct: 'BCA Kredit',
+                    acctIcon: '💳',
+                    type: 'expense',
+                    amount: 69000,
+                    pending: false,
+                },
+                {
+                    id: 9,
+                    date: '2025-06-15',
+                    merchant: 'Sewa Kos Juni',
+                    cat: 'Hunian',
+                    icon: '🏠',
+                    bg: '#E3F5F2',
+                    acct: 'BCA Tabungan',
+                    acctIcon: '🏦',
+                    type: 'expense',
+                    amount: 1500000,
+                    pending: false,
+                },
+                {
+                    id: 10,
+                    date: '2025-06-14',
+                    merchant: 'Grab Food',
+                    cat: 'Makanan & Minuman',
+                    icon: '🍱',
+                    bg: '#FFF5E6',
+                    acct: 'GoPay',
+                    acctIcon: '💚',
+                    type: 'expense',
+                    amount: 58000,
+                    pending: false,
+                },
+                {
+                    id: 11,
+                    date: '2025-06-12',
+                    merchant: 'Tokopedia – Sepatu Lari',
+                    cat: 'Belanja',
+                    icon: '📦',
+                    bg: '#F0EAF8',
+                    acct: 'BCA Kredit',
+                    acctIcon: '💳',
+                    type: 'expense',
+                    amount: 345000,
+                    pending: true,
+                },
+                {
+                    id: 12,
+                    date: '2025-06-10',
+                    merchant: 'Freelance – UI Project',
+                    cat: 'Pendapatan Lain',
+                    icon: '💻',
+                    bg: '#E3F5F2',
+                    acct: 'BCA Tabungan',
+                    acctIcon: '🏦',
+                    type: 'income',
+                    amount: 2500000,
+                    pending: false,
+                },
+                {
+                    id: 13,
+                    date: '2025-06-08',
+                    merchant: 'Alfamart Cilandak',
+                    cat: 'Belanja',
+                    icon: '🛒',
+                    bg: '#F0EAF8',
+                    acct: 'Kas',
+                    acctIcon: '💵',
+                    type: 'expense',
+                    amount: 57500,
+                    pending: false,
+                },
+                {
+                    id: 14,
+                    date: '2025-06-05',
+                    merchant: 'PLN Prepaid Token',
+                    cat: 'Utilitas',
+                    icon: '⚡',
+                    bg: '#FBF4E3',
+                    acct: 'GoPay',
+                    acctIcon: '💚',
+                    type: 'expense',
+                    amount: 200000,
+                    pending: false,
+                },
+                {
+                    id: 15,
+                    date: '2025-06-03',
+                    merchant: 'Netflix Indonesia',
+                    cat: 'Hiburan',
+                    icon: '🎬',
+                    bg: '#F0EAF8',
+                    acct: 'BCA Kredit',
+                    acctIcon: '💳',
+                    type: 'expense',
+                    amount: 186000,
+                    pending: false,
+                },
+                {
+                    id: 16,
+                    date: '2025-06-02',
+                    merchant: 'MRT Jakarta',
+                    cat: 'Transport',
+                    icon: '🚇',
+                    bg: '#FFF5E6',
+                    acct: 'GoPay',
+                    acctIcon: '💚',
+                    type: 'expense',
+                    amount: 14000,
+                    pending: false,
+                },
+                {
+                    id: 17,
+                    date: '2025-06-01',
+                    merchant: 'Gofood – Nasi Padang',
+                    cat: 'Makanan & Minuman',
+                    icon: '🍛',
+                    bg: '#FFF5E6',
+                    acct: 'GoPay',
+                    acctIcon: '💚',
+                    type: 'expense',
+                    amount: 42000,
+                    pending: false,
+                },
+            ];
+
+            const ACCT_DATA = [
+                { name: 'BCA Tabungan', icon: '🏦', bg: '#E3F5F2', bal: 'Rp 4.742.000' },
+                { name: 'GoPay', icon: '💚', bg: '#DDE9E1', bal: 'Rp 1.258.000' },
+                { name: 'Kas', icon: '💵', bg: '#FBF4E3', bal: 'Rp 350.000' },
+                { name: 'BCA Kredit', icon: '💳', bg: '#F0EAF8', bal: 'Rp 3.250.000' },
+            ];
+
+            const CAT_DATA = [
+                { name: 'Makanan & Minuman', icon: '🍜', bg: '#FFF5E6' },
+                { name: 'Transport', icon: '🛵', bg: '#FFF5E6' },
+                { name: 'Belanja', icon: '🛒', bg: '#F0EAF8' },
+                { name: 'Hiburan', icon: '🎵', bg: '#F0EAF8' },
+                { name: 'Hunian', icon: '🏠', bg: '#E3F5F2' },
+                { name: 'Gaji & Pendapatan', icon: '💼', bg: '#E3F5F2' },
+                { name: 'Pendapatan Lain', icon: '💻', bg: '#E3F5F2' },
+                { name: 'Utilitas', icon: '⚡', bg: '#FBF4E3' },
+                { name: 'Transfer', icon: '🔄', bg: '#DDE9E1' },
+            ];
+
+            const PERIOD_DATA = [
+                { id: 'today', label: 'Hari ini', chip: 'Hari ini' },
+                { id: 'week', label: 'Minggu ini', chip: 'Minggu ini' },
+                { id: 'month', label: 'Bulan ini', chip: 'Jun 2025' },
+                { id: '3month', label: '3 Bulan Terakhir', chip: '3 Bulan' },
+                { id: 'year', label: 'Tahun ini', chip: '2025' },
+                { id: 'custom', label: 'Rentang Khusus…', chip: 'Kustom' },
+            ];
+
+            const SORT_DATA = [
+                { id: 'newest', label: 'Terbaru dulu' },
+                { id: 'oldest', label: 'Terlama dulu' },
+                { id: 'highest', label: 'Nominal terbesar' },
+                { id: 'lowest', label: 'Nominal terkecil' },
+            ];
+
+            const TYPE_DATA = [
+                {
+                    id: 'expense',
+                    label: 'Pengeluaran',
+                    icon: '↓',
+                    color: 'var(--red)',
+                    bg: 'var(--red-lt)',
+                },
+                {
+                    id: 'income',
+                    label: 'Pemasukan',
+                    icon: '↑',
+                    color: 'var(--teal)',
+                    bg: 'var(--teal-lt)',
+                },
+                {
+                    id: 'transfer',
+                    label: 'Transfer',
+                    icon: '↔',
+                    color: 'var(--sage)',
+                    bg: 'var(--sage-lt)',
+                },
+            ];
+
+            /* ═══════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════ */
+            let S = {
+                period: 'month',
+                accounts: [],
+                categories: [],
+                types: [],
+                sort: 'newest',
+                search: '',
+                // temp (while sheet open)
+                tPeriod: 'month',
+                tAccounts: [],
+                tCategories: [],
+                tTypes: [],
+                tSort: 'newest',
+                sheetKind: null,
+            };
+
+            /* ═══════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════ */
+            const fmt = (n) => 'Rp\u202f' + n.toLocaleString('id-ID');
+
+            function fmtDay(ds) {
+                const d = new Date(ds + 'T00:00:00');
+                const dd = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+                const mm = [
+                    'Jan',
+                    'Feb',
+                    'Mar',
+                    'Apr',
+                    'Mei',
+                    'Jun',
+                    'Jul',
+                    'Agu',
+                    'Sep',
+                    'Okt',
+                    'Nov',
+                    'Des',
+                ];
+                return `${dd[d.getDay()]}, ${d.getDate()} ${mm[d.getMonth()]}`;
+            }
+
+            /* ═══════════════════════════════════════════════════
+   FILTER & RENDER
+═══════════════════════════════════════════════════ */
+            function applyFilters() {
+                let list = [...TRANSACTIONS];
+                const q = S.search.trim().toLowerCase();
+                if (q)
+                    list = list.filter(
+                        (t) =>
+                            t.merchant.toLowerCase().includes(q) ||
+                            t.cat.toLowerCase().includes(q) ||
+                            t.acct.toLowerCase().includes(q)
+                    );
+                if (S.accounts.length) list = list.filter((t) => S.accounts.includes(t.acct));
+                if (S.categories.length) list = list.filter((t) => S.categories.includes(t.cat));
+                if (S.types.length) list = list.filter((t) => S.types.includes(t.type));
+
+                // Sort
+                list.sort((a, b) => {
+                    if (S.sort === 'newest') return b.date.localeCompare(a.date) || b.id - a.id;
+                    if (S.sort === 'oldest') return a.date.localeCompare(b.date) || a.id - b.id;
+                    if (S.sort === 'highest') return b.amount - a.amount;
+                    if (S.sort === 'lowest') return a.amount - b.amount;
+                    return 0;
+                });
+                return list;
+            }
+
+            function groupByDate(list) {
+                const map = {};
+                list.forEach((t) => {
+                    (map[t.date] = map[t.date] || []).push(t);
+                });
+                const dates = Object.keys(map);
+                if (S.sort === 'oldest') dates.sort();
+                else dates.sort().reverse();
+                return dates.map((d) => [d, map[d]]);
+            }
+
+            function render() {
+                const list = applyFilters();
+                const groups = groupByDate(list);
+                const el = document.getElementById('txn-list');
+
+                // Recompute summary (exclude transfers from net)
+                let sumIn = 0,
+                    sumOut = 0;
+                list.forEach((t) => {
+                    if (t.type === 'income') sumIn += t.amount;
+                    if (t.type === 'expense') sumOut += t.amount;
+                });
+                const net = sumIn - sumOut;
+                document.getElementById('sum-in').textContent = sumIn ? fmt(sumIn) : '—';
+                document.getElementById('sum-out').textContent = sumOut ? fmt(sumOut) : '—';
+                const netEl = document.getElementById('sum-net');
+                netEl.textContent = net ? (net > 0 ? '+' : '−') + fmt(Math.abs(net)) : '—';
+                netEl.className = 'sum-val ' + (net >= 0 ? 'c-income' : 'c-expense');
+
+                // Load more btn
+                document.getElementById('load-btn').style.display = list.length ? 'flex' : 'none';
+
+                if (!list.length) {
+                    el.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">🔍</div>
+        <p class="empty-title">Tidak ada transaksi</p>
+        <p class="empty-body">Tidak ada transaksi yang cocok<br>dengan filter yang dipilih.</p>
+        <button class="empty-reset" onclick="resetAll()">Reset semua filter</button>
+      </div>`;
+                    return;
+                }
+
+                el.innerHTML = groups
+                    .map(([date, txns]) => {
+                        // Day net (income − expense, ignore transfer)
+                        const dayNet = txns.reduce(
+                            (s, t) =>
+                                t.type === 'income'
+                                    ? s + t.amount
+                                    : t.type === 'expense'
+                                      ? s - t.amount
+                                      : s,
+                            0
+                        );
+                        const netColor =
+                            dayNet > 0
+                                ? 'var(--teal)'
+                                : dayNet < 0
+                                  ? 'var(--red)'
+                                  : 'var(--text-3)';
+                        const netSign = dayNet > 0 ? '+' : dayNet < 0 ? '−' : '';
+
+                        const rows = txns
+                            .map((t) => {
+                                const amtClass =
+                                    t.type === 'income'
+                                        ? 'c-income'
+                                        : t.type === 'transfer'
+                                          ? 'c-transfer'
+                                          : 'c-expense';
+                                const amtSign =
+                                    t.type === 'income'
+                                        ? '+'
+                                        : t.type === 'transfer'
+                                          ? '↔\u00a0'
+                                          : '−';
+                                return `
+        <div class="txn-row" onclick="goTxn(${t.id})" role="button" tabindex="0">
+          <div class="txn-icon" style="background:${t.bg};">${t.icon}</div>
+          <div class="txn-main">
+            <div class="txn-name">${t.merchant}${t.pending ? '<span class="pending-dot" title="Pending"></span>' : ''}</div>
+            <div class="txn-sub">
+              <span>${t.cat}</span>
+              <span class="sub-dot"></span>
+              <span>${t.acctIcon} ${t.acct}</span>
+            </div>
+          </div>
+          <div class="txn-right">
+            <div class="txn-amt ${amtClass}">${amtSign}${fmt(t.amount)}</div>
+          </div>
+        </div>`;
+                            })
+                            .join('');
+
+                        return `
+      <div class="group">
+        <div class="day-hdr">
+          <div class="day-left">
+            <span class="day-label">${fmtDay(date)}</span>
+            <span class="day-count">${txns.length} transaksi</span>
+          </div>
+          <span class="day-net" style="color:${netColor};">
+            ${netSign}${fmt(Math.abs(dayNet))}
+          </span>
+        </div>
+        <div class="group-card">${rows}</div>
+      </div>`;
+                    })
+                    .join('');
+            }
+
+            /* ═══════════════════════════════════════════════════
+   CHIPS + ACTIVE FILTER BAR
+═══════════════════════════════════════════════════ */
+            function updateChips() {
+                // Period chip (always "active" styled)
+                document.getElementById('chip-period').className = 'chip active';
+                const p = PERIOD_DATA.find((x) => x.id === S.period);
+                document.getElementById('lbl-period').textContent = p?.chip || 'Periode';
+
+                // Account chip
+                const ac = document.getElementById('chip-account');
+                const an = S.accounts.length;
+                document.getElementById('lbl-account').textContent =
+                    an === 0 ? 'Semua Akun' : an === 1 ? S.accounts[0] : `${an} Akun`;
+                ac.className = 'chip' + (an > 0 ? ' active' : '');
+
+                // Category chip
+                const cc = document.getElementById('chip-category');
+                const cn = S.categories.length;
+                document.getElementById('lbl-category').textContent =
+                    cn === 0 ? 'Semua Kategori' : cn === 1 ? S.categories[0] : `${cn} Kategori`;
+                cc.className = 'chip' + (cn > 0 ? ' active' : '');
+
+                // Type chip
+                const tc = document.getElementById('chip-type');
+                const tn = S.types.length;
+                document.getElementById('lbl-type').textContent =
+                    tn === 0
+                        ? 'Semua Tipe'
+                        : tn === 1
+                          ? TYPE_DATA.find((x) => x.id === S.types[0])?.label
+                          : `${tn} Tipe`;
+                tc.className = 'chip' + (tn > 0 ? ' active' : '');
+
+                // Sort button
+                const sb = document.getElementById('sort-btn');
+                sb.classList.toggle('active', S.sort !== 'newest');
+                document.getElementById('sort-icon').style.stroke =
+                    S.sort !== 'newest' ? '#fff' : 'var(--text-2)';
+
+                // Active filters bar
+                buildAFBar();
+            }
+
+            function buildAFBar() {
+                const bar = document.getElementById('af-bar');
+                const tags = [];
+                if (S.accounts.length)
+                    S.accounts.forEach((a) =>
+                        tags.push({
+                            label: a,
+                            clear: () => {
+                                S.accounts = S.accounts.filter((x) => x !== a);
+                                refresh();
+                            },
+                        })
+                    );
+                if (S.categories.length)
+                    S.categories.forEach((c) =>
+                        tags.push({
+                            label: c,
+                            clear: () => {
+                                S.categories = S.categories.filter((x) => x !== c);
+                                refresh();
+                            },
+                        })
+                    );
+                if (S.types.length)
+                    S.types.forEach((t) =>
+                        tags.push({
+                            label: TYPE_DATA.find((x) => x.id === t)?.label,
+                            clear: () => {
+                                S.types = S.types.filter((x) => x !== t);
+                                refresh();
+                            },
+                        })
+                    );
+                if (S.sort !== 'newest')
+                    tags.push({
+                        label: '↕ ' + SORT_DATA.find((x) => x.id === S.sort)?.label,
+                        clear: () => {
+                            S.sort = 'newest';
+                            refresh();
+                        },
+                    });
+
+                if (!tags.length) {
+                    bar.style.display = 'none';
+                    return;
+                }
+                bar.style.display = 'flex';
+                bar.innerHTML = tags
+                    .map(
+                        (t, i) =>
+                            `<button class="af-tag" onclick="tagClear(${i})"><span>${t.label}</span><span class="af-tag-x">×</span></button>`
+                    )
+                    .join('');
+                bar._tagFns = tags.map((t) => t.clear);
+            }
+
+            function tagClear(i) {
+                document.getElementById('af-bar')._tagFns[i]();
+            }
+
+            function refresh() {
+                updateChips();
+                render();
+            }
+
+            /* ═══════════════════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════════════════ */
+            let debounce;
+            function onSearch(val) {
+                S.search = val;
+                document.getElementById('search-clr').style.display = val ? 'block' : 'none';
+                clearTimeout(debounce);
+                debounce = setTimeout(render, 180);
+            }
+            function clearSearch() {
+                document.getElementById('search-inp').value = '';
+                onSearch('');
+                document.getElementById('search-inp').focus();
+            }
+
+            /* ═══════════════════════════════════════════════════
+   BOTTOM SHEET
+═══════════════════════════════════════════════════ */
+            function openSheet(kind) {
+                S.sheetKind = kind;
+                S.tPeriod = S.period;
+                S.tAccounts = [...S.accounts];
+                S.tCategories = [...S.categories];
+                S.tTypes = [...S.types];
+                S.tSort = S.sort;
+
+                const titles = {
+                    period: 'Periode',
+                    account: 'Akun',
+                    category: 'Kategori',
+                    type: 'Tipe Transaksi',
+                    sort: 'Urutkan',
+                };
+                document.getElementById('sheet-title').textContent = titles[kind];
+                document.getElementById('sheet-body').innerHTML = buildContent(kind);
+                document.getElementById('overlay').classList.add('open');
+                requestAnimationFrame(() => document.getElementById('sheet').classList.add('open'));
+            }
+
+            function closeSheet() {
+                document.getElementById('sheet').classList.remove('open');
+                document.getElementById('overlay').classList.remove('open');
+            }
+
+            function buildContent(kind) {
+                /* ── PERIOD ── */
+                if (kind === 'period') {
+                    return PERIOD_DATA.map(
+                        (p) => `
+      <button class="opt-row ${S.tPeriod === p.id ? 'sel-row' : ''}" onclick="pickPeriod('${p.id}',this)">
+        <span class="opt-label">${p.label}</span>
+        <div class="radio ${S.tPeriod === p.id ? 'on' : ''}"></div>
+      </button>
+      ${
+          p.id === 'custom'
+              ? `
+        <div id="cr-wrap" style="display:${S.tPeriod === 'custom' ? 'flex' : 'none'};" class="date-range-row">
+          <div class="date-field"><label>Dari</label><input type="date" id="cr-from" /></div>
+          <div class="date-field"><label>Sampai</label><input type="date" id="cr-to" /></div>
+        </div>`
+              : ''
+      }
+    `
+                    ).join('');
+                }
+
+                /* ── ACCOUNT ── */
+                if (kind === 'account') {
+                    const allOn = S.tAccounts.length === 0;
+                    return `
+      <button class="acct-opt ${allOn ? 'sel-row' : ''}" onclick="toggleAcct('__all__')">
+        <div class="acct-chip" style="background:var(--sage-lt);font-size:0.72rem;font-weight:700;color:var(--sage);">ALL</div>
+        <div style="flex:1;">
+          <div style="font-size:0.875rem;font-weight:600;color:var(--text-1);">Semua Akun</div>
+        </div>
+        <div class="checkbox ${allOn ? 'on' : ''}"></div>
+      </button>
+      <div class="sh-div"></div>
+      ${ACCT_DATA.map((a) => {
+          const on = S.tAccounts.includes(a.name);
+          return `
+          <button class="acct-opt ${on ? 'sel-row' : ''}" onclick="toggleAcct('${a.name}')">
+            <div class="acct-chip" style="background:${a.bg};">${a.icon}</div>
+            <div style="flex:1;">
+              <div style="font-size:0.875rem;font-weight:600;color:var(--text-1);margin-bottom:2px;">${a.name}</div>
+              <div style="font-size:0.72rem;color:var(--text-3);font-family:'DM Mono',monospace;">${a.bal}</div>
+            </div>
+            <div class="checkbox ${on ? 'on' : ''}"></div>
+          </button>`;
+      }).join('')}`;
+                }
+
+                /* ── CATEGORY ── */
+                if (kind === 'category') {
+                    return `
+      <div class="sh-sec">
+        <span class="sh-sec-lbl" id="cat-count-lbl">${S.tCategories.length ? S.tCategories.length + ' dipilih' : 'Semua kategori'}</span>
+        <button class="sh-sec-act" onclick="resetCats()">Reset</button>
+      </div>
+      <div class="cat-grid">
+        ${CAT_DATA.map(
+            (c) => `
+          <button class="cat-tile ${S.tCategories.includes(c.name) ? 'on' : ''}" onclick="toggleCat('${c.name}',this)">
+            <span class="cat-tile-icon">${c.icon}</span>
+            <span class="cat-tile-name">${c.name}</span>
+          </button>`
+        ).join('')}
+      </div>`;
+                }
+
+                /* ── TYPE ── */
+                if (kind === 'type') {
+                    const allOn = S.tTypes.length === 0;
+                    return `
+      <button class="opt-row ${allOn ? 'sel-row' : ''}" onclick="toggleTypeAll()">
+        <span class="opt-label">Semua Tipe</span>
+        <div class="radio ${allOn ? 'on' : ''}"></div>
+      </button>
+      <div class="sh-div"></div>
+      ${TYPE_DATA.map((t) => {
+          const on = S.tTypes.includes(t.id);
+          return `
+          <button class="opt-row ${on ? 'sel-row' : ''}" onclick="toggleType('${t.id}')">
+            <span class="opt-label">
+              <span class="type-icon-pill" style="background:${t.bg};color:${t.color};">${t.icon}</span>
+              ${t.label}
+            </span>
+            <div class="checkbox ${on ? 'on' : ''}"></div>
+          </button>`;
+      }).join('')}`;
+                }
+
+                /* ── SORT ── */
+                if (kind === 'sort') {
+                    return SORT_DATA.map(
+                        (s) => `
+      <button class="opt-row ${S.tSort === s.id ? 'sel-row' : ''}" onclick="pickSort('${s.id}',this)">
+        <span class="opt-label">${s.label}</span>
+        <div class="radio ${S.tSort === s.id ? 'on' : ''}"></div>
+      </button>`
+                    ).join('');
+                }
+
+                return '';
+            }
+
+            /* ── Sheet interaction handlers ── */
+            function pickPeriod(id, row) {
+                S.tPeriod = id;
+                document.querySelectorAll('#sheet-body .opt-row').forEach((r) => {
+                    r.classList.remove('sel-row');
+                    r.querySelector('.radio')?.classList.remove('on');
+                });
+                row.classList.add('sel-row');
+                row.querySelector('.radio').classList.add('on');
+                const cr = document.getElementById('cr-wrap');
+                if (cr) cr.style.display = id === 'custom' ? 'flex' : 'none';
+            }
+
+            function toggleAcct(name) {
+                if (name === '__all__') {
+                    S.tAccounts = [];
+                } else {
+                    const i = S.tAccounts.indexOf(name);
+                    i >= 0 ? S.tAccounts.splice(i, 1) : S.tAccounts.push(name);
+                }
+                document.getElementById('sheet-body').innerHTML = buildContent('account');
+            }
+
+            function toggleCat(name, btn) {
+                const i = S.tCategories.indexOf(name);
+                i >= 0 ? S.tCategories.splice(i, 1) : S.tCategories.push(name);
+                btn.classList.toggle('on');
+                const lbl = document.getElementById('cat-count-lbl');
+                if (lbl)
+                    lbl.textContent = S.tCategories.length
+                        ? S.tCategories.length + ' dipilih'
+                        : 'Semua kategori';
+            }
+
+            function resetCats() {
+                S.tCategories = [];
+                document.getElementById('sheet-body').innerHTML = buildContent('category');
+            }
+
+            function toggleTypeAll() {
+                S.tTypes = [];
+                document.getElementById('sheet-body').innerHTML = buildContent('type');
+            }
+
+            function toggleType(id) {
+                const i = S.tTypes.indexOf(id);
+                i >= 0 ? S.tTypes.splice(i, 1) : S.tTypes.push(id);
+                document.getElementById('sheet-body').innerHTML = buildContent('type');
+            }
+
+            function pickSort(id, row) {
+                S.tSort = id;
+                document.querySelectorAll('#sheet-body .opt-row').forEach((r) => {
+                    r.classList.remove('sel-row');
+                    r.querySelector('.radio')?.classList.remove('on');
+                });
+                row.classList.add('sel-row');
+                row.querySelector('.radio').classList.add('on');
+            }
+
+            /* ── Apply ── */
+            function applyFilter() {
+                S.period = S.tPeriod;
+                S.accounts = [...S.tAccounts];
+                S.categories = [...S.tCategories];
+                S.types = [...S.tTypes];
+                S.sort = S.tSort;
+                closeSheet();
+                refresh();
+            }
+
+            /* ═══════════════════════════════════════════════════
+   MISC
+═══════════════════════════════════════════════════ */
+            function resetAll() {
+                S.period = 'month';
+                S.accounts = [];
+                S.categories = [];
+                S.types = [];
+                S.sort = 'newest';
+                S.search = '';
+                document.getElementById('search-inp').value = '';
+                document.getElementById('search-clr').style.display = 'none';
+                refresh();
+            }
+
+            function goTxn(id) {
+                /* navigate to detail */
+            }
+
+            function loadMore() {
+                const btn = document.getElementById('load-btn');
+                btn.textContent = 'Semua transaksi sudah ditampilkan';
+                btn.disabled = true;
+            }
+
+            /* ── Init ── */
+            refresh();
+        </script>
+    </body>
+</html>

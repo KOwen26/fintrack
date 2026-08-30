@@ -9,11 +9,13 @@
 
     const getSystemPreference = (): 'light' | 'dark' => {
         if (typeof window === 'undefined') return 'light';
+
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     };
 
     const getSavedTheme = (): Theme => {
         if (typeof window === 'undefined') return 'system';
+
         return (localStorage.getItem('theme') as Theme | null) ?? 'system';
     };
 
@@ -38,18 +40,18 @@
 
         <div class="mt-4 flex gap-3">
             <Button
-                variant={currentTheme === 'light' ? 'solid' : 'outline'}
-                onclick={() => (currentTheme = 'light')}>
+                onclick={() => (currentTheme = 'light')}
+                variant={currentTheme === 'light' ? 'solid' : 'outline'}>
                 Light
             </Button>
             <Button
-                variant={currentTheme === 'dark' ? 'solid' : 'outline'}
-                onclick={() => (currentTheme = 'dark')}>
+                onclick={() => (currentTheme = 'dark')}
+                variant={currentTheme === 'dark' ? 'solid' : 'outline'}>
                 Dark
             </Button>
             <Button
-                variant={currentTheme === 'system' ? 'solid' : 'outline'}
-                onclick={() => (currentTheme = 'system')}>
+                onclick={() => (currentTheme = 'system')}
+                variant={currentTheme === 'system' ? 'solid' : 'outline'}>
                 System
             </Button>
         </div>

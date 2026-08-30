@@ -41,7 +41,7 @@
         color = 'light',
         variant = 'solid',
         shape = 'rounded',
-        class: className,
+        class: _class,
         children,
         ...props
     }: BadgeProps = $props();
@@ -72,11 +72,11 @@
             variant === 'outline-dash' ? 'badge-dash' : '',
             variant === 'soft' ? 'badge-soft' : '',
             shapesClass[shape],
-            props.class
+            _class
         )
     );
 </script>
 
-<span bind:this={ref} class={badgeClass} data-slot="badge" {...props}>
+<span bind:this={ref} data-slot="badge" class={badgeClass} {...props}>
     {@render children?.()}
 </span>

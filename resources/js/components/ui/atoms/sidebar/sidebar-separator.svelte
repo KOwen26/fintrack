@@ -7,8 +7,8 @@
 </script>
 
 <Separator.Root
+    data-slot="sidebar-separator"
     class={cn('bg-sidebar-border', className)}
     data-sidebar="separator"
-    data-slot="sidebar-separator"
     bind:ref
     {...restProps} />

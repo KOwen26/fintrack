@@ -15,6 +15,7 @@ import type { ComponentProps } from 'svelte';
 
 import { renderComponent } from './render-helper';
 
+import { useHttp } from '@inertiajs/svelte';
 import {
     createTable,
     getCoreRowModel,
@@ -22,7 +23,6 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
 } from '@tanstack/table-core';
-import axios from 'axios';
 import { SvelteSet, SvelteURLSearchParams } from 'svelte/reactivity';
 
 import DatatableRowAction from '@components/ui/tables/datatable-row-action.svelte';
@@ -258,15 +258,9 @@ export class DataTable<TData extends RowData> {
 
             console.info('Fetch Datatable API', { url });
 
-            axios
-                .get<DataTableServerResponse<TData>>(url, {
-                    headers: {
-                        Accept: 'application/json',
-                    },
-                })
-                .then((response) => {
-                    return response.data;
-                })
+            const http = useHttp<Record<string, never>, DataTableServerResponse<TData>>();
+
+            http.get(url)
                 .then((result) => {
                     this.table_rows = result.data;
 

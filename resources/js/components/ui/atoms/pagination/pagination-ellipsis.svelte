@@ -13,9 +13,9 @@
 
 <span
     bind:this={ref}
+    data-slot="pagination-ellipsis"
     class={cn('flex size-9 items-center justify-center', className)}
     aria-hidden="true"
-    data-slot="pagination-ellipsis"
     {...restProps}>
     <i class="iconify ph--dots-three-duotone size-4"></i>
     <span class="sr-only">More pages</span>

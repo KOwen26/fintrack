@@ -1,5 +1,7 @@
 <?php
 
+use App\Helpers\TypeScript\Writers\TypeDefinitionWriter as AppTypeDefinitionWriter;
+use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Spatie\LaravelTypeScriptTransformer\Transformers\DtoTransformer;
@@ -8,7 +10,6 @@ use Spatie\TypeScriptTransformer\Collectors\DefaultCollector;
 use Spatie\TypeScriptTransformer\Collectors\EnumCollector;
 use Spatie\TypeScriptTransformer\Formatters\PrettierFormatter;
 use Spatie\TypeScriptTransformer\Transformers\EnumTransformer;
-use Spatie\TypeScriptTransformer\Writers\TypeDefinitionWriter;
 
 return [
     /*
@@ -17,7 +18,8 @@ return [
      */
 
     'auto_discover_types' => [
-        app_path(),
+        app_path('Data'),
+        // app_path('Enum'),
     ],
 
     /*
@@ -54,7 +56,7 @@ return [
         DateTimeImmutable::class => 'string',
         CarbonInterface::class => 'string',
         CarbonImmutable::class => 'string',
-        Carbon\Carbon::class => 'string',
+        Carbon::class => 'string',
     ],
 
     /*
@@ -69,7 +71,7 @@ return [
      * But you can also use the `ModuleWriter` or implement your own.
      */
 
-    'writer' => TypeDefinitionWriter::class,
+    'writer' => AppTypeDefinitionWriter::class,
 
     /*
      * The generated TypeScript file can be formatted. We ship a Prettier formatter

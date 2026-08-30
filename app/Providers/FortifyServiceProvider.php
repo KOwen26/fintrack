@@ -22,18 +22,18 @@ class FortifyServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(PasswordResetResponseContract::class, function ($app, $params) {
+        $this->app->bind(function ($app, $params): PasswordResetResponseContract {
             $status = $params['status'] ?? '';
 
-            return new class($status) implements PasswordResetResponseContract
+            return new readonly class($status) implements PasswordResetResponseContract
             {
-                public function __construct(private readonly string $status) {}
+                public function __construct(private string $status) {}
 
                 public function toResponse($request): Response
                 {
                     return $request->wantsJson()
                         ? new JsonResponse(['message' => trans($this->status)], 200)
-                        : redirect()->route('auth.login')->with('status', trans($this->status));
+                        : to_route('auth.login')->with('status', trans($this->status));
                 }
             };
         });
@@ -48,15 +48,11 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
-        RateLimiter::for('login', function (Request $request) {
-            return Limit::perMinute(5)->by(
-                Str::transliterate(Str::lower($request->string('email')) . '|' . $request->ip())
-            );
-        });
+        RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)->by(
+            Str::transliterate(Str::lower($request->string('email')) . '|' . $request->ip())
+        ));
 
-        RateLimiter::for('two-factor', function (Request $request) {
-            return Limit::perMinute(5)->by($request->session()->get('login.id'));
-        });
+        RateLimiter::for('two-factor', fn (Request $request) => Limit::perMinute(5)->by($request->session()->get('login.id')));
 
         // Inertia view bindings — called by Fortify's controllers regardless of route definition
         Fortify::loginView(fn (Request $request) => Inertia::render('auth/login', [

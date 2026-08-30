@@ -5,24 +5,36 @@
     import { twMerge } from 'tailwind-merge';
 
     interface Props extends RestProps {
-        title: string;
+        title?: string;
         description?: string;
         actions?: Snippet;
     }
 
-    const { title, description, actions, children, ...props }: Props = $props();
+    const { title, description, class: _class, actions, children, ...props }: Props = $props();
 </script>
 
-<header class="flex flex-col items-center gap-5 md:flex-row md:justify-between">
-    <div>
-        <h1 class="text-xl font-bold">{title}</h1>
+<header
+    class={[
+        'flex items-center gap-5 md:flex-row ',
+        _class,
+        // "flex-col md:justify-between"
+    ]}>
+    {#if !children}
+        <div>
+            <h1 class="text-xl font-bold">{title}</h1>
 
-        <p class={twMerge(['mt-1 text-sm font-medium text-current/80', !description && 'hidden'])}>
-            {description}
-        </p>
-
+            <p
+                class={twMerge([
+                    'mt-1 text-sm font-medium text-current/80',
+                    !description && 'hidden',
+                ])}>
+                {description}
+            </p>
+        </div>
+    {:else}
         {@render children?.()}
-    </div>
+    {/if}
+
     <div>
         {@render actions?.()}
     </div>

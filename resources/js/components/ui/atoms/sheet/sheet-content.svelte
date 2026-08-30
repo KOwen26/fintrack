@@ -48,8 +48,8 @@
 <SheetPrimitive.Portal {...portalProps}>
     <SheetOverlay />
     <SheetPrimitive.Content
-        class={cn(sheetVariants({ side }), className)}
         data-slot="sheet-content"
+        class={cn(sheetVariants({ side }), className)}
         bind:ref
         {...restProps}>
         {@render children?.()}

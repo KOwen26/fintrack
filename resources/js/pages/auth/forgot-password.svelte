@@ -26,7 +26,7 @@
         <p class="text-success text-sm">{status}</p>
     {/if}
     <form class="space-y-4" {onsubmit}>
-        <Field title="Email" error={form.errors.email}>
+        <Field error={form.errors.email} title="Email">
             <Input name="email" autocomplete="email" type="email" bind:value={form.email} />
         </Field>
 

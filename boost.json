@@ -1,10 +1,5 @@
 {
-    "agents": [
-        "claude_code",
-        "kiro",
-        "opencode",
-        "copilot"
-    ],
+    "agents": ["claude_code", "kiro", "opencode", "copilot"],
     "cloud": false,
     "guidelines": true,
     "mcp": true,

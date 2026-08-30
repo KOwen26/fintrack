@@ -30,8 +30,10 @@
     } = $props();
 
     const sidebarCookie = $derived.by(() => {
+        if (typeof document === 'undefined') return;
+
         // Will return 'sidebar:state={boolean}' or undefined
-        const cookie = document.cookie
+        const cookie = document?.cookie
             .split(';')
             .find((cookie) => cookie.startsWith(`${SIDEBAR_COOKIE_NAME}=`));
 
@@ -61,12 +63,12 @@
 <Tooltip.Provider delayDuration={0}>
     <div
         bind:this={ref}
+        data-slot="sidebar-wrapper"
         style="--sidebar-width: {SIDEBAR_WIDTH}; --sidebar-width-icon: {SIDEBAR_WIDTH_ICON}; {style}"
         class={cn(
             'group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full',
             className
         )}
-        data-slot="sidebar-wrapper"
         {...restProps}>
         {@render children?.()}
     </div>

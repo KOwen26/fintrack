@@ -1,6 +1,8 @@
 <script lang="ts">
     import type { RestProps } from '@type/index';
 
+    import ErrorWrapper from './error-wrapper.svelte';
+
     import { flatMenu, transformMenuToBreadcrumbs } from '@data/menu';
     import { useFlashToast } from '@hooks/flash-handler.svelte';
     import { page } from '@inertiajs/svelte';
@@ -8,6 +10,7 @@
     import { getBreadcrumbItems } from '@utilities/global-states.svelte';
     import { getTitleFromMenu } from '@utilities/helper.svelte';
 
+    import BottomNav from '@components/navigation/bottom-nav.svelte';
     import DashboardSidebar from '@components/navigation/dashboard-sidebar.svelte';
     import * as Sidebar from '@components/ui/atoms/sidebar';
     import Breadcrumbs from '@components/ui/breadcrumbs.svelte';
@@ -48,10 +51,18 @@
     <DashboardSidebar />
     <Sidebar.Inset>
         {@render header()}
-        <div class="flex h-full flex-col gap-6 p-6">
-            {@render children()}
-        </div>
-        {@render footer()}
+
+        <ErrorWrapper>
+            <div class="flex h-full flex-col gap-6 p-3 md:p-5">
+                {@render children?.()}
+            </div>
+
+            <div class="my-10"></div>
+
+            {@render footer()}
+        </ErrorWrapper>
+
+        <BottomNav />
     </Sidebar.Inset>
 </Sidebar.Provider>
 

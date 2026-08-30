@@ -24,7 +24,7 @@
         prepend,
     }: Props = $props();
 
-    const classes = $derived(cn('@container w-full flex flex-col gap-2.5', _class));
+    const classes = $derived(cn('@container flex w-full flex-col gap-2.5', _class));
 </script>
 
 <div class={classes}>

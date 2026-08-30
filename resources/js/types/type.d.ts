@@ -1,23 +1,9 @@
-import { route as routeFn } from 'ziggy-js';
+import type { App as Wayfinder } from '@wayfinder/types';
 
-// the package is not installed, we use directly from ./vendor/tightenco/ziggy/
-// import type { Config, RouteParams } from 'ziggy-js';
+export import Data = App.Data;
 
-// declare global {
-// function route(): Config;
-// function route(
-//     name: string,
-//     params?: RouteParams<typeof name> | undefined,
-//     absolute?: boolean
-// ): string;
-// }
+export import Controllers = Wayfinder.Http.Controllers;
 
-declare module 'ziggy-js' {
-    // interface TypeConfig {
-    //     strictRouteNames: true;
-    // }
-}
+export import Models = Wayfinder.Models;
 
-declare global {
-    var route: typeof routeFn;
-}
+export import Enums = Wayfinder.Enums;

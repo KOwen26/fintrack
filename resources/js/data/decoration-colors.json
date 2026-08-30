@@ -1,0 +1,2422 @@
+[
+    {
+        "slug": "slate-50",
+        "group": "slate",
+        "shade": 50,
+        "label": "Slate 50",
+        "hex": "#f8fafc",
+        "oklch": "oklch(98.4% 0.003 247.858)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "slate-100",
+        "group": "slate",
+        "shade": 100,
+        "label": "Slate 100",
+        "hex": "#f1f5f9",
+        "oklch": "oklch(96.8% 0.007 247.896)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "slate-200",
+        "group": "slate",
+        "shade": 200,
+        "label": "Slate 200",
+        "hex": "#e2e8f0",
+        "oklch": "oklch(92.9% 0.013 255.508)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "slate-300",
+        "group": "slate",
+        "shade": 300,
+        "label": "Slate 300",
+        "hex": "#cbd5e1",
+        "oklch": "oklch(86.9% 0.022 252.894)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "slate-400",
+        "group": "slate",
+        "shade": 400,
+        "label": "Slate 400",
+        "hex": "#94a3b8",
+        "oklch": "oklch(70.4% 0.04 256.788)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "slate-500",
+        "group": "slate",
+        "shade": 500,
+        "label": "Slate 500",
+        "hex": "#64748b",
+        "oklch": "oklch(55.4% 0.046 257.417)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "slate-600",
+        "group": "slate",
+        "shade": 600,
+        "label": "Slate 600",
+        "hex": "#475569",
+        "oklch": "oklch(44.6% 0.043 257.281)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "slate-700",
+        "group": "slate",
+        "shade": 700,
+        "label": "Slate 700",
+        "hex": "#334155",
+        "oklch": "oklch(37.2% 0.044 257.287)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "slate-800",
+        "group": "slate",
+        "shade": 800,
+        "label": "Slate 800",
+        "hex": "#1e293b",
+        "oklch": "oklch(27.9% 0.041 260.031)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "slate-900",
+        "group": "slate",
+        "shade": 900,
+        "label": "Slate 900",
+        "hex": "#0f172a",
+        "oklch": "oklch(20.8% 0.042 265.755)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "slate-950",
+        "group": "slate",
+        "shade": 950,
+        "label": "Slate 950",
+        "hex": "#020617",
+        "oklch": "oklch(12.9% 0.042 264.695)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "gray-50",
+        "group": "gray",
+        "shade": 50,
+        "label": "Gray 50",
+        "hex": "#f9fafb",
+        "oklch": "oklch(98.5% 0.002 247.839)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "gray-100",
+        "group": "gray",
+        "shade": 100,
+        "label": "Gray 100",
+        "hex": "#f3f4f6",
+        "oklch": "oklch(96.7% 0.003 264.542)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "gray-200",
+        "group": "gray",
+        "shade": 200,
+        "label": "Gray 200",
+        "hex": "#e5e7eb",
+        "oklch": "oklch(92.8% 0.006 264.531)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "gray-300",
+        "group": "gray",
+        "shade": 300,
+        "label": "Gray 300",
+        "hex": "#d1d5db",
+        "oklch": "oklch(87.2% 0.01 258.338)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "gray-400",
+        "group": "gray",
+        "shade": 400,
+        "label": "Gray 400",
+        "hex": "#9ca3af",
+        "oklch": "oklch(70.7% 0.022 261.325)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "gray-500",
+        "group": "gray",
+        "shade": 500,
+        "label": "Gray 500",
+        "hex": "#6b7280",
+        "oklch": "oklch(55.1% 0.027 264.364)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "gray-600",
+        "group": "gray",
+        "shade": 600,
+        "label": "Gray 600",
+        "hex": "#4b5563",
+        "oklch": "oklch(44.6% 0.03 256.802)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "gray-700",
+        "group": "gray",
+        "shade": 700,
+        "label": "Gray 700",
+        "hex": "#374151",
+        "oklch": "oklch(37.3% 0.034 259.733)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "gray-800",
+        "group": "gray",
+        "shade": 800,
+        "label": "Gray 800",
+        "hex": "#1f2937",
+        "oklch": "oklch(27.8% 0.033 256.848)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "gray-900",
+        "group": "gray",
+        "shade": 900,
+        "label": "Gray 900",
+        "hex": "#111827",
+        "oklch": "oklch(21% 0.034 264.665)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "gray-950",
+        "group": "gray",
+        "shade": 950,
+        "label": "Gray 950",
+        "hex": "#030712",
+        "oklch": "oklch(13% 0.028 261.692)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "zinc-50",
+        "group": "zinc",
+        "shade": 50,
+        "label": "Zinc 50",
+        "hex": "#fafafa",
+        "oklch": "oklch(98.5% 0 0)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "zinc-100",
+        "group": "zinc",
+        "shade": 100,
+        "label": "Zinc 100",
+        "hex": "#f4f4f5",
+        "oklch": "oklch(96.7% 0.001 286.375)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "zinc-200",
+        "group": "zinc",
+        "shade": 200,
+        "label": "Zinc 200",
+        "hex": "#e4e4e7",
+        "oklch": "oklch(92% 0.004 286.32)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "zinc-300",
+        "group": "zinc",
+        "shade": 300,
+        "label": "Zinc 300",
+        "hex": "#d4d4d8",
+        "oklch": "oklch(87.1% 0.006 286.286)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "zinc-400",
+        "group": "zinc",
+        "shade": 400,
+        "label": "Zinc 400",
+        "hex": "#a1a1aa",
+        "oklch": "oklch(70.5% 0.015 286.067)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "zinc-500",
+        "group": "zinc",
+        "shade": 500,
+        "label": "Zinc 500",
+        "hex": "#71717a",
+        "oklch": "oklch(55.2% 0.016 285.938)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "zinc-600",
+        "group": "zinc",
+        "shade": 600,
+        "label": "Zinc 600",
+        "hex": "#52525b",
+        "oklch": "oklch(44.2% 0.017 285.786)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "zinc-700",
+        "group": "zinc",
+        "shade": 700,
+        "label": "Zinc 700",
+        "hex": "#3f3f46",
+        "oklch": "oklch(37% 0.013 285.805)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "zinc-800",
+        "group": "zinc",
+        "shade": 800,
+        "label": "Zinc 800",
+        "hex": "#27272a",
+        "oklch": "oklch(27.4% 0.006 286.033)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "zinc-900",
+        "group": "zinc",
+        "shade": 900,
+        "label": "Zinc 900",
+        "hex": "#18181b",
+        "oklch": "oklch(21% 0.006 285.885)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "zinc-950",
+        "group": "zinc",
+        "shade": 950,
+        "label": "Zinc 950",
+        "hex": "#09090b",
+        "oklch": "oklch(14.1% 0.005 285.823)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "neutral-50",
+        "group": "neutral",
+        "shade": 50,
+        "label": "Neutral 50",
+        "hex": "#fafafa",
+        "oklch": "oklch(98.5% 0 0)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "neutral-100",
+        "group": "neutral",
+        "shade": 100,
+        "label": "Neutral 100",
+        "hex": "#f5f5f5",
+        "oklch": "oklch(97% 0 0)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "neutral-200",
+        "group": "neutral",
+        "shade": 200,
+        "label": "Neutral 200",
+        "hex": "#e5e5e5",
+        "oklch": "oklch(92.2% 0 0)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "neutral-300",
+        "group": "neutral",
+        "shade": 300,
+        "label": "Neutral 300",
+        "hex": "#d4d4d4",
+        "oklch": "oklch(87% 0 0)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "neutral-400",
+        "group": "neutral",
+        "shade": 400,
+        "label": "Neutral 400",
+        "hex": "#a3a3a3",
+        "oklch": "oklch(70.8% 0 0)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "neutral-500",
+        "group": "neutral",
+        "shade": 500,
+        "label": "Neutral 500",
+        "hex": "#737373",
+        "oklch": "oklch(55.6% 0 0)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "neutral-600",
+        "group": "neutral",
+        "shade": 600,
+        "label": "Neutral 600",
+        "hex": "#525252",
+        "oklch": "oklch(43.9% 0 0)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "neutral-700",
+        "group": "neutral",
+        "shade": 700,
+        "label": "Neutral 700",
+        "hex": "#404040",
+        "oklch": "oklch(37.1% 0 0)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "neutral-800",
+        "group": "neutral",
+        "shade": 800,
+        "label": "Neutral 800",
+        "hex": "#262626",
+        "oklch": "oklch(26.9% 0 0)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "neutral-900",
+        "group": "neutral",
+        "shade": 900,
+        "label": "Neutral 900",
+        "hex": "#171717",
+        "oklch": "oklch(20.5% 0 0)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "neutral-950",
+        "group": "neutral",
+        "shade": 950,
+        "label": "Neutral 950",
+        "hex": "#0a0a0a",
+        "oklch": "oklch(14.5% 0 0)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "stone-50",
+        "group": "stone",
+        "shade": 50,
+        "label": "Stone 50",
+        "hex": "#fafaf9",
+        "oklch": "oklch(98.5% 0.001 106.423)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "stone-100",
+        "group": "stone",
+        "shade": 100,
+        "label": "Stone 100",
+        "hex": "#f5f5f4",
+        "oklch": "oklch(97% 0.001 106.424)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "stone-200",
+        "group": "stone",
+        "shade": 200,
+        "label": "Stone 200",
+        "hex": "#e7e5e4",
+        "oklch": "oklch(92.3% 0.003 48.717)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "stone-300",
+        "group": "stone",
+        "shade": 300,
+        "label": "Stone 300",
+        "hex": "#d6d3d1",
+        "oklch": "oklch(86.9% 0.005 56.366)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "stone-400",
+        "group": "stone",
+        "shade": 400,
+        "label": "Stone 400",
+        "hex": "#a8a29e",
+        "oklch": "oklch(70.9% 0.01 56.259)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "stone-500",
+        "group": "stone",
+        "shade": 500,
+        "label": "Stone 500",
+        "hex": "#78716c",
+        "oklch": "oklch(55.3% 0.013 58.071)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "stone-600",
+        "group": "stone",
+        "shade": 600,
+        "label": "Stone 600",
+        "hex": "#57534e",
+        "oklch": "oklch(44.4% 0.011 73.639)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "stone-700",
+        "group": "stone",
+        "shade": 700,
+        "label": "Stone 700",
+        "hex": "#44403c",
+        "oklch": "oklch(37.4% 0.01 67.558)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "stone-800",
+        "group": "stone",
+        "shade": 800,
+        "label": "Stone 800",
+        "hex": "#292524",
+        "oklch": "oklch(26.8% 0.007 34.298)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "stone-900",
+        "group": "stone",
+        "shade": 900,
+        "label": "Stone 900",
+        "hex": "#1c1917",
+        "oklch": "oklch(21.6% 0.006 56.043)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "stone-950",
+        "group": "stone",
+        "shade": 950,
+        "label": "Stone 950",
+        "hex": "#0c0a09",
+        "oklch": "oklch(14.7% 0.004 49.25)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "red-50",
+        "group": "red",
+        "shade": 50,
+        "label": "Red 50",
+        "hex": "#fef2f2",
+        "oklch": "oklch(97.1% 0.013 17.38)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "red-100",
+        "group": "red",
+        "shade": 100,
+        "label": "Red 100",
+        "hex": "#fee2e2",
+        "oklch": "oklch(93.6% 0.032 17.717)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "red-200",
+        "group": "red",
+        "shade": 200,
+        "label": "Red 200",
+        "hex": "#fecaca",
+        "oklch": "oklch(88.5% 0.062 18.334)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "red-300",
+        "group": "red",
+        "shade": 300,
+        "label": "Red 300",
+        "hex": "#fca5a5",
+        "oklch": "oklch(80.8% 0.114 19.571)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "red-400",
+        "group": "red",
+        "shade": 400,
+        "label": "Red 400",
+        "hex": "#f87171",
+        "oklch": "oklch(70.4% 0.191 22.216)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "red-500",
+        "group": "red",
+        "shade": 500,
+        "label": "Red 500",
+        "hex": "#ef4444",
+        "oklch": "oklch(63.7% 0.237 25.331)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "red-600",
+        "group": "red",
+        "shade": 600,
+        "label": "Red 600",
+        "hex": "#dc2626",
+        "oklch": "oklch(57.7% 0.245 27.325)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "red-700",
+        "group": "red",
+        "shade": 700,
+        "label": "Red 700",
+        "hex": "#b91c1c",
+        "oklch": "oklch(50.5% 0.213 27.518)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "red-800",
+        "group": "red",
+        "shade": 800,
+        "label": "Red 800",
+        "hex": "#991b1b",
+        "oklch": "oklch(44.4% 0.177 26.899)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "red-900",
+        "group": "red",
+        "shade": 900,
+        "label": "Red 900",
+        "hex": "#7f1d1d",
+        "oklch": "oklch(39.6% 0.141 25.723)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "red-950",
+        "group": "red",
+        "shade": 950,
+        "label": "Red 950",
+        "hex": "#450a0a",
+        "oklch": "oklch(25.8% 0.092 26.042)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "orange-50",
+        "group": "orange",
+        "shade": 50,
+        "label": "Orange 50",
+        "hex": "#fff7ed",
+        "oklch": "oklch(98% 0.016 73.684)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "orange-100",
+        "group": "orange",
+        "shade": 100,
+        "label": "Orange 100",
+        "hex": "#ffedd5",
+        "oklch": "oklch(95.4% 0.038 75.164)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "orange-200",
+        "group": "orange",
+        "shade": 200,
+        "label": "Orange 200",
+        "hex": "#fed7aa",
+        "oklch": "oklch(90.1% 0.076 70.697)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "orange-300",
+        "group": "orange",
+        "shade": 300,
+        "label": "Orange 300",
+        "hex": "#fdba74",
+        "oklch": "oklch(83.7% 0.128 66.29)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "orange-400",
+        "group": "orange",
+        "shade": 400,
+        "label": "Orange 400",
+        "hex": "#fb923c",
+        "oklch": "oklch(75% 0.183 55.934)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "orange-500",
+        "group": "orange",
+        "shade": 500,
+        "label": "Orange 500",
+        "hex": "#f97316",
+        "oklch": "oklch(70.5% 0.213 47.604)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "orange-600",
+        "group": "orange",
+        "shade": 600,
+        "label": "Orange 600",
+        "hex": "#ea580c",
+        "oklch": "oklch(64.6% 0.222 41.116)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "orange-700",
+        "group": "orange",
+        "shade": 700,
+        "label": "Orange 700",
+        "hex": "#c2410c",
+        "oklch": "oklch(55.3% 0.195 38.402)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "orange-800",
+        "group": "orange",
+        "shade": 800,
+        "label": "Orange 800",
+        "hex": "#9a3412",
+        "oklch": "oklch(47% 0.157 37.304)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "orange-900",
+        "group": "orange",
+        "shade": 900,
+        "label": "Orange 900",
+        "hex": "#7c2d12",
+        "oklch": "oklch(40.8% 0.123 38.172)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "orange-950",
+        "group": "orange",
+        "shade": 950,
+        "label": "Orange 950",
+        "hex": "#431407",
+        "oklch": "oklch(26.6% 0.079 36.259)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "amber-50",
+        "group": "amber",
+        "shade": 50,
+        "label": "Amber 50",
+        "hex": "#fffbeb",
+        "oklch": "oklch(98.7% 0.022 95.277)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "amber-100",
+        "group": "amber",
+        "shade": 100,
+        "label": "Amber 100",
+        "hex": "#fef3c7",
+        "oklch": "oklch(96.2% 0.059 95.617)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "amber-200",
+        "group": "amber",
+        "shade": 200,
+        "label": "Amber 200",
+        "hex": "#fde68a",
+        "oklch": "oklch(92.4% 0.12 95.746)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "amber-300",
+        "group": "amber",
+        "shade": 300,
+        "label": "Amber 300",
+        "hex": "#fcd34d",
+        "oklch": "oklch(87.9% 0.169 91.605)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "amber-400",
+        "group": "amber",
+        "shade": 400,
+        "label": "Amber 400",
+        "hex": "#fbbf24",
+        "oklch": "oklch(82.8% 0.189 84.429)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "amber-500",
+        "group": "amber",
+        "shade": 500,
+        "label": "Amber 500",
+        "hex": "#f59e0b",
+        "oklch": "oklch(76.9% 0.188 70.08)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "amber-600",
+        "group": "amber",
+        "shade": 600,
+        "label": "Amber 600",
+        "hex": "#d97706",
+        "oklch": "oklch(66.6% 0.179 58.318)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "amber-700",
+        "group": "amber",
+        "shade": 700,
+        "label": "Amber 700",
+        "hex": "#b45309",
+        "oklch": "oklch(55.5% 0.163 48.998)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "amber-800",
+        "group": "amber",
+        "shade": 800,
+        "label": "Amber 800",
+        "hex": "#92400e",
+        "oklch": "oklch(47.3% 0.137 46.201)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "amber-900",
+        "group": "amber",
+        "shade": 900,
+        "label": "Amber 900",
+        "hex": "#78350f",
+        "oklch": "oklch(41.4% 0.112 45.904)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "amber-950",
+        "group": "amber",
+        "shade": 950,
+        "label": "Amber 950",
+        "hex": "#451a03",
+        "oklch": "oklch(27.9% 0.077 45.635)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "yellow-50",
+        "group": "yellow",
+        "shade": 50,
+        "label": "Yellow 50",
+        "hex": "#fefce8",
+        "oklch": "oklch(98.7% 0.026 102.212)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "yellow-100",
+        "group": "yellow",
+        "shade": 100,
+        "label": "Yellow 100",
+        "hex": "#fef9c3",
+        "oklch": "oklch(97.3% 0.071 103.193)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "yellow-200",
+        "group": "yellow",
+        "shade": 200,
+        "label": "Yellow 200",
+        "hex": "#fef08a",
+        "oklch": "oklch(94.5% 0.129 101.54)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "yellow-300",
+        "group": "yellow",
+        "shade": 300,
+        "label": "Yellow 300",
+        "hex": "#fde047",
+        "oklch": "oklch(90.5% 0.182 98.111)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "yellow-400",
+        "group": "yellow",
+        "shade": 400,
+        "label": "Yellow 400",
+        "hex": "#facc15",
+        "oklch": "oklch(85.2% 0.199 91.936)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "yellow-500",
+        "group": "yellow",
+        "shade": 500,
+        "label": "Yellow 500",
+        "hex": "#eab308",
+        "oklch": "oklch(79.5% 0.184 86.047)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "yellow-600",
+        "group": "yellow",
+        "shade": 600,
+        "label": "Yellow 600",
+        "hex": "#ca8a04",
+        "oklch": "oklch(68.1% 0.162 75.834)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "yellow-700",
+        "group": "yellow",
+        "shade": 700,
+        "label": "Yellow 700",
+        "hex": "#a16207",
+        "oklch": "oklch(55.4% 0.135 66.442)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "yellow-800",
+        "group": "yellow",
+        "shade": 800,
+        "label": "Yellow 800",
+        "hex": "#854d0e",
+        "oklch": "oklch(47.6% 0.114 61.907)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "yellow-900",
+        "group": "yellow",
+        "shade": 900,
+        "label": "Yellow 900",
+        "hex": "#713f12",
+        "oklch": "oklch(42.1% 0.095 57.708)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "yellow-950",
+        "group": "yellow",
+        "shade": 950,
+        "label": "Yellow 950",
+        "hex": "#422006",
+        "oklch": "oklch(28.6% 0.066 53.813)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "lime-50",
+        "group": "lime",
+        "shade": 50,
+        "label": "Lime 50",
+        "hex": "#f7fee7",
+        "oklch": "oklch(98.6% 0.031 120.757)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "lime-100",
+        "group": "lime",
+        "shade": 100,
+        "label": "Lime 100",
+        "hex": "#ecfccb",
+        "oklch": "oklch(96.7% 0.067 122.328)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "lime-200",
+        "group": "lime",
+        "shade": 200,
+        "label": "Lime 200",
+        "hex": "#d9f99d",
+        "oklch": "oklch(93.8% 0.127 124.321)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "lime-300",
+        "group": "lime",
+        "shade": 300,
+        "label": "Lime 300",
+        "hex": "#bef264",
+        "oklch": "oklch(89.7% 0.196 126.665)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "lime-400",
+        "group": "lime",
+        "shade": 400,
+        "label": "Lime 400",
+        "hex": "#a3e635",
+        "oklch": "oklch(84.1% 0.238 128.85)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "lime-500",
+        "group": "lime",
+        "shade": 500,
+        "label": "Lime 500",
+        "hex": "#84cc16",
+        "oklch": "oklch(76.8% 0.233 130.85)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "lime-600",
+        "group": "lime",
+        "shade": 600,
+        "label": "Lime 600",
+        "hex": "#65a30d",
+        "oklch": "oklch(64.8% 0.2 131.684)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "lime-700",
+        "group": "lime",
+        "shade": 700,
+        "label": "Lime 700",
+        "hex": "#4d7c0f",
+        "oklch": "oklch(53.2% 0.157 131.589)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "lime-800",
+        "group": "lime",
+        "shade": 800,
+        "label": "Lime 800",
+        "hex": "#3f6212",
+        "oklch": "oklch(45.3% 0.124 130.933)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "lime-900",
+        "group": "lime",
+        "shade": 900,
+        "label": "Lime 900",
+        "hex": "#365314",
+        "oklch": "oklch(40.5% 0.101 131.063)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "lime-950",
+        "group": "lime",
+        "shade": 950,
+        "label": "Lime 950",
+        "hex": "#1a2e05",
+        "oklch": "oklch(27.4% 0.072 132.109)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "green-50",
+        "group": "green",
+        "shade": 50,
+        "label": "Green 50",
+        "hex": "#f0fdf4",
+        "oklch": "oklch(98.2% 0.018 155.826)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "green-100",
+        "group": "green",
+        "shade": 100,
+        "label": "Green 100",
+        "hex": "#dcfce7",
+        "oklch": "oklch(96.2% 0.044 156.743)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "green-200",
+        "group": "green",
+        "shade": 200,
+        "label": "Green 200",
+        "hex": "#bbf7d0",
+        "oklch": "oklch(92.5% 0.084 155.995)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "green-300",
+        "group": "green",
+        "shade": 300,
+        "label": "Green 300",
+        "hex": "#86efac",
+        "oklch": "oklch(87.1% 0.15 154.449)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "green-400",
+        "group": "green",
+        "shade": 400,
+        "label": "Green 400",
+        "hex": "#4ade80",
+        "oklch": "oklch(79.2% 0.209 151.711)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "green-500",
+        "group": "green",
+        "shade": 500,
+        "label": "Green 500",
+        "hex": "#22c55e",
+        "oklch": "oklch(72.3% 0.219 149.579)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "green-600",
+        "group": "green",
+        "shade": 600,
+        "label": "Green 600",
+        "hex": "#16a34a",
+        "oklch": "oklch(62.7% 0.194 149.214)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "green-700",
+        "group": "green",
+        "shade": 700,
+        "label": "Green 700",
+        "hex": "#15803d",
+        "oklch": "oklch(52.7% 0.154 150.069)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "green-800",
+        "group": "green",
+        "shade": 800,
+        "label": "Green 800",
+        "hex": "#166534",
+        "oklch": "oklch(44.8% 0.119 151.328)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "green-900",
+        "group": "green",
+        "shade": 900,
+        "label": "Green 900",
+        "hex": "#14532d",
+        "oklch": "oklch(39.3% 0.095 152.535)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "green-950",
+        "group": "green",
+        "shade": 950,
+        "label": "Green 950",
+        "hex": "#052e16",
+        "oklch": "oklch(26.6% 0.065 152.934)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "emerald-50",
+        "group": "emerald",
+        "shade": 50,
+        "label": "Emerald 50",
+        "hex": "#ecfdf5",
+        "oklch": "oklch(97.9% 0.021 166.113)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "emerald-100",
+        "group": "emerald",
+        "shade": 100,
+        "label": "Emerald 100",
+        "hex": "#d1fae5",
+        "oklch": "oklch(95% 0.052 163.051)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "emerald-200",
+        "group": "emerald",
+        "shade": 200,
+        "label": "Emerald 200",
+        "hex": "#a7f3d0",
+        "oklch": "oklch(90.5% 0.093 164.15)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "emerald-300",
+        "group": "emerald",
+        "shade": 300,
+        "label": "Emerald 300",
+        "hex": "#6ee7b7",
+        "oklch": "oklch(84.5% 0.143 164.978)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "emerald-400",
+        "group": "emerald",
+        "shade": 400,
+        "label": "Emerald 400",
+        "hex": "#34d399",
+        "oklch": "oklch(76.5% 0.177 163.223)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "emerald-500",
+        "group": "emerald",
+        "shade": 500,
+        "label": "Emerald 500",
+        "hex": "#10b981",
+        "oklch": "oklch(69.6% 0.17 162.48)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "emerald-600",
+        "group": "emerald",
+        "shade": 600,
+        "label": "Emerald 600",
+        "hex": "#059669",
+        "oklch": "oklch(59.6% 0.145 163.225)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "emerald-700",
+        "group": "emerald",
+        "shade": 700,
+        "label": "Emerald 700",
+        "hex": "#047857",
+        "oklch": "oklch(50.8% 0.118 165.612)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "emerald-800",
+        "group": "emerald",
+        "shade": 800,
+        "label": "Emerald 800",
+        "hex": "#065f46",
+        "oklch": "oklch(43.2% 0.095 166.913)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "emerald-900",
+        "group": "emerald",
+        "shade": 900,
+        "label": "Emerald 900",
+        "hex": "#064e3b",
+        "oklch": "oklch(37.8% 0.077 168.94)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "emerald-950",
+        "group": "emerald",
+        "shade": 950,
+        "label": "Emerald 950",
+        "hex": "#022c22",
+        "oklch": "oklch(26.2% 0.051 172.552)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "teal-50",
+        "group": "teal",
+        "shade": 50,
+        "label": "Teal 50",
+        "hex": "#f0fdfa",
+        "oklch": "oklch(98.4% 0.014 180.72)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "teal-100",
+        "group": "teal",
+        "shade": 100,
+        "label": "Teal 100",
+        "hex": "#ccfbf1",
+        "oklch": "oklch(95.3% 0.051 180.801)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "teal-200",
+        "group": "teal",
+        "shade": 200,
+        "label": "Teal 200",
+        "hex": "#99f6e4",
+        "oklch": "oklch(91% 0.096 180.426)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "teal-300",
+        "group": "teal",
+        "shade": 300,
+        "label": "Teal 300",
+        "hex": "#5eead4",
+        "oklch": "oklch(85.5% 0.138 181.071)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "teal-400",
+        "group": "teal",
+        "shade": 400,
+        "label": "Teal 400",
+        "hex": "#2dd4bf",
+        "oklch": "oklch(77.7% 0.152 181.912)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "teal-500",
+        "group": "teal",
+        "shade": 500,
+        "label": "Teal 500",
+        "hex": "#14b8a6",
+        "oklch": "oklch(70.4% 0.14 182.503)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "teal-600",
+        "group": "teal",
+        "shade": 600,
+        "label": "Teal 600",
+        "hex": "#0d9488",
+        "oklch": "oklch(60% 0.118 184.704)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "teal-700",
+        "group": "teal",
+        "shade": 700,
+        "label": "Teal 700",
+        "hex": "#0f766e",
+        "oklch": "oklch(51.1% 0.096 186.391)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "teal-800",
+        "group": "teal",
+        "shade": 800,
+        "label": "Teal 800",
+        "hex": "#115e59",
+        "oklch": "oklch(43.7% 0.078 188.216)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "teal-900",
+        "group": "teal",
+        "shade": 900,
+        "label": "Teal 900",
+        "hex": "#134e4a",
+        "oklch": "oklch(38.6% 0.063 188.416)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "teal-950",
+        "group": "teal",
+        "shade": 950,
+        "label": "Teal 950",
+        "hex": "#042f2e",
+        "oklch": "oklch(27.7% 0.046 192.524)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "cyan-50",
+        "group": "cyan",
+        "shade": 50,
+        "label": "Cyan 50",
+        "hex": "#ecfeff",
+        "oklch": "oklch(98.4% 0.019 200.873)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "cyan-100",
+        "group": "cyan",
+        "shade": 100,
+        "label": "Cyan 100",
+        "hex": "#cffafe",
+        "oklch": "oklch(95.6% 0.045 203.388)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "cyan-200",
+        "group": "cyan",
+        "shade": 200,
+        "label": "Cyan 200",
+        "hex": "#a5f3fc",
+        "oklch": "oklch(91.7% 0.08 205.041)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "cyan-300",
+        "group": "cyan",
+        "shade": 300,
+        "label": "Cyan 300",
+        "hex": "#67e8f9",
+        "oklch": "oklch(86.5% 0.127 207.078)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "cyan-400",
+        "group": "cyan",
+        "shade": 400,
+        "label": "Cyan 400",
+        "hex": "#22d3ee",
+        "oklch": "oklch(78.9% 0.154 211.53)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "cyan-500",
+        "group": "cyan",
+        "shade": 500,
+        "label": "Cyan 500",
+        "hex": "#06b6d4",
+        "oklch": "oklch(71.5% 0.143 215.221)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "cyan-600",
+        "group": "cyan",
+        "shade": 600,
+        "label": "Cyan 600",
+        "hex": "#0891b2",
+        "oklch": "oklch(60.9% 0.126 221.723)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "cyan-700",
+        "group": "cyan",
+        "shade": 700,
+        "label": "Cyan 700",
+        "hex": "#0e7490",
+        "oklch": "oklch(52% 0.105 223.128)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "cyan-800",
+        "group": "cyan",
+        "shade": 800,
+        "label": "Cyan 800",
+        "hex": "#155e75",
+        "oklch": "oklch(45% 0.085 224.283)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "cyan-900",
+        "group": "cyan",
+        "shade": 900,
+        "label": "Cyan 900",
+        "hex": "#164e63",
+        "oklch": "oklch(39.8% 0.07 227.392)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "cyan-950",
+        "group": "cyan",
+        "shade": 950,
+        "label": "Cyan 950",
+        "hex": "#083344",
+        "oklch": "oklch(30.2% 0.056 229.695)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "sky-50",
+        "group": "sky",
+        "shade": 50,
+        "label": "Sky 50",
+        "hex": "#f0f9ff",
+        "oklch": "oklch(97.7% 0.013 236.62)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "sky-100",
+        "group": "sky",
+        "shade": 100,
+        "label": "Sky 100",
+        "hex": "#e0f2fe",
+        "oklch": "oklch(95.1% 0.026 236.824)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "sky-200",
+        "group": "sky",
+        "shade": 200,
+        "label": "Sky 200",
+        "hex": "#bae6fd",
+        "oklch": "oklch(90.1% 0.058 230.902)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "sky-300",
+        "group": "sky",
+        "shade": 300,
+        "label": "Sky 300",
+        "hex": "#7dd3fc",
+        "oklch": "oklch(82.8% 0.111 230.318)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "sky-400",
+        "group": "sky",
+        "shade": 400,
+        "label": "Sky 400",
+        "hex": "#38bdf8",
+        "oklch": "oklch(74.6% 0.16 232.661)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "sky-500",
+        "group": "sky",
+        "shade": 500,
+        "label": "Sky 500",
+        "hex": "#0ea5e9",
+        "oklch": "oklch(68.5% 0.169 237.323)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "sky-600",
+        "group": "sky",
+        "shade": 600,
+        "label": "Sky 600",
+        "hex": "#0284c7",
+        "oklch": "oklch(58.8% 0.158 241.966)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "sky-700",
+        "group": "sky",
+        "shade": 700,
+        "label": "Sky 700",
+        "hex": "#0369a1",
+        "oklch": "oklch(50% 0.134 242.749)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "sky-800",
+        "group": "sky",
+        "shade": 800,
+        "label": "Sky 800",
+        "hex": "#075985",
+        "oklch": "oklch(44.3% 0.11 240.79)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "sky-900",
+        "group": "sky",
+        "shade": 900,
+        "label": "Sky 900",
+        "hex": "#0c4a6e",
+        "oklch": "oklch(39.1% 0.09 240.876)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "sky-950",
+        "group": "sky",
+        "shade": 950,
+        "label": "Sky 950",
+        "hex": "#082f49",
+        "oklch": "oklch(29.3% 0.066 243.157)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "blue-50",
+        "group": "blue",
+        "shade": 50,
+        "label": "Blue 50",
+        "hex": "#eff6ff",
+        "oklch": "oklch(97% 0.014 254.604)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "blue-100",
+        "group": "blue",
+        "shade": 100,
+        "label": "Blue 100",
+        "hex": "#dbeafe",
+        "oklch": "oklch(93.2% 0.032 255.585)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "blue-200",
+        "group": "blue",
+        "shade": 200,
+        "label": "Blue 200",
+        "hex": "#bfdbfe",
+        "oklch": "oklch(88.2% 0.059 254.128)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "blue-300",
+        "group": "blue",
+        "shade": 300,
+        "label": "Blue 300",
+        "hex": "#93c5fd",
+        "oklch": "oklch(80.9% 0.105 251.813)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "blue-400",
+        "group": "blue",
+        "shade": 400,
+        "label": "Blue 400",
+        "hex": "#60a5fa",
+        "oklch": "oklch(70.7% 0.165 254.624)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "blue-500",
+        "group": "blue",
+        "shade": 500,
+        "label": "Blue 500",
+        "hex": "#3b82f6",
+        "oklch": "oklch(62.3% 0.214 259.815)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "blue-600",
+        "group": "blue",
+        "shade": 600,
+        "label": "Blue 600",
+        "hex": "#2563eb",
+        "oklch": "oklch(54.6% 0.245 262.881)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "blue-700",
+        "group": "blue",
+        "shade": 700,
+        "label": "Blue 700",
+        "hex": "#1d4ed8",
+        "oklch": "oklch(48.8% 0.243 264.376)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "blue-800",
+        "group": "blue",
+        "shade": 800,
+        "label": "Blue 800",
+        "hex": "#1e40af",
+        "oklch": "oklch(42.4% 0.199 265.638)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "blue-900",
+        "group": "blue",
+        "shade": 900,
+        "label": "Blue 900",
+        "hex": "#1e3a8a",
+        "oklch": "oklch(37.9% 0.146 265.522)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "blue-950",
+        "group": "blue",
+        "shade": 950,
+        "label": "Blue 950",
+        "hex": "#172554",
+        "oklch": "oklch(28.2% 0.091 267.935)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "indigo-50",
+        "group": "indigo",
+        "shade": 50,
+        "label": "Indigo 50",
+        "hex": "#eef2ff",
+        "oklch": "oklch(96.2% 0.018 272.314)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "indigo-100",
+        "group": "indigo",
+        "shade": 100,
+        "label": "Indigo 100",
+        "hex": "#e0e7ff",
+        "oklch": "oklch(93% 0.034 272.788)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "indigo-200",
+        "group": "indigo",
+        "shade": 200,
+        "label": "Indigo 200",
+        "hex": "#c7d2fe",
+        "oklch": "oklch(87% 0.065 274.039)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "indigo-300",
+        "group": "indigo",
+        "shade": 300,
+        "label": "Indigo 300",
+        "hex": "#a5b4fc",
+        "oklch": "oklch(78.5% 0.115 274.713)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "indigo-400",
+        "group": "indigo",
+        "shade": 400,
+        "label": "Indigo 400",
+        "hex": "#818cf8",
+        "oklch": "oklch(67.3% 0.182 276.935)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "indigo-500",
+        "group": "indigo",
+        "shade": 500,
+        "label": "Indigo 500",
+        "hex": "#6366f1",
+        "oklch": "oklch(58.5% 0.233 277.117)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "indigo-600",
+        "group": "indigo",
+        "shade": 600,
+        "label": "Indigo 600",
+        "hex": "#4f46e5",
+        "oklch": "oklch(51.1% 0.262 276.966)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "indigo-700",
+        "group": "indigo",
+        "shade": 700,
+        "label": "Indigo 700",
+        "hex": "#4338ca",
+        "oklch": "oklch(45.7% 0.24 277.023)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "indigo-800",
+        "group": "indigo",
+        "shade": 800,
+        "label": "Indigo 800",
+        "hex": "#3730a3",
+        "oklch": "oklch(39.8% 0.195 277.366)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "indigo-900",
+        "group": "indigo",
+        "shade": 900,
+        "label": "Indigo 900",
+        "hex": "#312e81",
+        "oklch": "oklch(35.9% 0.144 278.697)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "indigo-950",
+        "group": "indigo",
+        "shade": 950,
+        "label": "Indigo 950",
+        "hex": "#1e1b4b",
+        "oklch": "oklch(25.7% 0.09 281.288)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "violet-50",
+        "group": "violet",
+        "shade": 50,
+        "label": "Violet 50",
+        "hex": "#f5f3ff",
+        "oklch": "oklch(96.9% 0.016 293.756)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "violet-100",
+        "group": "violet",
+        "shade": 100,
+        "label": "Violet 100",
+        "hex": "#ede9fe",
+        "oklch": "oklch(94.3% 0.029 294.588)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "violet-200",
+        "group": "violet",
+        "shade": 200,
+        "label": "Violet 200",
+        "hex": "#ddd6fe",
+        "oklch": "oklch(89.4% 0.057 293.283)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "violet-300",
+        "group": "violet",
+        "shade": 300,
+        "label": "Violet 300",
+        "hex": "#c4b5fd",
+        "oklch": "oklch(81.1% 0.111 293.571)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "violet-400",
+        "group": "violet",
+        "shade": 400,
+        "label": "Violet 400",
+        "hex": "#a78bfa",
+        "oklch": "oklch(70.2% 0.183 293.541)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "violet-500",
+        "group": "violet",
+        "shade": 500,
+        "label": "Violet 500",
+        "hex": "#8b5cf6",
+        "oklch": "oklch(60.6% 0.25 292.717)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "violet-600",
+        "group": "violet",
+        "shade": 600,
+        "label": "Violet 600",
+        "hex": "#7c3aed",
+        "oklch": "oklch(54.1% 0.281 293.009)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "violet-700",
+        "group": "violet",
+        "shade": 700,
+        "label": "Violet 700",
+        "hex": "#6d28d9",
+        "oklch": "oklch(49.1% 0.27 292.581)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "violet-800",
+        "group": "violet",
+        "shade": 800,
+        "label": "Violet 800",
+        "hex": "#5b21b6",
+        "oklch": "oklch(43.2% 0.232 292.759)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "violet-900",
+        "group": "violet",
+        "shade": 900,
+        "label": "Violet 900",
+        "hex": "#4c1d95",
+        "oklch": "oklch(38% 0.189 293.745)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "violet-950",
+        "group": "violet",
+        "shade": 950,
+        "label": "Violet 950",
+        "hex": "#2e1065",
+        "oklch": "oklch(28.3% 0.141 291.089)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "purple-50",
+        "group": "purple",
+        "shade": 50,
+        "label": "Purple 50",
+        "hex": "#faf5ff",
+        "oklch": "oklch(97.7% 0.014 308.299)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "purple-100",
+        "group": "purple",
+        "shade": 100,
+        "label": "Purple 100",
+        "hex": "#f3e8ff",
+        "oklch": "oklch(94.6% 0.033 307.174)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "purple-200",
+        "group": "purple",
+        "shade": 200,
+        "label": "Purple 200",
+        "hex": "#e9d5ff",
+        "oklch": "oklch(90.2% 0.063 306.703)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "purple-300",
+        "group": "purple",
+        "shade": 300,
+        "label": "Purple 300",
+        "hex": "#d8b4fe",
+        "oklch": "oklch(82.7% 0.119 306.383)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "purple-400",
+        "group": "purple",
+        "shade": 400,
+        "label": "Purple 400",
+        "hex": "#c084fc",
+        "oklch": "oklch(71.4% 0.203 305.504)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "purple-500",
+        "group": "purple",
+        "shade": 500,
+        "label": "Purple 500",
+        "hex": "#a855f7",
+        "oklch": "oklch(62.7% 0.265 303.9)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "purple-600",
+        "group": "purple",
+        "shade": 600,
+        "label": "Purple 600",
+        "hex": "#9333ea",
+        "oklch": "oklch(55.8% 0.288 302.321)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "purple-700",
+        "group": "purple",
+        "shade": 700,
+        "label": "Purple 700",
+        "hex": "#7e22ce",
+        "oklch": "oklch(49.6% 0.265 301.924)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "purple-800",
+        "group": "purple",
+        "shade": 800,
+        "label": "Purple 800",
+        "hex": "#6b21a8",
+        "oklch": "oklch(43.8% 0.218 303.724)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "purple-900",
+        "group": "purple",
+        "shade": 900,
+        "label": "Purple 900",
+        "hex": "#581c87",
+        "oklch": "oklch(38.1% 0.176 304.987)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "purple-950",
+        "group": "purple",
+        "shade": 950,
+        "label": "Purple 950",
+        "hex": "#3b0764",
+        "oklch": "oklch(29.1% 0.149 302.717)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "fuchsia-50",
+        "group": "fuchsia",
+        "shade": 50,
+        "label": "Fuchsia 50",
+        "hex": "#fdf4ff",
+        "oklch": "oklch(97.7% 0.017 320.058)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "fuchsia-100",
+        "group": "fuchsia",
+        "shade": 100,
+        "label": "Fuchsia 100",
+        "hex": "#fae8ff",
+        "oklch": "oklch(95.2% 0.037 318.852)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "fuchsia-200",
+        "group": "fuchsia",
+        "shade": 200,
+        "label": "Fuchsia 200",
+        "hex": "#f5d0fe",
+        "oklch": "oklch(90.3% 0.076 319.62)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "fuchsia-300",
+        "group": "fuchsia",
+        "shade": 300,
+        "label": "Fuchsia 300",
+        "hex": "#f0abfc",
+        "oklch": "oklch(83.3% 0.145 321.434)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "fuchsia-400",
+        "group": "fuchsia",
+        "shade": 400,
+        "label": "Fuchsia 400",
+        "hex": "#e879f9",
+        "oklch": "oklch(74% 0.238 322.16)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "fuchsia-500",
+        "group": "fuchsia",
+        "shade": 500,
+        "label": "Fuchsia 500",
+        "hex": "#d946ef",
+        "oklch": "oklch(66.7% 0.295 322.15)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "fuchsia-600",
+        "group": "fuchsia",
+        "shade": 600,
+        "label": "Fuchsia 600",
+        "hex": "#c026d3",
+        "oklch": "oklch(59.1% 0.293 322.896)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "fuchsia-700",
+        "group": "fuchsia",
+        "shade": 700,
+        "label": "Fuchsia 700",
+        "hex": "#a21caf",
+        "oklch": "oklch(51.8% 0.253 323.949)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "fuchsia-800",
+        "group": "fuchsia",
+        "shade": 800,
+        "label": "Fuchsia 800",
+        "hex": "#86198f",
+        "oklch": "oklch(45.2% 0.211 324.591)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "fuchsia-900",
+        "group": "fuchsia",
+        "shade": 900,
+        "label": "Fuchsia 900",
+        "hex": "#701a75",
+        "oklch": "oklch(40.1% 0.17 325.612)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "fuchsia-950",
+        "group": "fuchsia",
+        "shade": 950,
+        "label": "Fuchsia 950",
+        "hex": "#4a044e",
+        "oklch": "oklch(29.3% 0.136 325.661)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "pink-50",
+        "group": "pink",
+        "shade": 50,
+        "label": "Pink 50",
+        "hex": "#fdf2f8",
+        "oklch": "oklch(97.1% 0.014 343.198)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "pink-100",
+        "group": "pink",
+        "shade": 100,
+        "label": "Pink 100",
+        "hex": "#fce7f3",
+        "oklch": "oklch(94.8% 0.028 342.258)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "pink-200",
+        "group": "pink",
+        "shade": 200,
+        "label": "Pink 200",
+        "hex": "#fbcfe8",
+        "oklch": "oklch(89.9% 0.061 343.231)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "pink-300",
+        "group": "pink",
+        "shade": 300,
+        "label": "Pink 300",
+        "hex": "#f9a8d4",
+        "oklch": "oklch(82.3% 0.12 346.018)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "pink-400",
+        "group": "pink",
+        "shade": 400,
+        "label": "Pink 400",
+        "hex": "#f472b6",
+        "oklch": "oklch(71.8% 0.202 349.761)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "pink-500",
+        "group": "pink",
+        "shade": 500,
+        "label": "Pink 500",
+        "hex": "#ec4899",
+        "oklch": "oklch(65.6% 0.241 354.308)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "pink-600",
+        "group": "pink",
+        "shade": 600,
+        "label": "Pink 600",
+        "hex": "#db2777",
+        "oklch": "oklch(59.2% 0.249 0.584)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "pink-700",
+        "group": "pink",
+        "shade": 700,
+        "label": "Pink 700",
+        "hex": "#be185d",
+        "oklch": "oklch(52.5% 0.223 3.958)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "pink-800",
+        "group": "pink",
+        "shade": 800,
+        "label": "Pink 800",
+        "hex": "#9d174d",
+        "oklch": "oklch(45.9% 0.187 3.815)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "pink-900",
+        "group": "pink",
+        "shade": 900,
+        "label": "Pink 900",
+        "hex": "#831843",
+        "oklch": "oklch(40.8% 0.153 2.432)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "pink-950",
+        "group": "pink",
+        "shade": 950,
+        "label": "Pink 950",
+        "hex": "#500724",
+        "oklch": "oklch(28.4% 0.109 3.907)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "rose-50",
+        "group": "rose",
+        "shade": 50,
+        "label": "Rose 50",
+        "hex": "#fff1f2",
+        "oklch": "oklch(96.9% 0.015 12.422)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "rose-100",
+        "group": "rose",
+        "shade": 100,
+        "label": "Rose 100",
+        "hex": "#ffe4e6",
+        "oklch": "oklch(94.1% 0.03 12.58)",
+        "text_color": "#000000",
+        "status": "Inactive"
+    },
+    {
+        "slug": "rose-200",
+        "group": "rose",
+        "shade": 200,
+        "label": "Rose 200",
+        "hex": "#fecdd3",
+        "oklch": "oklch(89.2% 0.058 10.001)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "rose-300",
+        "group": "rose",
+        "shade": 300,
+        "label": "Rose 300",
+        "hex": "#fda4af",
+        "oklch": "oklch(81% 0.117 11.638)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "rose-400",
+        "group": "rose",
+        "shade": 400,
+        "label": "Rose 400",
+        "hex": "#fb7185",
+        "oklch": "oklch(71.2% 0.194 13.428)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "rose-500",
+        "group": "rose",
+        "shade": 500,
+        "label": "Rose 500",
+        "hex": "#f43f5e",
+        "oklch": "oklch(64.5% 0.246 16.439)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "rose-600",
+        "group": "rose",
+        "shade": 600,
+        "label": "Rose 600",
+        "hex": "#e11d48",
+        "oklch": "oklch(58.6% 0.253 17.585)",
+        "text_color": "#000000",
+        "status": "Active"
+    },
+    {
+        "slug": "rose-700",
+        "group": "rose",
+        "shade": 700,
+        "label": "Rose 700",
+        "hex": "#be123c",
+        "oklch": "oklch(51.4% 0.222 16.935)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "rose-800",
+        "group": "rose",
+        "shade": 800,
+        "label": "Rose 800",
+        "hex": "#9f1239",
+        "oklch": "oklch(45.5% 0.188 13.697)",
+        "text_color": "#ffffff",
+        "status": "Active"
+    },
+    {
+        "slug": "rose-900",
+        "group": "rose",
+        "shade": 900,
+        "label": "Rose 900",
+        "hex": "#881337",
+        "oklch": "oklch(41% 0.159 10.272)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    },
+    {
+        "slug": "rose-950",
+        "group": "rose",
+        "shade": 950,
+        "label": "Rose 950",
+        "hex": "#4c0519",
+        "oklch": "oklch(27.1% 0.105 12.094)",
+        "text_color": "#ffffff",
+        "status": "Inactive"
+    }
+]

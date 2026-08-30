@@ -16,8 +16,8 @@
 </script>
 
 <MenubarPrimitive.GroupHeading
+    data-slot="menubar-group-heading"
     class={cn('px-2 py-1.5 text-sm font-medium data-[inset]:pl-8', className)}
     data-inset={inset}
-    data-slot="menubar-group-heading"
     bind:ref
     {...restProps} />

@@ -2,7 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\AccountService;
+use App\Services\CategoryService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
 use Inertia\Middleware;
 
@@ -37,15 +40,16 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $method = $request->method();
+        $authed = (bool) $request->user();
 
         return array_merge(parent::share($request), [
             'csrf_token' => csrf_token(),
             'auth' => [
-                'user' => fn () => $request->user()
-                    ? $request->user()->only('id', 'name', 'email')
+                'user' => fn () => $authed
+                    ? $request->user()->only('id', 'name', 'email', 'theme_preference')
                     : null,
-                'permissions' => fn () => $request->user()
-                    ? [] // $request->user()->getPermissionsViaRoles()->pluck('name')->toArray()
+                'permissions' => fn () => $authed
+                    ? ($request->user()->getPermissionsViaRoles()->pluck('name')->toArray() ?? [])
                     : null,
             ],
             'flash' => [
@@ -57,6 +61,11 @@ class HandleInertiaRequests extends Middleware
                 'app_name' => config('app.name'),
                 'current_route_name' => fn () => $method === 'GET' ? $request->route()->getName() : null,
                 'previous_route_name' => fn () => $method === 'GET' ? Route::getPreviousName() : null,
+            ],
+            'static' => [
+                'accounts' => fn (): Collection => $authed ? AccountService::getAccountsByUser($request->user()) : collect(),
+                'categories' => fn (): Collection => $authed ? CategoryService::getCategories() : collect(),
+                'groupedCategories' => fn (): Collection => $authed ? CategoryService::getGroupedCategories() : collect(),
             ],
         ]);
     }

@@ -12,56 +12,63 @@
     --radius-lg: var(--radius);
     --radius-xl: calc(var(--radius) + 4px);
 
-    /* Inherit from root/DaisyUI base variables */
-    /* --color-background: color-mix(in oklab, var(--color-base-100) 60%, #ffffff 100%); */
+    /* Base background/foreground */
     --color-background: var(--color-base-100);
     --color-foreground: var(--color-base-content);
 
-    --color-card: var(--color-base-100);
+    /* Card */
+    --color-card: var(--color-white);
+    /* --color-card: var(--color-base-100); */
     --color-card-foreground: var(--color-base-content);
 
+    /* Popover */
     --color-popover: var(--color-base-100);
     --color-popover-foreground: var(--color-base-content);
 
+    /* Primary */
     --color-primary: var(--color-primary);
     --color-primary-foreground: var(--color-primary-content);
+
+    /* Secondary */
     --color-secondary: var(--color-secondary);
     --color-secondary-foreground: var(--color-secondary-content);
+
+    /* Muted */
     --color-muted: var(--color-neutral-content);
     --color-muted-foreground: var(--color-neutral);
+
+    /* Accent */
     --color-accent: var(--color-accent);
     --color-accent-foreground: var(--color-accent-content);
-    --color-destructive: var(--color-error);
 
+    /* Destructive */
+    --color-destructive: var(--color-error);
+    --color-destructive-foreground: var(--color-error-content);
+
+    /* Border / Input / Ring */
     --color-border: var(--color-base-300);
     --color-input: var(--color-base-300);
     --color-ring: var(--color-primary);
 
-    /* Charts can be customized later; default to primary/secondary/accent shades */
-    --color-chart-1: var(--color-primary-600);
-    --color-chart-2: var(--color-secondary-600);
-    --color-chart-3: var(--color-accent-600);
-    --color-chart-4: var(--color-success-600);
-    --color-chart-5: var(--color-info-600);
+    /* Charts — derive from theme primitives */
+    --color-chart-1: var(--color-primary);
+    --color-chart-2: var(--color-secondary);
+    --color-chart-3: var(--color-accent);
+    --color-chart-4: var(--color-success);
+    --color-chart-5: var(--color-info);
 
-    /* Sidebar inherits from base color tokens */
-    --color-sidebar: var(--color-primary-content);
-    --color-sidebar-foreground: var(--color-primary);
-
+    /* Sidebar — standard base mapping */
+    --color-sidebar: var(--color-base-100);
+    --color-sidebar-foreground: var(--color-base-content);
     --color-sidebar-primary: var(--color-primary);
     --color-sidebar-primary-foreground: var(--color-primary-content);
     --color-sidebar-accent: var(--color-accent);
     --color-sidebar-accent-foreground: var(--color-accent-content);
-
-    --color-sidebar-border: var(--color-primary);
-    --color-sidebar-ring: var(--color-primary);
+    --color-sidebar-border: var(--color-base-300);
+    --color-sidebar-ring: var(--color-base-300);
 }
 
 @layer base {
-    /* * {
-        @apply border-border outline-ring/50;
-    } */
-
     body {
         @apply bg-background text-foreground;
     }

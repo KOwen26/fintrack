@@ -6,11 +6,10 @@
     import { cn } from '@utilities/shadcn';
 
     interface Props extends RestProps {
-        wrapperClass?: string;
-        wrapperProps?: HTMLAttributes<HTMLDivElement>;
+        wrapperProps?: HTMLAttributes<HTMLElement>;
 
         headerClass?: string;
-        headerProps?: HTMLAttributes<HTMLDivElement>;
+        headerProps?: HTMLAttributes<HTMLElement>;
         headerActionClass?: string;
         header?: Snippet;
         headerAction?: Snippet;
@@ -19,12 +18,14 @@
         title?: string | Snippet;
 
         footerClass?: string;
-        footerProps?: HTMLAttributes<HTMLDivElement>;
+        footerProps?: HTMLAttributes<HTMLElement>;
         footer?: Snippet;
+
+        class?: string;
+        contentClass?: string;
     }
 
     let {
-        wrapperClass,
         wrapperProps = {},
 
         headerClass,
@@ -40,6 +41,7 @@
         footerProps = {},
         footer,
 
+        contentClass,
         class: _class,
         children,
         ...props
@@ -47,17 +49,17 @@
 </script>
 
 <div
-    class={cn(
-        // 'bg-card text-card-foreground flex flex-col gap-5 rounded-md border border-neutral-500 py-5',
-        'card card-border @container/card gap-5 bg-white p-5',
-        wrapperClass
-    )}
     data-slot="card"
+    class={cn(
+        '@container/card bg-card p-5 text-card-foreground',
+        'flex flex-col gap-5 rounded-md border border-border',
+        _class
+    )}
     {...wrapperProps}>
     {#if title || header || headerAction}
         {@render HeaderSnippet()}
     {/if}
-    <div class={cn('card-body p-0', _class)} data-slot="card-content" {...props}>
+    <div data-slot="card-content" class={cn(contentClass)} {...props}>
         {@render children?.()}
     </div>
     {#if footer}
@@ -67,29 +69,31 @@
 
 {#snippet HeaderSnippet()}
     <header
+        data-slot="card-header"
         class={cn(
             '@container/card-header flex items-center gap-1.5',
             // 'grid auto-rows-min grid-rows-[auto_auto]  px-5 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-5',
             headerClass
         )}
-        data-slot="card-header"
         {...headerProps}>
         {#if typeof title === 'function'}
             {@render title?.()}
         {:else}
             <h2
-                class={cn('card-title leading-none font-semibold', titleClass)}
-                data-slot="card-title">
+                data-slot="card-title"
+                class={cn('card-title leading-none font-semibold', titleClass)}>
                 {title}
             </h2>
         {/if}
+
         {@render header?.()}
+
         <div
+            data-slot="card-header-action"
             class={cn(
                 // 'col-start-2 row-span-2 row-start-1 self-start justify-self-end',
                 headerActionClass
-            )}
-            data-slot="card-header-action">
+            )}>
             {@render headerAction?.()}
         </div>
     </header>
@@ -97,12 +101,12 @@
 
 {#snippet FooterSnippet()}
     <div
+        data-slot="card-footer"
         class={cn(
             // 'flex items-center px-5 [.border-t]:pt-5',
             'card-footer',
             footerClass
         )}
-        data-slot="card-footer"
         {...footerProps}>
         {@render footer?.()}
     </div>

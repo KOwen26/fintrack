@@ -63,7 +63,7 @@
 
     const alertClass = $derived(
         cn(
-            'alert gap-y-0.5 rounded-lg border px-4 py-3 text-sm has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current bg-card text-card-foreground shadow-sm',
+            'alert gap-y-0.5 rounded-lg border bg-card px-4 py-3 text-sm text-card-foreground shadow-sm has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current',
             colorVariants[color],
             variant === 'outline' ? 'alert-outline' : '',
             variant === 'outline-dash' ? 'alert-dash' : '',
@@ -73,17 +73,17 @@
     );
 </script>
 
-<div bind:this={ref} class={alertClass} data-slot="alert" role="alert" {...restProps}>
+<div bind:this={ref} data-slot="alert" class={alertClass} role="alert" {...restProps}>
     {#if icon}
         {@render icon?.()}
     {/if}
     {#if title}
         <div
+            data-slot="alert-title"
             class={cn(
                 'line-clamp-1 min-h-4 font-medium tracking-tight text-current',
                 icon && 'col-start-2'
-            )}
-            data-slot="alert-title">
+            )}>
             {#if typeof title === 'function'}
                 {@render title?.()}
             {:else}
@@ -93,11 +93,11 @@
     {/if}
     {#if description}
         <div
+            data-slot="alert-description"
             class={cn(
                 'text-base-content/80 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed',
                 icon && 'col-start-2'
-            )}
-            data-slot="alert-description">
+            )}>
             {#if typeof description === 'function'}
                 {@render description?.()}
             {:else}

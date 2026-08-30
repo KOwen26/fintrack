@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tambah Akun – FinTrack</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:wght@400;500&display=swap"
+            rel="stylesheet" />
+
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['DM Sans', 'sans-serif'],
+                            mono: ['DM Mono', 'monospace'],
+                        },
+                    },
+                },
+            };
+        </script>
+
+        <style>
+            :root {
+                --bg: #edf1ee;
+                --surface: #ffffff;
+                --border: #e2eae5;
+                --text-1: #1a2820;
+                --text-2: #5e706a;
+                --text-3: #96a8a2;
+                --sage: #4e7a5a;
+                --sage-dk: #3a6044;
+                --sage-lt: #dde9e1;
+                --teal: #29887c;
+                --teal-lt: #e3f5f2;
+                --red: #c24540;
+                --red-lt: #fbeeed;
+                --amber: #a07020;
+                --amber-lt: #fbf4e3;
+            }
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: 'DM Sans', sans-serif;
+                background: var(--bg);
+                color: var(--text-1);
+                min-height: 100vh;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            /* ── LAYOUT ─────────────────────────────────── */
+            .shell {
+                max-width: 430px;
+                margin: 0 auto;
+                padding-bottom: 48px;
+            }
+
+            .card {
+                background: var(--surface);
+                border-radius: 18px;
+                overflow: hidden;
+            }
+
+            .f-divider {
+                border-top: 1px solid var(--border);
+                margin: 0 20px;
+            }
+
+            /* ── SECTION LABEL ──────────────────────────── */
+            .sec-label {
+                font-size: 0.63rem;
+                font-weight: 700;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                color: var(--text-3);
+                margin-bottom: 4px;
+            }
+
+            /* ── FORM CONTROL & INPUTS ──────────────────── */
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                padding: 13px 20px;
+            }
+
+            .input-field {
+                width: 100%;
+                border: none;
+                outline: none;
+                background: transparent;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.9rem;
+                color: var(--text-1);
+                font-weight: 500;
+                margin-top: 4px;
+            }
+            .input-field::placeholder {
+                color: var(--text-3);
+                font-weight: 400;
+            }
+
+            .select-field {
+                border: none;
+                outline: none;
+                background: transparent;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.9rem;
+                color: var(--text-1);
+                font-weight: 500;
+                cursor: pointer;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2396A8A2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right center;
+                padding-right: 20px;
+            }
+
+            /* ── SWITCHER segmented controller ─────────── */
+            .switcher {
+                display: flex;
+                gap: 5px;
+                padding: 5px;
+                background: var(--surface);
+                border-radius: 13px;
+            }
+            .sw-btn {
+                flex: 1;
+                padding: 8px 4px;
+                border-radius: 9px;
+                border: none;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.68rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.18s;
+                color: var(--text-3);
+                background: transparent;
+                white-space: nowrap;
+            }
+            .sw-btn.active {
+                background: var(--sage);
+                color: #fff;
+            }
+
+            /* ── LIVE PREVIEW ACCOUNT CARD ──────────────── */
+            .acct-card {
+                border-radius: 20px;
+                padding: 22px 22px 20px;
+                position: relative;
+                overflow: hidden;
+                transition: background 0.3s ease;
+            }
+            .acct-card .deco-a {
+                position: absolute;
+                top: -50px;
+                right: -50px;
+                width: 180px;
+                height: 180px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.06);
+                pointer-events: none;
+            }
+            .acct-card .deco-b {
+                position: absolute;
+                bottom: -30px;
+                right: 40px;
+                width: 110px;
+                height: 110px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.04);
+                pointer-events: none;
+            }
+
+            .bal-label {
+                font-size: 0.63rem;
+                font-weight: 600;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.45);
+                margin-bottom: 5px;
+            }
+            .bal-prefix {
+                font-family: 'DM Mono', monospace;
+                font-size: 0.85rem;
+                color: rgba(255, 255, 255, 0.4);
+            }
+            .bal-number {
+                font-family: 'DM Mono', monospace;
+                font-size: clamp(1.8rem, 8vw, 2.4rem);
+                font-weight: 500;
+                color: #fff;
+                letter-spacing: -0.025em;
+                line-height: 1;
+            }
+
+            /* ── COLOR MATRIX PICKER ───────────────────── */
+            .color-grid {
+                display: flex;
+                gap: 10px;
+                margin-top: 8px;
+            }
+            .color-dot {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                cursor: pointer;
+                border: 2px solid transparent;
+                transition:
+                    transform 0.15s,
+                    border-color 0.15s;
+            }
+            .color-dot:hover {
+                transform: scale(1.1);
+            }
+            .color-dot.active {
+                border-color: var(--surface);
+                box-shadow: 0 0 0 2px var(--sage);
+            }
+
+            /* ── BUTTONS ────────────────────────────────── */
+            .btn {
+                flex: 1;
+                padding: 15px;
+                border-radius: 14px;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.9rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.15s ease;
+                border: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+            }
+            .btn-submit {
+                background: var(--sage);
+                color: #fff;
+            }
+            .btn-submit:hover {
+                background: var(--sage-dk);
+            }
+            .btn-cancel {
+                background: var(--surface);
+                color: var(--text-2);
+                border: 1.5px solid var(--border);
+            }
+            .btn-cancel:hover {
+                background: var(--bg);
+            }
+
+            .icon-btn {
+                width: 36px;
+                height: 36px;
+                border-radius: 11px;
+                background: var(--surface);
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .icon-btn:hover {
+                background: var(--sage-lt);
+            }
+
+            .mono {
+                font-family: 'DM Mono', monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="shell">
+            <div
+                style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 14px 16px;
+                ">
+                <button class="icon-btn" aria-label="Kembali" onclick="window.history.back()">
+                    <svg
+                        width="17"
+                        height="17"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="var(--text-1)"
+                        stroke-width="2.3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M19 12H5M12 5l-7 7 7 7" />
+                    </svg>
+                </button>
+                <span
+                    style="
+                        font-size: 0.88rem;
+                        font-weight: 600;
+                        color: var(--text-1);
+                        letter-spacing: -0.01em;
+                    "
+                    >Tambah Akun Baru</span
+                >
+                <div style="width: 36px"></div>
+            </div>
+
+            <div class="shell mb-3 px-4">
+                <div class="switcher">
+                    <button class="sw-btn active" id="sw-bank" onclick="changeAccountType('bank')">
+                        Tabungan
+                    </button>
+                    <button class="sw-btn" id="sw-ewallet" onclick="changeAccountType('ewallet')">
+                        E-Wallet
+                    </button>
+                    <button class="sw-btn" id="sw-cash" onclick="changeAccountType('cash')">
+                        Kas Tunai
+                    </button>
+                    <button class="sw-btn" id="sw-credit" onclick="changeAccountType('credit')">
+                        Kartu Kredit
+                    </button>
+                </div>
+            </div>
+
+            <div class="mx-4 mb-4">
+                <div class="acct-card" id="preview-card" style="background: #1b4d45">
+                    <div class="deco-a"></div>
+                    <div class="deco-b"></div>
+
+                    <div
+                        style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            margin-bottom: 24px;
+                            position: relative;
+                            z-index: 1;
+                        ">
+                        <div style="display: flex; align-items: center; gap: 11px">
+                            <div
+                                id="preview-icon"
+                                style="
+                                    width: 38px;
+                                    height: 38px;
+                                    border-radius: 11px;
+                                    background: rgba(255, 255, 255, 0.12);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 1.15rem;
+                                ">
+                                🏦
+                            </div>
+                            <div>
+                                <p
+                                    id="preview-provider"
+                                    style="
+                                        font-size: 0.68rem;
+                                        font-weight: 600;
+                                        color: rgba(255, 255, 255, 0.45);
+                                        letter-spacing: 0.06em;
+                                        text-transform: uppercase;
+                                        margin-bottom: 2px;
+                                    ">
+                                    BCA
+                                </p>
+                                <p
+                                    id="preview-name"
+                                    style="
+                                        font-size: 0.93rem;
+                                        font-weight: 600;
+                                        color: #fff;
+                                        line-height: 1.2;
+                                    ">
+                                    Tabungan Utama
+                                </p>
+                            </div>
+                        </div>
+                        <span
+                            class="mono"
+                            style="font-size:0.68rem; color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.08); padding:3px 8px; border-radius:6px; uppercase"
+                            id="preview-currency-tag"
+                            >IDR</span
+                        >
+                    </div>
+
+                    <div style="position: relative; z-index: 1">
+                        <p class="bal-label" id="preview-balance-label">Saldo Awal</p>
+                        <div style="display: flex; align-items: flex-start; gap: 4px">
+                            <span class="bal-prefix" style="margin-top: 4px">Rp</span>
+                            <span class="bal-number" id="preview-balance">0</span>
+                        </div>
+                    </div>
+
+                    <div
+                        style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            padding-top: 14px;
+                            position: relative;
+                            z-index: 1;
+                        ">
+                        <p
+                            class="mono"
+                            id="preview-number"
+                            style="
+                                font-size: 0.78rem;
+                                color: rgba(255, 255, 255, 0.4);
+                                letter-spacing: 0.12em;
+                            ">
+                            •••• •••• •••• 1234
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mx-4">
+                <div class="form-group">
+                    <label class="sec-label" for="in-acct-name">Nama Kustom Akun</label>
+                    <input
+                        type="text"
+                        id="in-acct-name"
+                        class="input-field"
+                        placeholder="Contoh: Tabungan Utama, Dompet Harian"
+                        value="Tabungan Utama"
+                        oninput="updatePreview()" />
+                </div>
+
+                <div class="f-divider"></div>
+
+                <div class="form-group">
+                    <label class="sec-label" id="label-provider" for="in-acct-provider"
+                        >Nama Bank / Penyedia</label
+                    >
+                    <input
+                        type="text"
+                        id="in-acct-provider"
+                        class="input-field"
+                        placeholder="Contoh: BCA, Mandiri, GoPay, Grab"
+                        value="BCA"
+                        oninput="updatePreview()" />
+                </div>
+
+                <div class="f-divider"></div>
+
+                <div class="form-group">
+                    <label class="sec-label" id="label-balance" for="in-acct-balance"
+                        >Saldo Awal</label
+                    >
+                    <input
+                        type="text"
+                        pattern="[0-9.]*"
+                        id="in-acct-balance"
+                        class="input-field mono text-lg"
+                        placeholder="0"
+                        oninput="formatAndUpdateCurrency(this)" />
+                </div>
+
+                <div class="f-divider"></div>
+
+                <div class="form-group" id="wrapper-account-number">
+                    <label class="sec-label" id="label-number" for="in-acct-number"
+                        >Nomor Rekening</label
+                    >
+                    <input
+                        type="text"
+                        id="in-acct-number"
+                        class="input-field mono"
+                        placeholder="Masukkan nomor rekening..."
+                        oninput="updatePreview()" />
+                </div>
+            </div>
+
+            <div class="card mx-4 mt-3" id="credit-meta-section" style="display: none">
+                <div class="form-group">
+                    <label class="sec-label" for="in-credit-limit"
+                        >Batas Limit Kredit (Limit)</label
+                    >
+                    <input
+                        type="text"
+                        pattern="[0-9.]*"
+                        id="in-credit-limit"
+                        class="input-field mono"
+                        placeholder="Rp 0"
+                        oninput="
+                            this.value =
+                                parseInt(this.value.replace(/\D/g, ''), 10).toLocaleString(
+                                    'id-ID'
+                                ) || ''
+                        " />
+                </div>
+
+                <div class="f-divider"></div>
+
+                <div style="display: flex; width: 100%">
+                    <div class="form-group" style="flex: 1; padding-right: 10px">
+                        <label class="sec-label" for="select-due-date">Siklus Jatuh Tempo</label>
+                        <select class="select-field mt-1 w-full" id="select-due-date">
+                            <option value="5">Tanggal 5 setiap bulan</option>
+                            <option value="10">Tanggal 10 setiap bulan</option>
+                            <option value="15" selected>Tanggal 15 setiap bulan</option>
+                            <option value="20">Tanggal 20 setiap bulan</option>
+                            <option value="25">Tanggal 25 setiap bulan</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mx-4 mt-3">
+                <div class="form-group">
+                    <label class="sec-label">Mata Uang Akun</label>
+                    <div style="margin-top: 4px">
+                        <select
+                            class="select-field w-full text-sm"
+                            id="select-currency"
+                            onchange="updatePreview()">
+                            <option value="IDR" selected>IDR - Indonesian Rupiah</option>
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="SGD">SGD - Singapore Dollar</option>
+                            <option value="EUR">EUR - Euro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="f-divider"></div>
+
+                <div class="form-group">
+                    <label class="sec-label">Warna Tema Kartu</label>
+                    <div class="color-grid">
+                        <div
+                            class="color-dot active"
+                            style="background: #1b4d45"
+                            onclick="selectCardColor('#1B4D45', this)"></div>
+                        <div
+                            class="color-dot"
+                            style="background: #273d2c"
+                            onclick="selectCardColor('#273D2C', this)"></div>
+                        <div
+                            class="color-dot"
+                            style="background: #3d2f1a"
+                            onclick="selectCardColor('#3D2F1A', this)"></div>
+                        <div
+                            class="color-dot"
+                            style="background: #252b3b"
+                            onclick="selectCardColor('#252B3B', this)"></div>
+                        <div
+                            class="color-dot"
+                            style="background: #5b2938"
+                            onclick="selectCardColor('#5B2938', this)"></div>
+                        <div
+                            class="color-dot"
+                            style="background: #4a3e66"
+                            onclick="selectCardColor('#4A3E66', this)"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin: 24px 16px 0">
+                <button class="btn-cancel btn" type="button" onclick="window.history.back()">
+                    Batal
+                </button>
+                <button class="btn-submit btn" type="button" onclick="submitAccountForm()">
+                    Simpan Akun
+                </button>
+            </div>
+        </div>
+
+        <script>
+            const SCHEMAS = {
+                bank: {
+                    icon: '🏦',
+                    providerLabel: 'Nama Bank / Institusi',
+                    providerPlaceholder: 'Contoh: BCA, Bank Mandiri, BNI',
+                    balanceLabel: 'Saldo Awal',
+                    numberLabel: 'Nomor Rekening',
+                    numberPlaceholder: 'Masukkan nomor rekening...',
+                    defaultColor: '#1B4D45',
+                    showNumber: true,
+                    showCreditMeta: false,
+                },
+                ewallet: {
+                    icon: '💚',
+                    providerLabel: 'Nama Layanan E-Wallet',
+                    providerPlaceholder: 'Contoh: GoPay, OVO, Dana, LinkAja',
+                    balanceLabel: 'Saldo Awal',
+                    numberLabel: 'Nomor Telepon terdaftar',
+                    numberPlaceholder: 'Contoh: 081234567890',
+                    defaultColor: '#273D2C',
+                    showNumber: true,
+                    showCreditMeta: false,
+                },
+                cash: {
+                    icon: '💵',
+                    providerLabel: 'Keterangan Lokasi Tunai',
+                    providerPlaceholder: 'Contoh: Dompet Utama, Brankas Rumah',
+                    balanceLabel: 'Jumlah Kas Tunai',
+                    defaultColor: '#3D2F1A',
+                    showNumber: false,
+                    showCreditMeta: false,
+                },
+                credit: {
+                    icon: '💳',
+                    providerLabel: 'Bank Penerbit Kartu',
+                    providerPlaceholder: 'Contoh: BCA Platinum, Mandiri Visa',
+                    balanceLabel: 'Plafond Kredit Tersedia',
+                    numberLabel: '4 Digit Terakhir Kartu',
+                    numberPlaceholder: 'Contoh: 5678',
+                    defaultColor: '#252B3B',
+                    showNumber: true,
+                    showCreditMeta: true,
+                },
+            };
+
+            let activeAccountType = 'bank';
+            let selectedCardColorHex = '#1B4D45';
+
+            /**
+             * Switches structural configuration rules when the user touches type segments
+             * @param {string} typeKey - Chosen schema identity mapping
+             */
+            function changeAccountType(typeKey) {
+                activeAccountType = typeKey;
+                const config = SCHEMAS[typeKey];
+
+                // Handle segmented tab indicator controls
+                document
+                    .querySelectorAll('.sw-btn')
+                    .forEach((btn) => btn.classList.remove('active'));
+                document.getElementById(`sw-${typeKey}`).classList.add('active');
+
+                // Update form labels dynamically
+                document.getElementById('preview-icon').textContent = config.icon;
+                document.getElementById('label-provider').textContent = config.providerLabel;
+                document.getElementById('in-acct-provider').placeholder =
+                    config.providerPlaceholder;
+                document.getElementById('label-balance').textContent = config.balanceLabel;
+                document.getElementById('preview-balance-label').textContent = config.balanceLabel;
+
+                // Toggle number component wrappers smoothly
+                const numWrapper = document.getElementById('wrapper-account-number');
+                if (config.showNumber) {
+                    numWrapper.style.display = 'flex';
+                    document.getElementById('label-number').textContent = config.numberLabel;
+                    document.getElementById('in-acct-number').placeholder =
+                        config.numberPlaceholder;
+                } else {
+                    numWrapper.style.display = 'none';
+                }
+
+                // Toggle specific credit parameters block
+                document.getElementById('credit-meta-section').style.display = config.showCreditMeta
+                    ? 'block'
+                    : 'none';
+
+                // Auto-update dots and assign default target color sets
+                autoSelectColorDot(config.defaultColor);
+                updatePreview();
+            }
+
+            /**
+             * Sets color palette codes inside state and triggers theme translation frames
+             */
+            function selectCardColor(hexColor, dotElement) {
+                selectedCardColorHex = hexColor;
+                document
+                    .querySelectorAll('.color-dot')
+                    .forEach((dot) => dot.classList.remove('active'));
+                if (dotElement) dotElement.classList.add('active');
+
+                document.getElementById('preview-card').style.background = hexColor;
+            }
+
+            /**
+             * Helper algorithm syncing dots automatically based on schema guidelines
+             */
+            function autoSelectColorDot(targetHex) {
+                selectedCardColorHex = targetHex;
+                document.getElementById('preview-card').style.background = targetHex;
+
+                document.querySelectorAll('.color-dot').forEach((dot) => {
+                    // Compare inline backgrounds to pick the correct active layout token
+                    const dotBg = dot.style.backgroundColor;
+                    dot.classList.remove('active');
+
+                    // Basic check matches native rgb conversions across browsers
+                    if (
+                        dotBg.includes(targetHex) ||
+                        dot.style.background.toLowerCase().includes(targetHex.toLowerCase())
+                    ) {
+                        dot.classList.add('active');
+                    }
+                });
+            }
+
+            /**
+             * Real-time rendering synchronization connecting input elements to layout previews
+             */
+            function updatePreview() {
+                const nameVal = document.getElementById('in-acct-name').value.trim();
+                const providerVal = document.getElementById('in-acct-provider').value.trim();
+                const numVal = document.getElementById('in-acct-number').value.trim();
+                const currencyVal = document.getElementById('select-currency').value;
+
+                document.getElementById('preview-name').textContent = nameVal || 'Nama Akun';
+                document.getElementById('preview-provider').textContent = providerVal || 'Penyedia';
+                document.getElementById('preview-currency-tag').textContent = currencyVal;
+
+                const numPreviewElement = document.getElementById('preview-number');
+                if (SCHEMAS[activeAccountType].showNumber) {
+                    numPreviewElement.style.display = 'block';
+                    if (activeAccountType === 'credit') {
+                        numPreviewElement.textContent = `•••• •••• •••• ${numVal || '5678'}`;
+                    } else if (activeAccountType === 'ewallet') {
+                        numPreviewElement.textContent = numVal || '0812-3456-7890';
+                    } else {
+                        numPreviewElement.textContent = numVal
+                            ? formatAccountNumberSpacing(numVal)
+                            : '•••• •••• •••• 1234';
+                    }
+                } else {
+                    numPreviewElement.style.display = 'none';
+                }
+            }
+
+            /**
+             * Formatting utility adding cosmetic gaps to standard raw typing
+             */
+            function formatAccountNumberSpacing(str) {
+                return str
+                    .replace(/\W/g, '')
+                    .replace(/(.{4})/g, '$1 ')
+                    .trim();
+            }
+
+            /**
+             * Thousand-separator processor mirroring transaction input configurations
+             */
+            function formatAndUpdateCurrency(input) {
+                let rawDigits = input.value.replace(/\D/g, '');
+                if (rawDigits === '') {
+                    input.value = '';
+                    document.getElementById('preview-balance').textContent = '0';
+                    return;
+                }
+                let formatted = parseInt(rawDigits, 10).toLocaleString('id-ID');
+                input.value = formatted;
+                document.getElementById('preview-balance').textContent = formatted;
+            }
+
+            /**
+             * Form data evaluation and verification sequence
+             */
+            function submitAccountForm() {
+                const accountName = document.getElementById('in-acct-name').value.trim();
+                const balance = document.getElementById('in-acct-balance').value;
+
+                if (!accountName) {
+                    alert('Mohon masukkan nama akun kustom terlebih dahulu.');
+                    return;
+                }
+                if (!balance) {
+                    alert('Mohon isi nominal saldo awal akun (bisa diisi 0).');
+                    return;
+                }
+
+                alert(`Akun "${accountName}" berhasil didaftarkan ke sistem FinTrack!`);
+                window.history.back();
+            }
+
+            // Self running initiator loops matching initial state
+            document.addEventListener('DOMContentLoaded', () => {
+                updatePreview();
+            });
+        </script>
+    </body>
+</html>

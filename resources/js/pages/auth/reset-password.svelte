@@ -31,7 +31,7 @@
 <AuthLayout>
     <h1>Konfirmasi Password Baru</h1>
     <form class="space-y-4" {onsubmit}>
-        <Field title="Email" error={form.errors.email}>
+        <Field error={form.errors.email} title="Email">
             <Input
                 name="email"
                 autocomplete="email"
@@ -40,11 +40,11 @@
                 bind:value={form.email} />
         </Field>
 
-        <Field title="Password" error={form.errors.password}>
+        <Field error={form.errors.password} title="Password">
             <PasswordInput name="password" bind:value={form.password} />
         </Field>
 
-        <Field title="Konfirmasi Password" error={form.errors.password_confirmation}>
+        <Field error={form.errors.password_confirmation} title="Konfirmasi Password">
             <PasswordInput name="password_confirmation" bind:value={form.password_confirmation} />
         </Field>
 

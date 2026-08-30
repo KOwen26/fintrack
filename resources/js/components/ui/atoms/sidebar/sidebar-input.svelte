@@ -14,9 +14,9 @@
 </script>
 
 <Input
+    data-slot="sidebar-input"
     class={cn('bg-background h-8 w-full shadow-none', className)}
     data-sidebar="input"
-    data-slot="sidebar-input"
     bind:ref
     bind:value
     {...restProps} />

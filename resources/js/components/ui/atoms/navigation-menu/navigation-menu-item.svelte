@@ -11,7 +11,7 @@
 </script>
 
 <NavigationMenuPrimitive.Item
-    class={cn('relative', className)}
     data-slot="navigation-menu-item"
+    class={cn('relative', className)}
     bind:ref
     {...restProps} />

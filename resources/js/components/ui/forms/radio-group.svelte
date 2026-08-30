@@ -21,8 +21,8 @@
 </script>
 
 <RadioGroupPrimitive.Root
-    class={cn('grid gap-3', className)}
     data-slot="radio-group"
+    class={cn('grid gap-3', className)}
     bind:ref
     bind:value
     {...restProps} />

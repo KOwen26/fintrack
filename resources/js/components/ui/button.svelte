@@ -139,10 +139,10 @@
 {#if href}
     <a
         bind:this={ref}
+        data-slot="button"
         class={buttonClass}
         {@attach useRouter && routerAttachment}
         aria-disabled={disabled}
-        data-slot="button"
         href={disabled ? undefined : href}
         role={disabled ? 'link' : undefined}
         tabindex={disabled ? -1 : undefined}
@@ -155,7 +155,7 @@
         {/if}
     </a>
 {:else}
-    <button bind:this={ref} class={buttonClass} data-slot="button" {disabled} {type} {...props}>
+    <button bind:this={ref} data-slot="button" class={buttonClass} {disabled} {type} {...props}>
         {#if typeof children === 'function'}
             {@render children?.()}
         {:else}

@@ -21,8 +21,7 @@ return [
 
     'ssr' => [
 
-        'enabled' => false,
-        // 'enabled' => (bool) env('INERTIA_SSR_ENABLED', true),
+        'enabled' => (bool) env('INERTIA_SSR_ENABLED', true),
 
         'runtime' => env('INERTIA_SSR_RUNTIME', default: 'node'),
 

@@ -1,4 +1,17 @@
 export default class DateTimeHelper {
+    /**
+     * @param value - Date, ISO string, or timestamp
+     * @param preset - Format preset:
+     *
+     * | preset | Example output |
+     * |---|---|
+     * | `datetime` | `01 Jan 2025 14:30` |
+     * | `datetime-long` | `1 Januari 2025 14.30` |
+     * | `date` | `1 Januari 2025` |
+     * | `time` | `14.30` |
+     *
+     * @example DateTimeHelper.format('2025-01-01T14:30:00', 'date') // "1 Januari 2025"
+     */
     static format(
         value: Date | string | number,
         preset: 'datetime' | 'datetime-long' | 'date' | 'time' = 'datetime'

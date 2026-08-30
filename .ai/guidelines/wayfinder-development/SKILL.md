@@ -28,44 +28,43 @@ The `.form()` variant is always generated — no flags needed.
 
 ```typescript
 // Controller actions — follow the PHP namespace
-import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
-
-// Named routes
-import accounts from '@wayfinder/routes/accounts';
-
-// Enum constants (runtime use)
-import AccountType from '@wayfinder/App/Enums/AccountType';
-import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
 
 // All types (models, enums, shared data, page props, form requests)
 import type { App } from '@wayfinder/types';
+
+import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
+// Enum constants (runtime use)
+import AccountType from '@wayfinder/App/Enums/AccountType';
+import { AccountsController } from '@wayfinder/App/Http/Controllers/AccountsController';
+// Named routes
+import accounts from '@wayfinder/routes/accounts';
 ```
 
 ## Common Methods
 
 ```typescript
 // Full route object { url, method }
-AccountsController.index()
-AccountsController.show({ account: 1 })  // { url: '/accounts/1', method: 'get' }
+AccountsController.index();
+AccountsController.show({ account: 1 }); // { url: '/accounts/1', method: 'get' }
 
 // URL string only — use this with Inertia's useForm / router
-AccountsController.index.url()
-AccountsController.show.url({ account: 1 })  // '/accounts/1'
+AccountsController.index.url();
+AccountsController.show.url({ account: 1 }); // '/accounts/1'
 
 // Explicit HTTP method variants
-AccountsController.index.get()
-AccountsController.store.post()
-AccountsController.update.put({ account: 1 })
-AccountsController.update.patch({ account: 1 })
-AccountsController.destroy.delete({ account: 1 })
+AccountsController.index.get();
+AccountsController.store.post();
+AccountsController.update.put({ account: 1 });
+AccountsController.update.patch({ account: 1 });
+AccountsController.destroy.delete({ account: 1 });
 
 // Form spread — native HTML forms only (NOT Inertia useForm)
 // Produces { action: '/accounts/1?_method=PUT', method: 'post' }
-AccountsController.update.form({ account: 1 })
+AccountsController.update.form({ account: 1 });
 
 // Query parameters
-AccountsController.index.url({ query: { page: 2, sort: 'created_at' } })
-AccountsController.index.url({ mergeQuery: { page: 3 } })
+AccountsController.index.url({ query: { page: 2, sort: 'created_at' } });
+AccountsController.index.url({ mergeQuery: { page: 3 } });
 ```
 
 ## Wayfinder + Inertia
@@ -89,7 +88,11 @@ router.post(AccountsController.archive.url({ account: id }));
 ```
 
 ```svelte
-<form onsubmit={(e) => { e.preventDefault(); form.post(AccountsController.store.url()); }}>
+<form
+    onsubmit={(e) => {
+        e.preventDefault();
+        form.post(AccountsController.store.url());
+    }}>
     <!-- fields -->
 </form>
 ```
@@ -133,17 +136,18 @@ Every PHP-backed enum must have a badge component in `resources/js/components/ui
 ```svelte
 <!-- account-type-badge.svelte -->
 <script lang="ts">
-    import AccountType from '@wayfinder/App/Enums/AccountType';
     import type { App } from '@wayfinder/types';
+
+    import AccountType from '@wayfinder/App/Enums/AccountType';
 
     let { type }: { type: App.Enums.AccountType } = $props();
 
     const config: Record<App.Enums.AccountType, { label: string; class: string }> = {
-        [AccountType.DebitAccount]: { label: 'Debit',       class: 'badge-primary' },
-        [AccountType.CreditCard]:   { label: 'Credit Card', class: 'badge-warning' },
-        [AccountType.CashWallet]:   { label: 'Cash',        class: 'badge-success' },
-        [AccountType.EWallet]:      { label: 'E-Wallet',    class: 'badge-info'    },
-        [AccountType.Investment]:   { label: 'Investment',  class: 'badge-secondary' },
+        [AccountType.DebitAccount]: { label: 'Debit', class: 'badge-primary' },
+        [AccountType.CreditCard]: { label: 'Credit Card', class: 'badge-warning' },
+        [AccountType.CashWallet]: { label: 'Cash', class: 'badge-success' },
+        [AccountType.EWallet]: { label: 'E-Wallet', class: 'badge-info' },
+        [AccountType.Investment]: { label: 'Investment', class: 'badge-secondary' },
     };
 
     const badge = $derived(config[type]);
