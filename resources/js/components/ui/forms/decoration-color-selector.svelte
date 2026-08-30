@@ -54,7 +54,9 @@
 </script>
 
 <div class="@container">
-    <div bind:this={gridEl} class="grid grid-cols-8 gap-2 @md:grid-cols-10 @xl:grid-cols-12">
+    <div
+        bind:this={gridEl}
+        class="grid grid-cols-4 gap-2 @sm:grid-cols-8 @md:grid-cols-10 @xl:grid-cols-12 @3xl:grid-cols-24">
         {#if hasSelection && selectedItem}
             <button
                 style="background-color: {selectedItem.oklch};"
@@ -94,9 +96,8 @@
                     {#snippet trigger()}
                         +{remaining}
                     {/snippet}
-                    {#snippet children()}
-                        {@render fullGrid()}
-                    {/snippet}
+
+                    {@render fullGrid()}
                 </Drawer>
             {:else if variant === 'popover'}
                 <Popover
@@ -108,9 +109,8 @@
                     {#snippet trigger()}
                         +{remaining}
                     {/snippet}
-                    {#snippet children()}
-                        {@render fullGrid()}
-                    {/snippet}
+
+                    {@render fullGrid()}
                 </Popover>
             {:else}
                 <button

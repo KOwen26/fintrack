@@ -16,6 +16,7 @@
     import Card from '@components/ui/card.svelte';
     import DecorationColorSelector from '@components/ui/forms/decoration-color-selector.svelte';
     import DecorationIconSelector from '@components/ui/forms/decoration-icon-selector.svelte';
+    import Field from '@components/ui/forms/field.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';
     import FormGenerator from '@components/ui/forms/form-generator.svelte';
 
@@ -34,12 +35,27 @@
         ...providers.map((p) => ({ value: p.id, label: p.name })),
     ]);
 
-    const typeOptions: { value: string; label: string }[] = [
-        { value: AccountType.DebitAccount, label: 'Debit / Savings' },
-        { value: AccountType.CreditCard, label: 'Credit Card' },
-        { value: AccountType.CashWallet, label: 'Cash Wallet' },
-        { value: AccountType.EWallet, label: 'E-Wallet' },
-        { value: AccountType.Investment, label: 'Investment' },
+    const typeOptions: { value: string; label: string; icon: string }[] = [
+        { value: AccountType.DebitAccount, label: 'Debit', icon: 'solar--buildings-bold-duotone' },
+        { value: AccountType.CreditCard, label: 'Credit', icon: 'solar--wallet-bold-duotone' },
+        { value: AccountType.CashWallet, label: 'Cash', icon: 'solar--wallet-money-bold-duotone' },
+        { value: AccountType.EWallet, label: 'E-Wallet', icon: 'solar--smartphone-bold-duotone' },
+        { value: AccountType.Investment, label: 'Invest', icon: 'solar--chart-bold-duotone' },
+    ];
+
+    const accessOptions: { value: string; label: string; description: string; icon: string }[] = [
+        {
+            value: AccountAccessType.Personal,
+            label: 'Personal',
+            description: 'Solo ownership',
+            icon: 'ph--user-bold',
+        },
+        {
+            value: AccountAccessType.Joint,
+            label: 'Joint',
+            description: 'Shared access',
+            icon: 'ph--users-bold',
+        },
     ];
 
     const iconForType = (type: string): string =>
@@ -59,7 +75,9 @@
             },
         });
 
-        const exceptKeys = isEdit ? ['type', 'access_type', 'initial_balance'] : ['type'];
+        const exceptKeys = isEdit
+            ? ['type', 'access_type', 'initial_balance']
+            : ['type', 'access_type'];
 
         return composer.except(exceptKeys).toFormGenerator(
             isEdit && account
@@ -122,9 +140,7 @@
 <div class="space-y-5">
     {@render accountPreview()}
 
-    <Card>
-        {@render accountAppearance()}
-    </Card>
+    {@render accountAppearance()}
 
     <Card>
         <FormGenerator
@@ -138,6 +154,8 @@
 
     <div>
         <FormAction
+            cancelClass="flex-auto"
+            submitClass="flex-3/5"
             {form}
             formId="account-form"
             labelCancel="Cancel"
@@ -152,49 +170,85 @@
     <div
         style="background-color: {color?.oklch}; color: {color?.text_color}"
         class="relative overflow-hidden rounded p-5">
-        <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/15">
-                <i class="iconify {icon?.value} text-xl"></i>
+        <!-- Decorative card bubbles from mockup -->
+        <div class="absolute -top-12 -right-12 size-44 rounded-full bg-white/10"></div>
+        <div class="absolute right-14 -bottom-10 size-28 rounded-full bg-white/5"></div>
+
+        <div class="relative z-10">
+            <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/15">
+                    <i class="iconify {icon?.value} text-xl"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-xs tracking-wide uppercase opacity-70">{selectedProviderName}</p>
+                    <p class="truncate font-semibold">{form.name || 'Account name'}</p>
+                </div>
             </div>
-            <div class="min-w-0">
-                <p class="text-xs tracking-wide uppercase opacity-70">{selectedProviderName}</p>
-                <p class="truncate font-semibold">{form.name || 'Account name'}</p>
+            <div class="mt-4">
+                <p class="text-xs tracking-wide uppercase opacity-70">{typeLabel}</p>
+                <p class="font-mono text-2xl font-semibold">{previewBalance}</p>
             </div>
-        </div>
-        <div class="mt-4">
-            <p class="text-xs tracking-wide uppercase opacity-70">{typeLabel}</p>
-            <p class="font-mono text-2xl font-semibold">{previewBalance}</p>
         </div>
     </div>
 {/snippet}
 
 {#snippet accountAppearance()}
-    <div class="space-y-3">
-        <div>
+    <div class="space-y-5">
+        <Card>
             <p class="mb-2 text-sm font-medium">Account Type</p>
-            <div class="grid grid-cols-3 gap-3">
+            <div class="flex gap-1 rounded-md bg-base-300 p-1">
                 {#each typeOptions as opt (opt.value)}
                     <button
-                        class="rounded border px-3 py-2 text-sm font-medium transition {form.type ===
-                        opt.value
-                            ? 'border-primary bg-primary/10 text-primary'
-                            : 'border-base-content/25 bg-base-100 text-base-content/70 hover:bg-base-200'}"
+                        class="type-btn flex flex-1 flex-col items-center gap-1 rounded-md py-2 text-[0.6rem] font-medium transition
+                            {form.type === opt.value
+                            ? 'bg-primary text-primary-content'
+                            : 'text-base-content/60 hover:bg-base-200'}"
                         onclick={() => (form.type = opt.value)}
                         type="button">
-                        {opt.label}
+                        <i class="iconify {opt.icon} text-lg"></i>
+                        <span>{opt.label}</span>
                     </button>
                 {/each}
             </div>
-        </div>
+        </Card>
 
-        <div>
-            <p class="mb-2 text-sm font-medium">Card Color</p>
-            <DecorationColorSelector bind:value={form.decorations.color} />
-        </div>
+        <Card>
+            <p class="mb-2 text-sm font-medium">Access Type</p>
+            <div class="grid grid-cols-2 gap-3">
+                {#each accessOptions as opt (opt.value)}
+                    <button
+                        class="flex items-center gap-3 rounded-lg border-2 p-3 text-left transition
+                            {form.access_type === opt.value
+                            ? 'border-primary bg-primary/5'
+                            : 'border-base-300 hover:border-base-content/20'}"
+                        onclick={() => (form.access_type = opt.value)}
+                        type="button">
+                        <div
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg
+                                {form.access_type === opt.value
+                                ? 'bg-primary text-primary-content'
+                                : 'bg-base-200 text-base-content/60'}">
+                            <i class="iconify {opt.icon} text-lg"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-medium">{opt.label}</p>
+                            <p class="text-xs text-base-content/50">{opt.description}</p>
+                        </div>
+                    </button>
+                {/each}
+            </div>
+        </Card>
 
-        <div>
-            <p class="mb-2 text-sm font-medium">Card Icon</p>
-            <DecorationIconSelector variant="popover" bind:value={form.decorations.icon} />
-        </div>
+        <Card>
+            <div class="grid grid-cols-2 gap-5">
+                <Field title="Card Color">
+                    <DecorationColorSelector rows={1} bind:value={form.decorations.color} />
+                </Field>
+
+                <Field title="Card Icon">
+                    <DecorationIconSelector rows={1} bind:value={form.decorations.icon} />
+                </Field>
+            </div>
+        </Card>
     </div>
 {/snippet}

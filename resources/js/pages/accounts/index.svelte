@@ -77,7 +77,7 @@
     </div>
 </PageSection>
 
-<PageSection>
+<PageSection class="space-y-5">
     <AccountList {accounts} />
 
     <!-- Add Account Placeholder -->

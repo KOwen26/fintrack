@@ -105,10 +105,10 @@
         "status": "Active"
     },
     {
-        "slug": "party-popper-bold",
+        "slug": "confetti-bold",
         "group": "entertainment",
-        "label": "Party Popper",
-        "value": "ph--party-popper-bold",
+        "label": "Confetti",
+        "value": "ph--confetti-bold",
         "status": "Active"
     },
     {
@@ -196,10 +196,10 @@
         "status": "Active"
     },
     {
-        "slug": "hand-coin-bold",
+        "slug": "hand-heart-bold",
         "group": "finance",
-        "label": "Hand Coin",
-        "value": "ph--hand-coin-bold",
+        "label": "Hand Heart",
+        "value": "ph--hand-heart-bold",
         "status": "Active"
     },
     {
@@ -280,10 +280,10 @@
         "status": "Active"
     },
     {
-        "slug": "heart-beat-bold",
+        "slug": "heartbeat-bold",
         "group": "health",
-        "label": "Heart Beat",
-        "value": "ph--heart-beat-bold",
+        "label": "Heartbeat",
+        "value": "ph--heartbeat-bold",
         "status": "Active"
     },
     {
@@ -294,10 +294,10 @@
         "status": "Active"
     },
     {
-        "slug": "heart-plus-bold",
+        "slug": "heart-straight-bold",
         "group": "health",
-        "label": "Heart Plus",
-        "value": "ph--heart-plus-bold",
+        "label": "Heart Straight",
+        "value": "ph--heart-straight-bold",
         "status": "Active"
     },
     {
@@ -305,13 +305,6 @@
         "group": "health",
         "label": "Pill",
         "value": "ph--pill-bold",
-        "status": "Active"
-    },
-    {
-        "slug": "pills-bold",
-        "group": "health",
-        "label": "Pills",
-        "value": "ph--pills-bold",
         "status": "Active"
     },
     {
@@ -364,13 +357,6 @@
         "status": "Active"
     },
     {
-        "slug": "cup-bold",
-        "group": "lifestyle",
-        "label": "Cup",
-        "value": "ph--cup-bold",
-        "status": "Active"
-    },
-    {
         "slug": "fork-knife-bold",
         "group": "lifestyle",
         "label": "Food",
@@ -399,10 +385,10 @@
         "status": "Active"
     },
     {
-        "slug": "people-bold",
+        "slug": "users-bold",
         "group": "misc",
-        "label": "People",
-        "value": "ph--people-bold",
+        "label": "Users",
+        "value": "ph--users-bold",
         "status": "Active"
     },
     {
@@ -483,13 +469,6 @@
         "status": "Active"
     },
     {
-        "slug": "gifts-bold",
-        "group": "shopping",
-        "label": "Gifts",
-        "value": "ph--gifts-bold",
-        "status": "Active"
-    },
-    {
         "slug": "shopping-bag-bold",
         "group": "shopping",
         "label": "Shopping Bag",
@@ -550,13 +529,6 @@
         "group": "technology",
         "label": "Monitor",
         "value": "ph--monitor-bold",
-        "status": "Active"
-    },
-    {
-        "slug": "smartphone-bold",
-        "group": "technology",
-        "label": "Smartphone",
-        "value": "ph--smartphone-bold",
         "status": "Active"
     },
     {
@@ -637,10 +609,10 @@
         "status": "Active"
     },
     {
-        "slug": "wifi-bold",
+        "slug": "wifi-high-bold",
         "group": "utilities",
         "label": "WiFi",
-        "value": "ph--wifi-bold",
+        "value": "ph--wifi-high-bold",
         "status": "Active"
     },
     {

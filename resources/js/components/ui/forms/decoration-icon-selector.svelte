@@ -53,7 +53,9 @@
 </script>
 
 <div class="@container">
-    <div bind:this={gridEl} class="grid grid-cols-8 gap-2 @md:grid-cols-10 @xl:grid-cols-12">
+    <div
+        bind:this={gridEl}
+        class="grid grid-cols-4 gap-2 @sm:grid-cols-8 @md:grid-cols-10 @xl:grid-cols-12 @3xl:grid-cols-24">
         {#if hasSelection && selectedItem}
             <button
                 class="flex size-10 items-center justify-center rounded-md border border-base-content/15 bg-primary/10 text-base-content ring-2 ring-primary"
@@ -87,15 +89,14 @@
         {#if seeMoreNeeded}
             {#if variant === 'drawer'}
                 <Drawer
-                    title="Pilih Ikon"
                     triggerClass="flex size-10 items-center justify-center rounded-md border border-dashed border-base-content/30 text-xs font-semibold text-base-content/60 transition hover:bg-base-200"
+                    title="Pilih Ikon"
                     bind:open>
                     {#snippet trigger()}
                         +{remaining}
                     {/snippet}
-                    {#snippet children()}
-                        {@render fullGrid()}
-                    {/snippet}
+
+                    {@render fullGrid()}
                 </Drawer>
             {:else if variant === 'popover'}
                 <Popover
@@ -107,9 +108,8 @@
                     {#snippet trigger()}
                         +{remaining}
                     {/snippet}
-                    {#snippet children()}
-                        {@render fullGrid()}
-                    {/snippet}
+
+                    {@render fullGrid()}
                 </Popover>
             {:else}
                 <button
