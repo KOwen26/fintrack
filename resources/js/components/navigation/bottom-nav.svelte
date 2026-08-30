@@ -4,7 +4,6 @@
     import { dashboardMenu } from '@data/menu';
     import { useUrlHandler } from '@hooks/url-handler.svelte';
     import { Link } from '@inertiajs/svelte';
-    import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
     import { cn } from '@utilities/shadcn';
@@ -22,15 +21,15 @@
     );
 </script>
 
-<nav class="md:hidden dock dock-sm">
+<nav class="dock dock-sm md:hidden">
     {@render dockItem(dashboardMenu.menus.dashboard)}
 
     {@render dockItem(dashboardMenu.menus.transactions)}
 
     <div class="relative">
-        <div class="bg-primary rounded-lg p-2 min-size-12 absolute -top-1 -translate-y-1/2">
+        <div class="min-size-12 absolute -top-1 -translate-y-1/2 rounded-lg bg-primary p-2">
             <Link
-                class="size-8 flex items-center justify-center"
+                class="flex size-8 items-center justify-center"
                 aria-label="Add"
                 href={TransactionController.create.url()}>
                 <i class="iconify size-8 tabler--plus"></i>
@@ -40,11 +39,7 @@
 
     {@render dockItem(dashboardMenu.menus.reports)}
 
-    {@render dockItem({
-        name: 'Config',
-        url: AccountController.index.url(),
-        icon: 'solar--wallet-money-linear',
-    })}
+    {@render dockItem(dashboardMenu.menus.accounts)}
 </nav>
 
 {#snippet dockItem({ name, url, icon }: Menu)}

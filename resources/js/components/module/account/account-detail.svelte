@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script context="module" lang="ts">
     /** Mask an account number for display: "1234567890" => "•••• •••• •••• 1234" */
     function maskAccountNumber(num: string): string {
         if (num.length <= 4) return num;
@@ -12,6 +12,7 @@
         if (groups.length > 0 && groups.join('').length < 16) {
             return [...groups, last4].join(' ');
         }
+
         return `•••• •••• •••• ${last4}`;
     }
 </script>
@@ -19,16 +20,12 @@
 <script lang="ts">
     import type { App } from '@wayfinder/types';
 
-    import AccountAccessTypeBadge from './account-access-type-badge.svelte';
-    import AccountTypeBadge from './account-type-badge.svelte';
-
     import { getDecorationColor } from '@data/decoration-colors';
     import { getDecorationIcon } from '@data/decoration-icons';
     import AccountType from '@wayfinder/App/Enums/AccountType';
 
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
-    import { cn } from '@utilities/shadcn';
 
     import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
 
@@ -40,23 +37,32 @@
         period: string;
     }
 
-    interface TransactionRow {
-        id: number;
-        type: App.Enums.TransactionType;
-        description: string | null;
-        amount: number;
-        transaction_date: string;
-        category?: App.Models.Category | null;
-    }
-
     interface Props {
         account: App.Models.Account;
         monthlyStats?: MonthlyStat | null;
-        recentTransactions?: TransactionRow[];
         members?: Array<{ name: string; email: string; role: string }>;
     }
 
-    let { account, monthlyStats = null, recentTransactions = [], members = [] }: Props = $props();
+    let {
+        account,
+        monthlyStats = {
+            inflow: 12500000,
+            inflow_count: 8,
+            outflow: 8750000,
+            outflow_count: 14,
+            period: 'August 2026',
+        },
+        members = [
+            { name: 'John Doe', email: 'john@example.com', role: 'Owner' },
+            { name: 'Jane Smith', email: 'jane@example.com', role: 'Member' },
+        ],
+    }: Props = $props();
+
+    // ── Prototype: credit card dummy data ──────────────────────
+    const creditLimit = 10000000;
+    const creditUsed = 3500000;
+    const dueDate = '2026-09-15';
+    const minPayment = 350000;
 
     // ── Derived state ─────────────────────────────────────────────
     const colorSlug = $derived(account.decorations?.color);
@@ -65,7 +71,7 @@
     const colorObj = $derived(colorSlug ? getDecorationColor(colorSlug) : undefined);
     const iconObj = $derived(iconSlug ? getDecorationIcon(iconSlug) : undefined);
 
-    const bgColor = $derived(colorObj?.value ?? 'oklch(0.45 0.08 160)');
+    const bgColor = $derived(colorObj?.oklch ?? 'oklch(0.45 0.08 160)');
 
     const accentText = $derived(colorObj?.text_color ?? '#FFFFFF');
 
@@ -98,6 +104,7 @@
             const y = 52 - 28 * (1 - Math.exp(-i / 6)) - Math.random() * 6;
             pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
         }
+
         return pts.join(' ');
     });
 
@@ -109,158 +116,44 @@
         textClass: string;
     }
 
-    const quickActions = $derived.by<ActionItem[]>(() => {
-        const base: ActionItem[] = [];
+    const actionRegistry: Record<string, ActionItem> = {
+        transact: {
+            icon: 'ph--arrows-left-right-bold',
+            label: 'Transact',
+            bgClass: 'bg-teal/10',
+            textClass: 'text-teal',
+        },
+        transfer: {
+            icon: 'ph--arrow-up-right-bold',
+            label: 'Transfer',
+            bgClass: 'bg-sage/10',
+            textClass: 'text-sage',
+        },
+        report: {
+            icon: 'ph--chart-bar-bold',
+            label: 'Report',
+            bgClass: 'bg-amber/10',
+            textClass: 'text-amber',
+        },
+        connect: {
+            icon: 'ph--link-bold',
+            label: 'Connect',
+            bgClass: 'bg-purple/10',
+            textClass: 'text-purple',
+        },
+    };
 
-        switch (account.type) {
-            case AccountType.DebitAccount:
-                base.push(
-                    {
-                        icon: 'ph--arrow-up-right-bold',
-                        label: 'Transfer',
-                        bgClass: 'bg-teal/10',
-                        textClass: 'text-teal',
-                    },
-                    {
-                        icon: 'ph--plus-bold',
-                        label: 'Top-up',
-                        bgClass: 'bg-sage/10',
-                        textClass: 'text-sage',
-                    },
-                    {
-                        icon: 'ph--chart-bar-bold',
-                        label: 'Report',
-                        bgClass: 'bg-amber/10',
-                        textClass: 'text-amber',
-                    },
-                    {
-                        icon: 'ph--link-bold',
-                        label: 'Connect',
-                        bgClass: 'bg-purple/10',
-                        textClass: 'text-purple',
-                    }
-                );
-                break;
+    const accountActions: Record<string, string[]> = {
+        [AccountType.DebitAccount]: ['transact', 'transfer', 'report', 'connect'],
+        [AccountType.CreditCard]: ['transact', 'transfer', 'report', 'connect'],
+        [AccountType.CashWallet]: ['transact', 'transfer', 'report'],
+        [AccountType.EWallet]: ['transact', 'transfer', 'report'],
+        [AccountType.Investment]: ['transact', 'transfer', 'report'],
+    };
 
-            case AccountType.CreditCard:
-                base.push(
-                    {
-                        icon: 'ph--credit-card-bold',
-                        label: 'Pay',
-                        bgClass: 'bg-teal/10',
-                        textClass: 'text-teal',
-                    },
-                    {
-                        icon: 'ph--lock-bold',
-                        label: 'Lock',
-                        bgClass: 'bg-error/10',
-                        textClass: 'text-error',
-                    },
-                    {
-                        icon: 'ph--file-text-bold',
-                        label: 'Bill',
-                        bgClass: 'bg-amber/10',
-                        textClass: 'text-amber',
-                    },
-                    {
-                        icon: 'ph--chart-bar-bold',
-                        label: 'Report',
-                        bgClass: 'bg-purple/10',
-                        textClass: 'text-purple',
-                    }
-                );
-                break;
-
-            case AccountType.CashWallet:
-                base.push(
-                    {
-                        icon: 'ph--plus-bold',
-                        label: 'Add Money',
-                        bgClass: 'bg-teal/10',
-                        textClass: 'text-teal',
-                    },
-                    {
-                        icon: 'ph--minus-bold',
-                        label: 'Withdraw',
-                        bgClass: 'bg-error/10',
-                        textClass: 'text-error',
-                    },
-                    {
-                        icon: 'ph--arrows-clockwise-bold',
-                        label: 'Adjust',
-                        bgClass: 'bg-amber/10',
-                        textClass: 'text-amber',
-                    },
-                    {
-                        icon: 'ph--chart-bar-bold',
-                        label: 'Report',
-                        bgClass: 'bg-purple/10',
-                        textClass: 'text-purple',
-                    }
-                );
-                break;
-
-            case AccountType.EWallet:
-                base.push(
-                    {
-                        icon: 'ph--arrow-up-right-bold',
-                        label: 'Transfer',
-                        bgClass: 'bg-teal/10',
-                        textClass: 'text-teal',
-                    },
-                    {
-                        icon: 'ph--plus-bold',
-                        label: 'Top-up',
-                        bgClass: 'bg-sage/10',
-                        textClass: 'text-sage',
-                    },
-                    {
-                        icon: 'ph--receipt-bold',
-                        label: 'Bill',
-                        bgClass: 'bg-amber/10',
-                        textClass: 'text-amber',
-                    },
-                    {
-                        icon: 'ph--chart-bar-bold',
-                        label: 'Report',
-                        bgClass: 'bg-purple/10',
-                        textClass: 'text-purple',
-                    }
-                );
-                break;
-
-            case AccountType.Investment:
-                base.push(
-                    {
-                        icon: 'ph--arrow-up-right-bold',
-                        label: 'Deposit',
-                        bgClass: 'bg-teal/10',
-                        textClass: 'text-teal',
-                    },
-                    {
-                        icon: 'ph--arrow-down-left-bold',
-                        label: 'Withdraw',
-                        bgClass: 'bg-error/10',
-                        textClass: 'text-error',
-                    },
-                    {
-                        icon: 'ph--chart-line-bold',
-                        label: 'Performance',
-                        bgClass: 'bg-amber/10',
-                        textClass: 'text-amber',
-                    },
-                    {
-                        icon: 'ph--chart-bar-bold',
-                        label: 'Report',
-                        bgClass: 'bg-purple/10',
-                        textClass: 'text-purple',
-                    }
-                );
-                break;
-        }
-
-        return base;
-    });
+    const quickActions = $derived(
+        (accountActions[account.type] ?? []).map((key) => actionRegistry[key])
+    );
 
     // ── Info rows ────────────────────────────────────────────────
     interface InfoRow {
@@ -317,24 +210,6 @@
         return rows;
     });
 
-    // ── Helpers ──────────────────────────────────────────────────
-    const isInflow = $derived(
-        (t: { type: App.Enums.TransactionType }) => t.type === 'income' || t.type === 'transfer_in'
-    );
-
-    function getTxnColor(type: App.Enums.TransactionType): string {
-        if (type === 'income' || type === 'transfer_in') return 'text-success';
-        if (type === 'transfer_out' || type === 'fee') return 'text-warning';
-        return 'text-error';
-    }
-
-    function getTxnIcon(type: App.Enums.TransactionType): string {
-        if (type === 'income' || type === 'transfer_in') return 'ph--plus-bold';
-        if (type === 'transfer_out') return 'ph--arrow-fat-right-bold';
-        if (type === 'fee') return 'ph--minus-bold';
-        return 'ph--minus-bold';
-    }
-
     function getMemberInitials(name: string): string {
         return name
             .split(' ')
@@ -352,23 +227,23 @@
     <ResponsiveCard class="overflow-x-clip" contentClass="p-0">
         <div
             style:background={bgColor}
-            class="relative overflow-hidden px-5 pb-4 pt-5 md:px-6 md:pb-5">
+            class="relative overflow-hidden px-5 pt-5 pb-4 md:px-6 md:pb-5">
             <!-- Decorative circles -->
             <div
-                class="pointer-events-none absolute -top-12 -right-12 size-44 rounded-full"
-                style="background: rgba(255,255,255,0.06)">
+                style="background: rgba(255,255,255,0.06)"
+                class="pointer-events-none absolute -top-12 -right-12 size-44 rounded-full">
             </div>
             <div
-                class="pointer-events-none absolute -bottom-8 right-10 size-28 rounded-full"
-                style="background: rgba(255,255,255,0.04)">
+                style="background: rgba(255,255,255,0.04)"
+                class="pointer-events-none absolute right-10 -bottom-8 size-28 rounded-full">
             </div>
 
             <!-- Header row: provider icon + name + hide toggle -->
-            <div class="relative z-1 flex items-center justify-between mb-5">
+            <div class="relative z-1 mb-5 flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
                     <div
-                        class="flex size-9 shrink-0 items-center justify-center rounded-xl"
-                        style="background: rgba(255,255,255,0.12)">
+                        style="background: rgba(255,255,255,0.12)"
+                        class="flex size-9 shrink-0 items-center justify-center rounded-xl">
                         {#if iconObj?.value}
                             <i class="iconify size-4.5 text-white {iconObj.value}"></i>
                         {:else if account.type === AccountType.CreditCard}
@@ -384,46 +259,46 @@
                     <div>
                         {#if providerName}
                             <p
-                                class="text-[0.68rem] font-semibold tracking-wider uppercase"
-                                style="color: rgba(255,255,255,0.45)">
+                                style="color: rgba(255,255,255,0.45)"
+                                class="text-[0.68rem] font-semibold tracking-wider uppercase">
                                 {providerName}
                             </p>
                         {/if}
-                        <p class="text-sm font-semibold text-white leading-tight">
+                        <p class="text-sm leading-tight font-semibold text-white">
                             {account.name}
                         </p>
                     </div>
                 </div>
 
                 <button
-                    onclick={toggleBalance}
-                    class="flex cursor-pointer items-center justify-center rounded-lg border-none p-1.5"
                     style="background: rgba(255,255,255,0.1)"
-                    aria-label="Toggle balance visibility">
+                    class="flex cursor-pointer items-center justify-center rounded-lg border-none p-1.5"
+                    aria-label="Toggle balance visibility"
+                    onclick={toggleBalance}>
                     {#if balanceHidden}
                         <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
                             fill="none"
+                            height="16"
                             stroke="rgba(255,255,255,0.6)"
-                            stroke-width="2"
                             stroke-linecap="round"
-                            stroke-linejoin="round">
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            viewBox="0 0 24 24"
+                            width="16">
                             <path
                                 d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                            <line x1="1" y1="1" x2="23" y2="23" />
+                            <line x1="1" x2="23" y1="1" y2="23" />
                         </svg>
                     {:else}
                         <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
                             fill="none"
+                            height="16"
                             stroke="rgba(255,255,255,0.6)"
-                            stroke-width="2"
                             stroke-linecap="round"
-                            stroke-linejoin="round">
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            viewBox="0 0 24 24"
+                            width="16">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                             <circle cx="12" cy="12" r="3" />
                         </svg>
@@ -434,20 +309,20 @@
             <!-- Balance -->
             <div class="relative z-1">
                 <p
-                    class="text-[0.63rem] font-semibold tracking-widest uppercase mb-1"
-                    style="color: rgba(255,255,255,0.45)">
+                    style="color: rgba(255,255,255,0.45)"
+                    class="mb-1 text-[0.63rem] font-semibold tracking-widest uppercase">
                     {balanceLabel}
                 </p>
                 <div class="flex items-start gap-1">
                     {#if !balanceHidden}
                         <span
-                            class="font-mono text-sm"
-                            style="color: rgba(255,255,255,0.4); margin-top: 4px;">
+                            style="color: rgba(255,255,255,0.4); margin-top: 4px;"
+                            class="font-mono text-sm">
                             Rp
                         </span>
                     {/if}
                     <span
-                        class="font-mono text-[clamp(1.8rem,8vw,2.4rem)] font-medium leading-none tracking-tight text-white">
+                        class="font-mono text-[clamp(1.8rem,8vw,2.4rem)] leading-none font-medium tracking-tight text-white">
                         {#if balanceHidden}
                             ••••••
                         {:else}
@@ -458,7 +333,7 @@
                         {/if}
                     </span>
                 </div>
-                <p class="text-[0.68rem] mt-1" style="color: rgba(255,255,255,0.35)">
+                <p style="color: rgba(255,255,255,0.35)" class="mt-1 text-[0.68rem]">
                     {account.currency ?? 'IDR'}
                 </p>
             </div>
@@ -467,42 +342,42 @@
             <div class="relative z-1 mt-4">
                 {#if !balanceHidden}
                     <svg
-                        viewBox="0 0 360 52"
+                        class="mb-1 block h-11 w-full"
                         preserveAspectRatio="none"
-                        class="mb-1 block h-11 w-full">
+                        viewBox="0 0 360 52">
                         <defs>
-                            <linearGradient id="spark-grad" x1="0" y1="0" x2="0" y2="1">
+                            <linearGradient id="spark-grad" x1="0" x2="0" y1="0" y2="1">
                                 <stop offset="0%" stop-color="rgba(255,255,255,0.18)" />
                                 <stop offset="100%" stop-color="rgba(255,255,255,0)" />
                             </linearGradient>
                         </defs>
                         <polygon
-                            points="{sparkPoints} 360,52 0,52"
                             fill="url(#spark-grad)"
+                            points="{sparkPoints} 360,52 0,52"
                             stroke="none" />
                         <polyline
-                            points={sparkPoints}
                             fill="none"
+                            points={sparkPoints}
                             stroke="rgba(255,255,255,0.45)"
-                            stroke-width="1.8"
                             stroke-linecap="round"
-                            stroke-linejoin="round" />
+                            stroke-linejoin="round"
+                            stroke-width="1.8" />
                     </svg>
                 {/if}
 
                 <div class="flex items-center justify-between pt-0.5">
                     {#if account.account_number}
                         <p
-                            class="font-mono text-[0.78rem] tracking-widest"
-                            style="color: rgba(255,255,255,0.4)">
+                            style="color: rgba(255,255,255,0.4)"
+                            class="font-mono text-[0.78rem] tracking-widest">
                             {numberRevealed
                                 ? account.account_number
                                 : maskAccountNumber(account.account_number)}
                         </p>
                         <button
-                            onclick={toggleNumber}
+                            style="color: rgba(255,255,255,0.45)"
                             class="cursor-pointer border-none bg-transparent p-0 text-[0.72rem] font-semibold"
-                            style="color: rgba(255,255,255,0.45)">
+                            onclick={toggleNumber}>
                             {numberRevealed ? 'Hide' : 'Show'}
                         </button>
                     {/if}
@@ -518,7 +393,7 @@
         <div class="flex gap-2.5 p-4 pb-5">
             {#each quickActions as action (action.label)}
                 <button
-                    class="flex flex-1 cursor-pointer flex-col items-center gap-2 rounded-[16px] border-none p-4 pt-3.5 transition-colors hover:bg-sage/5"
+                    class="hover:bg-sage/5 flex flex-1 cursor-pointer flex-col items-center gap-2 rounded-[16px] border-none p-4 pt-3.5 transition-colors"
                     type="button">
                     <div
                         class="flex size-11 items-center justify-center rounded-[14px] {action.bgClass}">
@@ -539,10 +414,10 @@
         <ResponsiveCard class="space-y-0" contentClass="p-0">
             <!-- Month header -->
             <div class="flex items-center justify-between px-5 pt-[18px] md:px-6">
-                <p class="text-[0.63rem] font-bold tracking-widest uppercase text-base-content/50">
+                <p class="text-[0.63rem] font-bold tracking-widest text-base-content/50 uppercase">
                     {monthlyStats.period}
                 </p>
-                <span class="text-[0.75rem] font-semibold text-teal cursor-pointer">
+                <span class="text-teal cursor-pointer text-[0.75rem] font-semibold">
                     See Report &rarr;
                 </span>
             </div>
@@ -552,13 +427,13 @@
                 <div class="flex-1 border-r border-base-content/10 px-5 py-[18px] md:px-6">
                     <div class="mb-1.5 flex items-center gap-1.5">
                         <span
-                            class="flex size-5 items-center justify-center rounded-md bg-teal/10 text-[0.65rem] font-bold text-teal">
+                            class="bg-teal/10 text-teal flex size-5 items-center justify-center rounded-md text-[0.65rem] font-bold">
                             &uarr;
                         </span>
                         <span class="text-[0.72rem] font-semibold text-base-content/50"
                             >Inflow</span>
                     </div>
-                    <p class="font-mono text-base font-medium text-teal">
+                    <p class="text-teal font-mono text-base font-medium">
                         {Formatter.currency(monthlyStats.inflow)}
                     </p>
                     <p class="mt-0.5 text-[0.72rem] text-base-content/50">
@@ -599,12 +474,12 @@
                 </div>
                 <div class="h-1.5 overflow-hidden rounded-full bg-error/20">
                     <div
-                        class="h-full rounded-full bg-teal transition-all"
-                        style="width: {inflowPct}%">
+                        style="width: {inflowPct}%"
+                        class="bg-teal h-full rounded-full transition-all">
                     </div>
                 </div>
                 <div class="mt-1 flex justify-between">
-                    <span class="text-[0.65rem] font-semibold text-teal"
+                    <span class="text-teal text-[0.65rem] font-semibold"
                         >{inflowPct.toFixed(0)}% inflow</span>
                     <span class="text-[0.65rem] font-semibold text-error"
                         >{(100 - inflowPct).toFixed(0)}% outflow</span>
@@ -616,97 +491,84 @@
     <!-- ════════════════════════════════════════════ -->
     <!--  CREDIT CARD SECTION                       -->
     <!-- ════════════════════════════════════════════ -->
-    {#if isCreditCard}
-        <ResponsiveCard class="space-y-0" contentClass="p-0">
-            <div class="px-5 pt-[18px] md:px-6">
-                <p class="text-[0.63rem] font-bold tracking-widest uppercase text-base-content/50">
-                    Credit Usage
-                </p>
+    <!-- {#if isCreditCard} -->
+    <ResponsiveCard class="space-y-0" contentClass="p-0">
+        <div class="px-5 pt-[18px] md:px-6">
+            <p class="text-[0.63rem] font-bold tracking-widest text-base-content/50 uppercase">
+                Credit Usage
+            </p>
+        </div>
+
+        <div class="px-5 pt-[14px] md:px-6">
+            <div class="mb-1 flex items-end justify-between">
+                <span class="text-[0.78rem] text-base-content/60">Used</span>
+                <div class="text-right">
+                    <span class="font-mono text-sm font-semibold text-error">
+                        {Formatter.currency(creditUsed, true)}
+                    </span>
+                    <span class="text-[0.75rem] text-base-content/50">
+                        / {Formatter.currency(creditLimit, true)}
+                    </span>
+                </div>
             </div>
 
-            <div class="px-5 pt-[14px] md:px-6">
-                {#if account.credit_card_limit && account.credit_card_limit > 0}
-                    {@const used =
-                        (account.current_balance ?? 0) > 0
-                            ? Math.min(account.current_balance ?? 0, account.credit_card_limit)
-                            : 0}
-                    {@const usagePct = (used / account.credit_card_limit) * 100}
-                    {@const available = account.credit_card_limit - used}
-
-                    <div class="mb-1 flex items-end justify-between">
-                        <span class="text-[0.78rem] text-base-content/60">Used</span>
-                        <div class="text-right">
-                            <span class="font-mono text-sm font-semibold text-error">
-                                {Formatter.currency(used, true)}
-                            </span>
-                            <span class="text-[0.75rem] text-base-content/50">
-                                / {Formatter.currency(account.credit_card_limit, true)}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="mt-2.5 h-2 overflow-hidden rounded-full bg-base-content/10">
-                        <div
-                            class="h-full rounded-full bg-error transition-all"
-                            style="width: {usagePct}%">
-                        </div>
-                    </div>
-
-                    <div class="mb-3.5 mt-1.5 flex justify-between">
-                        <span class="text-[0.69rem] font-semibold text-error"
-                            >{usagePct.toFixed(1)}% used</span>
-                        <span class="text-[0.69rem] font-semibold text-teal"
-                            >Available {Formatter.currency(available, true)}</span>
-                    </div>
-                {/if}
+            <div class="mt-2.5 h-2 overflow-hidden rounded-full bg-base-content/10">
+                <div
+                    style="width: {(creditUsed / creditLimit) * 100}%"
+                    class="h-full rounded-full bg-error transition-all">
+                </div>
             </div>
 
-            <hr class="border-base-content/10 mx-5 md:mx-6" />
-
-            <!-- Due date -->
-            <div class="flex items-center justify-between gap-3 px-5 py-3 md:px-6">
-                <span class="flex items-center gap-2 text-[0.8rem] text-base-content/60">
-                    <i class="iconify size-3.5 text-base-content/50 ph--calendar-bold"></i>
-                    Due Date
-                </span>
-                <span class="text-[0.85rem] font-semibold text-amber">
-                    {#if account.due_date}
-                        {DateTimeHelper.format(account.due_date, 'date')}
-                    {:else}
-                        --
-                    {/if}
-                </span>
+            <div class="mt-1.5 mb-3.5 flex justify-between">
+                <span class="text-[0.69rem] font-semibold text-error"
+                    >{((creditUsed / creditLimit) * 100).toFixed(1)}% used</span>
+                <span class="text-teal text-[0.69rem] font-semibold"
+                    >Available {Formatter.currency(creditLimit - creditUsed, true)}</span>
             </div>
+        </div>
 
-            <hr class="border-base-content/10 mx-5 md:mx-6" />
+        <hr class="mx-5 border-base-content/10 md:mx-6" />
 
-            <!-- Min payment -->
-            <div class="flex items-center justify-between gap-3 px-5 py-3 pb-4 md:px-6">
-                <span class="flex items-center gap-2 text-[0.8rem] text-base-content/60">
-                    <i class="iconify size-3.5 text-base-content/50 ph--currency-circle-dollar-bold"
-                    ></i>
-                    Min. Payment
-                </span>
-                <span class="font-mono text-[0.85rem] font-semibold">
-                    {Formatter.currency(account.min_payment ?? 0)}
-                </span>
-            </div>
-        </ResponsiveCard>
-    {/if}
+        <!-- Due date -->
+        <div class="flex items-center justify-between gap-3 px-5 py-3 md:px-6">
+            <span class="flex items-center gap-2 text-[0.8rem] text-base-content/60">
+                <i class="iconify size-3.5 text-base-content/50 ph--calendar-bold"></i>
+                Due Date
+            </span>
+            <span class="text-amber text-[0.85rem] font-semibold">
+                {DateTimeHelper.format(dueDate, 'date')}
+            </span>
+        </div>
+
+        <hr class="mx-5 border-base-content/10 md:mx-6" />
+
+        <!-- Min payment -->
+        <div class="flex items-center justify-between gap-3 px-5 py-3 pb-4 md:px-6">
+            <span class="flex items-center gap-2 text-[0.8rem] text-base-content/60">
+                <i class="iconify size-3.5 text-base-content/50 ph--currency-circle-dollar-bold"
+                ></i>
+                Min. Payment
+            </span>
+            <span class="font-mono text-[0.85rem] font-semibold">
+                {Formatter.currency(minPayment)}
+            </span>
+        </div>
+    </ResponsiveCard>
+    <!-- {/if} -->
 
     <!-- ════════════════════════════════════════════ -->
     <!--  ACCOUNT INFO                              -->
     <!-- ════════════════════════════════════════════ -->
     <ResponsiveCard class="space-y-0" contentClass="p-0">
         <div class="px-5 pt-[18px] md:px-6">
-            <p class="text-[0.63rem] font-bold tracking-widest uppercase text-base-content/50">
+            <p class="text-[0.63rem] font-bold tracking-widest text-base-content/50 uppercase">
                 Account Info
             </p>
         </div>
 
         <div>
             {#each infoRows as row, i (row.label)}
-                <hr class="border-base-content/10 mx-5 md:mx-6" />
+                <hr class="mx-5 border-base-content/10 md:mx-6" />
 
                 <div
                     class="flex items-center justify-between gap-3 px-5 py-3 md:px-6"
@@ -731,29 +593,29 @@
     {#if members.length > 0}
         <ResponsiveCard class="space-y-0" contentClass="p-0">
             <div class="flex items-center justify-between px-5 pt-[18px] pb-[14px] md:px-6">
-                <p class="text-[0.63rem] font-bold tracking-widest uppercase text-base-content/50">
+                <p class="text-[0.63rem] font-bold tracking-widest text-base-content/50 uppercase">
                     Members
                 </p>
-                <span class="text-[0.75rem] font-semibold text-teal cursor-pointer">
+                <span class="text-teal cursor-pointer text-[0.75rem] font-semibold">
                     + Invite
                 </span>
             </div>
 
             {#each members as member, i (member.name + member.email)}
                 {#if i > 0}
-                    <hr class="border-base-content/10 mx-5 md:mx-6" />
+                    <hr class="mx-5 border-base-content/10 md:mx-6" />
                 {/if}
 
                 <div
                     class="flex items-center gap-3 px-5 py-3 md:px-6"
                     class:pb-4={i === members.length - 1}>
                     <div
-                        class="avatar flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white"
-                        style:background={i === 0 ? bgColor : '#7A5CB8'}>
+                        style:background={i === 0 ? bgColor : '#7A5CB8'}
+                        class="avatar flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white">
                         {getMemberInitials(member.name)}
                     </div>
                     <div class="flex-1">
-                        <p class="text-sm font-semibold text-base-content mb-0.5">
+                        <p class="mb-0.5 text-sm font-semibold text-base-content">
                             {member.name}
                         </p>
                         <p class="text-[0.75rem] text-base-content/60">{member.email}</p>
@@ -772,70 +634,18 @@
     {/if}
 
     <!-- ════════════════════════════════════════════ -->
-    <!--  RECENT TRANSACTIONS                       -->
-    <!-- ════════════════════════════════════════════ -->
-    {#if recentTransactions.length > 0}
-        <ResponsiveCard class="space-y-0" contentClass="p-0">
-            <div class="flex items-center justify-between px-5 pt-[18px] pb-[14px] md:px-6">
-                <p class="text-[0.63rem] font-bold tracking-widest uppercase text-base-content/50">
-                    Recent Transactions
-                </p>
-                <span class="text-[0.75rem] font-semibold text-teal cursor-pointer">
-                    See All &rarr;
-                </span>
-            </div>
-
-            <div class="pb-1.5">
-                {#each recentTransactions as txn, i (txn.id)}
-                    {#if i > 0}
-                        <hr class="border-base-content/10 mx-5 md:mx-6" />
-                    {/if}
-
-                    <div
-                        class="flex items-center gap-3 px-5 py-3 md:px-6"
-                        class:pb-4={i === recentTransactions.length - 1}>
-                        <div
-                            class="flex size-[38px] shrink-0 items-center justify-center rounded-xl text-base">
-                            {#if txn.category?.decorations?.icon && getDecorationIcon(txn.category.decorations.icon)?.value}
-                                <i
-                                    class="iconify {getDecorationIcon(
-                                        txn.category.decorations.icon
-                                    )!.value}"></i>
-                            {:else}
-                                <i class="iconify ph--receipt-bold"></i>
-                            {/if}
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <p class="truncate text-sm font-semibold text-base-content mb-0.5">
-                                {txn.description ?? 'Transaction'}
-                            </p>
-                            <p class="text-[0.73rem] text-base-content/50">
-                                {DateTimeHelper.format(txn.transaction_date, 'date')}
-                            </p>
-                        </div>
-                        <span class="mono shrink-0 text-sm font-medium {getTxnColor(txn.type)}">
-                            {isInflow(txn) ? '+' : '-'}
-                            {Formatter.currency(txn.amount, true)}
-                        </span>
-                    </div>
-                {/each}
-            </div>
-        </ResponsiveCard>
-    {/if}
-
-    <!-- ════════════════════════════════════════════ -->
     <!--  DETAIL FIELDS (timestamps)                -->
     <!-- ════════════════════════════════════════════ -->
     <ResponsiveCard class="space-y-5" contentClass="p-2.5">
-        <p class=" font-semibold tracking-widest uppercase text-base-content/50 text-xs">Details</p>
+        <p class=" text-xs font-semibold tracking-widest text-base-content/50 uppercase">Details</p>
 
         <!-- Account number -->
         <div class="flex items-start gap-3">
             <i
-                class="iconify size-5 text-base-content/50 shrink-0 mt-0.5 ph--identification-badge-bold"
+                class="mt-0.5 iconify size-5 shrink-0 text-base-content/50 ph--identification-badge-bold"
             ></i>
             <div>
-                <p class="text-xs text-base-content/50 mb-0.5">Account ID</p>
+                <p class="mb-0.5 text-xs text-base-content/50">Account ID</p>
                 <p class="font-mono text-sm text-base-content">#{account.id}</p>
             </div>
         </div>
@@ -845,9 +655,9 @@
         <!-- Created / Updated -->
         <div class="flex items-start justify-between gap-4">
             <div class="flex items-start gap-3">
-                <i class="iconify size-5 text-base-content/50 shrink-0 mt-0.5 ph--clock-bold"></i>
+                <i class="mt-0.5 iconify size-5 shrink-0 text-base-content/50 ph--clock-bold"></i>
                 <div>
-                    <p class="text-xs text-base-content/50 mb-0.5">Created</p>
+                    <p class="mb-0.5 text-xs text-base-content/50">Created</p>
                     <p class="text-sm text-base-content">
                         {DateTimeHelper.format(account.created_at, 'datetime')}
                     </p>
@@ -855,7 +665,7 @@
             </div>
             {#if account.updated_at}
                 <div class="text-right">
-                    <p class="text-xs text-base-content/50 mb-0.5">Updated</p>
+                    <p class="mb-0.5 text-xs text-base-content/50">Updated</p>
                     <p class="text-sm text-base-content">
                         {DateTimeHelper.format(account.updated_at, 'datetime')}
                     </p>

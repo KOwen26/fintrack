@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { InertiaForm } from '@inertiajs/svelte';
     import type { App } from '@wayfinder/types';
 
     import { getDecorationColor } from '@data/decoration-colors';
@@ -16,9 +15,10 @@
     import Card from '@components/ui/card.svelte';
     import DecorationColorSelector from '@components/ui/forms/decoration-color-selector.svelte';
     import DecorationIconSelector from '@components/ui/forms/decoration-icon-selector.svelte';
+    import FieldInput from '@components/ui/forms/field-input.svelte';
     import Field from '@components/ui/forms/field.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';
-    import FormGenerator from '@components/ui/forms/form-generator.svelte';
+    import Form from '@components/ui/forms/form.svelte';
 
     interface Props {
         providers: App.Models.Provider[];
@@ -67,7 +67,7 @@
             [AccountType.Investment]: 'chart-line-bold',
         })[type] ?? 'wallet-bold';
 
-    const formSchema = $derived(() => {
+    const formSchema = $derived.by(() => {
         const composer = DataComposer.from(accountSchema).extendSchema({
             provider_id: {
                 label: 'Provider (optional)',
@@ -95,22 +95,19 @@
         );
     });
 
-    let form: InertiaForm<any> = $state(
-        useForm({
-            ...formSchema().data,
-            type: isEdit && account ? account.type : AccountType.DebitAccount,
-            decorations: {
-                icon:
-                    isEdit && account
-                        ? (account.decorations?.icon ?? iconForType(account.type))
-                        : iconForType(AccountType.DebitAccount),
-                color:
-                    isEdit && account
-                        ? (account.decorations?.color ?? 'emerald-600')
-                        : 'emerald-600',
-            },
-        })
-    );
+    let form = useForm({
+        ...formSchema.data,
+        type: isEdit && account ? account.type : AccountType.DebitAccount,
+        access_type: isEdit && account ? account.access_type : AccountAccessType.Personal,
+        decorations: {
+            icon:
+                isEdit && account
+                    ? (account.decorations?.icon ?? iconForType(account.type))
+                    : iconForType(AccountType.DebitAccount),
+            color:
+                isEdit && account ? (account.decorations?.color ?? 'emerald-600') : 'emerald-600',
+        },
+    });
 
     // Keep the decoration icon in sync with the selected account type.
     $effect(() => {
@@ -140,16 +137,84 @@
 <div class="space-y-5">
     {@render accountPreview()}
 
-    {@render accountAppearance()}
+    <Card>
+        <Field title="Account Type">
+            <div class="flex gap-1 rounded-md bg-base-300 p-1">
+                {#each typeOptions as opt (opt.value)}
+                    <button
+                        class="type-btn flex flex-1 flex-col items-center gap-1 rounded-md py-2 text-[0.6rem] font-medium transition
+                                {form.type === opt.value
+                            ? 'bg-primary text-primary-content'
+                            : 'text-base-content/60 hover:bg-base-200'}"
+                        onclick={() => (form.type = opt.value)}
+                        type="button">
+                        <i class="iconify {opt.icon} text-lg"></i>
+                        <span>{opt.label}</span>
+                    </button>
+                {/each}
+            </div>
+        </Field>
+    </Card>
 
     <Card>
-        <FormGenerator
-            id="account-form"
-            {action}
-            formSchema={formSchema()}
-            {method}
-            withoutSubmit
-            bind:form />
+        <div class="grid grid-cols-2 gap-5">
+            <Field title="Card Color">
+                <DecorationColorSelector rows={1} bind:value={form.decorations.color} />
+            </Field>
+
+            <Field title="Card Icon">
+                <DecorationIconSelector rows={1} bind:value={form.decorations.icon} />
+            </Field>
+        </div>
+    </Card>
+
+    <Card>
+        <Form id="account-form" {action} {form} {method}>
+            <div class="space-y-5">
+                <FieldInput
+                    {...formSchema.fields.name}
+                    error={form.errors.name}
+                    bind:value={form.name} />
+
+                <Field title="Access Type">
+                    <div class="grid grid-cols-2 gap-3">
+                        {#each accessOptions as opt (opt.value)}
+                            <button
+                                class="flex items-center gap-3 rounded-lg border-2 p-3 text-left transition
+                                {form.access_type === opt.value
+                                    ? 'border-primary bg-primary/5'
+                                    : 'border-base-300 hover:border-base-content/20'}"
+                                onclick={() => (form.access_type = opt.value)}
+                                type="button">
+                                <div
+                                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg
+                                    {form.access_type === opt.value
+                                        ? 'bg-primary text-primary-content'
+                                        : 'bg-base-200 text-base-content/60'}">
+                                    <i class="iconify {opt.icon} text-lg"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium">{opt.label}</p>
+                                    <p class="text-xs text-base-content/50">{opt.description}</p>
+                                </div>
+                            </button>
+                        {/each}
+                    </div>
+                </Field>
+
+                <FieldInput
+                    {...formSchema.fields.provider_id}
+                    error={form.errors.provider_id}
+                    bind:value={form.provider_id} />
+
+                {#if !isEdit}
+                    <FieldInput
+                        {...formSchema.fields.initial_balance}
+                        error={form.errors.initial_balance}
+                        bind:value={form.initial_balance} />
+                {/if}
+            </div>
+        </Form>
     </Card>
 
     <div>
@@ -189,66 +254,5 @@
                 <p class="font-mono text-2xl font-semibold">{previewBalance}</p>
             </div>
         </div>
-    </div>
-{/snippet}
-
-{#snippet accountAppearance()}
-    <div class="space-y-5">
-        <Card>
-            <p class="mb-2 text-sm font-medium">Account Type</p>
-            <div class="flex gap-1 rounded-md bg-base-300 p-1">
-                {#each typeOptions as opt (opt.value)}
-                    <button
-                        class="type-btn flex flex-1 flex-col items-center gap-1 rounded-md py-2 text-[0.6rem] font-medium transition
-                            {form.type === opt.value
-                            ? 'bg-primary text-primary-content'
-                            : 'text-base-content/60 hover:bg-base-200'}"
-                        onclick={() => (form.type = opt.value)}
-                        type="button">
-                        <i class="iconify {opt.icon} text-lg"></i>
-                        <span>{opt.label}</span>
-                    </button>
-                {/each}
-            </div>
-        </Card>
-
-        <Card>
-            <p class="mb-2 text-sm font-medium">Access Type</p>
-            <div class="grid grid-cols-2 gap-3">
-                {#each accessOptions as opt (opt.value)}
-                    <button
-                        class="flex items-center gap-3 rounded-lg border-2 p-3 text-left transition
-                            {form.access_type === opt.value
-                            ? 'border-primary bg-primary/5'
-                            : 'border-base-300 hover:border-base-content/20'}"
-                        onclick={() => (form.access_type = opt.value)}
-                        type="button">
-                        <div
-                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg
-                                {form.access_type === opt.value
-                                ? 'bg-primary text-primary-content'
-                                : 'bg-base-200 text-base-content/60'}">
-                            <i class="iconify {opt.icon} text-lg"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-sm font-medium">{opt.label}</p>
-                            <p class="text-xs text-base-content/50">{opt.description}</p>
-                        </div>
-                    </button>
-                {/each}
-            </div>
-        </Card>
-
-        <Card>
-            <div class="grid grid-cols-2 gap-5">
-                <Field title="Card Color">
-                    <DecorationColorSelector rows={1} bind:value={form.decorations.color} />
-                </Field>
-
-                <Field title="Card Icon">
-                    <DecorationIconSelector rows={1} bind:value={form.decorations.icon} />
-                </Field>
-            </div>
-        </Card>
     </div>
 {/snippet}
