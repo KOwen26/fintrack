@@ -14,6 +14,16 @@ class StoreAccountRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'initial_balance' => $this->integer('initial_balance', 0),
+        ]);
+    }
+
     public function rules(): array
     {
         return [
@@ -21,7 +31,7 @@ class StoreAccountRequest extends FormRequest
             'type' => ['required', 'string', Rule::enum(AccountType::class)],
             'access_type' => ['required', 'string', Rule::enum(AccountAccessType::class)],
             'provider_id' => ['nullable', 'integer', 'exists:providers,id'],
-            'initial_balance' => ['required', 'numeric', 'min:0'],
+            'initial_balance' => ['nullable', 'numeric', 'min:0'],
             'credit_card_limit' => ['nullable', 'numeric', 'min:0'],
             'currency' => ['nullable', 'string', 'size:3'],
             'decorations' => ['nullable', 'array'],

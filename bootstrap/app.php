@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Middleware\HandleInertiaRequests;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,5 +23,20 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (AuthorizationException $e, $request) {
+            if ($request->expectsJson() || $request->inertia()) {
+                return response()->json(['message' => $e->getMessage() ?: 'This action is unauthorized.'], 403);
+            }
+        });
+
+        $exceptions->render(function (ValidationException $e, $request): void {
+            if ($request->inertia()) {
+                Inertia::flash([
+                    'type' => 'warning',
+                    'message' => $e->getMessage(),
+                ]);
+            }
+        });
+
+        $exceptions->dontReportDuplicates();
     })->create();

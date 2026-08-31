@@ -11,7 +11,7 @@
 
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
     import PageSection from '@components/layouts/page-section.svelte';
-    import AccountCard2 from '@components/module/account/account-card-2.svelte';
+    import AccountCard2 from '@components/module/account/account-card.svelte';
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
     import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
     import Button from '@components/ui/button.svelte';
@@ -171,17 +171,13 @@
     }
 </script>
 
-<DashboardPageHeader title="">
-    <div>
+<DashboardPageHeader title="Account Detail">
+    <div class="flex items-center gap-3">
+        <Button color="light" href={AccountController.index.url()} variant="outline">
+            <i class="iconify size-5 ph--arrow-left-bold"></i>
+        </Button>
         <div class="space-y-1.5">
             <h1 class="text-xl font-bold">{account.name}</h1>
-            <div class="flex items-center gap-1.5">
-                <!-- <AccountTypeBadge type={account.type} /> -->
-                <!-- <AccountAccessTypeBadge type={account.access_type} /> -->
-                <!-- {#if providerName}
-                <Badge color="light">{providerName}</Badge>
-            {/if} -->
-            </div>
         </div>
 
         <!-- ═══ Breadcrumb — desktop only ═══ -->
