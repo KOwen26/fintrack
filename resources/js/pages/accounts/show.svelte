@@ -2,6 +2,7 @@
     import type { App } from '@wayfinder/types';
 
     import { getDecorationColor } from '@data/decoration-colors';
+    import { setLayoutProps } from '@inertiajs/svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
     import { Collapsible } from 'bits-ui';
     import { SvelteMap } from 'svelte/reactivity';
@@ -11,7 +12,7 @@
 
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
     import PageSection from '@components/layouts/page-section.svelte';
-    import AccountCard2 from '@components/module/account/account-card.svelte';
+    import AccountCard from '@components/module/account/account-card.svelte';
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
     import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
     import Button from '@components/ui/button.svelte';
@@ -20,6 +21,8 @@
     import DonutChart from '@components/ui/charts/donut-chart.svelte';
 
     let { account }: { account: App.Models.Account } = $props();
+
+    setLayoutProps({ backUrl: AccountController.index.url() });
 
     const providerName = $derived<string | undefined>(
         (account.provider as { name?: string } | null)?.name
@@ -207,7 +210,7 @@
     <!-- ════════════════════════════════════════════ -->
     <!--  HERO CARD                                  -->
     <!-- ════════════════════════════════════════════ -->
-    <AccountCard2 {account} />
+    <AccountCard {account} />
 
     <!-- Toggle detail view -->
     <Button

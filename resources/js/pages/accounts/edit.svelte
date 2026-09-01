@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { App } from '@wayfinder/types';
 
-    import { router } from '@inertiajs/svelte';
+    import { router, setLayoutProps } from '@inertiajs/svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
     import PageSection from '@components/layouts/page-section.svelte';
@@ -12,6 +12,8 @@
 
     let { account, providers }: { account: App.Models.Account; providers: App.Models.Provider[] } =
         $props();
+
+    setLayoutProps({ backUrl: AccountController.show.url({ account: account.id }) });
 
     let showArchiveConfirm = $state(false);
     let showDeleteConfirm = $state(false);

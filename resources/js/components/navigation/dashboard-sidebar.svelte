@@ -14,6 +14,7 @@
     let {
         ref = $bindable(null),
         collapsible = 'icon',
+        side = 'left',
         ...restProps
     }: ComponentProps<typeof Sidebar.Root> = $props();
 
@@ -23,12 +24,15 @@
 
     const sidebar = useSidebar();
 
+    // The mobile drawer slides in from the right; desktop keeps the configured side.
+    const resolvedSide = $derived(sidebar.isMobile ? 'right' : side);
+
     const handleLogout = () => {
         router.post(auth.logout().url);
     };
 </script>
 
-<Sidebar.Root {collapsible} {...restProps}>
+<Sidebar.Root {collapsible} side={resolvedSide} {...restProps}>
     <Sidebar.Header>
         <div class="p-2">
             <i class="iconify ph--map-trifold-duotone"></i>
@@ -54,7 +58,7 @@
                             size="lg"
                             {...props}>
                             <div class="avatar">
-                                <div class="bg-neutral text-neutral-content size-8 rounded-full">
+                                <div class="size-8 rounded-full bg-neutral text-neutral-content">
                                     <img alt={user.name} src={user.avatar} />
                                     <!-- <span class="text-3xl">{user.name}</span> -->
                                 </div>
@@ -63,7 +67,7 @@
                                 <span class="truncate font-medium">{user.name}</span>
                                 <span class="truncate text-xs">{user.email}</span>
                             </div>
-                            <i class="iconify ph--caret-up-down-duotone ml-auto size-4"></i>
+                            <i class="ml-auto iconify size-4 ph--caret-up-down-duotone"></i>
                         </Sidebar.MenuButton>
                     {/snippet}
                 </DropdownMenu.Trigger>
@@ -75,7 +79,7 @@
                     <DropdownMenu.Label class="p-0 font-normal">
                         <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                             <div class="avatar">
-                                <div class="bg-neutral text-neutral-content size-8 rounded-full">
+                                <div class="size-8 rounded-full bg-neutral text-neutral-content">
                                     <img alt={user.name} src={user.avatar} />
                                     <!-- <span class="text-3xl">{user.name}</span> -->
                                 </div>

@@ -1,46 +1,37 @@
 <script lang="ts">
-    import { flatMenu } from '@data/menu';
-    import { page } from '@inertiajs/svelte';
+    import type { BreadcrumbItem } from '@components/ui/breadcrumbs.svelte';
 
-    import { getTitleFromMenu } from '@utilities/helper.svelte';
-
+    import * as Sidebar from '@components/ui/atoms/sidebar';
+    import Breadcrumbs from '@components/ui/breadcrumbs.svelte';
     import Button from '@components/ui/button.svelte';
-    import { sidebar } from '@states/reactive.svelte';
 
-    const title = $derived(page.props?.meta?.title || getTitleFromMenu(flatMenu));
+    interface Props {
+        backUrl?: string;
+        breadcrumbs?: BreadcrumbItem[];
+    }
+
+    let { backUrl = undefined, breadcrumbs = [] }: Props = $props();
 </script>
 
 <header
-    class={[
-        'sticky top-0 z-50',
-        'bg-base-100 text-base-content flex h-16 w-full items-center justify-between gap-3 px-6 py-3',
-    ]}>
-    <div class="flex items-center gap-3">
-        {@render sidebarToggle()}
-        {title}
+    class="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-base-300 bg-white text-base-content transition-[width,height] ease-linear">
+    <div class="flex items-center gap-2 px-4">
+        <div class="hidden items-center gap-2 md:flex">
+            <Sidebar.Trigger class="-ml-1" />
+            <div class="divider mx-0 divider-horizontal divide-base-300"></div>
+        </div>
+        {#if backUrl}
+            <Button class="size-8 p-1 btn-sm" color="secondary" href={backUrl} variant="ghost">
+                <i class="iconify size-5 ph--arrow-left-bold"></i>
+            </Button>
+        {/if}
+        <Breadcrumbs items={breadcrumbs} />
     </div>
-    <div>
+    <div class="flex items-center gap-2 px-4">
+        <Sidebar.Trigger class="md:hidden" />
         {@render profileInfo()}
     </div>
 </header>
-
-{#snippet sidebarToggle()}
-    <button
-        class="hidden cursor-pointer p-0.5 md:inline"
-        aria-label="Sidebar Toggle"
-        onclick={() => sidebar.collapse()}
-        type="button">
-        <div class="size-6">
-            <i
-                class={[
-                    'size-6',
-                    sidebar.is_collapsed
-                        ? 'iconify ph--arrow-line-right-bold'
-                        : 'iconify ph--arrow-line-left-bold',
-                ]}></i>
-        </div>
-    </button>
-{/snippet}
 
 {#snippet profileInfo()}
     <Button
@@ -54,9 +45,9 @@
     <div
         id="profile-info"
         style="position-anchor:--anchor-1"
-        class="dropdown dropdown-end bg-base-100 mt-2 w-52 rounded-lg shadow-sm"
+        class="dropdown dropdown-end mt-2 w-52 rounded-lg bg-base-100 shadow-sm"
         popover>
-        <ul class="menu text-base-content w-full space-y-1">
+        <ul class="menu w-full space-y-1 text-base-content">
             <li class="menu-title">Title</li>
             <li><a><i class="iconify ph--user-bold"></i> Item 1</a></li>
             <li><a><i class="iconify ph--user-bold"></i> Item 2</a></li>
