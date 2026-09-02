@@ -6,12 +6,10 @@ use App\Data\Report\CategorySpendingItemData;
 use App\Data\Report\CategorySpendingReportData;
 use App\Data\Report\ContributionMemberData;
 use App\Data\Report\ContributionSplitData;
-use App\Data\Report\CreditUtilizationData;
 use App\Data\Report\FixedVariableData;
 use App\Data\Report\TrendMonthData;
 use App\Data\Report\TrendReportData;
 use App\Enums\AccountAccessType;
-use App\Enums\AlertLevel;
 use App\Models\Account;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -23,7 +21,6 @@ class ReportService
     /**
      * Income vs Expense Trend — last N months of monthly income/expense/net rows.
      * Cached per month: past months permanently, current month for 5 minutes.
-     * Credit utilization is always live and is not cached here.
      */
     public function trend(Account $account, int $months = 6): TrendReportData
     {
@@ -220,40 +217,6 @@ class ReportService
                     to: $to->toDateString(),
                 );
             }
-        );
-    }
-
-    /**
-     * Credit Utilization — always live, never cached.
-     * Uses BalanceService::forAccount() from the Ledger spec.
-     * Only meaningful for credit card accounts (credit_card_limit must be set).
-     */
-    public function creditUtilization(Account $account): CreditUtilizationData
-    {
-        $limit = (float) ($account->credit_card_limit ?? 0);
-        $balance = resolve(BalanceService::class)->forAccount($account);
-
-        // For credit cards: balance starts at limit and decreases as spending happens.
-        // used = limit - balance (money spent against the credit line)
-        $used = max(0.0, $limit - (float) $balance);
-        $available = max(0.0, (float) $balance);
-
-        $utilizationPct = $limit > 0
-            ? round($used / $limit * 100, 2)
-            : 0.0;
-
-        $alertLevel = match (true) {
-            $utilizationPct >= 70 => AlertLevel::HighRisk,
-            $utilizationPct >= 30 => AlertLevel::Warning,
-            default => AlertLevel::Normal,
-        };
-
-        return new CreditUtilizationData(
-            limit: $limit,
-            used: $used,
-            available: $available,
-            utilization_pct: $utilizationPct,
-            alert_level: $alertLevel,
         );
     }
 

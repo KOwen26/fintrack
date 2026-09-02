@@ -3,7 +3,6 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\LandingController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserThemeController;
@@ -49,7 +48,6 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
     Route::get('accounts/{account}/reports/trend', [ReportController::class, 'trend'])->name('reports.trend');
     Route::get('accounts/{account}/reports/category-leak', [ReportController::class, 'categoryLeak'])->name('reports.category-leak');
     Route::get('accounts/{account}/reports/contribution-split', [ReportController::class, 'contributionSplit'])->name('reports.contribution-split');
-    Route::get('accounts/{account}/reports/credit-utilization', [ReportController::class, 'creditUtilization'])->name('reports.credit-utilization');
     Route::get('accounts/{account}/reports/fixed-vs-variable', [ReportController::class, 'fixedVsVariable'])->name('reports.fixed-vs-variable');
 
     require __DIR__ . '/settings.php';

@@ -57,18 +57,20 @@
                 <Tooltip>
                     {#snippet trigger({ props })}
                         <Button {...props} class="size-8 p-1" color="secondary" variant="outline">
-                            <i class="iconify ph--dots-three-vertical-bold"></i>
+                            <i class="iconify solar--menu-dots-bold-duotone"></i>
                         </Button>
                     {/snippet}
                     Lainnya
                 </Tooltip>
 
                 <ul
-                    class="dropdown-content menu bg-base-100 rounded-box border-base-300 z-50 mt-2 w-40 border p-2 shadow-sm">
+                    class="menu dropdown-content z-50 mt-2 w-40 rounded-box border border-base-300 bg-base-100 p-2 shadow-sm">
                     {#each actions.slice(2) as action, i (i)}
                         {@const actionIcon =
                             action?.icon ??
-                            (action?.type === 'detail' ? 'ph--info-duotone' : undefined)}
+                            (action?.type === 'detail'
+                                ? 'solar--info-circle-line-duotone'
+                                : undefined)}
                         <li>
                             <Button class="justify-start px-2" color="secondary" variant="ghost">
                                 <i class={twMerge('iconify', actionIcon)}></i>
@@ -84,7 +86,7 @@
 
 {#snippet ActionButton(action: RowAction)}
     {@const { type, label, icon: _icon, ...buttonProps } = action}
-    {@const icon = _icon ?? (type === 'detail' ? 'ph--info-duotone' : undefined)}
+    {@const icon = _icon ?? (type === 'detail' ? 'solar--info-circle-line-duotone' : undefined)}
     <Tooltip>
         {#snippet trigger({ props })}
             <Button

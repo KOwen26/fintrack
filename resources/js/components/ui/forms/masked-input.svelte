@@ -22,7 +22,6 @@
         maskedValue = $bindable(''),
         mask,
         maskPreset: _maskPreset = undefined,
-        defaultClass = 'input',
         name,
         ...props
     }: MaskedInputProps & RestProps = $props();
@@ -81,7 +80,7 @@
 <input
     bind:this={input}
     name={`${name}_mask`}
-    class={[defaultClass, props.class]}
+    class={['input w-full', props.class]}
     type="text"
     {...props} />
 

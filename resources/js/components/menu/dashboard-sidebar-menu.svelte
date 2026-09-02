@@ -80,7 +80,7 @@
                                             {@render menuIcon(group.icon)}
                                             <span>{group.name}</span>
                                             <i
-                                                class="ml-auto iconify transition-transform duration-200 ph--caret-right-duotone group-data-[state=open]/collapsible:rotate-90"
+                                                class="ml-auto iconify transition-transform duration-200 solar--alt-arrow-right-line-duotone group-data-[state=open]/collapsible:rotate-90"
                                             ></i>
                                         </Sidebar.MenuButton>
                                     {/snippet}
@@ -131,7 +131,7 @@
                                         {@render menuIcon(group.icon)}
                                         {group.name}
                                         <i
-                                            class="ml-auto iconify transition-transform duration-200 ph--arrows-left-right-duotone group-data-[state=open]/collapsible:rotate-90"
+                                            class="ml-auto iconify transition-transform duration-200 solar--transfer-horizontal-line-duotone group-data-[state=open]/collapsible:rotate-90"
                                         ></i>
                                     </Sidebar.MenuButton>
                                 {/snippet}

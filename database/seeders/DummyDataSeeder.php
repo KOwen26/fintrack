@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Enums\AccountType;
 use App\Models\Account;
 use App\Models\Category;
+use App\Models\Provider;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Sequence;
@@ -50,16 +51,7 @@ class DummyDataSeeder extends Seeder
 
         $user = User::factory()->create(compact('name', 'email'));
 
-        $accountIds = Account::factory()
-            ->count(random_int(5, 10))
-            ->sequence(fn (): array => [
-                'type' => collect(AccountType::cases())->random()->value,
-                'name' => $this->randomAccountName(),
-                'owner_id' => $user->id,
-            ])
-            ->create()
-            ->pluck('id')
-            ->toArray();
+        $accountIds = $this->seedAccounts($user, Provider::query()->get());
 
         for ($monthOffset = 2; $monthOffset >= 0; $monthOffset--) {
             $date = Date::now()->startOfMonth()->subMonths($monthOffset);
@@ -139,6 +131,33 @@ class DummyDataSeeder extends Seeder
         );
 
         return $pickList;
+    }
+
+    /**
+     * @param  Collection<int, Provider>  $providers
+     *
+     * @return list<int>
+     */
+    private function seedAccounts(User $user, Collection $providers): array
+    {
+        $accounts = collect();
+
+        foreach (range(1, random_int(5, 10)) as $ignored) {
+            $factory = Account::factory()->state([
+                'type' => collect(AccountType::cases())->random(),
+                'owner_id' => $user->id,
+            ]);
+
+            if ($providers->isNotEmpty() && fake()->boolean(60)) {
+                $accounts->push($factory->forProvider($providers->random())->create());
+
+                continue;
+            }
+
+            $accounts->push($factory->create(['name' => $this->randomAccountName()]));
+        }
+
+        return $accounts->pluck('id')->toArray();
     }
 
     private function randomAccountName(): string

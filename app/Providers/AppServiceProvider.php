@@ -9,6 +9,7 @@ use App\Listeners\InvalidateAccountBalanceCache;
 use App\Listeners\InvalidateAccountReportCache;
 use Exception;
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
@@ -47,6 +48,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Model::unguard();
+
+        Model::preventSilentlyDiscardingAttributes($this->app->isLocal());
+
         RedirectResponse::macro('flash', function (string $message, string $type = 'success', ?array $meta = []) {
             Inertia::flash([
                 'type' => $type,

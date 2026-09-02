@@ -159,11 +159,11 @@
         <!-- ── Back header ─────────────────────────────── -->
         <div class="flex items-center justify-between px-1">
             <button
-                class="btn btn-ghost btn-sm btn-square"
+                class="btn btn-square btn-ghost btn-sm"
                 aria-label="Kembali"
                 onclick={onCancel ?? defaultBack}
                 type="button">
-                <i class="iconify ph--arrow-left-bold size-5"></i>
+                <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
             </button>
             <span class="text-sm font-semibold tracking-tight">{typeConfig.title}</span>
             <div class="w-9"></div>
@@ -172,17 +172,17 @@
         <!-- ── Form wrapper ─────────────────────────────── -->
         <Form id="transaction-form" {action} {form} {method}>
             <!-- Card: Amount -->
-            <div class="card bg-base-100 rounded-2xl overflow-hidden border border-base-content/15">
+            <div class="card overflow-hidden rounded-2xl border border-base-content/15 bg-base-100">
                 <div class="h-1 w-full {typeConfig.accentBar}"></div>
                 <div class="px-5 py-4">
                     <p
-                        class="text-[0.625rem] font-bold tracking-[0.09em] uppercase text-base-content/40">
+                        class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
                         Nominal Transaksi
                     </p>
-                    <div class="flex items-center gap-1.5 mt-1">
+                    <div class="mt-1 flex items-center gap-1.5">
                         <span class="font-mono text-sm font-medium text-base-content/40">Rp</span>
                         <input
-                            class="font-mono text-[clamp(2rem,9vw,2.6rem)] font-medium w-full border-none bg-transparent outline-none leading-none tracking-tight {typeConfig.textColor}"
+                            class="w-full border-none bg-transparent font-mono text-[clamp(2rem,9vw,2.6rem)] leading-none font-medium tracking-tight outline-none {typeConfig.textColor}"
                             inputmode="numeric"
                             oninput={handleAmountInput}
                             placeholder="0"
@@ -193,29 +193,29 @@
             </div>
 
             <!-- Card: Details -->
-            <div class="card bg-base-100 rounded-2xl overflow-hidden border border-base-content/15">
+            <div class="card overflow-hidden rounded-2xl border border-base-content/15 bg-base-100">
                 <!-- Merchant / Description -->
                 <div class="flex flex-col px-5 py-3">
                     <label
-                        class="text-[0.625rem] font-bold tracking-[0.09em] uppercase text-base-content/40"
+                        class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase"
                         for="in-merchant">
                         {typeConfig.merchantLabel}
                     </label>
                     <input
                         id="in-merchant"
-                        class="input w-full border-none bg-transparent px-0 text-sm font-medium mt-0.5 placeholder:text-base-content/30"
+                        class="input mt-0.5 w-full border-none bg-transparent px-0 text-sm font-medium placeholder:text-base-content/30"
                         placeholder={typeConfig.merchantPlaceholder}
                         type="text"
                         bind:value={form.description} />
                 </div>
 
-                <div class="border-t border-base-content/10 mx-5"></div>
+                <div class="mx-5 border-t border-base-content/10"></div>
 
                 <!-- Account -->
                 <div class="flex items-center px-5 py-3">
                     <div class="flex-1">
                         <span
-                            class="text-[0.625rem] font-bold tracking-[0.09em] uppercase text-base-content/40">
+                            class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
                             {typeConfig.accountLabel}
                         </span>
                         <div class="mt-0.5">
@@ -228,12 +228,12 @@
                 </div>
 
                 {#if typeConfig.showDestination}
-                    <div class="border-t border-base-content/10 mx-5"></div>
+                    <div class="mx-5 border-t border-base-content/10"></div>
 
                     <div class="flex items-center px-5 py-3">
                         <div class="flex-1">
                             <span
-                                class="text-[0.625rem] font-bold tracking-[0.09em] uppercase text-base-content/40">
+                                class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
                                 Akun Tujuan
                             </span>
                             <div class="mt-0.5">
@@ -246,13 +246,13 @@
                     </div>
                 {/if}
 
-                <div class="border-t border-base-content/10 mx-5"></div>
+                <div class="mx-5 border-t border-base-content/10"></div>
 
                 <!-- Category -->
                 <div class="flex items-center px-5 py-3">
                     <div class="flex-1">
                         <span
-                            class="text-[0.625rem] font-bold tracking-[0.09em] uppercase text-base-content/40">
+                            class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
                             Kategori
                         </span>
                         <div class="mt-0.5">
@@ -261,13 +261,13 @@
                     </div>
                 </div>
 
-                <div class="border-t border-base-content/10 mx-5"></div>
+                <div class="mx-5 border-t border-base-content/10"></div>
 
                 <!-- Date -->
                 <div class="flex items-center px-5 py-3">
                     <div class="flex-1">
                         <label
-                            class="text-[0.625rem] font-bold tracking-[0.09em] uppercase text-base-content/40"
+                            class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase"
                             for="in-date">
                             Tanggal
                         </label>
@@ -283,16 +283,16 @@
             </div>
 
             <!-- Card: Notes -->
-            <div class="card bg-base-100 rounded-2xl overflow-hidden border border-base-content/15">
+            <div class="card overflow-hidden rounded-2xl border border-base-content/15 bg-base-100">
                 <div class="flex flex-col px-5 py-3">
                     <label
-                        class="text-[0.625rem] font-bold tracking-[0.09em] uppercase text-base-content/40"
+                        class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase"
                         for="in-notes">
                         Catatan
                     </label>
                     <textarea
                         id="in-notes"
-                        class="textarea w-full border-none bg-transparent px-0 text-sm font-normal leading-relaxed resize-none mt-0.5 placeholder:text-base-content/30"
+                        class="textarea mt-0.5 w-full resize-none border-none bg-transparent px-0 text-sm leading-relaxed font-normal placeholder:text-base-content/30"
                         placeholder="Tambahkan catatan detail transaksi di sini..."
                         rows="2"
                         bind:value={form.notes}></textarea>

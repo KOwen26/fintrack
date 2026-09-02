@@ -22,7 +22,7 @@
     const color = $derived(isInflow ? 'text-success' : 'text-error');
 </script>
 
-<Card class={cn('transition-transform active:scale-95', _class, 'p-3 rounded-md')}>
+<Card class={cn('transition-transform active:scale-95', _class, 'rounded-md p-3')}>
     <div class="grid grid-cols-2 gap-y-2">
         {#if !withoutAccount}
             <div class="col-span-full">
@@ -40,16 +40,16 @@
             </p>
         </div>
 
-        <div class=" text-right space-y-1">
+        <div class=" space-y-1 text-right">
             <p class="text-sm text-base-content/40">
                 {DateTimeHelper.format(transaction.transaction_date, 'datetime')}
             </p>
 
-            <p class="font-semibold flex items-center gap-1 justify-end {color}">
+            <p class="flex items-center justify-end gap-1 font-semibold {color}">
                 <i
                     class={cn([
-                        'iconify text-current size-3',
-                        isInflow ? 'ph--plus-bold' : 'ph--minus-bold',
+                        'iconify size-3 text-current',
+                        isInflow ? 'solar--add-bold-duotone' : 'solar--minus-bold-duotone',
                     ])}></i>
 
                 {Formatter.currency(transaction.amount)}
@@ -80,7 +80,7 @@
                 <i
                     class={cn([
                         'iconify text-current size-3',
-                        isInflow ? 'ph--plus-bold' : 'ph--minus-bold',
+                        isInflow ? 'solar--add-bold-duotone' : 'solar--minus-bold-duotone',
                     ])}></i>
 
                 {Formatter.currency(transaction.amount)}

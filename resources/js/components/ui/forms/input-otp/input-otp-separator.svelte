@@ -13,6 +13,6 @@
     {#if children}
         {@render children?.()}
     {:else}
-        <i class="iconify ph--dot-duotone"></i>
+        <i class="iconify solar--record-minimalistic-line-duotone"></i>
     {/if}
 </div>

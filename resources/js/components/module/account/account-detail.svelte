@@ -58,12 +58,6 @@
         ],
     }: Props = $props();
 
-    // ── Prototype: credit card dummy data ──────────────────────
-    const creditLimit = 10000000;
-    const creditUsed = 3500000;
-    const dueDate = '2026-09-15';
-    const minPayment = 350000;
-
     // ── Derived state ─────────────────────────────────────────────
     const colorSlug = $derived(account.decorations?.color);
     const iconSlug = $derived(account.decorations?.icon);
@@ -118,25 +112,25 @@
 
     const actionRegistry: Record<string, ActionItem> = {
         transact: {
-            icon: 'ph--arrows-left-right-bold',
+            icon: 'solar--transfer-horizontal-bold-duotone',
             label: 'Transact',
             bgClass: 'bg-teal/10',
             textClass: 'text-teal',
         },
         transfer: {
-            icon: 'ph--arrow-up-right-bold',
+            icon: 'solar--arrow-right-up-line-duotone',
             label: 'Transfer',
             bgClass: 'bg-sage/10',
             textClass: 'text-sage',
         },
         report: {
-            icon: 'ph--chart-bar-bold',
+            icon: 'solar--chart-2-bold-duotone',
             label: 'Report',
             bgClass: 'bg-amber/10',
             textClass: 'text-amber',
         },
         connect: {
-            icon: 'ph--link-bold',
+            icon: 'solar--link-bold-duotone',
             label: 'Connect',
             bgClass: 'bg-purple/10',
             textClass: 'text-purple',
@@ -166,7 +160,7 @@
     const infoRows = $derived.by<InfoRow[]>(() => {
         const rows: InfoRow[] = [
             {
-                icon: 'ph--identification-badge-bold',
+                icon: 'solar--user-id-bold-duotone',
                 label: 'Account Type',
                 value: account.type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
                 mono: false,
@@ -175,7 +169,7 @@
 
         if (providerName) {
             rows.push({
-                icon: 'ph--building-bold',
+                icon: 'solar--buildings-bold-duotone',
                 label: 'Provider',
                 value: providerName,
                 mono: false,
@@ -184,24 +178,15 @@
 
         if (account.access_type) {
             rows.push({
-                icon: 'ph--users-three-bold',
+                icon: 'solar--users-group-two-rounded-bold-duotone',
                 label: 'Access Type',
                 value: account.access_type === 'personal' ? 'Personal' : 'Joint',
                 mono: false,
             });
         }
 
-        if (account.currency) {
-            rows.push({
-                icon: 'ph--currency-circle-dollar-bold',
-                label: 'Currency',
-                value: account.currency,
-                mono: false,
-            });
-        }
-
         rows.push({
-            icon: 'ph--calendar-bold',
+            icon: 'solar--calendar-bold-duotone',
             label: 'Created',
             value: DateTimeHelper.format(account.created_at, 'date'),
             mono: false,
@@ -247,13 +232,15 @@
                         {#if iconObj?.value}
                             <i class="iconify size-4.5 text-white {iconObj.value}"></i>
                         {:else if account.type === AccountType.CreditCard}
-                            <i class="iconify size-4.5 text-white ph--credit-card-bold"></i>
+                            <i class="iconify size-4.5 text-white solar--card-bold-duotone"></i>
                         {:else if account.type === AccountType.EWallet}
-                            <i class="iconify size-4.5 text-white ph--device-mobile-bold"></i>
+                            <i class="iconify size-4.5 text-white solar--smartphone-bold-duotone"
+                            ></i>
                         {:else if account.type === AccountType.CashWallet}
-                            <i class="iconify size-4.5 text-white ph--wallet-bold"></i>
+                            <i class="iconify size-4.5 text-white solar--wallet-bold-duotone"></i>
                         {:else}
-                            <i class="iconify size-4.5 text-white ph--bank-bold"></i>
+                            <i class="iconify size-4.5 text-white solar--banknote-2-bold-duotone"
+                            ></i>
                         {/if}
                     </div>
                     <div>
@@ -333,9 +320,6 @@
                         {/if}
                     </span>
                 </div>
-                <p style="color: rgba(255,255,255,0.35)" class="mt-1 text-[0.68rem]">
-                    {account.currency ?? 'IDR'}
-                </p>
             </div>
 
             <!-- Sparkline + account number row -->
@@ -489,74 +473,6 @@
     {/if}
 
     <!-- ════════════════════════════════════════════ -->
-    <!--  CREDIT CARD SECTION                       -->
-    <!-- ════════════════════════════════════════════ -->
-    <!-- {#if isCreditCard} -->
-    <ResponsiveCard class="space-y-0" contentClass="p-0">
-        <div class="px-5 pt-[18px] md:px-6">
-            <p class="text-[0.63rem] font-bold tracking-widest text-base-content/50 uppercase">
-                Credit Usage
-            </p>
-        </div>
-
-        <div class="px-5 pt-[14px] md:px-6">
-            <div class="mb-1 flex items-end justify-between">
-                <span class="text-[0.78rem] text-base-content/60">Used</span>
-                <div class="text-right">
-                    <span class="font-mono text-sm font-semibold text-error">
-                        {Formatter.currency(creditUsed, true)}
-                    </span>
-                    <span class="text-[0.75rem] text-base-content/50">
-                        / {Formatter.currency(creditLimit, true)}
-                    </span>
-                </div>
-            </div>
-
-            <div class="mt-2.5 h-2 overflow-hidden rounded-full bg-base-content/10">
-                <div
-                    style="width: {(creditUsed / creditLimit) * 100}%"
-                    class="h-full rounded-full bg-error transition-all">
-                </div>
-            </div>
-
-            <div class="mt-1.5 mb-3.5 flex justify-between">
-                <span class="text-[0.69rem] font-semibold text-error"
-                    >{((creditUsed / creditLimit) * 100).toFixed(1)}% used</span>
-                <span class="text-teal text-[0.69rem] font-semibold"
-                    >Available {Formatter.currency(creditLimit - creditUsed, true)}</span>
-            </div>
-        </div>
-
-        <hr class="mx-5 border-base-content/10 md:mx-6" />
-
-        <!-- Due date -->
-        <div class="flex items-center justify-between gap-3 px-5 py-3 md:px-6">
-            <span class="flex items-center gap-2 text-[0.8rem] text-base-content/60">
-                <i class="iconify size-3.5 text-base-content/50 ph--calendar-bold"></i>
-                Due Date
-            </span>
-            <span class="text-amber text-[0.85rem] font-semibold">
-                {DateTimeHelper.format(dueDate, 'date')}
-            </span>
-        </div>
-
-        <hr class="mx-5 border-base-content/10 md:mx-6" />
-
-        <!-- Min payment -->
-        <div class="flex items-center justify-between gap-3 px-5 py-3 pb-4 md:px-6">
-            <span class="flex items-center gap-2 text-[0.8rem] text-base-content/60">
-                <i class="iconify size-3.5 text-base-content/50 ph--currency-circle-dollar-bold"
-                ></i>
-                Min. Payment
-            </span>
-            <span class="font-mono text-[0.85rem] font-semibold">
-                {Formatter.currency(minPayment)}
-            </span>
-        </div>
-    </ResponsiveCard>
-    <!-- {/if} -->
-
-    <!-- ════════════════════════════════════════════ -->
     <!--  ACCOUNT INFO                              -->
     <!-- ════════════════════════════════════════════ -->
     <ResponsiveCard class="space-y-0" contentClass="p-0">
@@ -642,7 +558,7 @@
         <!-- Account number -->
         <div class="flex items-start gap-3">
             <i
-                class="mt-0.5 iconify size-5 shrink-0 text-base-content/50 ph--identification-badge-bold"
+                class="mt-0.5 iconify size-5 shrink-0 text-base-content/50 solar--user-id-bold-duotone"
             ></i>
             <div>
                 <p class="mb-0.5 text-xs text-base-content/50">Account ID</p>
@@ -655,7 +571,9 @@
         <!-- Created / Updated -->
         <div class="flex items-start justify-between gap-4">
             <div class="flex items-start gap-3">
-                <i class="mt-0.5 iconify size-5 shrink-0 text-base-content/50 ph--clock-bold"></i>
+                <i
+                    class="mt-0.5 iconify size-5 shrink-0 text-base-content/50 solar--clock-circle-bold-duotone"
+                ></i>
                 <div>
                     <p class="mb-0.5 text-xs text-base-content/50">Created</p>
                     <p class="text-sm text-base-content">

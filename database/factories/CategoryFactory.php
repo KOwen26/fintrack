@@ -4,8 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\CategoryType;
 use App\Models\Category;
-use App\Models\DecorationColor;
-use App\Models\DecorationIcon;
+use Database\Factories\Concerns\HasDecorations;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -13,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class CategoryFactory extends Factory
 {
+    use HasDecorations;
+
     public function definition(): array
     {
         return [
@@ -20,10 +21,7 @@ class CategoryFactory extends Factory
             'name' => fake()->word(),
             'type' => fake()->randomElement(CategoryType::cases()),
             'order' => 0.100,
-            'decorations' => [
-                'icon' => DecorationIcon::inRandomOrder()->first()?->slug ?? 'tag',
-                'color' => DecorationColor::inRandomOrder()->first()?->slug ?? 'slate-500',
-            ],
+            'decorations' => $this->randomDecorations(),
             'is_fixed_cost' => false,
         ];
     }
@@ -36,5 +34,10 @@ class CategoryFactory extends Factory
     public function fixed(): static
     {
         return $this->state(['is_fixed_cost' => true]);
+    }
+
+    public function withoutDecorations(): static
+    {
+        return $this->state(['decorations' => null]);
     }
 }

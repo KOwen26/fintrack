@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Data\DecorationData;
+use App\Enums\AccountType;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -24,18 +25,6 @@ class AccountService
         $totalBalance = (float) $accounts->sum('current_balance');
         $totalAccounts = $accounts->count();
 
-        $creditCards = $accounts->filter(
-            fn (Account $a): bool => $a->type === 'credit_card' && ($a->credit_card_limit ?? 0) > 0
-        );
-
-        $creditUtilization = $creditCards->isNotEmpty()
-            ? round(
-                ($creditCards->sum(fn (Account $a): float | int => abs($a->current_balance ?? 0))
-                / $creditCards->sum('credit_card_limit'))
-                * 100
-            )
-            : null;
-
         $oldest = $accounts->sortBy('created_at')->first();
         $oldestAccountYears = $oldest
             ? (int) $oldest->created_at->diffInYears(now())
@@ -44,9 +33,27 @@ class AccountService
         return [
             'total_balance' => $totalBalance,
             'total_accounts' => $totalAccounts,
-            'credit_utilization_percentage' => $creditUtilization,
             'oldest_account_years' => $oldestAccountYears,
+            'available_balance' => self::balanceForTypes($accounts, [
+                AccountType::DebitAccount,
+                AccountType::CashWallet,
+                AccountType::EWallet,
+            ]),
+            'investment_balance' => self::balanceForTypes($accounts, [AccountType::Investment]),
         ];
+    }
+
+    /**
+     * Sum current balances across accounts of the given types.
+     *
+     * @param  Collection<int, Account>  $accounts
+     * @param  list<AccountType>  $types
+     */
+    private static function balanceForTypes(Collection $accounts, array $types): float
+    {
+        return (float) $accounts
+            ->filter(fn (Account $account): bool => in_array($account->type, $types, true))
+            ->sum('current_balance');
     }
 
     public function getTransferEligibleAccounts(?Account $excludeAccount = null): Collection

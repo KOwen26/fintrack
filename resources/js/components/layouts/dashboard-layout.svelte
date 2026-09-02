@@ -11,15 +11,22 @@
     import { getTitleFromMenu } from '@utilities/helper.svelte';
 
     import BottomNav from '@components/navigation/bottom-nav.svelte';
+    import DashboardHeader from '@components/navigation/dashboard-header.svelte';
     import DashboardSidebar from '@components/navigation/dashboard-sidebar.svelte';
     import * as Sidebar from '@components/ui/atoms/sidebar';
-    import Breadcrumbs from '@components/ui/breadcrumbs.svelte';
-    import Button from '@components/ui/button.svelte';
     import Toaster from '@components/ui/toaster.svelte';
 
-    let { meta, backUrl = undefined, breadcrumbs = [], children, ...props }: RestProps = $props();
+    let {
+        meta,
+        backUrl = undefined,
+        breadcrumbs = [],
+        title: layoutTitle = undefined,
+        children,
+        ...props
+    }: RestProps = $props();
 
-    const title = $derived(page.props?.meta?.title || getTitleFromMenu(flatMenu));
+    // setLayoutProps({ title }) wins, then the shared meta title, then the active menu.
+    const title = $derived(layoutTitle ?? (page.props?.meta?.title || getTitleFromMenu(flatMenu)));
     const appName = import.meta.env.VITE_APP_NAME || page?.props?.meta?.app_name;
 
     useFlashToast();
@@ -50,7 +57,7 @@
 <Sidebar.Provider>
     <DashboardSidebar />
     <Sidebar.Inset>
-        {@render header()}
+        <DashboardHeader {backUrl} breadcrumbs={breadcrumbItems} {title} />
 
         <ErrorWrapper>
             <div class="flex h-full flex-col gap-6 p-3 md:p-5">
@@ -65,22 +72,6 @@
         <BottomNav />
     </Sidebar.Inset>
 </Sidebar.Provider>
-
-{#snippet header()}
-    <header
-        class="flex h-14 shrink-0 items-center gap-2 border-b border-base-300 bg-white text-base-content transition-[width,height] ease-linear">
-        <div class="flex items-center gap-2 px-4">
-            <Sidebar.Trigger class="-ml-1" />
-            <div class="divider mx-0 divider-horizontal divide-base-300"></div>
-            {#if backUrl}
-                <Button class="size-8 p-1 btn-sm" color="secondary" href={backUrl} variant="ghost">
-                    <i class="iconify size-5 ph--arrow-left-bold"></i>
-                </Button>
-            {/if}
-            <Breadcrumbs items={breadcrumbItems} />
-        </div>
-    </header>
-{/snippet}
 
 {#snippet footer()}
     <footer></footer>

@@ -17,8 +17,6 @@ return new class extends Migration
             $table->string('access_type');
             $table->decimal('current_balance', 15, 2)->default(0);
             $table->decimal('initial_balance', 15, 2)->default(0);
-            $table->decimal('credit_card_limit', 15, 2)->nullable();
-            $table->char('currency', 3)->default('IDR');
             $table->json('decorations')->nullable();
             $table->timestamp('archived_at')->nullable();
             $table->timestamps();

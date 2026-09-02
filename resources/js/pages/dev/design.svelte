@@ -67,7 +67,7 @@
                         <Button href="https://phosphoricons.com/" variant="link" withoutInertia
                             >Iconify - Phosphor Icons</Button>
                     </div>
-                    <div><i class="iconify ph--database-duotone"></i></div>
+                    <div><i class="iconify solar--database-line-duotone"></i></div>
                 </div>
                 <div>
                     <div>

@@ -64,7 +64,7 @@
             color="light"
             href={ReportController.index.url({ account: account.id })}
             variant="ghost">
-            <i class="iconify size-5 ph--arrow-left-bold"></i>
+            <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
         </Button>
         <div>
             <h1 class="text-xl font-bold">Contribution Split</h1>
@@ -76,7 +76,7 @@
         <!-- Personal account empty state -->
         <div
             class="flex flex-col items-center justify-center py-16 text-center text-base-content/50">
-            <i class="iconify mb-3 size-12 ph--users-slash-bold"></i>
+            <i class="mb-3 iconify size-12 solar--user-block-bold-duotone"></i>
             <p class="font-semibold">Joint accounts only</p>
             <p class="mt-1 max-w-xs text-sm">
                 Contribution split is only available for joint accounts. This account is personal.
@@ -86,19 +86,19 @@
         <!-- Period nav -->
         <div class="mb-4 flex items-center justify-between rounded-xl bg-base-200 px-3 py-2">
             <Button
-                class="btn-xs btn-circle"
+                class="btn-circle btn-xs"
                 color="light"
                 onclick={() => navigatePeriod('prev')}
                 variant="ghost">
-                <i class="iconify size-4 ph--caret-left-bold"></i>
+                <i class="iconify size-4 solar--alt-arrow-left-line-duotone"></i>
             </Button>
             <span class="text-sm font-medium">{periodLabel}</span>
             <Button
-                class="btn-xs btn-circle"
+                class="btn-circle btn-xs"
                 color="light"
                 onclick={() => navigatePeriod('next')}
                 variant="ghost">
-                <i class="iconify size-4 ph--caret-right-bold"></i>
+                <i class="iconify size-4 solar--alt-arrow-right-line-duotone"></i>
             </Button>
         </div>
 

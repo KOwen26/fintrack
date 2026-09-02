@@ -62,7 +62,7 @@
             color="error"
             onclick={() => (showDeleteConfirm = true)}
             variant="outline">
-            <i class="iconify size-4 ph--trash-bold"></i>
+            <i class="iconify size-4 solar--trash-bin-2-bold-duotone"></i>
             {isTransferRow ? 'Delete Transfer (all linked rows)' : 'Delete Transaction'}
         </Button>
     </div>

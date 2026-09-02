@@ -32,7 +32,7 @@
 
 {#if categories.length === 0}
     <div class="flex flex-col items-center justify-center py-10 text-base-content/40">
-        <i class="iconify mb-2 size-8 ph--chart-donut-bold"></i>
+        <i class="mb-2 iconify size-8 solar--pie-chart-2-bold-duotone"></i>
         <p class="text-sm">No expense data for this period</p>
     </div>
 {:else}
@@ -53,7 +53,7 @@
     <ul class="mt-4 space-y-2">
         {#each categories as cat (cat.name)}
             <li class="flex items-center justify-between text-sm">
-                <div class="flex items-center gap-2 min-w-0">
+                <div class="flex min-w-0 items-center gap-2">
                     <span
                         style="background-color: {cat.color}"
                         class="inline-block size-2.5 shrink-0 rounded-[2px]"></span>

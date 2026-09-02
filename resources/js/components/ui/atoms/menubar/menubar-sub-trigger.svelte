@@ -19,12 +19,12 @@
 <MenubarPrimitive.SubTrigger
     data-slot="menubar-sub-trigger"
     class={cn(
-        'focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-[inset]:pl-8',
+        'flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[inset]:pl-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground',
         className
     )}
     data-inset={inset}
     bind:ref
     {...restProps}>
     {@render children?.()}
-    <i class="iconify ph--caret-right-duotone ml-auto size-4"></i>
+    <i class="ml-auto iconify size-4 solar--alt-arrow-right-line-duotone"></i>
 </MenubarPrimitive.SubTrigger>

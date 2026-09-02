@@ -30,7 +30,6 @@ it('stores a new account', function (): void {
         'access_type' => AccountAccessType::Personal->value,
         'initial_balance' => 1_000_000,
         'provider_id' => null,
-        'credit_card_limit' => null,
         'decorations' => [
             'icon' => 'wallet-bold',
             'color' => 'green-500',

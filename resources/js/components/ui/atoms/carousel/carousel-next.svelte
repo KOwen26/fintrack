@@ -34,6 +34,6 @@
     {variant}
     bind:ref
     {...restProps}>
-    <i class="iconify ph--arrow-right-duotone size-4"></i>
+    <i class="iconify size-4 solar--arrow-right-line-duotone"></i>
     <span class="sr-only">Next slide</span>
 </Button>

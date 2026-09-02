@@ -21,7 +21,7 @@ class TransactionFactory extends Factory
             'category_id' => Category::factory(),
             'created_by' => User::factory(),
             'amount' => fake()->randomFloat(2, 1_000_000, 10_000_000),
-            'type' => TransactionType::Expense->value,
+            'type' => TransactionType::Expense,
             'transfer_link_id' => null,
             'transaction_date' => fake()->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
             'description' => fake()->optional(0.6)->sentence(),
@@ -30,18 +30,18 @@ class TransactionFactory extends Factory
 
     public function income(): static
     {
-        return $this->state(['type' => TransactionType::Income->value]);
+        return $this->state(['type' => TransactionType::Income]);
     }
 
     public function expense(): static
     {
-        return $this->state(['type' => TransactionType::Expense->value]);
+        return $this->state(['type' => TransactionType::Expense]);
     }
 
     public function transferOut(string $linkId): static
     {
         return $this->state([
-            'type' => TransactionType::TransferOut->value,
+            'type' => TransactionType::TransferOut,
             'transfer_link_id' => $linkId,
         ]);
     }
@@ -49,7 +49,7 @@ class TransactionFactory extends Factory
     public function transferIn(string $linkId): static
     {
         return $this->state([
-            'type' => TransactionType::TransferIn->value,
+            'type' => TransactionType::TransferIn,
             'transfer_link_id' => $linkId,
         ]);
     }
@@ -57,7 +57,7 @@ class TransactionFactory extends Factory
     public function fee(string $linkId): static
     {
         return $this->state([
-            'type' => TransactionType::Fee->value,
+            'type' => TransactionType::Fee,
             'transfer_link_id' => $linkId,
         ]);
     }

@@ -18,7 +18,7 @@ export const categorySchema: DataSchema<App.Models.Category> = {
             type: 'text',
             name: 'decorations.icon',
             required: true,
-            inputProps: { placeholder: 'ph--tag', autocorrect: 'off' },
+            inputProps: { placeholder: 'tag', autocorrect: 'off' },
         }),
     },
     'decorations.color': {

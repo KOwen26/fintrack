@@ -19,8 +19,6 @@ class UpdateAccountRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'string', Rule::enum(AccountType::class)],
             'provider_id' => ['nullable', 'integer', 'exists:providers,id'],
-            'credit_card_limit' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'size:3'],
             'decorations' => ['nullable', 'array'],
             'decorations.icon' => ['required_with:decorations', 'string', 'max:100'],
             'decorations.color' => ['required_with:decorations', 'string', 'max:100'],

@@ -25,7 +25,7 @@
     <EmptyItemPlaceholder
         ctaLabel="Create your first account"
         ctaUrl={AccountController.create.url()}
-        icon="ph--wallet-bold"
+        icon="solar--wallet-bold-duotone"
         label="No accounts yet" />
 {:else}
     <ToggleableGrid class="mb-3" bind:mode>
@@ -34,10 +34,10 @@
         </h6>
     </ToggleableGrid>
 
-    <div class={cn('grid gap-3', mode === 'list' ? 'grid-cols-1' : 'grid-cols-2')}>
+    <div class={cn('grid gap-3 md:gap-6', mode === 'list' ? 'grid-cols-1' : 'grid-cols-2')}>
         {#each accounts as account (account.id)}
             <Link href={AccountController.show.url({ account: account.id })}>
-                <AccountCard {account} />
+                <AccountCard {account} hideActions hideEdit hideFooter />
             </Link>
         {/each}
     </div>

@@ -7,7 +7,7 @@
 @import './shadcn.css';
 
 @plugin '@iconify/tailwind4' {
-    prefixes: solar, ph, tabler;
+    prefixes: solar, tabler;
     scale: 1.5;
 }
 

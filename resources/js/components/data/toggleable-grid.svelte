@@ -23,7 +23,7 @@
             color="light"
             onclick={() => (mode = 'list')}
             variant="ghost">
-            <i class="iconify size-6 ph--list-bold"></i>
+            <i class="iconify size-6 solar--list-bold-duotone"></i>
         </Button>
 
         <Button
@@ -31,7 +31,7 @@
             color="light"
             onclick={() => (mode = 'grid')}
             variant="ghost">
-            <i class="iconify size-6 ph--text-columns-bold"></i>
+            <i class="iconify size-6 tabler--layout-grid"></i>
         </Button>
     </div>
 </div>

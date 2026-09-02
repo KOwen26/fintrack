@@ -45,7 +45,7 @@
         <div class="flex items-center justify-between">
             <span class="text-sm font-medium text-white/85">Total Balance</span>
             <span
-                class="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white/80">
+                class="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-medium tracking-wider text-white/80 uppercase">
                 All Accounts
             </span>
         </div>
@@ -56,12 +56,12 @@
 
         <div class="mt-3 flex items-center gap-4 text-sm">
             <span class="flex items-center gap-1">
-                <i class="iconify size-4 text-success-300 shadow ph--trend-up-bold"></i>
+                <i class="iconify size-4 text-success-300 shadow solar--course-up-bold-duotone"></i>
                 <span class="text-white/85">+ {Formatter.currency(monthlyIncome)}</span>
                 <span class="text-white/60">this month</span>
             </span>
             <span class="flex items-center gap-1">
-                <i class="iconify size-4 text-error-300 shadow ph--trend-down-bold"></i>
+                <i class="iconify size-4 text-error-300 shadow solar--course-down-bold-duotone"></i>
                 <span class="text-white/85">- {Formatter.currency(monthlyExpenses)}</span>
                 <span class="text-white/60">this month</span>
             </span>

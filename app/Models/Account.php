@@ -19,16 +19,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[ObservedBy([AccountObserver::class])]
 class Account extends Model
 {
-    public const string DEFAULT_CURRENCY = 'IDR';
-
     /** @use HasFactory<AccountFactory> */
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
-    protected $attributes = [
-        'currency' => self::DEFAULT_CURRENCY,
-    ];
 
     protected function casts(): array
     {
@@ -36,7 +30,6 @@ class Account extends Model
             'type' => AccountType::class,
             'access_type' => AccountAccessType::class,
             'initial_balance' => 'decimal:2',
-            'credit_card_limit' => 'decimal:2',
             'archived_at' => 'datetime',
             'decorations' => DecorationData::class,
         ];

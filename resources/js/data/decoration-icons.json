@@ -1,632 +1,653 @@
 [
     {
-        "slug": "t-shirt-bold",
+        "slug": "t-shirt",
         "group": "clothing",
         "label": "T-Shirt",
-        "value": "ph--t-shirt-bold",
+        "value": "solar--t-shirt-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "chat-circle-bold",
+        "slug": "chat-round",
         "group": "communication",
         "label": "Chat",
-        "value": "ph--chat-circle-bold",
+        "value": "solar--chat-round-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "envelope-bold",
+        "slug": "letter",
         "group": "communication",
         "label": "Envelope",
-        "value": "ph--envelope-bold",
+        "value": "solar--letter-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "phone-bold",
+        "slug": "phone",
         "group": "communication",
         "label": "Phone",
-        "value": "ph--phone-bold",
+        "value": "solar--phone-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "book-bold",
+        "slug": "book-2",
         "group": "education",
         "label": "Book",
-        "value": "ph--book-bold",
+        "value": "solar--book-2-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "book-open-bold",
+        "slug": "book",
         "group": "education",
         "label": "Book Open",
-        "value": "ph--book-open-bold",
+        "value": "solar--book-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "books-bold",
+        "slug": "library",
         "group": "education",
         "label": "Books",
-        "value": "ph--books-bold",
+        "value": "solar--library-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "graduation-cap-bold",
+        "slug": "square-academic-cap",
         "group": "education",
         "label": "Graduation",
-        "value": "ph--graduation-cap-bold",
+        "value": "solar--square-academic-cap-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "lightbulb-bold",
+        "slug": "lightbulb",
         "group": "education",
         "label": "Lightbulb",
-        "value": "ph--lightbulb-bold",
+        "value": "solar--lightbulb-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "student-bold",
+        "slug": "diploma",
         "group": "education",
         "label": "Student",
-        "value": "ph--student-bold",
+        "value": "solar--diploma-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "film-strip-bold",
+        "slug": "reel",
         "group": "entertainment",
         "label": "Film",
-        "value": "ph--film-strip-bold",
+        "value": "solar--reel-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "game-controller-bold",
+        "slug": "gamepad",
         "group": "entertainment",
         "label": "Game",
-        "value": "ph--game-controller-bold",
+        "value": "solar--gamepad-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "music-note-bold",
+        "slug": "music-note",
         "group": "entertainment",
         "label": "Music",
-        "value": "ph--music-note-bold",
+        "value": "solar--music-note-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "newspaper-bold",
+        "slug": "document-text",
         "group": "entertainment",
         "label": "Newspaper",
-        "value": "ph--newspaper-bold",
+        "value": "solar--document-text-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "paint-brush-bold",
+        "slug": "paint-brush",
         "group": "entertainment",
         "label": "Paint Brush",
-        "value": "ph--paint-brush-bold",
+        "value": "solar--paint-brush-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "confetti-bold",
+        "slug": "confetti",
         "group": "entertainment",
         "label": "Confetti",
-        "value": "ph--confetti-bold",
+        "value": "solar--confetti-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "television-bold",
+        "slug": "tv",
         "group": "entertainment",
         "label": "Television",
-        "value": "ph--television-bold",
+        "value": "solar--tv-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "arrow-circle-down-bold",
+        "slug": "round-arrow-down",
         "group": "finance",
         "label": "Arrow Down",
-        "value": "ph--arrow-circle-down-bold",
+        "value": "solar--round-arrow-down-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "bank-bold",
+        "slug": "banknote-2",
         "group": "finance",
         "label": "Bank",
-        "value": "ph--bank-bold",
+        "value": "solar--banknote-2-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "calculator-bold",
+        "slug": "calculator",
         "group": "finance",
         "label": "Calculator",
-        "value": "ph--calculator-bold",
+        "value": "solar--calculator-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "chart-bar-bold",
+        "slug": "chart-2",
         "group": "finance",
         "label": "Chart Bar",
-        "value": "ph--chart-bar-bold",
+        "value": "solar--chart-2-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "chart-line-bold",
+        "slug": "graph",
         "group": "finance",
         "label": "Chart Line",
-        "value": "ph--chart-line-bold",
+        "value": "solar--graph-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "chart-pie-bold",
+        "slug": "pie-chart",
         "group": "finance",
         "label": "Chart Pie",
-        "value": "ph--chart-pie-bold",
+        "value": "solar--pie-chart-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "coin-bold",
+        "slug": "dollar",
         "group": "finance",
         "label": "Coin",
-        "value": "ph--coin-bold",
+        "value": "solar--dollar-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "coins-bold",
+        "slug": "hand-money",
         "group": "finance",
         "label": "Coins",
-        "value": "ph--coins-bold",
+        "value": "solar--hand-money-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "credit-card-bold",
+        "slug": "card",
         "group": "finance",
         "label": "Credit Card",
-        "value": "ph--credit-card-bold",
+        "value": "solar--card-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "currency-circle-dollar-bold",
+        "slug": "dollar-minimalistic",
         "group": "finance",
         "label": "Dollar Circle",
-        "value": "ph--currency-circle-dollar-bold",
+        "value": "solar--dollar-minimalistic-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "currency-dollar-bold",
+        "slug": "banknote",
         "group": "finance",
         "label": "Dollar",
-        "value": "ph--currency-dollar-bold",
+        "value": "solar--banknote-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "hand-heart-bold",
+        "slug": "hand-heart",
         "group": "finance",
         "label": "Hand Heart",
-        "value": "ph--hand-heart-bold",
+        "value": "solar--hand-heart-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "money-bold",
+        "slug": "money-bag",
         "group": "finance",
         "label": "Money",
-        "value": "ph--money-bold",
+        "value": "solar--money-bag-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "percent-bold",
+        "slug": "sale",
         "group": "finance",
         "label": "Percent",
-        "value": "ph--percent-bold",
+        "value": "solar--sale-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "piggy-bank-bold",
+        "slug": "safe-2",
         "group": "finance",
         "label": "Piggy Bank",
-        "value": "ph--piggy-bank-bold",
+        "value": "solar--safe-2-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "receipt-bold",
+        "slug": "bill",
         "group": "finance",
         "label": "Receipt",
-        "value": "ph--receipt-bold",
+        "value": "solar--bill-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "scales-bold",
+        "slug": "scale",
         "group": "finance",
         "label": "Scales",
-        "value": "ph--scales-bold",
+        "value": "solar--scale-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "shield-check-bold",
+        "slug": "shield-check",
         "group": "finance",
         "label": "Shield Check",
-        "value": "ph--shield-check-bold",
+        "value": "solar--shield-check-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "trend-down-bold",
+        "slug": "course-down",
         "group": "finance",
         "label": "Trend Down",
-        "value": "ph--trend-down-bold",
+        "value": "solar--course-down-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "trend-up-bold",
+        "slug": "course-up",
         "group": "finance",
         "label": "Trend Up",
-        "value": "ph--trend-up-bold",
+        "value": "solar--course-up-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "wallet-bold",
+        "slug": "wallet",
         "group": "finance",
         "label": "Wallet",
-        "value": "ph--wallet-bold",
+        "value": "solar--wallet-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "barbell-bold",
+        "slug": "dumbbell-large",
         "group": "health",
         "label": "Barbell",
-        "value": "ph--barbell-bold",
+        "value": "solar--dumbbell-large-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "first-aid-bold",
+        "slug": "basketball",
+        "group": "health",
+        "label": "Basketball",
+        "value": "solar--basketball-bold-duotone",
+        "status": "Active"
+    },
+    {
+        "slug": "medical-kit",
         "group": "health",
         "label": "First Aid",
-        "value": "ph--first-aid-bold",
+        "value": "solar--medical-kit-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "heartbeat-bold",
+        "slug": "heart-pulse",
         "group": "health",
         "label": "Heartbeat",
-        "value": "ph--heartbeat-bold",
+        "value": "solar--heart-pulse-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "heart-bold",
+        "slug": "heart",
         "group": "health",
         "label": "Heart",
-        "value": "ph--heart-bold",
+        "value": "solar--heart-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "heart-straight-bold",
+        "slug": "heart-angle",
         "group": "health",
         "label": "Heart Straight",
-        "value": "ph--heart-straight-bold",
+        "value": "solar--heart-angle-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "pill-bold",
+        "slug": "pill",
         "group": "health",
         "label": "Pill",
-        "value": "ph--pill-bold",
+        "value": "solar--pill-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "stethoscope-bold",
+        "slug": "stethoscope",
         "group": "health",
         "label": "Stethoscope",
-        "value": "ph--stethoscope-bold",
+        "value": "solar--stethoscope-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "broom-bold",
+        "slug": "broom",
         "group": "housing",
         "label": "Broom",
-        "value": "ph--broom-bold",
+        "value": "solar--broom-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "building-bold",
+        "slug": "buildings",
         "group": "housing",
         "label": "Building",
-        "value": "ph--building-bold",
+        "value": "solar--buildings-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "house-bold",
+        "slug": "house",
         "group": "housing",
         "label": "House",
-        "value": "ph--house-bold",
+        "value": "solar--house-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "key-bold",
+        "slug": "key",
         "group": "housing",
         "label": "Key",
-        "value": "ph--key-bold",
+        "value": "solar--key-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "lamp-bold",
+        "slug": "lamp",
         "group": "housing",
         "label": "Lamp",
-        "value": "ph--lamp-bold",
+        "value": "solar--lamp-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "coffee-bold",
+        "slug": "chef-hat",
+        "group": "lifestyle",
+        "label": "Chef Hat",
+        "value": "solar--chef-hat-bold-duotone",
+        "status": "Active"
+    },
+    {
+        "slug": "cup-hot",
         "group": "lifestyle",
         "label": "Coffee",
-        "value": "ph--coffee-bold",
+        "value": "solar--cup-hot-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "fork-knife-bold",
+        "slug": "plate",
         "group": "lifestyle",
         "label": "Food",
-        "value": "ph--fork-knife-bold",
+        "value": "solar--plate-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "hamburger-bold",
+        "slug": "donut",
         "group": "lifestyle",
         "label": "Hamburger",
-        "value": "ph--hamburger-bold",
+        "value": "solar--donut-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "pizza-bold",
+        "slug": "mug",
+        "group": "lifestyle",
+        "label": "Mug",
+        "value": "solar--mug-bold-duotone",
+        "status": "Active"
+    },
+    {
+        "slug": "donut-bitten",
         "group": "lifestyle",
         "label": "Pizza",
-        "value": "ph--pizza-bold",
+        "value": "solar--donut-bitten-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "gear-bold",
+        "slug": "settings",
         "group": "misc",
         "label": "Gear",
-        "value": "ph--gear-bold",
+        "value": "solar--settings-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "users-bold",
+        "slug": "users-group-two-rounded",
         "group": "misc",
         "label": "Users",
-        "value": "ph--users-bold",
+        "value": "solar--users-group-two-rounded-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "plus-circle-bold",
+        "slug": "add-circle",
         "group": "misc",
         "label": "Plus Circle",
-        "value": "ph--plus-circle-bold",
+        "value": "solar--add-circle-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "scissors-bold",
+        "slug": "scissors",
         "group": "misc",
         "label": "Scissors",
-        "value": "ph--scissors-bold",
+        "value": "solar--scissors-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "toolbox-bold",
+        "slug": "toolbox",
         "group": "misc",
         "label": "Toolbox",
-        "value": "ph--toolbox-bold",
+        "value": "solar--toolbox-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "wrench-bold",
+        "slug": "settings-minimalistic",
         "group": "misc",
         "label": "Wrench",
-        "value": "ph--wrench-bold",
+        "value": "solar--settings-minimalistic-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "flower-bold",
+        "slug": "sun",
         "group": "nature",
         "label": "Flower",
-        "value": "ph--flower-bold",
+        "value": "solar--sun-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "leaf-bold",
+        "slug": "leaf",
         "group": "nature",
         "label": "Leaf",
-        "value": "ph--leaf-bold",
+        "value": "solar--leaf-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "tree-bold",
+        "slug": "earth",
         "group": "nature",
         "label": "Tree",
-        "value": "ph--tree-bold",
+        "value": "solar--earth-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "cat-bold",
+        "slug": "cat",
         "group": "pets",
         "label": "Cat",
-        "value": "ph--cat-bold",
+        "value": "solar--cat-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "dog-bold",
+        "slug": "paw",
         "group": "pets",
         "label": "Dog",
-        "value": "ph--dog-bold",
+        "value": "solar--paw-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "bag-bold",
+        "slug": "bag",
         "group": "shopping",
         "label": "Bag",
-        "value": "ph--bag-bold",
+        "value": "solar--bag-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "gift-bold",
+        "slug": "gift",
         "group": "shopping",
         "label": "Gift",
-        "value": "ph--gift-bold",
+        "value": "solar--gift-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "shopping-bag-bold",
+        "slug": "bag-2",
         "group": "shopping",
         "label": "Shopping Bag",
-        "value": "ph--shopping-bag-bold",
+        "value": "solar--bag-2-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "shopping-cart-bold",
+        "slug": "cart-large",
         "group": "shopping",
         "label": "Shopping Cart",
-        "value": "ph--shopping-cart-bold",
+        "value": "solar--cart-large-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "storefront-bold",
+        "slug": "shop",
         "group": "shopping",
         "label": "Storefront",
-        "value": "ph--storefront-bold",
+        "value": "solar--shop-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "tag-bold",
+        "slug": "tag",
         "group": "shopping",
         "label": "Tag",
-        "value": "ph--tag-bold",
+        "value": "solar--tag-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "computer-tower-bold",
+        "slug": "server-square",
         "group": "technology",
         "label": "Computer Tower",
-        "value": "ph--computer-tower-bold",
+        "value": "solar--server-square-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "device-mobile-bold",
+        "slug": "smartphone",
         "group": "technology",
         "label": "Mobile",
-        "value": "ph--device-mobile-bold",
+        "value": "solar--smartphone-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "device-tablet-bold",
+        "slug": "tablet",
         "group": "technology",
         "label": "Tablet",
-        "value": "ph--device-tablet-bold",
+        "value": "solar--tablet-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "laptop-bold",
+        "slug": "laptop",
         "group": "technology",
         "label": "Laptop",
-        "value": "ph--laptop-bold",
+        "value": "solar--laptop-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "monitor-bold",
+        "slug": "monitor",
         "group": "technology",
         "label": "Monitor",
-        "value": "ph--monitor-bold",
+        "value": "solar--monitor-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "airplane-bold",
+        "slug": "plane",
         "group": "transport",
         "label": "Airplane",
-        "value": "ph--airplane-bold",
+        "value": "solar--plane-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "bus-bold",
+        "slug": "bus",
         "group": "transport",
         "label": "Bus",
-        "value": "ph--bus-bold",
+        "value": "solar--bus-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "car-bold",
+        "slug": "wheel-angle",
         "group": "transport",
         "label": "Car",
-        "value": "ph--car-bold",
+        "value": "solar--wheel-angle-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "gas-pump-bold",
+        "slug": "fuel",
         "group": "transport",
         "label": "Gas Pump",
-        "value": "ph--gas-pump-bold",
+        "value": "solar--fuel-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "motorcycle-bold",
+        "slug": "scooter",
         "group": "transport",
         "label": "Motorcycle",
-        "value": "ph--motorcycle-bold",
+        "value": "solar--scooter-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "train-bold",
+        "slug": "tram",
         "group": "transport",
         "label": "Train",
-        "value": "ph--train-bold",
+        "value": "solar--tram-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "backpack-bold",
+        "slug": "backpack",
         "group": "travel",
         "label": "Backpack",
-        "value": "ph--backpack-bold",
+        "value": "solar--backpack-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "suitcase-bold",
+        "slug": "suitcase",
         "group": "travel",
         "label": "Suitcase",
-        "value": "ph--suitcase-bold",
+        "value": "solar--suitcase-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "drop-bold",
+        "slug": "waterdrop",
         "group": "utilities",
         "label": "Water",
-        "value": "ph--drop-bold",
+        "value": "solar--waterdrop-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "fire-bold",
+        "slug": "fire",
         "group": "utilities",
         "label": "Fire",
-        "value": "ph--fire-bold",
+        "value": "solar--fire-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "lightning-bold",
+        "slug": "lightning",
         "group": "utilities",
         "label": "Lightning",
-        "value": "ph--lightning-bold",
+        "value": "solar--lightning-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "wifi-high-bold",
+        "slug": "wi-fi-high",
         "group": "utilities",
         "label": "WiFi",
-        "value": "ph--wifi-high-bold",
+        "value": "solar--wi-fi-high-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "briefcase-bold",
+        "slug": "case",
         "group": "work",
         "label": "Briefcase",
-        "value": "ph--briefcase-bold",
+        "value": "solar--case-bold-duotone",
         "status": "Active"
     },
     {
-        "slug": "handshake-bold",
+        "slug": "hand-shake",
         "group": "work",
         "label": "Handshake",
-        "value": "ph--handshake-bold",
+        "value": "solar--hand-shake-bold-duotone",
         "status": "Active"
     }
 ]

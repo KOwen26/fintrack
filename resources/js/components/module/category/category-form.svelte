@@ -38,7 +38,7 @@
             })
             .toFormGenerator({
                 name: '',
-                'decorations.icon': 'ph--tag',
+                'decorations.icon': 'tag',
                 'decorations.color': 'indigo-500',
                 type: 'output',
                 order: '0.100',

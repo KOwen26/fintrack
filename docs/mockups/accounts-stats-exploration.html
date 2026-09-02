@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Accounts Stats — Design Exploration</title>
+        <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap"
+            rel="stylesheet" />
+        <style>
+            /* ── Verdant Design Tokens (mirrors resources/css/colors.css) ── */
+            :root {
+                --base-100: oklch(0.98 0.012 85);
+                --base-200: oklch(0.94 0.018 85);
+                --base-300: oklch(0.88 0.022 85);
+                --base-content: oklch(0.18 0.02 160);
+
+                --primary: oklch(0.42 0.11 160);
+                --primary-content: oklch(0.95 0.01 160);
+                --secondary: oklch(0.62 0.07 175);
+                --accent: oklch(0.72 0.14 85);
+                --info: oklch(0.55 0.1 210);
+                --success: oklch(0.55 0.12 150);
+                --warning: oklch(0.72 0.14 85);
+                --error: oklch(0.55 0.12 30);
+
+                --card: #ffffff;
+                --card-border: color-mix(in oklab, var(--base-content) 25%, transparent);
+                --hairline: color-mix(in oklab, var(--base-content) 12%, transparent);
+                --muted-60: color-mix(in oklab, var(--base-content) 60%, transparent);
+                --muted-45: color-mix(in oklab, var(--base-content) 45%, transparent);
+                --muted-35: color-mix(in oklab, var(--base-content) 35%, transparent);
+
+                --radius-card: 0.875rem; /* ≈ rounded-xl with shadcn --radius 0.625rem */
+                --radius-badge: 0.5rem; /* rounded-lg */
+                --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+                --gradient-primary: linear-gradient(
+                    135deg,
+                    oklch(0.42 0.11 160),
+                    oklch(0.35 0.1 165)
+                );
+                --font-sans: 'Figtree', system-ui, -apple-system, sans-serif;
+            }
+
+            /* ── Reset ── */
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: var(--font-sans);
+                background: var(--base-200);
+                color: var(--base-content);
+                line-height: 1.5;
+                -webkit-font-smoothing: antialiased;
+            }
+            iconify-icon {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            /* ── Page scaffold ── */
+            .page {
+                max-width: 1440px;
+                margin: 0 auto;
+                padding: 2.5rem 2rem 5rem;
+            }
+            .page-header {
+                margin-bottom: 2rem;
+                text-align: center;
+            }
+            .page-header h1 {
+                font-size: 2rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+            }
+            .page-header h1 span {
+                color: var(--primary);
+            }
+            .page-header .subtitle {
+                margin-top: 0.5rem;
+                font-size: 0.95rem;
+                color: var(--muted-60);
+                max-width: 680px;
+                margin-left: auto;
+                margin-right: auto;
+                line-height: 1.6;
+            }
+            .page-header .current-badge {
+                display: inline-block;
+                margin-top: 1rem;
+                padding: 0.35rem 1rem;
+                border-radius: 999px;
+                background: var(--card);
+                border: 1px solid var(--base-300);
+                font-size: 0.8rem;
+                color: var(--muted-60);
+            }
+
+            /* ── Data strip (what is mocked) ── */
+            .data-strip {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem 1.5rem;
+                margin-bottom: 3rem;
+                padding: 0.9rem 1.25rem;
+                background: var(--card);
+                border: 1px solid var(--base-300);
+                border-radius: var(--radius-card);
+                box-shadow: var(--card-shadow);
+                font-size: 0.8rem;
+                color: var(--muted-60);
+            }
+            .data-strip .chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.45rem;
+            }
+            .data-strip .chip b {
+                color: var(--base-content);
+                font-weight: 700;
+            }
+            .data-strip .dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 3px;
+                display: inline-block;
+                flex-shrink: 0;
+            }
+
+            /* ── Direction sections ── */
+            .direction {
+                margin-bottom: 4.5rem;
+            }
+            .direction-header {
+                display: flex;
+                align-items: baseline;
+                gap: 1rem;
+                margin-bottom: 0.75rem;
+            }
+            .direction-header .num {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: var(--primary);
+                opacity: 0.5;
+            }
+            .direction-header h2 {
+                font-size: 1.35rem;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+            }
+            .direction-note {
+                margin-bottom: 1.5rem;
+                font-size: 0.9rem;
+                color: var(--muted-60);
+                max-width: 720px;
+                line-height: 1.65;
+            }
+            .direction-divider {
+                height: 1px;
+                background: var(--base-300);
+                margin-bottom: 2rem;
+            }
+
+            /* ── Decision list (annotations under each direction) ── */
+            .decisions {
+                margin-top: 1.5rem;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 0.75rem 2rem;
+                font-size: 0.85rem;
+                color: var(--muted-60);
+                line-height: 1.6;
+            }
+            .decisions strong {
+                color: var(--base-content);
+                font-weight: 700;
+            }
+
+            /* ── Device frames ── */
+            .frames {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.5rem;
+                align-items: stretch;
+            }
+            .frame {
+                display: flex;
+                flex-direction: column;
+                background: var(--card);
+                border: 1px solid var(--base-300);
+                border-radius: 12px;
+                box-shadow: var(--card-shadow);
+                overflow: hidden;
+            }
+            .frame-mobile {
+                flex: 0 0 379px;
+                width: 379px;
+                max-width: 100%;
+            }
+            .frame-desktop {
+                flex: 1 1 560px;
+                min-width: 0;
+            }
+            .frame-bar {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 0.95rem;
+                background: var(--base-100);
+                border-bottom: 1px solid var(--base-200);
+                font-size: 0.7rem;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--muted-45);
+            }
+            .frame-bar .frame-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 999px;
+                flex-shrink: 0;
+            }
+            .frame-body {
+                flex: 1;
+                background: var(--base-100);
+                padding: 1.15rem;
+            }
+            .frame-caption {
+                padding: 0.55rem 0.95rem;
+                border-top: 1px solid var(--base-200);
+                font-size: 0.72rem;
+                color: var(--muted-45);
+                line-height: 1.5;
+            }
+
+            /* ═══════════════════════════════════════════ */
+            /* Shared stat primitives (mirror StatCard)    */
+            /* ═══════════════════════════════════════════ */
+            .stat-card {
+                background: var(--card);
+                border: 1px solid var(--card-border);
+                border-radius: var(--radius-card);
+                padding: 1rem;
+                box-shadow: var(--card-shadow);
+            }
+            .stat-head {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 0.75rem;
+            }
+            .stat-label {
+                font-size: 0.68rem;
+                font-weight: 600;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                color: var(--muted-60);
+            }
+            .stat-value {
+                margin-top: 0.55rem;
+                font-size: 1.5rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                color: var(--base-content);
+            }
+            .icon-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 2rem;
+                height: 2rem;
+                border-radius: var(--radius-badge);
+                flex-shrink: 0;
+                font-size: 1.05rem; /* icon size via 1em */
+            }
+            .icon-badge.lg {
+                width: 2.75rem;
+                height: 2.75rem;
+                border-radius: 0.625rem;
+                font-size: 1.45rem;
+            }
+            .tint-primary {
+                background: color-mix(in oklab, var(--primary) 10%, transparent);
+                color: var(--primary);
+            }
+            .tint-info {
+                background: color-mix(in oklab, var(--info) 10%, transparent);
+                color: var(--info);
+            }
+            .tint-warning {
+                background: color-mix(in oklab, var(--warning) 14%, transparent);
+                color: color-mix(in oklab, var(--warning) 78%, black);
+            }
+            .tint-success {
+                background: color-mix(in oklab, var(--success) 10%, transparent);
+                color: var(--success);
+            }
+            .on-primary {
+                background: rgba(255, 255, 255, 0.2);
+                color: #fff;
+            }
+            .value-null {
+                color: var(--muted-35);
+            }
+            .i-sm {
+                font-size: 0.85rem;
+            }
+
+            /* ═══════════════════════════════════════════ */
+            /* 00 · CURRENT STATE                          */
+            /* ═══════════════════════════════════════════ */
+            .current-card .stat-value {
+                font-size: 1.5rem;
+            }
+
+            /* ═══════════════════════════════════════════ */
+            /* 01 · LEDGER HERO                            */
+            /* ═══════════════════════════════════════════ */
+            /* Mobile */
+            .d1-card .stat-value {
+                font-size: 1.9rem;
+                margin-top: 0.5rem;
+            }
+            .d1-substats {
+                margin-top: 1rem;
+                padding-top: 0.9rem;
+                border-top: 1px solid var(--base-200);
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+            .d1-substat {
+                padding: 0 0.75rem;
+                min-width: 0;
+            }
+            .d1-substat:first-child {
+                padding-left: 0;
+            }
+            .d1-substat:last-child {
+                padding-right: 0;
+            }
+            .d1-substat + .d1-substat {
+                border-left: 1px solid var(--base-200);
+            }
+            .d1-mini-top {
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                color: var(--muted-45);
+            }
+            .d1-mini-top iconify-icon {
+                font-size: 0.8rem;
+                flex-shrink: 0;
+            }
+            .d1-mini-top .c-info {
+                color: var(--info);
+            }
+            .d1-mini-top .c-warning {
+                color: color-mix(in oklab, var(--warning) 78%, black);
+            }
+            .d1-mini-top .c-success {
+                color: var(--success);
+            }
+            .d1-mini-label {
+                font-size: 0.58rem;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .d1-mini-value {
+                margin-top: 0.2rem;
+                font-size: 0.95rem;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+            }
+
+            /* Desktop */
+            .d1-desktop {
+                display: flex;
+                align-items: stretch;
+                padding: 1.4rem 1.6rem;
+            }
+            .d1-hero-block {
+                display: flex;
+                align-items: center;
+                gap: 1.1rem;
+                flex-shrink: 0;
+            }
+            .d1-hero-block .stat-value {
+                font-size: 2.25rem;
+                margin-top: 0.15rem;
+            }
+            .d1-divider {
+                width: 1px;
+                background: var(--base-200);
+                margin: 0 1.6rem;
+                align-self: stretch;
+            }
+            .d1-substats-desktop {
+                flex: 1;
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 1rem;
+                align-items: center;
+                min-width: 0;
+            }
+            .d1-cell {
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+                min-width: 0;
+            }
+            .d1-cell .stat-label {
+                white-space: nowrap;
+            }
+            .d1-cell .d1-mini-value {
+                font-size: 1.15rem;
+            }
+
+            /* ═══════════════════════════════════════════ */
+            /* 02 · BRAND HERO → GRID                      */
+            /* ═══════════════════════════════════════════ */
+            .d2-hero {
+                background: var(--gradient-primary);
+                color: var(--primary-content);
+                border-radius: var(--radius-card);
+                padding: 1.1rem;
+                box-shadow: var(--card-shadow);
+            }
+            .d2-hero .stat-label {
+                color: rgba(255, 255, 255, 0.75);
+            }
+            .d2-hero .stat-value {
+                color: #fff;
+                font-size: 1.9rem;
+                margin-top: 0.5rem;
+            }
+            .d2-chips {
+                margin-top: 0.95rem;
+                padding-top: 0.85rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.18);
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.45rem;
+            }
+            .d2-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.35rem;
+                background: rgba(255, 255, 255, 0.16);
+                border-radius: 999px;
+                padding: 0.3rem 0.7rem;
+                font-size: 0.68rem;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.92);
+                white-space: nowrap;
+            }
+            .d2-chip iconify-icon {
+                font-size: 0.8rem;
+            }
+
+            /* Desktop grid */
+            .d2-grid,
+            .d3-grid-desktop {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 0.9rem;
+            }
+            .d2-hero-card {
+                background: var(--gradient-primary);
+                color: var(--primary-content);
+                border-radius: var(--radius-card);
+                padding: 1rem;
+                box-shadow: var(--card-shadow);
+            }
+            .d2-hero-card .stat-label {
+                color: rgba(255, 255, 255, 0.75);
+            }
+            .d2-hero-card .stat-value {
+                color: #fff;
+            }
+
+            /* ═══════════════════════════════════════════ */
+            /* 03 · SEGMENTED STACK                        */
+            /* ═══════════════════════════════════════════ */
+            /* Mobile */
+            .d3-card {
+                padding: 0;
+                overflow: hidden;
+            }
+            .d3-hero {
+                padding: 1rem;
+                background: color-mix(in oklab, var(--primary) 5%, transparent);
+                border-bottom: 1px solid var(--base-200);
+            }
+            .d3-hero .stat-value {
+                font-size: 1.9rem;
+                margin-top: 0.5rem;
+            }
+            .d3-grid {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+            .d3-cell {
+                padding: 0.8rem 0.9rem;
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 0.35rem;
+            }
+            .d3-cell + .d3-cell {
+                border-left: 1px solid var(--base-200);
+            }
+            .d3-cell-top {
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                color: var(--muted-45);
+            }
+            .d3-cell-top iconify-icon {
+                font-size: 0.9rem;
+                flex-shrink: 0;
+            }
+            .d3-cell-top .c-info {
+                color: var(--info);
+            }
+            .d3-cell-top .c-warning {
+                color: color-mix(in oklab, var(--warning) 78%, black);
+            }
+            .d3-cell-top .c-success {
+                color: var(--success);
+            }
+            .d3-cell-top .d1-mini-label {
+                font-size: 0.58rem;
+            }
+            .d3-cell .d1-mini-value {
+                margin-top: 0;
+                font-size: 1rem;
+            }
+
+            /* Desktop — sibling cards with colour band */
+            .d3-stat {
+                position: relative;
+                overflow: hidden;
+            }
+            .d3-stat::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: var(--band);
+            }
+            .band-primary {
+                --band: var(--primary);
+            }
+            .band-info {
+                --band: var(--info);
+            }
+            .band-warning {
+                --band: var(--warning);
+            }
+            .band-success {
+                --band: var(--success);
+            }
+
+            /* ── Null-state section ── */
+            .nulls-frames {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.5rem;
+                align-items: stretch;
+            }
+            .nulls-frames .frame {
+                flex: 0 1 379px;
+                width: 379px;
+                max-width: 100%;
+            }
+
+            /* ── Recommendation strip ── */
+            .rec {
+                background: var(--card);
+                border: 1px solid var(--base-300);
+                border-left: 5px solid var(--primary);
+                border-radius: var(--radius-card);
+                box-shadow: var(--card-shadow);
+                padding: 1.5rem 1.75rem;
+                max-width: 860px;
+            }
+            .rec h3 {
+                font-size: 1.1rem;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+            }
+            .rec h3 span {
+                color: var(--primary);
+            }
+            .rec p {
+                margin-top: 0.6rem;
+                font-size: 0.9rem;
+                color: var(--muted-60);
+                line-height: 1.65;
+            }
+            .rec ul {
+                margin: 0.75rem 0 0 1.1rem;
+                font-size: 0.88rem;
+                color: var(--muted-60);
+                line-height: 1.7;
+            }
+            .rec ul b {
+                color: var(--base-content);
+            }
+
+            /* ── Responsive ── */
+            @media (max-width: 900px) {
+                .page {
+                    padding: 1.5rem 1rem 3rem;
+                }
+                .frames,
+                .nulls-frames {
+                    flex-direction: column;
+                }
+                .frame-mobile,
+                .nulls-frames .frame {
+                    width: 100%;
+                    flex: 1 1 auto;
+                }
+                .d2-grid,
+                .d3-grid-desktop {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="page">
+            <!-- ═══════════════════ HEADER ═══════════════════ -->
+            <header class="page-header">
+                <h1>Accounts Stats · <span>Design Exploration</span></h1>
+                <p class="subtitle">
+                    Three directions for the accounts summary section. The requirement: mobile
+                    collapses to <strong>one single card</strong>; desktop gets a richer, more
+                    spacious layout. Amounts use <strong>Rp</strong> with Indonesian digit grouping
+                    to match <code>Formatter.currency()</code>.
+                </p>
+                <span class="current-badge"
+                    >Current: one full-width StatCard (Total Balance) on every breakpoint</span
+                >
+            </header>
+
+            <!-- ═══════════════════ MOCK DATA KEY ═══════════════════ -->
+            <div class="data-strip">
+                <span
+                    style="
+                        font-weight: 700;
+                        letter-spacing: 0.06em;
+                        text-transform: uppercase;
+                        font-size: 0.68rem;
+                    "
+                    >Mock data</span
+                >
+                <span class="chip">Total Balance <b>Rp 24.568.420</b></span>
+                <span class="chip">Total Accounts <b>7</b></span>
+                <span class="chip">Credit Utilisation <b>42%</b></span>
+                <span class="chip">Oldest Account <b>4 years</b></span>
+                <span class="chip" style="margin-left: auto"
+                    ><span class="dot" style="background: var(--primary)"></span>primary</span
+                >
+                <span class="chip"
+                    ><span class="dot" style="background: var(--info)"></span>info</span
+                >
+                <span class="chip"
+                    ><span class="dot" style="background: var(--warning)"></span>warning</span
+                >
+                <span class="chip"
+                    ><span class="dot" style="background: var(--success)"></span>success</span
+                >
+            </div>
+
+            <!-- ============================================================== -->
+            <!--  00 · CURRENT STATE                                            -->
+            <!-- ============================================================== -->
+            <section class="direction">
+                <div class="direction-header">
+                    <span class="num">00</span>
+                    <h2>Current State</h2>
+                </div>
+                <p class="direction-note">
+                    Today the grid renders a single full-width Total Balance StatCard on mobile and
+                    desktop alike. The other three stats (Total Accounts, Credit Utilisation, Oldest
+                    Account) exist in the markup but are commented out.
+                </p>
+                <div class="direction-divider"></div>
+                <div class="frames">
+                    <div class="frame frame-mobile">
+                        <div class="frame-bar">
+                            <span class="frame-dot" style="background: var(--muted-35)"></span>
+                            Mobile · 375 px
+                        </div>
+                        <div class="frame-body">
+                            <div class="stat-card current-card">
+                                <div class="stat-head">
+                                    <span class="stat-label">Total Balance</span>
+                                    <span class="icon-badge tint-primary">
+                                        <iconify-icon
+                                            icon="solar:wallet-bold-duotone"></iconify-icon>
+                                    </span>
+                                </div>
+                                <p class="stat-value">Rp 24.568.420</p>
+                            </div>
+                        </div>
+                        <div class="frame-caption">
+                            One card, one number — 3 of 4 summary stats invisible to the user.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!--  01 · LEDGER HERO                                              -->
+            <!-- ============================================================== -->
+            <section class="direction">
+                <div class="direction-header">
+                    <span class="num">01</span>
+                    <h2>Ledger Hero — hero card with inline sub-stats</h2>
+                </div>
+                <p class="direction-note">
+                    <strong>One card everywhere.</strong> Mobile packs the balance hero and a
+                    three-cell ledger row into a single card, so the stats never push the account
+                    list below the fold. On desktop the same card stretches full width: balance
+                    block on the left, a hairline divider, then the three sub-stats with their
+                    familiar colour-coded icon badges. Reads as one quiet system instead of four
+                    competing tiles.
+                </p>
+                <div class="direction-divider"></div>
+                <div class="frames">
+                    <!-- Mobile -->
+                    <div class="frame frame-mobile">
+                        <div class="frame-bar">
+                            <span class="frame-dot" style="background: var(--primary)"></span>
+                            Mobile · 375 px
+                        </div>
+                        <div class="frame-body">
+                            <div class="stat-card d1-card">
+                                <div class="stat-head">
+                                    <span class="stat-label">Total Balance</span>
+                                    <span class="icon-badge tint-primary">
+                                        <iconify-icon
+                                            icon="solar:wallet-bold-duotone"></iconify-icon>
+                                    </span>
+                                </div>
+                                <p class="stat-value">Rp 24.568.420</p>
+
+                                <div class="d1-substats">
+                                    <div class="d1-substat">
+                                        <div class="d1-mini-top">
+                                            <iconify-icon
+                                                class="c-info"
+                                                icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                            <span class="d1-mini-label">Accounts</span>
+                                        </div>
+                                        <p class="d1-mini-value">7</p>
+                                    </div>
+                                    <div class="d1-substat">
+                                        <div class="d1-mini-top">
+                                            <iconify-icon
+                                                class="c-warning"
+                                                icon="solar:card-bold-duotone"></iconify-icon>
+                                            <span class="d1-mini-label">Credit Util.</span>
+                                        </div>
+                                        <p class="d1-mini-value">42%</p>
+                                    </div>
+                                    <div class="d1-substat">
+                                        <div class="d1-mini-top">
+                                            <iconify-icon
+                                                class="c-success"
+                                                icon="solar:clock-circle-bold-duotone"></iconify-icon>
+                                            <span class="d1-mini-label">Oldest</span>
+                                        </div>
+                                        <p class="d1-mini-value">4 yrs</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="frame-caption">
+                            Single card — hero + ledger row of 3 mini stats separated by hairlines.
+                        </div>
+                    </div>
+
+                    <!-- Desktop -->
+                    <div class="frame frame-desktop">
+                        <div class="frame-bar">
+                            <span class="frame-dot" style="background: var(--primary)"></span>
+                            Desktop · ≥1024 px
+                        </div>
+                        <div class="frame-body">
+                            <div class="stat-card d1-desktop">
+                                <div class="d1-hero-block">
+                                    <span class="icon-badge lg tint-primary">
+                                        <iconify-icon
+                                            icon="solar:wallet-bold-duotone"></iconify-icon>
+                                    </span>
+                                    <div>
+                                        <span class="stat-label">Total Balance</span>
+                                        <p class="stat-value">Rp 24.568.420</p>
+                                    </div>
+                                </div>
+
+                                <div class="d1-divider"></div>
+
+                                <div class="d1-substats-desktop">
+                                    <div class="d1-cell">
+                                        <span class="icon-badge tint-info">
+                                            <iconify-icon
+                                                icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                        </span>
+                                        <div>
+                                            <span class="stat-label">Total Accounts</span>
+                                            <p class="d1-mini-value">7</p>
+                                        </div>
+                                    </div>
+                                    <div class="d1-cell">
+                                        <span class="icon-badge tint-warning">
+                                            <iconify-icon
+                                                icon="solar:card-bold-duotone"></iconify-icon>
+                                        </span>
+                                        <div>
+                                            <span class="stat-label">Credit Utilisation</span>
+                                            <p class="d1-mini-value">42%</p>
+                                        </div>
+                                    </div>
+                                    <div class="d1-cell">
+                                        <span class="icon-badge tint-success">
+                                            <iconify-icon
+                                                icon="solar:clock-circle-bold-duotone"></iconify-icon>
+                                        </span>
+                                        <div>
+                                            <span class="stat-label">Oldest Account</span>
+                                            <p class="d1-mini-value">4 years</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="frame-caption">
+                            Same component, horizontal: hero block | hairline divider | 3 sub-stats
+                            with colour-coded badges. Pure re-layout, no new chrome.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="decisions">
+                    <div>
+                        <strong>Mobile.</strong> One white card (matches StatCard's
+                        <code>bg-card border-base-content/25 rounded-xl</code> language): uppercase
+                        label + primary-tinted wallet badge, big figure, then a border-top ledger
+                        row of three mini stats with hairline separators.
+                    </div>
+                    <div>
+                        <strong>Desktop.</strong> Nothing new is added — the card simply goes
+                        horizontal with an <code>lg:</code> flex row and a vertical divider.
+                        Sub-stats reuse the icon-badge tint treatment from StatCard
+                        (info/warning/success).
+                    </div>
+                    <div>
+                        <strong>Nulls.</strong> Missing stats render as muted <b>“—”</b> so the row
+                        never reflows when a credit account is added or removed. (Alternative: hide
+                        cells.)
+                    </div>
+                    <div>
+                        <strong>Svelte mapping.</strong> Replace the 4 StatCards with one
+                        <code>AccountsSummaryCard</code> (or extend StatCard with a
+                        <code>substats</code> snippet slot). Sub-stat is a tiny presentational
+                        component. No new design tokens required.
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!--  02 · BRAND HERO → GRID                                        -->
+            <!-- ============================================================== -->
+            <section class="direction">
+                <div class="direction-header">
+                    <span class="num">02</span>
+                    <h2>Brand Hero → Grid — filled primary card, classic 4-col desktop</h2>
+                </div>
+                <p class="direction-note">
+                    <strong>Brand-forward.</strong> Mobile collapses everything into one filled
+                    primary hero card — the gradient language already used in the palette explorer —
+                    with the remaining stats as translucent chips inside the card. Desktop promotes
+                    the hero into the classic four-column grid of distinct colour-coded StatCards,
+                    staying closest to today's markup.
+                </p>
+                <div class="direction-divider"></div>
+                <div class="frames">
+                    <!-- Mobile -->
+                    <div class="frame frame-mobile">
+                        <div class="frame-bar">
+                            <span class="frame-dot" style="background: var(--primary)"></span>
+                            Mobile · 375 px
+                        </div>
+                        <div class="frame-body">
+                            <div class="d2-hero">
+                                <div class="stat-head">
+                                    <span class="stat-label">Total Balance</span>
+                                    <span class="icon-badge on-primary">
+                                        <iconify-icon
+                                            icon="solar:wallet-bold-duotone"></iconify-icon>
+                                    </span>
+                                </div>
+                                <p class="stat-value">Rp 24.568.420</p>
+
+                                <div class="d2-chips">
+                                    <span class="d2-chip">
+                                        <iconify-icon
+                                            icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                        7 accounts
+                                    </span>
+                                    <span class="d2-chip">
+                                        <iconify-icon icon="solar:card-bold-duotone"></iconify-icon>
+                                        42% credit used
+                                    </span>
+                                    <span class="d2-chip">
+                                        <iconify-icon
+                                            icon="solar:clock-circle-bold-duotone"></iconify-icon>
+                                        4 yrs oldest
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="frame-caption">
+                            Single filled primary card — chips carry the secondary stats; highest
+                            visual hierarchy for the balance.
+                        </div>
+                    </div>
+
+                    <!-- Desktop -->
+                    <div class="frame frame-desktop">
+                        <div class="frame-bar">
+                            <span class="frame-dot" style="background: var(--primary)"></span>
+                            Desktop · ≥1024 px
+                        </div>
+                        <div class="frame-body">
+                            <div class="d2-grid">
+                                <div class="d2-hero-card">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Total Balance</span>
+                                        <span class="icon-badge on-primary">
+                                            <iconify-icon
+                                                icon="solar:wallet-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">Rp 24.568.420</p>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Total Accounts</span>
+                                        <span class="icon-badge tint-info">
+                                            <iconify-icon
+                                                icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">7</p>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Credit Utilisation</span>
+                                        <span class="icon-badge tint-warning">
+                                            <iconify-icon
+                                                icon="solar:card-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">42%</p>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Oldest Account</span>
+                                        <span class="icon-badge tint-success">
+                                            <iconify-icon
+                                                icon="solar:clock-circle-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">4 years</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="frame-caption">
+                            Classic <code>lg:grid-cols-4</code>: filled primary hero + three white
+                            StatCards reusing today's exact component design.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="decisions">
+                    <div>
+                        <strong>Mobile.</strong> Gradient primary surface (same gradient as the
+                        palette explorer hero). Chips (white/16 pills) carry accounts / credit /
+                        oldest so the requirement of one single card still holds.
+                    </div>
+                    <div>
+                        <strong>Desktop.</strong> Four distinct cards; the filled primary hero keeps
+                        hierarchy while the other three reuse the current StatCard markup verbatim —
+                        the least risky desktop change.
+                    </div>
+                    <div>
+                        <strong>Nulls.</strong> Chips with null data are simply not rendered (the
+                        chip row wraps naturally). Desktop cards render “—” exactly like today's
+                        StatCard.
+                    </div>
+                    <div>
+                        <strong>Svelte mapping.</strong> Keep the existing <code>StatCard</code>s
+                        for <code>lg:</code>; add a compact mobile hero variant swapped via
+                        <code>hidden lg:grid</code> / <code>lg:hidden</code>. Most component reuse,
+                        but two markups to keep in sync.
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!--  03 · SEGMENTED STACK                                          -->
+            <!-- ============================================================== -->
+            <section class="direction">
+                <div class="direction-header">
+                    <span class="num">03</span>
+                    <h2>Segmented Stack — one card, internal segments; desktop splits apart</h2>
+                </div>
+                <p class="direction-note">
+                    <strong>Structured grid.</strong> One card on mobile, but internally segmented:
+                    a tinted hero segment for the balance and three boxed cells for the sub-stats,
+                    separated by hairlines. On desktop the segmentation breaks apart into four
+                    sibling cards, each keyed by a thin colour band — a nod to the account cards'
+                    accent-band language.
+                </p>
+                <div class="direction-divider"></div>
+                <div class="frames">
+                    <!-- Mobile -->
+                    <div class="frame frame-mobile">
+                        <div class="frame-bar">
+                            <span class="frame-dot" style="background: var(--primary)"></span>
+                            Mobile · 375 px
+                        </div>
+                        <div class="frame-body">
+                            <div class="stat-card d3-card">
+                                <div class="d3-hero">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Total Balance</span>
+                                        <span class="icon-badge tint-primary">
+                                            <iconify-icon
+                                                icon="solar:wallet-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">Rp 24.568.420</p>
+                                </div>
+
+                                <div class="d3-grid">
+                                    <div class="d3-cell">
+                                        <div class="d3-cell-top">
+                                            <iconify-icon
+                                                class="c-info"
+                                                icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                            <span class="d1-mini-label">Accounts</span>
+                                        </div>
+                                        <p class="d1-mini-value">7</p>
+                                    </div>
+                                    <div class="d3-cell">
+                                        <div class="d3-cell-top">
+                                            <iconify-icon
+                                                class="c-warning"
+                                                icon="solar:card-bold-duotone"></iconify-icon>
+                                            <span class="d1-mini-label">Credit Util.</span>
+                                        </div>
+                                        <p class="d1-mini-value">42%</p>
+                                    </div>
+                                    <div class="d3-cell">
+                                        <div class="d3-cell-top">
+                                            <iconify-icon
+                                                class="c-success"
+                                                icon="solar:clock-circle-bold-duotone"></iconify-icon>
+                                            <span class="d1-mini-label">Oldest</span>
+                                        </div>
+                                        <p class="d1-mini-value">4 yrs</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="frame-caption">
+                            One card, two zones: tinted hero segment + boxed 3-cell grid with
+                            hairline dividers.
+                        </div>
+                    </div>
+
+                    <!-- Desktop -->
+                    <div class="frame frame-desktop">
+                        <div class="frame-bar">
+                            <span class="frame-dot" style="background: var(--primary)"></span>
+                            Desktop · ≥1024 px
+                        </div>
+                        <div class="frame-body">
+                            <div class="d3-grid-desktop">
+                                <div class="stat-card d3-stat band-primary">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Total Balance</span>
+                                        <span class="icon-badge tint-primary">
+                                            <iconify-icon
+                                                icon="solar:wallet-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">Rp 24.568.420</p>
+                                </div>
+
+                                <div class="stat-card d3-stat band-info">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Total Accounts</span>
+                                        <span class="icon-badge tint-info">
+                                            <iconify-icon
+                                                icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">7</p>
+                                </div>
+
+                                <div class="stat-card d3-stat band-warning">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Credit Utilisation</span>
+                                        <span class="icon-badge tint-warning">
+                                            <iconify-icon
+                                                icon="solar:card-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">42%</p>
+                                </div>
+
+                                <div class="stat-card d3-stat band-success">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Oldest Account</span>
+                                        <span class="icon-badge tint-success">
+                                            <iconify-icon
+                                                icon="solar:clock-circle-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">4 years</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="frame-caption">
+                            Segments become four cards, each with a 4px colour top-band — echoes the
+                            account cards' original accent band.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="decisions">
+                    <div>
+                        <strong>Mobile.</strong> Still one card, but the tinted hero segment makes
+                        the balance feel like the primary surface while cells give each sub-stat a
+                        clear "slot" — strongest visual structure of the three options.
+                    </div>
+                    <div>
+                        <strong>Desktop.</strong> Four sibling cards with 4px top-bands
+                        (primary/info/warning/success). The band is the only addition over today's
+                        StatCard, so the change reads as an accent, not a redesign.
+                    </div>
+                    <div>
+                        <strong>Nulls.</strong> Cells keep their slot and show muted <b>“—”</b> to
+                        avoid grid reflow; the band rhythm stays intact.
+                    </div>
+                    <div>
+                        <strong>Svelte mapping.</strong> One card component with a segmented layout
+                        on mobile; desktop = four StatCards + a new <code>band</code> prop (single
+                        <code>::before</code>). Slightly more custom CSS than 01/02.
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!--  04 · NULL & EMPTY STATES                                      -->
+            <!-- ============================================================== -->
+            <section class="direction">
+                <div class="direction-header">
+                    <span class="num">04</span>
+                    <h2>Null &amp; Empty States</h2>
+                </div>
+                <p class="direction-note">
+                    <code>credit_utilization_percentage</code> is <code>null</code> when the user
+                    has no credit accounts; <code>oldest_account_years</code> is <code>null</code>
+                    when there are no accounts at all. Each mobile card below shows the "no credit +
+                    oldest unknown" case (only Total Balance and Total Accounts remain).
+                </p>
+                <div class="direction-divider"></div>
+                <div class="nulls-frames">
+                    <!-- 01 null -->
+                    <div class="frame">
+                        <div class="frame-bar">
+                            <span class="frame-dot" style="background: var(--primary)"></span>
+                            01 · Ledger Hero
+                        </div>
+                        <div class="frame-body">
+                            <div class="stat-card d1-card">
+                                <div class="stat-head">
+                                    <span class="stat-label">Total Balance</span>
+                                    <span class="icon-badge tint-primary">
+                                        <iconify-icon
+                                            icon="solar:wallet-bold-duotone"></iconify-icon>
+                                    </span>
+                                </div>
+                                <p class="stat-value">Rp 24.568.420</p>
+
+                                <div class="d1-substats">
+                                    <div class="d1-substat">
+                                        <div class="d1-mini-top">
+                                            <iconify-icon
+                                                class="c-info"
+                                                icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                            <span class="d1-mini-label">Accounts</span>
+                                        </div>
+                                        <p class="d1-mini-value">7</p>
+                                    </div>
+                                    <div class="d1-substat">
+                                        <div class="d1-mini-top">
+                                            <iconify-icon
+                                                class="c-warning"
+                                                icon="solar:card-bold-duotone"></iconify-icon>
+                                            <span class="d1-mini-label">Credit Util.</span>
+                                        </div>
+                                        <p class="d1-mini-value value-null">—</p>
+                                    </div>
+                                    <div class="d1-substat">
+                                        <div class="d1-mini-top">
+                                            <iconify-icon
+                                                class="c-success"
+                                                icon="solar:clock-circle-bold-duotone"></iconify-icon>
+                                            <span class="d1-mini-label">Oldest</span>
+                                        </div>
+                                        <p class="d1-mini-value value-null">—</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="frame-caption">
+                            Muted “—” keeps the ledger row stable — no reflow when a credit card is
+                            added later.
+                        </div>
+                    </div>
+
+                    <!-- 02 null -->
+                    <div class="frame">
+                        <div class="frame-bar">
+                            <span class="frame-dot" style="background: var(--primary)"></span>
+                            02 · Brand Hero
+                        </div>
+                        <div class="frame-body">
+                            <div class="d2-hero">
+                                <div class="stat-head">
+                                    <span class="stat-label">Total Balance</span>
+                                    <span class="icon-badge on-primary">
+                                        <iconify-icon
+                                            icon="solar:wallet-bold-duotone"></iconify-icon>
+                                    </span>
+                                </div>
+                                <p class="stat-value">Rp 24.568.420</p>
+
+                                <div class="d2-chips">
+                                    <span class="d2-chip">
+                                        <iconify-icon
+                                            icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                        7 accounts
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="frame-caption">
+                            Null chips are not rendered — the chip row just shrinks. Cleanest empty
+                            treatment of the three.
+                        </div>
+                    </div>
+
+                    <!-- 03 null -->
+                    <div class="frame">
+                        <div class="frame-bar">
+                            <span class="frame-dot" style="background: var(--primary)"></span>
+                            03 · Segmented Stack
+                        </div>
+                        <div class="frame-body">
+                            <div class="stat-card d3-card">
+                                <div class="d3-hero">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Total Balance</span>
+                                        <span class="icon-badge tint-primary">
+                                            <iconify-icon
+                                                icon="solar:wallet-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">Rp 24.568.420</p>
+                                </div>
+
+                                <div class="d3-grid">
+                                    <div class="d3-cell">
+                                        <div class="d3-cell-top">
+                                            <iconify-icon
+                                                class="c-info"
+                                                icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                            <span class="d1-mini-label">Accounts</span>
+                                        </div>
+                                        <p class="d1-mini-value">7</p>
+                                    </div>
+                                    <div class="d3-cell">
+                                        <div class="d3-cell-top">
+                                            <iconify-icon
+                                                class="c-warning"
+                                                icon="solar:card-bold-duotone"></iconify-icon>
+                                            <span class="d1-mini-label">Credit Util.</span>
+                                        </div>
+                                        <p class="d1-mini-value value-null">—</p>
+                                    </div>
+                                    <div class="d3-cell">
+                                        <div class="d3-cell-top">
+                                            <iconify-icon
+                                                class="c-success"
+                                                icon="solar:clock-circle-bold-duotone"></iconify-icon>
+                                            <span class="d1-mini-label">Oldest</span>
+                                        </div>
+                                        <p class="d1-mini-value value-null">—</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="frame-caption">
+                            Cells keep their slots with muted “—”; the segmented rhythm stays
+                            intact.
+                        </div>
+                    </div>
+                </div>
+                <div class="decisions">
+                    <div>
+                        <strong>Recommendation on nulls.</strong> Prefer the stable
+                        <b>“—”</b> treatment (01 / 03) for grid layouts so adding a first credit
+                        account never shifts the layout; prefer the render-if-present chips (02)
+                        when the container is flexible.
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════ RECOMMENDATION ═══════════════════ -->
+            <div class="rec">
+                <h3>Recommended — <span>01 · Ledger Hero</span></h3>
+                <p>
+                    It satisfies the single-card mobile requirement with the least new surface: one
+                    component that reflows instead of two layouts to maintain, the quietest fit with
+                    the existing StatCard language (white card, tinted badges, uppercase labels),
+                    and a null-safe stable ledger row.
+                </p>
+                <ul>
+                    <li>
+                        <b>Least code:</b> same card at every breakpoint — only the flex direction
+                        changes at <code>lg:</code>.
+                    </li>
+                    <li>
+                        <b>Most consistent:</b> reuses StatCard's card, badge, and label treatments
+                        verbatim; no filled surfaces or bands that don't yet exist in this area of
+                        the app.
+                    </li>
+                    <li>
+                        <b>Null-safe:</b> “—” placeholders keep the row from jumping when credit
+                        accounts appear.
+                    </li>
+                    <li>
+                        <b>Runner-up:</b> 02 · Brand Hero if you want the balance to visually
+                        dominate; 03 · Segmented Stack if you want the strongest per-stat structure.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { App } from '@wayfinder/types';
 
-    import { router } from '@inertiajs/svelte';
+    import { router, setLayoutProps } from '@inertiajs/svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
     import PageSection from '@components/layouts/page-section.svelte';
@@ -12,6 +12,8 @@
 
     let { account, providers }: { account: App.Models.Account; providers: App.Models.Provider[] } =
         $props();
+
+    setLayoutProps({ backUrl: AccountController.show.url({ account: account.id }) });
 
     let showArchiveConfirm = $state(false);
     let showDeleteConfirm = $state(false);
@@ -38,7 +40,7 @@
             color="warning"
             onclick={() => (showArchiveConfirm = true)}
             variant="outline">
-            <i class="iconify size-4 ph--archive-bold"></i>
+            <i class="iconify size-4 solar--archive-bold-duotone"></i>
             Archive Account
         </Button>
         <Button
@@ -46,7 +48,7 @@
             color="error"
             onclick={() => (showDeleteConfirm = true)}
             variant="outline">
-            <i class="iconify size-4 ph--trash-bold"></i>
+            <i class="iconify size-4 solar--trash-bin-2-bold-duotone"></i>
             Delete Account
         </Button>
     </div>

@@ -18,8 +18,8 @@
 
     const iconClass = $derived(
         category?.decorations?.icon
-            ? (getDecorationIcon(category.decorations.icon)?.value ?? 'ph--tag-bold')
-            : 'ph--tag-bold'
+            ? (getDecorationIcon(category.decorations.icon)?.value ?? 'solar--tag-bold-duotone')
+            : 'solar--tag-bold-duotone'
     );
 </script>
 
@@ -27,16 +27,16 @@
     <div
         style:background={color ? `${color}20` : undefined}
         style:color={color ?? undefined}
-        class="size-10 rounded-xl flex items-center justify-center shrink">
+        class="flex size-10 shrink items-center justify-center rounded-xl">
         <i class="iconify size-5 {iconClass}"></i>
     </div>
     <div class="grow">
         {#if category.parent}
-            <p class="text-sm text-base-content/50 truncate">{category.parent.name}</p>
+            <p class="truncate text-sm text-base-content/50">{category.parent.name}</p>
         {/if}
-        <p class="font-semibold text-sm truncate">
+        <p class="truncate text-sm font-semibold">
             {category.name}
         </p>
     </div>
-    <i class="iconify size-5 text-base-content/60 ph--caret-right-bold"></i>
+    <i class="iconify size-5 text-base-content/60 solar--alt-arrow-right-line-duotone"></i>
 </div>

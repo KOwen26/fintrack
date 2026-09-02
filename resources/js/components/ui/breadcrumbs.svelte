@@ -88,7 +88,7 @@
     <ol
         data-slot="breadcrumb-list"
         class={cn(
-            'text-muted-foreground flex flex-wrap items-center gap-1 text-sm wrap-break-word',
+            'flex flex-wrap items-center gap-1 text-sm wrap-break-word text-muted-foreground',
             className
         )}
         {...props}>
@@ -121,7 +121,7 @@
 {#snippet breadcrumbLink(item: BreadcrumbItem)}
     <a
         data-slot="breadcrumb-link"
-        class={cn('hover:text-primary-800 transition-colors')}
+        class={cn('transition-colors hover:text-primary-800')}
         href={item.href}
         use:inertia>
         {@render breadcrumbIcon(item.icon)}
@@ -132,7 +132,7 @@
 {#snippet breadcrumbPage(item: BreadcrumbItem)}
     <span
         data-slot="breadcrumb-page"
-        class={cn('text-primary-600 font-normal')}
+        class={cn('font-normal text-primary-600')}
         aria-current="page"
         aria-disabled="true"
         role="link">
@@ -159,7 +159,7 @@
     <li data-slot="breadcrumb-collapsed-items">
         <Popover class="w-40 p-2" sideOffset={8}>
             {#snippet trigger()}
-                <i class="iconify ph--dots-three-duotone size-4"></i>
+                <i class="iconify size-4 solar--menu-dots-line-duotone"></i>
                 <span class="sr-only">More</span>
             {/snippet}
 
@@ -167,7 +167,7 @@
                 {#each items as item (item)}
                     <li
                         data-slot="breadcrumb-collapsed-item"
-                        class={cn('hover:bg-accent rounded-sm px-2 py-1', item.class)}>
+                        class={cn('rounded-sm px-2 py-1 hover:bg-accent', item.class)}>
                         {#if item.href}
                             {@render breadcrumbLink(item)}
                         {:else}

@@ -19,8 +19,9 @@
 
     const iconClass = $derived(
         account?.decorations?.icon
-            ? (getDecorationIcon(account.decorations.icon)?.value ?? 'ph--bank-bold')
-            : 'ph--bank-bold'
+            ? (getDecorationIcon(account.decorations.icon)?.value ??
+                  'solar--banknote-2-bold-duotone')
+            : 'solar--banknote-2-bold-duotone'
     );
 
     const colorValue = $derived(
@@ -43,7 +44,7 @@
         <div
             style:background={colorValue ? `${colorValue}20` : undefined}
             style:color={colorValue ?? undefined}
-            class="size-10 rounded-xl bg-base-content/10 flex items-center justify-center shrink-0">
+            class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-base-content/10">
             <i class="iconify size-5 {iconClass}"></i>
         </div>
         <div class="grow">
