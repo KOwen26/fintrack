@@ -43,17 +43,18 @@
 <PageSection>
     <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
         <StatCard
+            class="col-span-full"
             color="primary"
             icon="solar--wallet-bold-duotone"
             label="Total Balance"
             value={summary.total_balance} />
 
-        <StatCard
+        <!-- <StatCard
             color="info"
             format="number"
             icon="solar--banknote-2-bold-duotone"
             label="Total Accounts"
-            value={summary.total_accounts} />
+            value={summary.total_accounts} /> -->
 
         <!-- <StatCard
             color="warning"

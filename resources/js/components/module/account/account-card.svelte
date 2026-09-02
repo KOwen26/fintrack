@@ -119,10 +119,6 @@
                 <span class="text-sm font-semibold text-current md:text-base">
                     {account.name}
                 </span>
-                <span
-                    class="rounded-full bg-white/20 px-1.5 py-0.5 text-[9px] font-medium tracking-wider text-current/85 uppercase">
-                    {typeLabel}
-                </span>
             </div>
             <div class="flex items-center gap-2 text-xs text-current/70">
                 {#if providerName}
@@ -134,6 +130,10 @@
                 {#if isJoint}
                     <span>Joint</span>
                 {/if}
+                <span
+                    class="rounded-full bg-white/20 px-1.5 py-0.5 text-[9px] font-medium tracking-wider text-current/85 uppercase">
+                    {typeLabel}
+                </span>
             </div>
         </div>
         {@render editButton()}
@@ -157,7 +157,8 @@
             class="flex items-center gap-1.5 text-sm font-medium tracking-wide text-current/70 uppercase">
             Current Balance
         </div>
-        <p class="text-2xl font-bold tracking-tight text-current md:text-4xl lg:text-5xl">
+        <p
+            class="truncate text-2xl font-bold tracking-tight text-nowrap text-current md:text-4xl lg:text-5xl">
             {#if balanceHidden}
                 ••••••
             {:else}

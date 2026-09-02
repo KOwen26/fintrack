@@ -7,7 +7,7 @@ use Spatie\LaravelData\Data;
 class DecorationData extends Data
 {
     public function __construct(
-        public string $icon,
-        public string $color,
+        public ?string $icon = null,
+        public ?string $color = null,
     ) {}
 }

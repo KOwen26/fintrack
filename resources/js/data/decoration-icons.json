@@ -273,6 +273,13 @@
         "status": "Active"
     },
     {
+        "slug": "basketball",
+        "group": "health",
+        "label": "Basketball",
+        "value": "solar--basketball-bold-duotone",
+        "status": "Active"
+    },
+    {
         "slug": "medical-kit",
         "group": "health",
         "label": "First Aid",
@@ -350,6 +357,13 @@
         "status": "Active"
     },
     {
+        "slug": "chef-hat",
+        "group": "lifestyle",
+        "label": "Chef Hat",
+        "value": "solar--chef-hat-bold-duotone",
+        "status": "Active"
+    },
+    {
         "slug": "cup-hot",
         "group": "lifestyle",
         "label": "Coffee",
@@ -368,6 +382,13 @@
         "group": "lifestyle",
         "label": "Hamburger",
         "value": "solar--donut-bold-duotone",
+        "status": "Active"
+    },
+    {
+        "slug": "mug",
+        "group": "lifestyle",
+        "label": "Mug",
+        "value": "solar--mug-bold-duotone",
         "status": "Active"
     },
     {
