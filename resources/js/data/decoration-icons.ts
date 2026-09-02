@@ -16,6 +16,21 @@ export function getActiveDecorationIcons(): DecorationIcon[] {
 }
 
 /**
+ * Get a random active decoration icon.
+ *
+ * @returns {DecorationIcon | undefined} A random active DecorationIcon, or undefined when none exist.
+ */
+export function getRandomDecorationIcon(): DecorationIcon | undefined {
+    const activeIcons = getActiveDecorationIcons();
+
+    if (!activeIcons.length) {
+        return undefined;
+    }
+
+    return activeIcons[Math.floor(Math.random() * activeIcons.length)];
+}
+
+/**
  * Find a decoration icon by its slug.
  *
  * @param {string} slug - The unique slug identifying the decoration icon.

@@ -3,6 +3,7 @@
 
     import AccountCard from './account-card.svelte';
 
+    import { getRandomDecorationColor } from '@data/decoration-colors';
     import { router, useForm } from '@inertiajs/svelte';
     import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
     import AccountType from '@wayfinder/App/Enums/AccountType';
@@ -56,7 +57,7 @@
             icon:
                 account?.decorations?.icon ??
                 iconForAccountType(account?.type ?? AccountType.DebitAccount),
-            color: account?.decorations?.color ?? 'emerald-600',
+            color: account?.decorations?.color ?? getRandomDecorationColor().slug,
         },
     });
 

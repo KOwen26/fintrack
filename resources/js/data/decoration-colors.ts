@@ -16,6 +16,21 @@ export function getActiveDecorationColors(): DecorationColor[] {
 }
 
 /**
+ * Get a random active decoration color.
+ *
+ * @returns {DecorationColor | undefined} A random active DecorationColor, or undefined when none exist.
+ */
+export function getRandomDecorationColor(): DecorationColor | undefined {
+    const activeColors = getActiveDecorationColors();
+
+    if (!activeColors.length) {
+        return undefined;
+    }
+
+    return activeColors[Math.floor(Math.random() * activeColors.length)];
+}
+
+/**
  * Find a decoration color by its slug.
  *
  * @param {string} slug - The unique slug identifying the decoration color.
