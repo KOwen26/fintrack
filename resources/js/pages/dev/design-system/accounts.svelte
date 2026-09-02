@@ -14,6 +14,7 @@
     import AccountInfo from '@components/module/account/account-info.svelte';
     import AccountList from '@components/module/account/account-list.svelte';
     import AccountTypeBadge from '@components/module/account/account-type-badge.svelte';
+    import AccountsSummaryCard from '@components/module/account/accounts-summary-card.svelte';
     import BaseAccountCard from '@components/module/account/base-account-card.svelte';
 
     setBreadcrumbItems([{ title: 'Dev' }, { title: 'Design System' }, { title: 'Accounts' }]);
@@ -39,8 +40,6 @@
         access_type: AccountAccessType.Personal,
         current_balance: 12_500_000,
         initial_balance: 10_000_000,
-        credit_card_limit: null,
-        currency: 'IDR',
         decorations: { icon: 'money-bag', color: 'emerald-600' },
         archived_at: null,
         created_at: '2026-01-15T00:00:00.000000Z',
@@ -58,14 +57,18 @@
         access_type: AccountAccessType.Joint,
         current_balance: 3_450_000,
         initial_balance: 2_000_000,
-        credit_card_limit: null,
-        currency: 'IDR',
         decorations: { icon: 'wallet', color: 'violet-600' },
         archived_at: null,
         created_at: '2026-03-02T00:00:00.000000Z',
         updated_at: '2026-09-01T00:00:00.000000Z',
         deleted_at: null,
         provider: null,
+    };
+
+    const summary = {
+        total_balance: 20_800_000,
+        available_balance: 15_950_000,
+        investment_balance: 4_850_000,
     };
 </script>
 
@@ -120,6 +123,16 @@
         </section>
 
         <section>
+            <h2>Accounts Summary Card</h2>
+            <hr class="mt-2 mb-4" />
+            <p class="mb-4 text-sm text-base-content/60">
+                Brand hero for the accounts index — primary gradient with glow blobs. Stacks on
+                mobile; on lg screens it lays out horizontally with divided sub-stats.
+            </p>
+            <AccountsSummaryCard {summary} />
+        </section>
+
+        <section>
             <h2>Account Type Badge</h2>
             <hr class="mt-2 mb-4" />
             <p class="mb-4 text-sm text-base-content/60">
@@ -133,8 +146,8 @@
                 <AccountTypeBadge type={AccountType.EWallet} />
                 <AccountTypeBadge type={AccountType.Investment} />
                 <span class="text-base-content/40">|</span>
-                <AccountTypeBadge type={AccountType.DebitAccount} icon="hide" />
-                <AccountTypeBadge type={AccountType.EWallet} icon="only" />
+                <AccountTypeBadge icon="hide" type={AccountType.DebitAccount} />
+                <AccountTypeBadge icon="only" type={AccountType.EWallet} />
             </div>
         </section>
 
@@ -148,7 +161,7 @@
                 <AccountAccessTypeBadge type={AccountAccessType.Personal} />
                 <AccountAccessTypeBadge type={AccountAccessType.Joint} />
                 <span class="text-base-content/40">|</span>
-                <AccountAccessTypeBadge type={AccountAccessType.Joint} icon="only" />
+                <AccountAccessTypeBadge icon="only" type={AccountAccessType.Joint} />
             </div>
         </section>
 

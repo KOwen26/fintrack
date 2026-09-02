@@ -26,8 +26,6 @@ class AccountFactory extends Factory
             'type' => AccountType::DebitAccount,
             'access_type' => AccountAccessType::Personal,
             'initial_balance' => 0,
-            'credit_card_limit' => null,
-            'currency' => Account::DEFAULT_CURRENCY,
             'decorations' => $this->randomDecorations(),
             'archived_at' => null,
         ];
@@ -37,7 +35,6 @@ class AccountFactory extends Factory
     {
         return $this->state([
             'type' => AccountType::CreditCard,
-            'credit_card_limit' => 5_000_000,
         ]);
     }
 

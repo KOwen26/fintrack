@@ -8,16 +8,17 @@
 
     import PageSection from '@components/layouts/page-section.svelte';
     import AccountList from '@components/module/account/account-list.svelte';
+    import AccountsSummaryCard from '@components/module/account/accounts-summary-card.svelte';
     import BaseAccountCard from '@components/module/account/base-account-card.svelte';
     import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
     import Button from '@components/ui/button.svelte';
-    import StatCard from '@components/ui/cards/stat-card.svelte';
 
     interface Summary {
         total_balance: number;
         total_accounts: number;
-        credit_utilization_percentage: number | null;
         oldest_account_years: number | null;
+        available_balance: number;
+        investment_balance: number;
     }
 
     let {
@@ -41,42 +42,7 @@
 </DashboardPageHeader>
 
 <PageSection>
-    <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-        <StatCard
-            class="col-span-full"
-            color="primary"
-            icon="solar--wallet-bold-duotone"
-            label="Total Balance"
-            value={summary.total_balance} />
-
-        <!-- <StatCard
-            color="info"
-            format="number"
-            icon="solar--banknote-2-bold-duotone"
-            label="Total Accounts"
-            value={summary.total_accounts} /> -->
-
-        <!-- <StatCard
-            color="warning"
-            icon="solar--card-bold-duotone"
-            label="Credit Utilisation"
-            value={summary.credit_utilization_percentage !== null
-                ? `${summary.credit_utilization_percentage}%`
-                : null} />
-
-        {let oldestLabel = $derived.by(() => {
-            if (summary.oldest_account_years === null) return null;
-            if (summary.oldest_account_years < 1) return 'Less than a year';
-
-            return `${summary.oldest_account_years} year${summary.oldest_account_years > 1 ? 's' : ''}`;
-        })}
-
-        <StatCard
-            color="success"
-            icon="solar--clock-circle-bold-duotone"
-            label="Oldest Account"
-            value={oldestLabel} /> -->
-    </div>
+    <AccountsSummaryCard {summary} />
 </PageSection>
 
 <PageSection class="space-y-5">

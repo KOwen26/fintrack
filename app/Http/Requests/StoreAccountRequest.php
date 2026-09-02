@@ -32,8 +32,6 @@ class StoreAccountRequest extends FormRequest
             'access_type' => ['required', 'string', Rule::enum(AccountAccessType::class)],
             'provider_id' => ['nullable', 'integer', 'exists:providers,id'],
             'initial_balance' => ['nullable', 'numeric', 'min:0'],
-            'credit_card_limit' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'size:3'],
             'decorations' => ['nullable', 'array'],
             'decorations.icon' => ['required_with:decorations', 'string', 'max:100'],
             'decorations.color' => ['required_with:decorations', 'string', 'max:100'],

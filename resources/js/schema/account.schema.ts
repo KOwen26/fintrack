@@ -84,9 +84,6 @@ export const accountSchema: DataSchema<App.Models.Account> = {
             options: accountAccessTypeOptions,
         }),
     },
-    currency: {
-        label: 'Currency',
-    },
     current_balance: {
         label: 'Current Balance',
         table: true,
@@ -98,18 +95,6 @@ export const accountSchema: DataSchema<App.Models.Account> = {
         form: () => ({
             type: 'currency-input',
             name: 'initial_balance',
-        }),
-    },
-    credit_card_limit: {
-        label: 'Credit Limit',
-        show: (data) => data.type === AccountType.CreditCard,
-        value: (data) =>
-            data.credit_card_limit ? Number(data.credit_card_limit).toLocaleString('id-ID') : '—',
-        form: () => ({
-            type: 'number',
-            name: 'credit_card_limit',
-            show: (form) => form.type === AccountType.CreditCard,
-            inputProps: { inputmode: 'decimal', min: 0, step: 0.01 },
         }),
     },
     archived_at: {

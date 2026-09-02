@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Accounts Stats — Brand Hero · Blob Variants</title>
+        <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap"
+            rel="stylesheet" />
+        <style>
+            /* ── Verdant Design Tokens (mirrors resources/css/colors.css) ── */
+            :root {
+                --base-100: oklch(0.98 0.012 85);
+                --base-200: oklch(0.94 0.018 85);
+                --base-300: oklch(0.88 0.022 85);
+                --base-content: oklch(0.18 0.02 160);
+
+                --primary: oklch(0.42 0.11 160);
+                --primary-content: oklch(0.95 0.01 160);
+                --secondary: oklch(0.62 0.07 175);
+                --accent: oklch(0.72 0.14 85);
+
+                --card: #ffffff;
+                --muted-60: color-mix(in oklab, var(--base-content) 60%, transparent);
+                --muted-45: color-mix(in oklab, var(--base-content) 45%, transparent);
+
+                --radius-card: 0.875rem;
+                --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+                --gradient-primary: linear-gradient(
+                    135deg,
+                    oklch(0.42 0.11 160),
+                    oklch(0.35 0.1 165)
+                );
+                --font-sans: 'Figtree', system-ui, -apple-system, sans-serif;
+
+                --on-primary-hairline: rgba(255, 255, 255, 0.18);
+            }
+
+            /* ── Reset ── */
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: var(--font-sans);
+                background: var(--base-200);
+                color: var(--base-content);
+                line-height: 1.5;
+                -webkit-font-smoothing: antialiased;
+            }
+            iconify-icon {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            /* ── Page scaffold ── */
+            .page {
+                max-width: 1160px;
+                margin: 0 auto;
+                padding: 2.5rem 2rem 4.5rem;
+            }
+            .page-header {
+                margin-bottom: 2.75rem;
+                text-align: center;
+            }
+            .page-header h1 {
+                font-size: 1.7rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+            }
+            .page-header h1 span {
+                color: var(--primary);
+            }
+            .page-header .subtitle {
+                margin-top: 0.5rem;
+                font-size: 0.92rem;
+                color: var(--muted-60);
+                max-width: 640px;
+                margin-inline: auto;
+                line-height: 1.6;
+            }
+            .page-footer {
+                margin-top: 3rem;
+                text-align: center;
+                font-size: 0.72rem;
+                color: var(--muted-45);
+            }
+
+            /* ── Variant sections ── */
+            .variant {
+                margin-bottom: 3.25rem;
+            }
+            .variant-head {
+                display: flex;
+                align-items: baseline;
+                gap: 0.75rem;
+                margin-bottom: 0.35rem;
+            }
+            .variant-head .v-key {
+                font-size: 1.05rem;
+                font-weight: 700;
+                color: var(--primary);
+                opacity: 0.55;
+            }
+            .variant-head h2 {
+                font-size: 1.15rem;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+            }
+            .variant-note {
+                margin-bottom: 1.25rem;
+                font-size: 0.85rem;
+                color: var(--muted-60);
+                max-width: 680px;
+                line-height: 1.6;
+            }
+            .variant-divider {
+                height: 1px;
+                background: var(--base-300);
+                margin-bottom: 1.5rem;
+            }
+
+            /* ── Card pair (mobile + desktop side by side) ── */
+            .pair {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.5rem;
+                align-items: stretch;
+            }
+            .pair figure {
+                min-width: 0;
+            }
+            .pair figcaption {
+                margin-bottom: 0.45rem;
+                font-size: 0.68rem;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--muted-45);
+            }
+            .stage {
+                background: var(--base-100);
+                border: 1px solid var(--base-300);
+                border-radius: 12px;
+                padding: 1.25rem;
+            }
+            .stage-mobile {
+                width: 375px;
+                max-width: 100%;
+            }
+            .stage-desktop {
+                width: 680px;
+                max-width: 100%;
+                display: flex;
+                align-items: center;
+            }
+
+            /* ═══════════════════════════════════════════ */
+            /* Brand Hero card base                        */
+            /* ═══════════════════════════════════════════ */
+            .hero-card {
+                position: relative;
+                overflow: hidden;
+                isolation: isolate;
+                width: 100%;
+                background: var(--gradient-primary);
+                color: var(--primary-content);
+                border-radius: var(--radius-card);
+                padding: 1.1rem;
+                box-shadow: var(--card-shadow);
+            }
+            .hero-content {
+                position: relative;
+                z-index: 1;
+            }
+
+            .stat-label {
+                font-size: 0.68rem;
+                font-weight: 600;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.75);
+            }
+            .stat-value {
+                margin-top: 0.5rem;
+                font-size: 1.9rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                color: #fff;
+                white-space: nowrap;
+            }
+            .icon-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 2rem;
+                height: 2rem;
+                border-radius: 0.5rem;
+                flex-shrink: 0;
+                font-size: 1.05rem;
+                background: rgba(255, 255, 255, 0.2);
+                color: #fff;
+            }
+            .icon-badge.lg {
+                width: 2.75rem;
+                height: 2.75rem;
+                border-radius: 0.625rem;
+                font-size: 1.45rem;
+            }
+            .stat-head {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 0.75rem;
+            }
+
+            /* ── Mobile: divided mini-row ── */
+            .hero-mini {
+                margin-top: 0.95rem;
+                padding-top: 0.85rem;
+                border-top: 1px solid var(--on-primary-hairline);
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .hero-mini-cell {
+                min-width: 0;
+            }
+            .hero-mini-cell + .hero-mini-cell {
+                border-left: 1px solid var(--on-primary-hairline);
+                padding-left: 0.9rem;
+            }
+            .mini-top {
+                display: flex;
+                align-items: center;
+                gap: 0.3rem;
+                color: rgba(255, 255, 255, 0.72);
+            }
+            .mini-top iconify-icon {
+                font-size: 0.85rem;
+                flex-shrink: 0;
+            }
+            .mini-top span {
+                font-size: 0.6rem;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+            .mini-value {
+                margin-top: 0.2rem;
+                font-size: 0.95rem;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+                color: #fff;
+                white-space: nowrap;
+            }
+
+            /* ── Desktop: horizontal row ── */
+            .hero-desktop {
+                padding: 1.4rem 1.5rem;
+            }
+            .hero-row {
+                display: flex;
+                align-items: center;
+            }
+            .hero-block {
+                display: flex;
+                align-items: center;
+                gap: 1.1rem;
+                flex-shrink: 0;
+            }
+            .hero-block .stat-value {
+                font-size: 2.05rem;
+                margin-top: 0.15rem;
+            }
+            .hero-substats {
+                flex: 1;
+                min-width: 0;
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                margin-left: 1.35rem;
+                padding-left: 1.35rem;
+                border-left: 1px solid var(--on-primary-hairline);
+            }
+            .hero-sub {
+                min-width: 0;
+            }
+            .hero-sub + .hero-sub {
+                border-left: 1px solid var(--on-primary-hairline);
+                padding-left: 1.1rem;
+                margin-left: 1.1rem;
+            }
+            .hero-sub .mini-top iconify-icon {
+                font-size: 0.9rem;
+            }
+            .hero-sub .mini-top span {
+                font-size: 0.62rem;
+            }
+            .hero-sub .mini-value {
+                margin-top: 0.25rem;
+                font-size: 1rem;
+            }
+
+            /* ═══════════════════════════════════════════ */
+            /* Decorative blobs (z-index 0, clipped)       */
+            /* ═══════════════════════════════════════════ */
+            .blob-glow {
+                position: absolute;
+                z-index: 0;
+                border-radius: 50%;
+                filter: blur(42px);
+                pointer-events: none;
+            }
+            .blob-svg {
+                position: absolute;
+                z-index: 0;
+                display: block;
+                pointer-events: none;
+            }
+
+            /* ── Variant A · blurred glow blobs ── */
+            .va .g1 {
+                width: 210px;
+                height: 210px;
+                top: -80px;
+                right: -60px;
+                background: rgba(255, 255, 255, 0.26);
+            }
+            .va .g2 {
+                width: 170px;
+                height: 170px;
+                bottom: -70px;
+                left: -50px;
+                background: oklch(0.72 0.14 85 / 0.38);
+                filter: blur(48px);
+            }
+            .va .g3 {
+                width: 100px;
+                height: 100px;
+                bottom: 26px;
+                right: 34%;
+                background: rgba(255, 255, 255, 0.12);
+                filter: blur(30px);
+            }
+            .hero-desktop.va .g1 {
+                width: 320px;
+                height: 320px;
+                top: -130px;
+                right: -100px;
+            }
+            .hero-desktop.va .g2 {
+                width: 260px;
+                height: 260px;
+                bottom: -110px;
+                left: -80px;
+            }
+            .hero-desktop.va .g3 {
+                width: 140px;
+                height: 140px;
+                bottom: 44px;
+                right: 36%;
+            }
+
+            /* ── Variant B · crisp organic SVG blobs ── */
+            .vb .s1 {
+                width: 240px;
+                height: 240px;
+                right: -60px;
+                bottom: -70px;
+            }
+            .vb .s2 {
+                width: 170px;
+                height: 170px;
+                top: -50px;
+                left: -40px;
+            }
+            .hero-desktop.vb .s1 {
+                width: 400px;
+                height: 400px;
+                right: -110px;
+                bottom: -130px;
+            }
+            .hero-desktop.vb .s2 {
+                width: 260px;
+                height: 260px;
+                top: -80px;
+                left: -60px;
+            }
+
+            /* ── Variant C · glow + outlined blob ── */
+            .vc .g1 {
+                width: 200px;
+                height: 200px;
+                top: -75px;
+                right: -55px;
+                background: rgba(255, 255, 255, 0.22);
+            }
+            .vc .o1 {
+                width: 230px;
+                height: 230px;
+                left: -60px;
+                bottom: -70px;
+            }
+            .hero-desktop.vc .g1 {
+                width: 300px;
+                height: 300px;
+                top: -120px;
+                right: -90px;
+            }
+            .hero-desktop.vc .o1 {
+                width: 340px;
+                height: 340px;
+                left: -90px;
+                bottom: -110px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="page">
+            <!-- ═══════════════════ HEADER ═══════════════════ -->
+            <header class="page-header">
+                <h1>Brand Hero Card · <span>Blob Variants</span></h1>
+                <p class="subtitle">
+                    One chosen design, three decorative blob treatments. Content is identical
+                    everywhere: <strong>Total Balance</strong> hero, with
+                    <strong>Available</strong> and <strong>Investment</strong> in a divided row
+                    (mobile) or right column (desktop). Static — no interactions, no animations.
+                </p>
+            </header>
+
+            <!-- ============================================================== -->
+            <!--  A · BLURRED GLOW BLOBS                                        -->
+            <!-- ============================================================== -->
+            <section class="variant">
+                <div class="variant-head">
+                    <span class="v-key">A</span>
+                    <h2>Blurred glow blobs</h2>
+                </div>
+                <p class="variant-note">
+                    Two–three soft radial glows — lighter primary plus a hint of accent — blurred
+                    and clipped by the card.
+                </p>
+                <div class="variant-divider"></div>
+                <div class="pair">
+                    <!-- A · mobile -->
+                    <figure>
+                        <figcaption>A · Glow blobs — mobile</figcaption>
+                        <div class="stage stage-mobile">
+                            <div class="hero-card va">
+                                <div class="blob-glow g1"></div>
+                                <div class="blob-glow g2"></div>
+                                <div class="blob-glow g3"></div>
+                                <div class="hero-content">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Total Balance</span>
+                                        <span class="icon-badge">
+                                            <iconify-icon
+                                                icon="solar:wallet-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">Rp 24.568.420</p>
+                                    <div class="hero-mini">
+                                        <div class="hero-mini-cell">
+                                            <div class="mini-top">
+                                                <iconify-icon
+                                                    icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                                <span>Available</span>
+                                            </div>
+                                            <p class="mini-value">Rp 18.240.000</p>
+                                        </div>
+                                        <div class="hero-mini-cell">
+                                            <div class="mini-top">
+                                                <iconify-icon
+                                                    icon="solar:chart-2-bold-duotone"></iconify-icon>
+                                                <span>Investment</span>
+                                            </div>
+                                            <p class="mini-value">Rp 4.850.000</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </figure>
+
+                    <!-- A · desktop -->
+                    <figure>
+                        <figcaption>A · Glow blobs — desktop</figcaption>
+                        <div class="stage stage-desktop">
+                            <div class="hero-card hero-desktop va">
+                                <div class="blob-glow g1"></div>
+                                <div class="blob-glow g2"></div>
+                                <div class="blob-glow g3"></div>
+                                <div class="hero-row hero-content">
+                                    <div class="hero-block">
+                                        <span class="icon-badge lg">
+                                            <iconify-icon
+                                                icon="solar:wallet-bold-duotone"></iconify-icon>
+                                        </span>
+                                        <div>
+                                            <span class="stat-label">Total Balance</span>
+                                            <p class="stat-value">Rp 24.568.420</p>
+                                        </div>
+                                    </div>
+                                    <div class="hero-substats">
+                                        <div class="hero-sub">
+                                            <div class="mini-top">
+                                                <iconify-icon
+                                                    icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                                <span>Available Balance</span>
+                                            </div>
+                                            <p class="mini-value">Rp 18.240.000</p>
+                                        </div>
+                                        <div class="hero-sub">
+                                            <div class="mini-top">
+                                                <iconify-icon
+                                                    icon="solar:chart-2-bold-duotone"></iconify-icon>
+                                                <span>Investment</span>
+                                            </div>
+                                            <p class="mini-value">Rp 4.850.000</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </figure>
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!--  B · CRISP ORGANIC SVG BLOBS                                   -->
+            <!-- ============================================================== -->
+            <section class="variant">
+                <div class="variant-head">
+                    <span class="v-key">B</span>
+                    <h2>Crisp organic SVG blobs</h2>
+                </div>
+                <p class="variant-note">
+                    One–two sharp-edged organic shapes, white at 8–15% opacity, sitting behind the
+                    content.
+                </p>
+                <div class="variant-divider"></div>
+                <div class="pair">
+                    <!-- B · mobile -->
+                    <figure>
+                        <figcaption>B · Organic SVG — mobile</figcaption>
+                        <div class="stage stage-mobile">
+                            <div class="hero-card vb">
+                                <svg
+                                    class="blob-svg s1"
+                                    viewBox="0 0 200 200"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true">
+                                    <path
+                                        fill="#ffffff"
+                                        fill-opacity="0.14"
+                                        d="M100,26 C130,22 162,40 170,72 C178,104 160,142 128,158 C96,174 50,168 30,136 C10,104 16,62 44,40 C66,24 78,29 100,26 Z" />
+                                </svg>
+                                <svg
+                                    class="blob-svg s2"
+                                    viewBox="0 0 200 200"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true">
+                                    <path
+                                        fill="#ffffff"
+                                        fill-opacity="0.09"
+                                        d="M132,58 C150,54 168,66 172,84 C176,102 166,122 148,130 C130,138 106,134 96,118 C86,102 92,80 108,68 C116,62 122,60 132,58 Z" />
+                                </svg>
+                                <div class="hero-content">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Total Balance</span>
+                                        <span class="icon-badge">
+                                            <iconify-icon
+                                                icon="solar:wallet-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">Rp 24.568.420</p>
+                                    <div class="hero-mini">
+                                        <div class="hero-mini-cell">
+                                            <div class="mini-top">
+                                                <iconify-icon
+                                                    icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                                <span>Available</span>
+                                            </div>
+                                            <p class="mini-value">Rp 18.240.000</p>
+                                        </div>
+                                        <div class="hero-mini-cell">
+                                            <div class="mini-top">
+                                                <iconify-icon
+                                                    icon="solar:chart-2-bold-duotone"></iconify-icon>
+                                                <span>Investment</span>
+                                            </div>
+                                            <p class="mini-value">Rp 4.850.000</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </figure>
+
+                    <!-- B · desktop -->
+                    <figure>
+                        <figcaption>B · Organic SVG — desktop</figcaption>
+                        <div class="stage stage-desktop">
+                            <div class="hero-card hero-desktop vb">
+                                <svg
+                                    class="blob-svg s1"
+                                    viewBox="0 0 200 200"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true">
+                                    <path
+                                        fill="#ffffff"
+                                        fill-opacity="0.14"
+                                        d="M100,26 C130,22 162,40 170,72 C178,104 160,142 128,158 C96,174 50,168 30,136 C10,104 16,62 44,40 C66,24 78,29 100,26 Z" />
+                                </svg>
+                                <svg
+                                    class="blob-svg s2"
+                                    viewBox="0 0 200 200"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true">
+                                    <path
+                                        fill="#ffffff"
+                                        fill-opacity="0.09"
+                                        d="M132,58 C150,54 168,66 172,84 C176,102 166,122 148,130 C130,138 106,134 96,118 C86,102 92,80 108,68 C116,62 122,60 132,58 Z" />
+                                </svg>
+                                <div class="hero-row hero-content">
+                                    <div class="hero-block">
+                                        <span class="icon-badge lg">
+                                            <iconify-icon
+                                                icon="solar:wallet-bold-duotone"></iconify-icon>
+                                        </span>
+                                        <div>
+                                            <span class="stat-label">Total Balance</span>
+                                            <p class="stat-value">Rp 24.568.420</p>
+                                        </div>
+                                    </div>
+                                    <div class="hero-substats">
+                                        <div class="hero-sub">
+                                            <div class="mini-top">
+                                                <iconify-icon
+                                                    icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                                <span>Available Balance</span>
+                                            </div>
+                                            <p class="mini-value">Rp 18.240.000</p>
+                                        </div>
+                                        <div class="hero-sub">
+                                            <div class="mini-top">
+                                                <iconify-icon
+                                                    icon="solar:chart-2-bold-duotone"></iconify-icon>
+                                                <span>Investment</span>
+                                            </div>
+                                            <p class="mini-value">Rp 4.850.000</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </figure>
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!--  C · MIXED — GLOW + OUTLINE                                    -->
+            <!-- ============================================================== -->
+            <section class="variant">
+                <div class="variant-head">
+                    <span class="v-key">C</span>
+                    <h2>Mixed — glow + outline</h2>
+                </div>
+                <p class="variant-note">
+                    One blurred glow paired with a thin white/20 outlined blob — soft depth with a
+                    crisp accent line.
+                </p>
+                <div class="variant-divider"></div>
+                <div class="pair">
+                    <!-- C · mobile -->
+                    <figure>
+                        <figcaption>C · Glow + outline — mobile</figcaption>
+                        <div class="stage stage-mobile">
+                            <div class="hero-card vc">
+                                <div class="blob-glow g1"></div>
+                                <svg
+                                    class="blob-svg o1"
+                                    viewBox="0 0 200 200"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true">
+                                    <path
+                                        fill="none"
+                                        stroke="rgba(255,255,255,0.2)"
+                                        stroke-width="1.25"
+                                        vector-effect="non-scaling-stroke"
+                                        d="M100,26 C130,22 162,40 170,72 C178,104 160,142 128,158 C96,174 50,168 30,136 C10,104 16,62 44,40 C66,24 78,29 100,26 Z" />
+                                </svg>
+                                <div class="hero-content">
+                                    <div class="stat-head">
+                                        <span class="stat-label">Total Balance</span>
+                                        <span class="icon-badge">
+                                            <iconify-icon
+                                                icon="solar:wallet-bold-duotone"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <p class="stat-value">Rp 24.568.420</p>
+                                    <div class="hero-mini">
+                                        <div class="hero-mini-cell">
+                                            <div class="mini-top">
+                                                <iconify-icon
+                                                    icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                                <span>Available</span>
+                                            </div>
+                                            <p class="mini-value">Rp 18.240.000</p>
+                                        </div>
+                                        <div class="hero-mini-cell">
+                                            <div class="mini-top">
+                                                <iconify-icon
+                                                    icon="solar:chart-2-bold-duotone"></iconify-icon>
+                                                <span>Investment</span>
+                                            </div>
+                                            <p class="mini-value">Rp 4.850.000</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </figure>
+
+                    <!-- C · desktop -->
+                    <figure>
+                        <figcaption>C · Glow + outline — desktop</figcaption>
+                        <div class="stage stage-desktop">
+                            <div class="hero-card hero-desktop vc">
+                                <div class="blob-glow g1"></div>
+                                <svg
+                                    class="blob-svg o1"
+                                    viewBox="0 0 200 200"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true">
+                                    <path
+                                        fill="none"
+                                        stroke="rgba(255,255,255,0.2)"
+                                        stroke-width="1.25"
+                                        vector-effect="non-scaling-stroke"
+                                        d="M100,26 C130,22 162,40 170,72 C178,104 160,142 128,158 C96,174 50,168 30,136 C10,104 16,62 44,40 C66,24 78,29 100,26 Z" />
+                                </svg>
+                                <div class="hero-row hero-content">
+                                    <div class="hero-block">
+                                        <span class="icon-badge lg">
+                                            <iconify-icon
+                                                icon="solar:wallet-bold-duotone"></iconify-icon>
+                                        </span>
+                                        <div>
+                                            <span class="stat-label">Total Balance</span>
+                                            <p class="stat-value">Rp 24.568.420</p>
+                                        </div>
+                                    </div>
+                                    <div class="hero-substats">
+                                        <div class="hero-sub">
+                                            <div class="mini-top">
+                                                <iconify-icon
+                                                    icon="solar:banknote-2-bold-duotone"></iconify-icon>
+                                                <span>Available Balance</span>
+                                            </div>
+                                            <p class="mini-value">Rp 18.240.000</p>
+                                        </div>
+                                        <div class="hero-sub">
+                                            <div class="mini-top">
+                                                <iconify-icon
+                                                    icon="solar:chart-2-bold-duotone"></iconify-icon>
+                                                <span>Investment</span>
+                                            </div>
+                                            <p class="mini-value">Rp 4.850.000</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </figure>
+                </div>
+            </section>
+
+            <p class="page-footer">
+                Tokens mirror <code>resources/css/colors.css</code> · Figtree · Solar duotone icons
+                via iconify CDN · static mockup, no JS beyond icon loading
+            </p>
+        </div>
+    </body>
+</html>

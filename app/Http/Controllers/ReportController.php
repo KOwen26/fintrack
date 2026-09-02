@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\AccountType;
 use App\Models\Account;
 use App\Services\ReportService;
 use Carbon\Carbon;
@@ -91,27 +90,6 @@ class ReportController extends Controller
             'contribution_split' => $data,
             'from' => $from->toDateString(),
             'to' => $to->toDateString(),
-        ]);
-    }
-
-    /**
-     * Credit Utilization — always live, only relevant for credit_card accounts.
-     */
-    public function creditUtilization(Account $account): Response
-    {
-        $this->authorize('view', $account);
-
-        abort_unless(
-            $account->type === AccountType::CreditCard,
-            422,
-            'Credit utilization is only available for credit card accounts.'
-        );
-
-        $data = $this->reportService->creditUtilization($account);
-
-        return Inertia::render('reports/credit-utilization', [
-            'account' => $account,
-            'credit_utilization' => $data,
         ]);
     }
 

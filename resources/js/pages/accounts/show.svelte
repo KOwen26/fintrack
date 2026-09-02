@@ -140,15 +140,6 @@
             });
         }
 
-        if (account.currency) {
-            rows.push({
-                icon: 'solar--dollar-minimalistic-bold-duotone',
-                label: 'Currency',
-                value: account.currency,
-                mono: false,
-            });
-        }
-
         rows.push({
             icon: 'solar--calendar-bold-duotone',
             label: 'Created',

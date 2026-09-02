@@ -2,12 +2,9 @@
 
 use App\Data\Report\CategoryLeakReportData;
 use App\Data\Report\ContributionSplitData;
-use App\Data\Report\CreditUtilizationData;
 use App\Data\Report\FixedVariableData;
 use App\Data\Report\TrendReportData;
 use App\Enums\AccountAccessType;
-use App\Enums\AccountType;
-use App\Enums\AlertLevel;
 use App\Events\TransactionSaved;
 use App\Models\Account;
 use App\Models\Category;
@@ -17,7 +14,6 @@ use App\Services\ReportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Facades\Event;
 
 uses(RefreshDatabase::class);
 
@@ -58,30 +54,6 @@ it('trend endpoint returns trend data', function (): void {
             ->component('reports/trend')
             ->has('trend')
             ->where('months', 6)
-        );
-});
-
-it('credit utilization endpoint is only accessible for credit card accounts', function (): void {
-    [$user, , $debitAccount] = createUserWithAccountAndHousehold(['type' => AccountType::DebitAccount->value]);
-
-    $this->actingAs($user)
-        ->get(route('reports.credit-utilization', $debitAccount))
-        ->assertStatus(422);
-});
-
-it('credit utilization endpoint renders for credit card accounts', function (): void {
-    [$user, , $account] = createUserWithAccountAndHousehold([
-        'type' => AccountType::CreditCard->value,
-        'credit_card_limit' => 10_000_000,
-        'initial_balance' => 10_000_000,
-    ]);
-
-    $this->actingAs($user)
-        ->get(route('reports.credit-utilization', $account))
-        ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->component('reports/credit-utilization')
-            ->has('credit_utilization')
         );
 });
 
@@ -211,32 +183,6 @@ it('contribution split returns member shares for joint accounts', function (): v
     // Owner contributed 60%
     $ownerRow = collect($result->members)->firstWhere('name', $owner->name);
     expect($ownerRow?->percentage)->toBe(60.0);
-});
-
-it('credit utilization calculates alert levels correctly', function (): void {
-    [$user, , $account] = createUserWithAccountAndHousehold([
-        'type' => AccountType::CreditCard->value,
-        'credit_card_limit' => 10_000_000,
-        'initial_balance' => 10_000_000,
-    ]);
-    $category = Category::factory()->create(['user_id' => $user->id]);
-
-    // Spend 8M → 80% utilization → high_risk
-    Transaction::factory()->create([
-        'account_id' => $account->id,
-        'created_by' => $user->id,
-        'category_id' => $category->id,
-        'type' => 'expense',
-        'amount' => 8_000_000,
-        'transaction_date' => Date::now()->startOfMonth(),
-    ]);
-
-    $service = resolve(ReportService::class);
-    $result = $service->creditUtilization($account);
-
-    expect($result)->toBeInstanceOf(CreditUtilizationData::class);
-    expect($result->utilization_pct)->toBe(80.0);
-    expect($result->alert_level)->toBe(AlertLevel::HighRisk);
 });
 
 it('fixed vs variable splits expenses by is_fixed_cost', function (): void {

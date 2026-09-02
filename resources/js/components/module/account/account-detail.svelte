@@ -58,12 +58,6 @@
         ],
     }: Props = $props();
 
-    // ── Prototype: credit card dummy data ──────────────────────
-    const creditLimit = 10000000;
-    const creditUsed = 3500000;
-    const dueDate = '2026-09-15';
-    const minPayment = 350000;
-
     // ── Derived state ─────────────────────────────────────────────
     const colorSlug = $derived(account.decorations?.color);
     const iconSlug = $derived(account.decorations?.icon);
@@ -187,15 +181,6 @@
                 icon: 'solar--users-group-two-rounded-bold-duotone',
                 label: 'Access Type',
                 value: account.access_type === 'personal' ? 'Personal' : 'Joint',
-                mono: false,
-            });
-        }
-
-        if (account.currency) {
-            rows.push({
-                icon: 'solar--dollar-minimalistic-bold-duotone',
-                label: 'Currency',
-                value: account.currency,
                 mono: false,
             });
         }
@@ -335,9 +320,6 @@
                         {/if}
                     </span>
                 </div>
-                <p style="color: rgba(255,255,255,0.35)" class="mt-1 text-[0.68rem]">
-                    {account.currency ?? 'IDR'}
-                </p>
             </div>
 
             <!-- Sparkline + account number row -->
@@ -489,75 +471,6 @@
             </div>
         </ResponsiveCard>
     {/if}
-
-    <!-- ════════════════════════════════════════════ -->
-    <!--  CREDIT CARD SECTION                       -->
-    <!-- ════════════════════════════════════════════ -->
-    <!-- {#if isCreditCard} -->
-    <ResponsiveCard class="space-y-0" contentClass="p-0">
-        <div class="px-5 pt-[18px] md:px-6">
-            <p class="text-[0.63rem] font-bold tracking-widest text-base-content/50 uppercase">
-                Credit Usage
-            </p>
-        </div>
-
-        <div class="px-5 pt-[14px] md:px-6">
-            <div class="mb-1 flex items-end justify-between">
-                <span class="text-[0.78rem] text-base-content/60">Used</span>
-                <div class="text-right">
-                    <span class="font-mono text-sm font-semibold text-error">
-                        {Formatter.currency(creditUsed, true)}
-                    </span>
-                    <span class="text-[0.75rem] text-base-content/50">
-                        / {Formatter.currency(creditLimit, true)}
-                    </span>
-                </div>
-            </div>
-
-            <div class="mt-2.5 h-2 overflow-hidden rounded-full bg-base-content/10">
-                <div
-                    style="width: {(creditUsed / creditLimit) * 100}%"
-                    class="h-full rounded-full bg-error transition-all">
-                </div>
-            </div>
-
-            <div class="mt-1.5 mb-3.5 flex justify-between">
-                <span class="text-[0.69rem] font-semibold text-error"
-                    >{((creditUsed / creditLimit) * 100).toFixed(1)}% used</span>
-                <span class="text-teal text-[0.69rem] font-semibold"
-                    >Available {Formatter.currency(creditLimit - creditUsed, true)}</span>
-            </div>
-        </div>
-
-        <hr class="mx-5 border-base-content/10 md:mx-6" />
-
-        <!-- Due date -->
-        <div class="flex items-center justify-between gap-3 px-5 py-3 md:px-6">
-            <span class="flex items-center gap-2 text-[0.8rem] text-base-content/60">
-                <i class="iconify size-3.5 text-base-content/50 solar--calendar-bold-duotone"></i>
-                Due Date
-            </span>
-            <span class="text-amber text-[0.85rem] font-semibold">
-                {DateTimeHelper.format(dueDate, 'date')}
-            </span>
-        </div>
-
-        <hr class="mx-5 border-base-content/10 md:mx-6" />
-
-        <!-- Min payment -->
-        <div class="flex items-center justify-between gap-3 px-5 py-3 pb-4 md:px-6">
-            <span class="flex items-center gap-2 text-[0.8rem] text-base-content/60">
-                <i
-                    class="iconify size-3.5 text-base-content/50 solar--dollar-minimalistic-bold-duotone"
-                ></i>
-                Min. Payment
-            </span>
-            <span class="font-mono text-[0.85rem] font-semibold">
-                {Formatter.currency(minPayment)}
-            </span>
-        </div>
-    </ResponsiveCard>
-    <!-- {/if} -->
 
     <!-- ════════════════════════════════════════════ -->
     <!--  ACCOUNT INFO                              -->

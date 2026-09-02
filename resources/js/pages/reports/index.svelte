@@ -92,13 +92,6 @@
             <h1 class="text-xl font-bold">Reports</h1>
             <p class="text-sm text-base-content/50">{account.name}</p>
         </div>
-        <Button
-            class="btn-sm"
-            color="light"
-            href={ReportController.creditUtilization.url({ account: account.id })}
-            variant="ghost">
-            <i class="iconify size-4 solar--pie-chart-bold-duotone"></i>
-        </Button>
     </div>
 
     <!-- Period nav -->
