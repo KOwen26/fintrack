@@ -45,6 +45,18 @@
         dark: '',
     };
 
+    const outlineColorVariants: Record<ColorVariant, string> = {
+        primary: '',
+        secondary: '',
+        accent: '',
+        success: '',
+        info: '',
+        warning: '',
+        error: '',
+        light: 'border-border',
+        dark: '',
+    };
+
     export const tvButtonVariants = tv({
         base: "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium outline-none transition-all focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         variants: {
@@ -89,7 +101,8 @@
     import type { Attachment } from 'svelte/attachments';
 
     import { inertia, router } from '@inertiajs/svelte';
-    import { twMerge } from 'tailwind-merge';
+
+    import { cn } from '@utilities/shadcn';
 
     let {
         class: className,
@@ -124,10 +137,10 @@
     };
 
     const buttonClass = $derived(
-        twMerge(
+        cn(
             'btn',
             colorVariants[color],
-            variant === 'outline' ? 'btn-outline' : '',
+            variant === 'outline' ? ['btn-outline', outlineColorVariants[color]] : '',
             variant === 'ghost' ? 'btn-ghost' : '',
             variant === 'link' ? ['btn-link', 'h-fit p-1', linkColorVariants[color]] : '',
             variant === 'soft' ? ['btn-soft', softColorVariants[color]] : '',

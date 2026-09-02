@@ -16,9 +16,17 @@
     import * as Sidebar from '@components/ui/atoms/sidebar';
     import Toaster from '@components/ui/toaster.svelte';
 
-    let { meta, backUrl = undefined, breadcrumbs = [], children, ...props }: RestProps = $props();
+    let {
+        meta,
+        backUrl = undefined,
+        breadcrumbs = [],
+        title: layoutTitle = undefined,
+        children,
+        ...props
+    }: RestProps = $props();
 
-    const title = $derived(page.props?.meta?.title || getTitleFromMenu(flatMenu));
+    // setLayoutProps({ title }) wins, then the shared meta title, then the active menu.
+    const title = $derived(layoutTitle ?? (page.props?.meta?.title || getTitleFromMenu(flatMenu)));
     const appName = import.meta.env.VITE_APP_NAME || page?.props?.meta?.app_name;
 
     useFlashToast();
@@ -49,7 +57,7 @@
 <Sidebar.Provider>
     <DashboardSidebar />
     <Sidebar.Inset>
-        <DashboardHeader {backUrl} breadcrumbs={breadcrumbItems} />
+        <DashboardHeader {backUrl} breadcrumbs={breadcrumbItems} {title} />
 
         <ErrorWrapper>
             <div class="flex h-full flex-col gap-6 p-3 md:p-5">

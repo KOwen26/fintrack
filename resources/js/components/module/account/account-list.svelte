@@ -37,7 +37,7 @@
     <div class={cn('grid gap-3', mode === 'list' ? 'grid-cols-1' : 'grid-cols-2')}>
         {#each accounts as account (account.id)}
             <Link href={AccountController.show.url({ account: account.id })}>
-                <AccountCard {account} hideActions hideEdit hideMask />
+                <AccountCard {account} hideActions hideEdit hideFooter />
             </Link>
         {/each}
     </div>

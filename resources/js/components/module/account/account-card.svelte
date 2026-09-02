@@ -9,21 +9,22 @@
 
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
+    import { cn } from '@utilities/shadcn';
 
-    import Button from '@components/ui/button.svelte';
+    import Link from '@components/ui/link.svelte';
 
     interface Props extends RestProps {
         account: App.Models.Account;
         hideActions?: boolean;
         hideEdit?: boolean;
-        hideMask?: boolean;
+        hideFooter?: boolean;
     }
 
     let {
         account,
         hideActions = false,
         hideEdit = false,
-        hideMask = false,
+        hideFooter = false,
         class: _class,
         children,
         ...props
@@ -94,14 +95,14 @@
     );
 </script>
 
-<!-- ════════════════════════════════════════════ -->
-<!--  HERO CARD                                  -->
-<!-- ════════════════════════════════════════════ -->
-<div class="overflow-hidden rounded-xl shadow-xs">
+<div class={cn('overflow-hidden rounded-xl shadow-xs', _class)}>
     <div
         style:background={bgColor}
         style:color={colorObj?.text_color}
-        class="relative min-h-38 overflow-hidden p-5 md:px-6 md:pb-5">
+        class={[
+            'relative min-h-36 overflow-hidden p-3 md:min-h-40 md:p-6',
+            'flex flex-col justify-around gap-3',
+        ]}>
         <!-- Decorative circles -->
         <div
             class="pointer-events-none absolute -top-12 -right-12 size-44 rounded-full bg-white/10">
@@ -138,7 +139,8 @@
                     {/if}
                 </div>
             </div>
-            {#if !hideMask}
+            {@render editButton()}
+            <!--
                 <button
                     class="flex size-8 cursor-pointer items-center justify-center rounded-lg border-none bg-white/10 transition-colors hover:bg-white/15"
                     aria-label="Toggle balance visibility"
@@ -149,16 +151,16 @@
                             : 'solar--eye-bold-duotone'}">
                     </i>
                 </button>
-            {/if}
+            -->
         </div>
 
         <!-- Balance -->
-        <div class="relative z-1 mt-4 md:mt-5">
+        <div class="relative z-1">
             <div
-                class="flex items-center gap-1.5 text-sm font-medium tracking-wider text-current/70 uppercase">
+                class="flex items-center gap-1.5 text-sm font-medium tracking-wide text-current/70 uppercase">
                 Current Balance
             </div>
-            <p class="mt-1 text-3xl font-bold tracking-tight text-current md:text-4xl lg:text-5xl">
+            <p class="text-2xl font-bold tracking-tight text-current md:text-4xl lg:text-5xl">
                 {#if balanceHidden}
                     ••••••
                 {:else}
@@ -171,7 +173,7 @@
         {#if !hideActions && quickActions.length > 0}
             <div
                 style="scrollbar-width: none; -ms-overflow-style: none;"
-                class="relative z-1 -mx-5 mt-5 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0">
+                class="relative z-1 -mx-5 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0">
                 <div class="flex gap-2 md:flex-wrap">
                     {#each quickActions as action (action.label)}
                         <button
@@ -187,29 +189,33 @@
     </div>
 
     <!-- Detail badges row — white background -->
-    {#if !hideEdit}
+    {#if !hideFooter}
         <div
             class="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-base-300 bg-card px-5 py-3 text-xs">
             {#if account?.account_number}
                 <span class="flex items-center gap-1">
-                    <i class="iconify size-3 text-base-content/60 solar--user-id-bold-duotone"></i>
-                    <span class="text-base-content/60">{account?.account_number}</span>
+                    <i class="iconify size-4 text-base-content/80 solar--user-id-line-duotone"></i>
+                    <span class="text-base-content/80">{account?.account_number}</span>
                 </span>
             {/if}
             {#if account.created_at}
                 <span class="flex items-center gap-1">
-                    <i class="iconify size-3 text-base-content/60 solar--calendar-bold-duotone"></i>
-                    <span class="text-base-content/60"
+                    <i class="iconify size-4 text-base-content/80 solar--calendar-line-duotone"></i>
+                    <span class="text-base-content/80"
                         >Since {DateTimeHelper.format(account.created_at, 'date')}</span>
                 </span>
             {/if}
-            <Button
-                class="ml-auto text-xs"
-                color="primary"
-                href={AccountController.edit.url({ account: account.id })}
-                variant="link">
-                Edit
-            </Button>
         </div>
     {/if}
 </div>
+
+{#snippet editButton()}
+    {#if !hideEdit}
+        <Link
+            class="inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-white/15 text-current transition-colors hover:bg-white/25 md:order-last md:ml-auto"
+            aria-label="Edit account"
+            href={AccountController.edit.url({ account: account.id })}>
+            <i class="iconify size-4 solar--pen-new-square-line-duotone"></i>
+        </Link>
+    {/if}
+{/snippet}

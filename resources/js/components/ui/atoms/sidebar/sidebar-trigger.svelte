@@ -35,8 +35,10 @@
     {...restProps}>
     <i
         class={twMerge(
-            'iconify size-5',
-            sidebar.open ? 'solar--sidebar-linear' : 'solar--sidebar-minimalistic-linear'
+            'iconify size-6',
+            sidebar.open
+                ? 'solar--hamburger-menu-line-duotone md:solar--sidebar-linear'
+                : 'solar--sidebar-minimalistic-linear'
         )}></i>
     <span class="sr-only">Toggle Sidebar</span>
 </Button>

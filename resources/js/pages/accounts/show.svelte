@@ -22,7 +22,7 @@
 
     let { account }: { account: App.Models.Account } = $props();
 
-    setLayoutProps({ backUrl: AccountController.index.url() });
+    setLayoutProps({ title: account?.name, backUrl: AccountController.index.url() });
 
     const providerName = $derived<string | undefined>(
         (account.provider as { name?: string } | null)?.name
@@ -176,9 +176,6 @@
 
 <DashboardPageHeader title="Account Detail">
     <div class="flex items-center gap-3">
-        <Button color="light" href={AccountController.index.url()} variant="outline">
-            <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
-        </Button>
         <div class="space-y-1.5">
             <h1 class="text-xl font-bold">{account.name}</h1>
         </div>
@@ -197,32 +194,27 @@
 
     {#snippet actions()}
         <Button
+            class="hidden md:inline-flex"
             color="light"
             href={AccountController.edit.url({ account: account.id })}
             variant="outline">
-            <i class="iconify size-4 solar--pen-bold-duotone"></i>
+            <i class="iconify size-4 solar--pen-line-duotone"></i>
             Edit
         </Button>
     {/snippet}
 </DashboardPageHeader>
 
 <div class="space-y-5">
-    <!-- ════════════════════════════════════════════ -->
-    <!--  HERO CARD                                  -->
-    <!-- ════════════════════════════════════════════ -->
     <AccountCard {account} />
 
     <!-- Toggle detail view -->
     <Button
-        class="w-full"
+        class="w-full hover:bg-white"
         color="light"
         onclick={() => (showDetail = !showDetail)}
         variant="outline">
-        <i
-            class="iconify size-4 {showDetail
-                ? 'solar--eye-closed-bold-duotone'
-                : 'solar--eye-bold-duotone'}"></i>
-        {showDetail ? 'Hide Details' : 'Show Details'}
+        <i class="iconify size-5 solar--hamburger-menu-linear"></i>
+        {showDetail ? 'Hide Account Details' : 'Show Account Details'}
     </Button>
 
     {#if showDetail}

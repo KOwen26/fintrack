@@ -8,26 +8,32 @@
     interface Props {
         backUrl?: string;
         breadcrumbs?: BreadcrumbItem[];
+        title?: string;
     }
 
-    let { backUrl = undefined, breadcrumbs = [] }: Props = $props();
+    let { backUrl = undefined, breadcrumbs = [], title = undefined }: Props = $props();
 </script>
 
 <header
-    class="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-base-300 bg-white text-base-content transition-[width,height] ease-linear">
-    <div class="flex items-center gap-2 px-4">
+    class="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-base-300 bg-white px-4 text-base-content transition-[width,height] ease-linear">
+    <div class="flex min-w-0 items-center gap-2">
         <div class="hidden items-center gap-2 md:flex">
             <Sidebar.Trigger class="-ml-1" />
             <div class="divider mx-0 divider-horizontal divide-base-300"></div>
         </div>
         {#if backUrl}
-            <Button class="size-8 p-1 btn-sm" color="secondary" href={backUrl} variant="ghost">
-                <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
+            <Button class="size-10 p-1 btn-sm" color="secondary" href={backUrl} variant="ghost">
+                <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
             </Button>
         {/if}
-        <Breadcrumbs items={breadcrumbs} />
+        {#if title}
+            <span class="truncate text-xl font-bold md:hidden">{title}</span>
+        {/if}
+        {#if breadcrumbs?.length}
+            <Breadcrumbs class="hidden md:flex" items={breadcrumbs} />
+        {/if}
     </div>
-    <div class="flex items-center gap-2 px-4">
+    <div class="flex items-center gap-2">
         <Sidebar.Trigger class="md:hidden" />
         {@render profileInfo()}
     </div>
