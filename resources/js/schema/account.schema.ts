@@ -96,9 +96,8 @@ export const accountSchema: DataSchema<App.Models.Account> = {
         label: 'Initial Balance',
         value: (data) => Number(data.initial_balance).toLocaleString('id-ID'),
         form: () => ({
-            type: 'masked-input',
+            type: 'currency-input',
             name: 'initial_balance',
-            inputProps: { maskPreset: 'currency' },
         }),
     },
     credit_card_limit: {

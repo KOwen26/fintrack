@@ -1,4 +1,5 @@
 import type { CheckboxProps } from '@components/ui/forms/checkbox.svelte';
+import type { CurrencyInputProps } from '@components/ui/forms/currency-input.svelte';
 import type { DateInputProps } from '@components/ui/forms/date-input.svelte';
 import type { FieldProps } from '@components/ui/forms/field.svelte';
 import type { FileInputProps } from '@components/ui/forms/file-input.svelte';
@@ -73,6 +74,11 @@ interface PhoneInputFieldProps extends BaseInputFieldProps {
     inputProps?: WithoutValue<PhoneInputProps>;
 }
 
+interface CurrencyInputFieldProps extends BaseInputFieldProps {
+    type: 'currency-input';
+    inputProps?: WithoutValue<CurrencyInputProps>;
+}
+
 interface TextareaFieldProps extends BaseInputFieldProps {
     type: 'textarea';
     inputProps?: WithoutValue<TextareaProps>;
@@ -141,6 +147,7 @@ export type FormGeneratorProps =
     | TextInputFieldProps
     | PasswordInputFieldProps
     | PhoneInputFieldProps
+    | CurrencyInputFieldProps
     | TextareaFieldProps
     | MaskedInputFieldProps
     | DateInputFieldProps

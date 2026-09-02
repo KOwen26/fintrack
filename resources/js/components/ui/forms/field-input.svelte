@@ -13,6 +13,7 @@
     import CategorySelect from './category-select.svelte';
     import CheckboxGroup from './checkbox-group.svelte';
     import Checkbox from './checkbox.svelte';
+    import CurrencyInput from './currency-input.svelte';
     import DateInput from './date-input.svelte';
     import Field from './field.svelte';
     import FileInput from './file-input.svelte';
@@ -61,6 +62,10 @@
         {@const inputProps = mapInputProps(restProps)}
 
         <PhoneInput bind:phone={value} {...inputProps} />
+    {:else if restProps.type === 'currency-input'}
+        {@const inputProps = mapInputProps(restProps)}
+
+        <CurrencyInput bind:value {...inputProps} />
     {:else if restProps.type === 'textarea'}
         {@const inputProps = mapInputProps(restProps)}
 
