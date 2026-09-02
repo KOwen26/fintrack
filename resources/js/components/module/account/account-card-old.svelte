@@ -51,7 +51,7 @@
 
         <div
             class="mt-2 flex items-center gap-1.5 border-t border-(--accent)/50 pt-2 text-xs text-base-content/50">
-            <i class="iconify size-4 ph--bank-bold"></i>
+            <i class="iconify size-4 solar--banknote-2-bold-duotone"></i>
             <span>{account.provider?.name ?? '-'}</span>
         </div>
     </div>

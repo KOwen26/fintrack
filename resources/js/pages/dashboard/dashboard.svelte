@@ -169,7 +169,7 @@
 <DashboardPageHeader class="hidden md:block" title="Dashboard">
     {#snippet actions()}
         <Button color="primary" href={TransactionController.create.url()}>
-            <i class="iconify size-4 ph--plus-bold"></i>
+            <i class="iconify size-4 solar--add-bold-duotone"></i>
             Add Transaction
         </Button>
     {/snippet}
@@ -375,7 +375,7 @@
                                             .icon}"></i>
                                 {:else}
                                     <i
-                                        class="iconify size-4 {style.color} ph--currency-circle-dollar-bold"
+                                        class="iconify size-4 {style.color} solar--dollar-minimalistic-bold-duotone"
                                     ></i>
                                 {/if}
                             </div>
@@ -442,7 +442,8 @@
                                         <i style="color: {decoColor.hex};" class="iconify size-4"
                                         ></i>
                                     {:else}
-                                        <i class="iconify size-4 text-base-content/50 ph--bank-bold"
+                                        <i
+                                            class="iconify size-4 text-base-content/50 solar--banknote-2-bold-duotone"
                                         ></i>
                                     {/if}
                                 </div>
@@ -459,7 +460,7 @@
                         href={AccountController.create.url()}>
                         <div class="text-center">
                             <i
-                                class="iconify mx-auto mb-1 size-5 text-base-content/50 ph--plus-bold"
+                                class="mx-auto mb-1 iconify size-5 text-base-content/50 solar--add-bold-duotone"
                             ></i>
                             <p class="text-xs font-medium text-base-content/50">Add Account</p>
                         </div>

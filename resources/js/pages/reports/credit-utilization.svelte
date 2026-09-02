@@ -31,7 +31,7 @@
             color="light"
             href={ReportController.index.url({ account: account.id })}
             variant="ghost">
-            <i class="iconify size-5 ph--arrow-left-bold"></i>
+            <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
         </Button>
         <div>
             <h1 class="text-xl font-bold">Credit Utilization</h1>

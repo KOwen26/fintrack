@@ -40,7 +40,7 @@
             color="warning"
             onclick={() => (showArchiveConfirm = true)}
             variant="outline">
-            <i class="iconify size-4 ph--archive-bold"></i>
+            <i class="iconify size-4 solar--archive-bold-duotone"></i>
             Archive Account
         </Button>
         <Button
@@ -48,7 +48,7 @@
             color="error"
             onclick={() => (showDeleteConfirm = true)}
             variant="outline">
-            <i class="iconify size-4 ph--trash-bold"></i>
+            <i class="iconify size-4 solar--trash-bin-2-bold-duotone"></i>
             Delete Account
         </Button>
     </div>

@@ -41,13 +41,13 @@
         <Dialog.Overlay
             class={[
                 'fixed inset-0 z-50 bg-black/75',
-                'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+                'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
             ]} />
         <Dialog.Content
             class={[
                 'fixed top-[50%] left-[50%] z-50',
-                'shadow-popover w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] overflow-clip rounded-xl bg-white outline-hidden sm:max-w-[480px] md:w-full',
-                'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
+                'w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] overflow-clip rounded-xl bg-white shadow-popover outline-hidden sm:max-w-[480px] md:w-full',
+                'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
             ]}
             {...contentProps}>
             <Dialog.Title>
@@ -70,7 +70,7 @@
 {#snippet headerCloseButton()}
     <Dialog.Close>
         <Button class="btn-square" color="light" variant="outline">
-            <i class="iconify ph--x-bold"></i>
+            <i class="iconify solar--close-bold-duotone"></i>
         </Button>
     </Dialog.Close>
 {/snippet}

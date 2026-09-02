@@ -25,7 +25,7 @@
     <EmptyItemPlaceholder
         ctaLabel="Create your first account"
         ctaUrl={AccountController.create.url()}
-        icon="ph--wallet-bold"
+        icon="solar--wallet-bold-duotone"
         label="No accounts yet" />
 {:else}
     <ToggleableGrid class="mb-3" bind:mode>

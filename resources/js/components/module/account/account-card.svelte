@@ -36,11 +36,11 @@
 
     // ── Type-driven defaults (icon source: decoration first, then type) ──
     const typeIcons: Record<string, string> = {
-        [AccountType.DebitAccount]: 'ph--bank-bold',
-        [AccountType.CreditCard]: 'ph--credit-card-bold',
-        [AccountType.CashWallet]: 'ph--wallet-bold',
-        [AccountType.EWallet]: 'ph--device-mobile-bold',
-        [AccountType.Investment]: 'ph--chart-line-bold',
+        [AccountType.DebitAccount]: 'solar--banknote-2-bold-duotone',
+        [AccountType.CreditCard]: 'solar--card-bold-duotone',
+        [AccountType.CashWallet]: 'solar--wallet-bold-duotone',
+        [AccountType.EWallet]: 'solar--smartphone-bold-duotone',
+        [AccountType.Investment]: 'solar--graph-bold-duotone',
     };
 
     const typeLabels: Record<string, string> = {
@@ -51,7 +51,9 @@
         [AccountType.Investment]: 'Investment',
     };
 
-    const heroIcon = $derived<string>(iconObj?.value ?? typeIcons[account.type] ?? 'ph--bank-bold');
+    const heroIcon = $derived<string>(
+        iconObj?.value ?? typeIcons[account.type] ?? 'solar--banknote-2-bold-duotone'
+    );
     const typeLabel = $derived(typeLabels[account.type] ?? account.type);
 
     const providerName = $derived<string | undefined>(
@@ -73,10 +75,10 @@
     }
 
     const actionRegistry: Record<string, ActionItem> = {
-        transact: { icon: 'ph--arrows-left-right-bold', label: 'Transact' },
-        transfer: { icon: 'ph--arrow-up-right-bold', label: 'Transfer' },
-        report: { icon: 'ph--chart-bar-bold', label: 'Report' },
-        connect: { icon: 'ph--link-bold', label: 'Connect' },
+        transact: { icon: 'solar--transfer-horizontal-bold-duotone', label: 'Transact' },
+        transfer: { icon: 'solar--arrow-right-up-line-duotone', label: 'Transfer' },
+        report: { icon: 'solar--chart-2-bold-duotone', label: 'Report' },
+        connect: { icon: 'solar--link-bold-duotone', label: 'Connect' },
     };
 
     const accountActions: Record<string, string[]> = {
@@ -143,8 +145,8 @@
                     onclick={toggleBalance}>
                     <i
                         class="iconify size-4 text-white/80 {balanceHidden
-                            ? 'ph--eye-slash-bold'
-                            : 'ph--eye-bold'}">
+                            ? 'solar--eye-closed-bold-duotone'
+                            : 'solar--eye-bold-duotone'}">
                     </i>
                 </button>
             {/if}
@@ -190,13 +192,13 @@
             class="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-base-300 bg-card px-5 py-3 text-xs">
             {#if account?.account_number}
                 <span class="flex items-center gap-1">
-                    <i class="iconify size-3 text-base-content/60 ph--identification-card-bold"></i>
+                    <i class="iconify size-3 text-base-content/60 solar--user-id-bold-duotone"></i>
                     <span class="text-base-content/60">{account?.account_number}</span>
                 </span>
             {/if}
             {#if account.created_at}
                 <span class="flex items-center gap-1">
-                    <i class="iconify size-3 text-base-content/60 ph--calendar-bold"></i>
+                    <i class="iconify size-3 text-base-content/60 solar--calendar-bold-duotone"></i>
                     <span class="text-base-content/60"
                         >Since {DateTimeHelper.format(account.created_at, 'date')}</span>
                 </span>

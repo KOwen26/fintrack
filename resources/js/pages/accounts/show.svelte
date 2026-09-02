@@ -115,7 +115,7 @@
     const infoRows = $derived.by<InfoRow[]>(() => {
         const rows: InfoRow[] = [
             {
-                icon: 'ph--identification-badge-bold',
+                icon: 'solar--user-id-bold-duotone',
                 label: 'Account Type',
                 value: account.type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
                 mono: false,
@@ -124,7 +124,7 @@
 
         if (providerName) {
             rows.push({
-                icon: 'ph--building-bold',
+                icon: 'solar--buildings-bold-duotone',
                 label: 'Provider',
                 value: providerName,
                 mono: false,
@@ -133,7 +133,7 @@
 
         if (account.access_type) {
             rows.push({
-                icon: 'ph--users-three-bold',
+                icon: 'solar--users-group-two-rounded-bold-duotone',
                 label: 'Access Type',
                 value: account.access_type === 'personal' ? 'Personal' : 'Joint',
                 mono: false,
@@ -142,7 +142,7 @@
 
         if (account.currency) {
             rows.push({
-                icon: 'ph--currency-circle-dollar-bold',
+                icon: 'solar--dollar-minimalistic-bold-duotone',
                 label: 'Currency',
                 value: account.currency,
                 mono: false,
@@ -150,7 +150,7 @@
         }
 
         rows.push({
-            icon: 'ph--calendar-bold',
+            icon: 'solar--calendar-bold-duotone',
             label: 'Created',
             value: DateTimeHelper.format(account.created_at, 'date'),
             mono: false,
@@ -177,7 +177,7 @@
 <DashboardPageHeader title="Account Detail">
     <div class="flex items-center gap-3">
         <Button color="light" href={AccountController.index.url()} variant="outline">
-            <i class="iconify size-5 ph--arrow-left-bold"></i>
+            <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
         </Button>
         <div class="space-y-1.5">
             <h1 class="text-xl font-bold">{account.name}</h1>
@@ -200,7 +200,7 @@
             color="light"
             href={AccountController.edit.url({ account: account.id })}
             variant="outline">
-            <i class="iconify size-4 ph--pencil-simple-bold"></i>
+            <i class="iconify size-4 solar--pen-bold-duotone"></i>
             Edit
         </Button>
     {/snippet}
@@ -218,7 +218,10 @@
         color="light"
         onclick={() => (showDetail = !showDetail)}
         variant="outline">
-        <i class="iconify size-4 {showDetail ? 'ph--eye-slash-bold' : 'ph--eye-bold'}"></i>
+        <i
+            class="iconify size-4 {showDetail
+                ? 'solar--eye-closed-bold-duotone'
+                : 'solar--eye-bold-duotone'}"></i>
         {showDetail ? 'Hide Details' : 'Show Details'}
     </Button>
 
@@ -299,8 +302,8 @@
                                 <div class="flex items-center gap-2">
                                     <i
                                         class="iconify size-4 {categoryOpen
-                                            ? 'ph--caret-up-bold'
-                                            : 'ph--caret-down-bold'}"></i>
+                                            ? 'solar--alt-arrow-up-line-duotone'
+                                            : 'solar--alt-arrow-down-line-duotone'}"></i>
                                 </div>
                             </Collapsible.Trigger>
                         {/snippet}
@@ -359,8 +362,8 @@
                             </p>
                             <i
                                 class="iconify size-4 {transactionsOpen
-                                    ? 'ph--caret-up-bold'
-                                    : 'ph--caret-down-bold'}"></i>
+                                    ? 'solar--alt-arrow-up-line-duotone'
+                                    : 'solar--alt-arrow-down-line-duotone'}"></i>
                         </Collapsible.Trigger>
                     {/snippet}
                     <Collapsible.Content>

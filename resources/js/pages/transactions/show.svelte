@@ -42,7 +42,7 @@
             color="light"
             // href={TransactionController.edit.url({ transaction: transaction.id })}
             variant="outline">
-            <i class="iconify size-5 ph--pencil-simple-bold"></i>
+            <i class="iconify size-5 solar--pen-bold-duotone"></i>
             Edit
         </Button>
     {/snippet}
@@ -52,13 +52,13 @@
     <TransactionDetail {transaction} />
 
     <!-- Action Buttons -->
-    <div class="flex gap-3 mt-4">
+    <div class="mt-4 flex gap-3">
         <Button
             class="flex-1"
             color="light"
             // href={TransactionController.edit.url({ transaction: transaction.id })}
             variant="outline">
-            <i class="iconify size-4 ph--pencil-simple-bold"></i>
+            <i class="iconify size-4 solar--pen-bold-duotone"></i>
             Edit
         </Button>
         <Button
@@ -66,7 +66,7 @@
             color="error"
             onclick={() => (showDeleteConfirm = true)}
             variant="outline">
-            <i class="iconify size-4 ph--trash-bold"></i>
+            <i class="iconify size-4 solar--trash-bin-2-bold-duotone"></i>
             Delete
         </Button>
     </div>

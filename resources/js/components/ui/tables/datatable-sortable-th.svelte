@@ -47,11 +47,11 @@
                 {title}
             </span>
             {#if column.getIsSorted() === 'desc'}
-                <i class="iconify ph--arrow-down-duotone size-4"></i>
+                <i class="iconify size-4 solar--arrow-down-line-duotone"></i>
             {:else if column.getIsSorted() === 'asc'}
-                <i class="iconify ph--arrow-up-duotone size-4"></i>
+                <i class="iconify size-4 solar--arrow-up-line-duotone"></i>
             {:else}
-                <i class="iconify ph--caret-up-down-duotone size-4"></i>
+                <i class="iconify size-4 solar--sort-vertical-line-duotone"></i>
             {/if}
         </Button>
     </div>

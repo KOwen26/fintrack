@@ -19,11 +19,15 @@
         App.Enums.AccountAccessType,
         { label: string; color: ColorVariant; icon: string }
     > = {
-        [AccountAccessType.Personal]: { label: 'Personal', color: 'light', icon: 'ph--user-bold' },
+        [AccountAccessType.Personal]: {
+            label: 'Personal',
+            color: 'light',
+            icon: 'solar--user-bold-duotone',
+        },
         [AccountAccessType.Joint]: {
             label: 'Joint',
             color: 'accent',
-            icon: 'ph--users-three-bold',
+            icon: 'solar--users-group-two-rounded-bold-duotone',
         },
     };
 
@@ -31,7 +35,7 @@
 </script>
 
 <Badge
-    class={cn(['gap-1 px-2.5', icon === 'only' && 'px-0.5 size-6'])}
+    class={cn(['gap-1 px-2.5', icon === 'only' && 'size-6 px-0.5'])}
     color={badge.color}
     variant="soft">
     <i class="iconify size-3 {badge.icon} {icon === 'hide' ? 'hidden' : ''}"></i>

@@ -35,7 +35,7 @@
 <Sidebar.Root {collapsible} side={resolvedSide} {...restProps}>
     <Sidebar.Header>
         <div class="p-2">
-            <i class="iconify ph--map-trifold-duotone"></i>
+            <i class="iconify solar--map-line-duotone"></i>
         </div>
     </Sidebar.Header>
     <Sidebar.Content>
@@ -67,7 +67,7 @@
                                 <span class="truncate font-medium">{user.name}</span>
                                 <span class="truncate text-xs">{user.email}</span>
                             </div>
-                            <i class="ml-auto iconify size-4 ph--caret-up-down-duotone"></i>
+                            <i class="ml-auto iconify size-4 solar--sort-vertical-line-duotone"></i>
                         </Sidebar.MenuButton>
                     {/snippet}
                 </DropdownMenu.Trigger>
@@ -93,28 +93,28 @@
                     <DropdownMenu.Separator />
                     <DropdownMenu.Group>
                         <DropdownMenu.Item>
-                            <i class="iconify ph--sparkle-duotone"></i>
+                            <i class="iconify solar--star-shine-line-duotone"></i>
                             Upgrade to Pro
                         </DropdownMenu.Item>
                     </DropdownMenu.Group>
                     <DropdownMenu.Separator />
                     <DropdownMenu.Group>
                         <DropdownMenu.Item>
-                            <i class="iconify ph--seal-check-duotone"></i>
+                            <i class="iconify solar--verified-check-line-duotone"></i>
                             Account
                         </DropdownMenu.Item>
                         <DropdownMenu.Item>
-                            <i class="iconify ph--credit-card-duotone"></i>
+                            <i class="iconify solar--card-line-duotone"></i>
                             Billing
                         </DropdownMenu.Item>
                         <DropdownMenu.Item>
-                            <i class="iconify ph--bell-duotone"></i>
+                            <i class="iconify solar--bell-line-duotone"></i>
                             Notifications
                         </DropdownMenu.Item>
                     </DropdownMenu.Group>
                     <DropdownMenu.Separator />
                     <DropdownMenu.Item onclick={handleLogout}>
-                        <i class="iconify ph--sign-out-duotone"></i>
+                        <i class="iconify solar--logout-line-duotone"></i>
                         Log out
                     </DropdownMenu.Item>
                 </DropdownMenu.Content>

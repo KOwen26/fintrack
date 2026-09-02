@@ -71,7 +71,7 @@
             color="light"
             href={ReportController.index.url({ account: account.id })}
             variant="ghost">
-            <i class="iconify size-5 ph--arrow-left-bold"></i>
+            <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
         </Button>
         <div>
             <h1 class="text-xl font-bold">Fixed vs Variable</h1>
@@ -82,26 +82,26 @@
     <!-- Period nav -->
     <div class="mb-4 flex items-center justify-between rounded-xl bg-base-200 px-3 py-2">
         <Button
-            class="btn-xs btn-circle"
+            class="btn-circle btn-xs"
             color="light"
             onclick={() => navigatePeriod('prev')}
             variant="ghost">
-            <i class="iconify size-4 ph--caret-left-bold"></i>
+            <i class="iconify size-4 solar--alt-arrow-left-line-duotone"></i>
         </Button>
         <span class="text-sm font-medium">{periodLabel}</span>
         <Button
-            class="btn-xs btn-circle"
+            class="btn-circle btn-xs"
             color="light"
             onclick={() => navigatePeriod('next')}
             variant="ghost">
-            <i class="iconify size-4 ph--caret-right-bold"></i>
+            <i class="iconify size-4 solar--alt-arrow-right-line-duotone"></i>
         </Button>
     </div>
 
     {#if grandTotal === 0}
         <div
             class="flex flex-col items-center justify-center py-16 text-center text-base-content/50">
-            <i class="iconify mb-3 size-12 ph--sliders-horizontal-bold"></i>
+            <i class="mb-3 iconify size-12 solar--tuning-2-bold-duotone"></i>
             <p class="font-semibold">No expense data</p>
             <p class="mt-1 text-sm">No expense or fee transactions found for this period.</p>
         </div>
@@ -134,7 +134,7 @@
         </Card>
 
         <!-- Stats -->
-        <div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="mb-4 grid grid-cols-2 gap-3">
             <Card>
                 <p class="text-xs text-base-content/50">Fixed costs</p>
                 <p class="font-mono font-bold text-error">

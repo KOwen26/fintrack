@@ -21,24 +21,24 @@ export const accountAccessTypeOptions = [
         value: AccountAccessType.Personal,
         label: 'Personal',
         description: 'Solo ownership',
-        icon: 'ph--user-bold',
+        icon: 'solar--user-bold-duotone',
     },
     {
         value: AccountAccessType.Joint,
         label: 'Joint',
         description: 'Shared access',
-        icon: 'ph--users-bold',
+        icon: 'solar--users-group-two-rounded-bold-duotone',
     },
 ];
 
 export const iconForAccountType = (type: string): string =>
     ({
-        [AccountType.DebitAccount]: 'bank-bold',
-        [AccountType.CreditCard]: 'credit-card-bold',
-        [AccountType.CashWallet]: 'money-bold',
-        [AccountType.EWallet]: 'device-mobile-bold',
-        [AccountType.Investment]: 'chart-line-bold',
-    })[type] ?? 'wallet-bold';
+        [AccountType.DebitAccount]: 'banknote-2',
+        [AccountType.CreditCard]: 'card',
+        [AccountType.CashWallet]: 'money-bag',
+        [AccountType.EWallet]: 'smartphone',
+        [AccountType.Investment]: 'graph',
+    })[type] ?? 'wallet';
 
 export const accountSchema: DataSchema<App.Models.Account> = {
     name: {

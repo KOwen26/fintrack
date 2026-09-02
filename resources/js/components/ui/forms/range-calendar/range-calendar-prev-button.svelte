@@ -19,7 +19,7 @@
 </script>
 
 {#snippet Fallback()}
-    <i class="iconify ph--caret-left-duotone size-4"></i>
+    <i class="iconify size-4 solar--alt-arrow-left-line-duotone"></i>
 {/snippet}
 
 <RangeCalendarPrimitive.PrevButton

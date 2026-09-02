@@ -97,26 +97,26 @@
             color="light"
             href={ReportController.creditUtilization.url({ account: account.id })}
             variant="ghost">
-            <i class="iconify size-4 ph--chart-pie-bold"></i>
+            <i class="iconify size-4 solar--pie-chart-bold-duotone"></i>
         </Button>
     </div>
 
     <!-- Period nav -->
     <div class="mb-4 flex items-center justify-between rounded-xl bg-base-200 px-3 py-2">
         <Button
-            class="btn-xs btn-circle"
+            class="btn-circle btn-xs"
             color="light"
             onclick={() => navigatePeriod('prev')}
             variant="ghost">
-            <i class="iconify size-4 ph--caret-left-bold"></i>
+            <i class="iconify size-4 solar--alt-arrow-left-line-duotone"></i>
         </Button>
         <span class="text-sm font-medium">{periodLabel}</span>
         <Button
-            class="btn-xs btn-circle"
+            class="btn-circle btn-xs"
             color="light"
             onclick={() => navigatePeriod('next')}
             variant="ghost">
-            <i class="iconify size-4 ph--caret-right-bold"></i>
+            <i class="iconify size-4 solar--alt-arrow-right-line-duotone"></i>
         </Button>
     </div>
 
@@ -189,10 +189,10 @@
                 query: { from, to },
             })}>
             <div class="flex items-center gap-2">
-                <i class="iconify size-5 ph--sliders-horizontal-bold text-secondary"></i>
+                <i class="iconify size-5 text-secondary solar--tuning-2-bold-duotone"></i>
                 Fixed vs Variable
             </div>
-            <i class="iconify size-4 ph--caret-right-bold text-base-content/30"></i>
+            <i class="iconify size-4 text-base-content/30 solar--alt-arrow-right-line-duotone"></i>
         </a>
 
         <a
@@ -202,10 +202,11 @@
                 query: { from, to },
             })}>
             <div class="flex items-center gap-2">
-                <i class="iconify size-5 ph--users-bold text-accent"></i>
+                <i class="iconify size-5 text-accent solar--users-group-two-rounded-bold-duotone"
+                ></i>
                 Contribution Split
             </div>
-            <i class="iconify size-4 ph--caret-right-bold text-base-content/30"></i>
+            <i class="iconify size-4 text-base-content/30 solar--alt-arrow-right-line-duotone"></i>
         </a>
     </div>
 </div>

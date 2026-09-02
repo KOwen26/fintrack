@@ -19,7 +19,7 @@
     <div
         style="background: var(--color-base-200);"
         class="mb-6 flex size-16 items-center justify-center rounded-2xl">
-        <i class="iconify size-8 text-base-content/40 ph--bank-bold"></i>
+        <i class="iconify size-8 text-base-content/40 solar--banknote-2-bold-duotone"></i>
     </div>
 
     <h3 class="mb-2 text-xl font-semibold text-base-content">Welcome to FinTrack</h3>
@@ -29,7 +29,7 @@
     </p>
 
     <Button color="primary" href={ctaUrl}>
-        <i class="iconify size-5 ph--plus-bold"></i>
+        <i class="iconify size-5 solar--add-bold-duotone"></i>
         Create Account
     </Button>
 </Card>

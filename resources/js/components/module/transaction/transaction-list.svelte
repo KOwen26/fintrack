@@ -411,11 +411,11 @@
 
     <!-- ── FILTER CHIPS ─────────────────────────────────────── -->
     <div class="flex items-center gap-2">
-        <div class="flex flex-1 gap-1.5 overflow-x-auto scrollbar-none">
+        <div class="flex flex-1 scrollbar-none gap-1.5 overflow-x-auto">
             {#each filterChips as { kind, label, active }, i (i)}
                 <button
                     class={cn(
-                        'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border-1.5 px-3 py-1.5 font-sans text-xs font-semibold transition-all duration-150',
+                        'border-1.5 inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 font-sans text-xs font-semibold whitespace-nowrap transition-all duration-150',
                         active
                             ? 'border-primary bg-primary text-primary-content'
                             : 'border-base-content/10 bg-base-100 text-base-content/60 hover:border-primary hover:text-primary'
@@ -439,7 +439,7 @@
         <!-- Sort button (standalone) -->
         <button
             class={cn(
-                'flex size-9 shrink-0 items-center justify-center rounded-xl border-1.5 transition-all duration-150',
+                'border-1.5 flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150',
                 sortOrder !== 'newest'
                     ? 'border-primary bg-primary text-primary-content'
                     : 'border-base-content/10 bg-base-100 text-base-content/60 hover:border-primary'
@@ -481,7 +481,7 @@
             <div class="flex">
                 <div class="flex-1 space-y-1 px-4 py-3.5">
                     <div
-                        class="flex items-center gap-1 text-[0.64rem] font-bold uppercase tracking-wider text-base-content/40">
+                        class="flex items-center gap-1 text-[0.64rem] font-bold tracking-wider text-base-content/40 uppercase">
                         <span class="text-success">&#8593;</span> Masuk
                     </div>
                     <div class="font-mono text-sm font-medium text-success">
@@ -490,7 +490,7 @@
                 </div>
                 <div class="flex-1 space-y-1 border-l border-base-content/10 px-4 py-3.5">
                     <div
-                        class="flex items-center gap-1 text-[0.64rem] font-bold uppercase tracking-wider text-base-content/40">
+                        class="flex items-center gap-1 text-[0.64rem] font-bold tracking-wider text-base-content/40 uppercase">
                         <span class="text-error">&#8595;</span> Keluar
                     </div>
                     <div class="font-mono text-sm font-medium text-error">
@@ -499,7 +499,7 @@
                 </div>
                 <div class="flex-1 space-y-1 border-l border-base-content/10 px-4 py-3.5">
                     <div
-                        class="text-[0.64rem] font-bold uppercase tracking-wider text-base-content/40">
+                        class="text-[0.64rem] font-bold tracking-wider text-base-content/40 uppercase">
                         &#8645; Net
                     </div>
                     <div
@@ -529,13 +529,13 @@
             </p>
             {#if activeFilters.length > 0 || searchQuery}
                 <button
-                    class="btn btn-primary btn-sm mt-4 rounded-full px-5 font-semibold normal-case"
+                    class="btn mt-4 rounded-full px-5 font-semibold normal-case btn-primary btn-sm"
                     onclick={resetAllFilters}>
                     Reset semua filter
                 </button>
             {:else}
                 <Link
-                    class="btn btn-primary btn-sm mt-4 rounded-full px-5 font-semibold normal-case"
+                    class="btn mt-4 rounded-full px-5 font-semibold normal-case btn-primary btn-sm"
                     href={TransactionController.create.url()}>
                     Tambah transaksi
                 </Link>
@@ -583,10 +583,10 @@
                                             'iconify size-4',
                                             txn.type === TransactionType.Income ||
                                                 txn.type === TransactionType.TransferIn
-                                                ? 'ph--arrow-up-bold'
+                                                ? 'solar--arrow-up-line-duotone'
                                                 : txn.type === TransactionType.Expense
-                                                  ? 'ph--arrow-down-bold'
-                                                  : 'ph--arrows-left-right-bold',
+                                                  ? 'solar--arrow-down-line-duotone'
+                                                  : 'solar--transfer-horizontal-bold-duotone',
                                             s.color
                                         )}></i>
                                 </div>
@@ -620,7 +620,7 @@
         <!-- Load more -->
         {#if !allLoaded}
             <button
-                class="mx-0 mb-0 mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-base-100 px-4 py-3.5 font-sans text-sm font-semibold text-primary shadow-xs transition-colors duration-150 hover:bg-primary/10"
+                class="mx-0 mt-2 mb-0 flex w-full items-center justify-center gap-2 rounded-2xl bg-base-100 px-4 py-3.5 font-sans text-sm font-semibold text-primary shadow-xs transition-colors duration-150 hover:bg-primary/10"
                 onclick={loadMore}>
                 <svg
                     class="size-3.5"
@@ -649,7 +649,7 @@
 
             <!-- Header -->
             <div
-                class="flex items-center justify-between border-b border-base-content/10 px-5 pb-3 pt-4">
+                class="flex items-center justify-between border-b border-base-content/10 px-5 pt-4 pb-3">
                 <span class="text-sm font-bold text-base-content">{sheetTitle}</span>
                 <button
                     class="flex size-7 items-center justify-center rounded-lg bg-base-200 text-base-content/60"
@@ -715,7 +715,7 @@
                                     ? getDecorationColor(acct.decorations.color)?.value
                                     : 'var(--color-base-content/60)'}
                                 class="flex size-9 shrink-0 items-center justify-center rounded-xl text-base">
-                                <i class="iconify size-4 ph--bank-bold"></i>
+                                <i class="iconify size-4 solar--banknote-2-bold-duotone"></i>
                             </div>
                             <div class="flex-1">
                                 <div class="text-sm font-semibold text-base-content">
@@ -737,9 +737,9 @@
                     {/each}
                 {:else if sheetKind === 'category'}
                     <!-- Category filter -->
-                    <div class="flex items-center justify-between px-5 pb-1 pt-3">
+                    <div class="flex items-center justify-between px-5 pt-3 pb-1">
                         <span
-                            class="text-[0.65rem] font-bold uppercase tracking-widest text-base-content/40">
+                            class="text-[0.65rem] font-bold tracking-widest text-base-content/40 uppercase">
                             {tCategoryIds.length > 0
                                 ? `${tCategoryIds.length} dipilih`
                                 : 'Semua kategori'}
@@ -757,7 +757,7 @@
                             {@const selected = tCategoryIds.includes(cat.id)}
                             <button
                                 class={cn(
-                                    'flex flex-col items-center gap-1.5 rounded-2xl border-1.5 px-2 py-3 font-sans transition-all duration-140',
+                                    'border-1.5 flex flex-col items-center gap-1.5 rounded-2xl px-2 py-3 font-sans transition-all duration-140',
                                     selected
                                         ? 'border-info bg-info/10'
                                         : 'border-base-content/10 bg-transparent hover:border-primary'
@@ -768,11 +768,11 @@
                                         ? getDecorationColor(cat.decorations.color)?.value
                                         : undefined}
                                     class="text-lg">
-                                    <i class="iconify size-5 ph--tag-bold"></i>
+                                    <i class="iconify size-5 solar--tag-bold-duotone"></i>
                                 </div>
                                 <span
                                     class={cn(
-                                        'text-center text-[0.67rem] font-semibold leading-tight',
+                                        'text-center text-[0.67rem] leading-tight font-semibold',
                                         selected ? 'text-info' : 'text-base-content/60'
                                     )}>
                                     {cat.name}
@@ -866,9 +866,9 @@
             </div>
 
             <!-- Footer -->
-            <div class="border-t border-base-content/10 px-5 pb-8 pt-3">
+            <div class="border-t border-base-content/10 px-5 pt-3 pb-8">
                 <button
-                    class="btn btn-primary btn-block rounded-2xl font-bold normal-case"
+                    class="btn btn-block rounded-2xl font-bold normal-case btn-primary"
                     onclick={applyFilter}>
                     Terapkan Filter
                 </button>

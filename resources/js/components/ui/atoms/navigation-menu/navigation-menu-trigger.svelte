@@ -27,6 +27,6 @@
     {@render children?.()}
 
     <i
-        class="iconify ph--caret-down-duotone relative top-[1px] ml-1 size-3 transition duration-300 group-data-[state=open]:rotate-180"
+        class="relative top-[1px] ml-1 iconify size-3 transition duration-300 solar--alt-arrow-down-line-duotone group-data-[state=open]:rotate-180"
         aria-hidden="true"></i>
 </NavigationMenuPrimitive.Trigger>

@@ -36,7 +36,7 @@
     <i
         class={twMerge(
             'iconify size-5',
-            sidebar.open ? 'ph--sidebar-simple-bold' : 'ph--sidebar-bold'
+            sidebar.open ? 'solar--sidebar-linear' : 'solar--sidebar-minimalistic-linear'
         )}></i>
     <span class="sr-only">Toggle Sidebar</span>
 </Button>

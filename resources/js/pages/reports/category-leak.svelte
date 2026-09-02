@@ -65,7 +65,7 @@
             color="light"
             href={ReportController.index.url({ account: account.id })}
             variant="ghost">
-            <i class="iconify size-5 ph--arrow-left-bold"></i>
+            <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
         </Button>
         <div>
             <h1 class="text-xl font-bold">Category Breakdown</h1>
@@ -76,19 +76,19 @@
     <!-- Period nav -->
     <div class="mb-4 flex items-center justify-between rounded-xl bg-base-200 px-3 py-2">
         <Button
-            class="btn-xs btn-circle"
+            class="btn-circle btn-xs"
             color="light"
             onclick={() => navigatePeriod('prev')}
             variant="ghost">
-            <i class="iconify size-4 ph--caret-left-bold"></i>
+            <i class="iconify size-4 solar--alt-arrow-left-line-duotone"></i>
         </Button>
         <span class="text-sm font-medium">{periodLabel}</span>
         <Button
-            class="btn-xs btn-circle"
+            class="btn-circle btn-xs"
             color="light"
             onclick={() => navigatePeriod('next')}
             variant="ghost">
-            <i class="iconify size-4 ph--caret-right-bold"></i>
+            <i class="iconify size-4 solar--alt-arrow-right-line-duotone"></i>
         </Button>
     </div>
 

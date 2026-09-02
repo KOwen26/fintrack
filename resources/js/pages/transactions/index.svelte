@@ -26,7 +26,7 @@
 <DashboardPageHeader title="Transactions">
     {#snippet actions()}
         <Button color="primary" href={TransactionController.create.url()}>
-            <i class="iconify size-5 ph--plus-bold"></i>
+            <i class="iconify size-5 solar--add-bold-duotone"></i>
             Add
         </Button>
     {/snippet}
@@ -36,7 +36,7 @@
     <TransactionList transactions={transactions.data} />
 
     {#if transactions.last_page > 1}
-        <div class="mt-4 flex items-center justify-center gap-1 flex-wrap">
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-1">
             {#each transactions.links as link (link.label)}
                 {#if link.url}
                     <Link
@@ -46,7 +46,7 @@
                         {link.label}
                     </Link>
                 {:else}
-                    <span class="btn btn-xs btn-disabled">{link.label}</span>
+                    <span class="btn btn-disabled btn-xs">{link.label}</span>
                 {/if}
             {/each}
         </div>

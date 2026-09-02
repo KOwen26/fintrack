@@ -58,7 +58,7 @@
             color="light"
             href={ReportController.index.url({ account: account.id })}
             variant="ghost">
-            <i class="iconify size-5 ph--arrow-left-bold"></i>
+            <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
         </Button>
         <div>
             <h1 class="text-xl font-bold">Income vs Expense</h1>
@@ -70,7 +70,7 @@
     <div class="mb-4 flex gap-2">
         {#each [3, 6, 12] as m (m)}
             <Button
-                class="btn-sm flex-1"
+                class="flex-1 btn-sm"
                 color={months === m ? 'primary' : 'light'}
                 onclick={() => setMonths(m)}
                 variant={months === m ? 'solid' : 'outline'}>
@@ -85,7 +85,7 @@
     </Card>
 
     <!-- Totals summary -->
-    <div class="grid grid-cols-3 gap-3 mb-4">
+    <div class="mb-4 grid grid-cols-3 gap-3">
         <Card class="text-center">
             <p class="text-xs text-base-content/50">Total Income</p>
             <p class="font-mono text-sm font-bold text-success">{formatIDR(totalIncome)}</p>
@@ -105,7 +105,7 @@
     <!-- Per-month breakdown table -->
     <Card title="Monthly Breakdown">
         <div class="overflow-x-auto">
-            <table class="table table-sm w-full">
+            <table class="table w-full table-sm">
                 <thead>
                     <tr class="text-xs text-base-content/50">
                         <th>Month</th>

@@ -42,7 +42,7 @@
                 <DrawerTitle>{title}</DrawerTitle>
                 <DrawerClose
                     class="rounded-md border border-base-content/20 p-1.5 text-base-content transition hover:bg-base-200">
-                    <i class="iconify text-lg ph--x-bold"></i>
+                    <i class="iconify text-lg solar--close-bold-duotone"></i>
                 </DrawerClose>
             </DrawerHeader>
         {/if}

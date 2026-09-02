@@ -17,6 +17,6 @@
     class={cn('flex size-9 items-center justify-center', className)}
     aria-hidden="true"
     {...restProps}>
-    <i class="iconify ph--dots-three-duotone size-4"></i>
+    <i class="iconify size-4 solar--menu-dots-line-duotone"></i>
     <span class="sr-only">More pages</span>
 </span>

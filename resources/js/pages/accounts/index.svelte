@@ -33,7 +33,7 @@
 <DashboardPageHeader class="hidden sm:block" title="Accounts">
     {#snippet actions()}
         <Button color="primary" href={AccountController.create.url()}>
-            <i class="iconify size-5 ph--plus-bold"></i>
+            <i class="iconify size-5 solar--add-bold-duotone"></i>
             Add
         </Button>
     {/snippet}
@@ -43,20 +43,20 @@
     <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
         <StatCard
             color="primary"
-            icon="ph--wallet-bold"
+            icon="solar--wallet-bold-duotone"
             label="Total Balance"
             value={summary.total_balance} />
 
         <StatCard
             color="info"
             format="number"
-            icon="ph--bank-bold"
+            icon="solar--banknote-2-bold-duotone"
             label="Total Accounts"
             value={summary.total_accounts} />
 
         <!-- <StatCard
             color="warning"
-            icon="ph--credit-card-bold"
+            icon="solar--card-bold-duotone"
             label="Credit Utilisation"
             value={summary.credit_utilization_percentage !== null
                 ? `${summary.credit_utilization_percentage}%`
@@ -71,7 +71,7 @@
 
         <StatCard
             color="success"
-            icon="ph--clock-bold"
+            icon="solar--clock-circle-bold-duotone"
             label="Oldest Account"
             value={oldestLabel} /> -->
     </div>
@@ -86,7 +86,9 @@
             class="flex min-h-38 cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-base-200 bg-card transition-colors hover:border-primary/50 hover:bg-primary/5"
             href={AccountController.create.url()}>
             <div class="text-center">
-                <i class="mx-auto mb-1 iconify block size-5 text-base-content/50 ph--plus-bold"></i>
+                <i
+                    class="mx-auto mb-1 iconify block size-5 text-base-content/50 solar--add-bold-duotone"
+                ></i>
                 <span class="text-sm font-medium text-base-content/50">Add Account</span>
             </div>
         </Link>
@@ -102,14 +104,16 @@
         <summary
             class="flex cursor-pointer items-center justify-between p-4 text-sm font-medium text-base-content/60">
             <span>Archived ({archived_accounts.length})</span>
-            <i class="iconify size-4 text-base-content/40 ph--caret-down-bold"></i>
+            <i class="iconify size-4 text-base-content/40 solar--alt-arrow-down-line-duotone"></i>
         </summary>
         <div class="space-y-2 px-4 pb-4">
             {#each archived_accounts as acct (acct.id)}
                 <div class="flex items-center justify-between rounded-lg bg-base-200 p-3">
                     <div class="flex items-center gap-3">
                         <div class="flex size-9 items-center justify-center rounded-lg bg-base-300">
-                            <i class="iconify size-4 text-base-content/50 ph--bank-bold"></i>
+                            <i
+                                class="iconify size-4 text-base-content/50 solar--banknote-2-bold-duotone"
+                            ></i>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-base-content/60">{acct.name}</p>

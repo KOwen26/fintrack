@@ -118,25 +118,25 @@
 
     const actionRegistry: Record<string, ActionItem> = {
         transact: {
-            icon: 'ph--arrows-left-right-bold',
+            icon: 'solar--transfer-horizontal-bold-duotone',
             label: 'Transact',
             bgClass: 'bg-teal/10',
             textClass: 'text-teal',
         },
         transfer: {
-            icon: 'ph--arrow-up-right-bold',
+            icon: 'solar--arrow-right-up-line-duotone',
             label: 'Transfer',
             bgClass: 'bg-sage/10',
             textClass: 'text-sage',
         },
         report: {
-            icon: 'ph--chart-bar-bold',
+            icon: 'solar--chart-2-bold-duotone',
             label: 'Report',
             bgClass: 'bg-amber/10',
             textClass: 'text-amber',
         },
         connect: {
-            icon: 'ph--link-bold',
+            icon: 'solar--link-bold-duotone',
             label: 'Connect',
             bgClass: 'bg-purple/10',
             textClass: 'text-purple',
@@ -166,7 +166,7 @@
     const infoRows = $derived.by<InfoRow[]>(() => {
         const rows: InfoRow[] = [
             {
-                icon: 'ph--identification-badge-bold',
+                icon: 'solar--user-id-bold-duotone',
                 label: 'Account Type',
                 value: account.type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
                 mono: false,
@@ -175,7 +175,7 @@
 
         if (providerName) {
             rows.push({
-                icon: 'ph--building-bold',
+                icon: 'solar--buildings-bold-duotone',
                 label: 'Provider',
                 value: providerName,
                 mono: false,
@@ -184,7 +184,7 @@
 
         if (account.access_type) {
             rows.push({
-                icon: 'ph--users-three-bold',
+                icon: 'solar--users-group-two-rounded-bold-duotone',
                 label: 'Access Type',
                 value: account.access_type === 'personal' ? 'Personal' : 'Joint',
                 mono: false,
@@ -193,7 +193,7 @@
 
         if (account.currency) {
             rows.push({
-                icon: 'ph--currency-circle-dollar-bold',
+                icon: 'solar--dollar-minimalistic-bold-duotone',
                 label: 'Currency',
                 value: account.currency,
                 mono: false,
@@ -201,7 +201,7 @@
         }
 
         rows.push({
-            icon: 'ph--calendar-bold',
+            icon: 'solar--calendar-bold-duotone',
             label: 'Created',
             value: DateTimeHelper.format(account.created_at, 'date'),
             mono: false,
@@ -247,13 +247,15 @@
                         {#if iconObj?.value}
                             <i class="iconify size-4.5 text-white {iconObj.value}"></i>
                         {:else if account.type === AccountType.CreditCard}
-                            <i class="iconify size-4.5 text-white ph--credit-card-bold"></i>
+                            <i class="iconify size-4.5 text-white solar--card-bold-duotone"></i>
                         {:else if account.type === AccountType.EWallet}
-                            <i class="iconify size-4.5 text-white ph--device-mobile-bold"></i>
+                            <i class="iconify size-4.5 text-white solar--smartphone-bold-duotone"
+                            ></i>
                         {:else if account.type === AccountType.CashWallet}
-                            <i class="iconify size-4.5 text-white ph--wallet-bold"></i>
+                            <i class="iconify size-4.5 text-white solar--wallet-bold-duotone"></i>
                         {:else}
-                            <i class="iconify size-4.5 text-white ph--bank-bold"></i>
+                            <i class="iconify size-4.5 text-white solar--banknote-2-bold-duotone"
+                            ></i>
                         {/if}
                     </div>
                     <div>
@@ -532,7 +534,7 @@
         <!-- Due date -->
         <div class="flex items-center justify-between gap-3 px-5 py-3 md:px-6">
             <span class="flex items-center gap-2 text-[0.8rem] text-base-content/60">
-                <i class="iconify size-3.5 text-base-content/50 ph--calendar-bold"></i>
+                <i class="iconify size-3.5 text-base-content/50 solar--calendar-bold-duotone"></i>
                 Due Date
             </span>
             <span class="text-amber text-[0.85rem] font-semibold">
@@ -545,7 +547,8 @@
         <!-- Min payment -->
         <div class="flex items-center justify-between gap-3 px-5 py-3 pb-4 md:px-6">
             <span class="flex items-center gap-2 text-[0.8rem] text-base-content/60">
-                <i class="iconify size-3.5 text-base-content/50 ph--currency-circle-dollar-bold"
+                <i
+                    class="iconify size-3.5 text-base-content/50 solar--dollar-minimalistic-bold-duotone"
                 ></i>
                 Min. Payment
             </span>
@@ -642,7 +645,7 @@
         <!-- Account number -->
         <div class="flex items-start gap-3">
             <i
-                class="mt-0.5 iconify size-5 shrink-0 text-base-content/50 ph--identification-badge-bold"
+                class="mt-0.5 iconify size-5 shrink-0 text-base-content/50 solar--user-id-bold-duotone"
             ></i>
             <div>
                 <p class="mb-0.5 text-xs text-base-content/50">Account ID</p>
@@ -655,7 +658,9 @@
         <!-- Created / Updated -->
         <div class="flex items-start justify-between gap-4">
             <div class="flex items-start gap-3">
-                <i class="mt-0.5 iconify size-5 shrink-0 text-base-content/50 ph--clock-bold"></i>
+                <i
+                    class="mt-0.5 iconify size-5 shrink-0 text-base-content/50 solar--clock-circle-bold-duotone"
+                ></i>
                 <div>
                     <p class="mb-0.5 text-xs text-base-content/50">Created</p>
                     <p class="text-sm text-base-content">

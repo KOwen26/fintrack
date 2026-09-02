@@ -22,7 +22,7 @@
         </div>
         {#if backUrl}
             <Button class="size-8 p-1 btn-sm" color="secondary" href={backUrl} variant="ghost">
-                <i class="iconify size-5 ph--arrow-left-bold"></i>
+                <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
             </Button>
         {/if}
         <Breadcrumbs items={breadcrumbs} />
@@ -36,11 +36,11 @@
 {#snippet profileInfo()}
     <Button
         style="anchor-name:--anchor-1"
-        class="btn-circle btn-sm"
+        class="hidden btn-circle btn-sm md:inline-flex"
         color="accent"
         popovertarget="profile-info"
         variant="outline">
-        <i class="iconify ph--user-bold"></i>
+        <i class="iconify solar--user-bold-duotone"></i>
     </Button>
     <div
         id="profile-info"
@@ -49,13 +49,13 @@
         popover>
         <ul class="menu w-full space-y-1 text-base-content">
             <li class="menu-title">Title</li>
-            <li><a><i class="iconify ph--user-bold"></i> Item 1</a></li>
-            <li><a><i class="iconify ph--user-bold"></i> Item 2</a></li>
+            <li><a><i class="iconify solar--user-bold-duotone"></i> Item 1</a></li>
+            <li><a><i class="iconify solar--user-bold-duotone"></i> Item 2</a></li>
             <hr class="-mx-2" />
-            <li><a><i class="iconify ph--user-bold"></i> Item 3</a></li>
+            <li><a><i class="iconify solar--user-bold-duotone"></i> Item 3</a></li>
             <li>
                 <Button class="justify-start px-3" color="error" variant="soft">
-                    <i class="iconify ph--sign-out-bold"></i>
+                    <i class="iconify solar--logout-bold-duotone"></i>
                     Logout
                 </Button>
             </li>

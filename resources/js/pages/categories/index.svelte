@@ -42,7 +42,7 @@
     <div class="mb-4 flex items-center justify-between">
         <h1 class="text-xl font-bold">Categories</h1>
         <Button color="primary" onclick={() => (showForm = !showForm)} size="sm">
-            <i class="iconify size-4 ph--plus-bold"></i>
+            <i class="iconify size-4 solar--add-bold-duotone"></i>
             Add
         </Button>
     </div>
@@ -63,7 +63,7 @@
                             style="background-color: {getDecorationColor(group.decorations?.color)
                                 ?.value}"
                             class="inline-block h-3 w-3 rounded-full"></span>
-                        <span class="font-semibold text-sm">{group.name}</span>
+                        <span class="text-sm font-semibold">{group.name}</span>
                         {#if group.is_fixed_cost}
                             <Badge color="light" variant="outline">Fixed</Badge>
                         {/if}
@@ -73,12 +73,12 @@
                         color="error"
                         onclick={() => confirmDelete(group.id)}
                         variant="ghost">
-                        <i class="iconify size-4 ph--trash-bold"></i>
+                        <i class="iconify size-4 solar--trash-bin-2-bold-duotone"></i>
                     </Button>
                 </div>
 
                 {#if group.children?.length}
-                    <ul class="ml-5 mt-2 space-y-1 border-t border-base-200 pt-2">
+                    <ul class="mt-2 ml-5 space-y-1 border-t border-base-200 pt-2">
                         {#each group.children as child (child.id)}
                             <li class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
@@ -97,7 +97,7 @@
                                     color="error"
                                     onclick={() => confirmDelete(child.id)}
                                     variant="ghost">
-                                    <i class="iconify size-4 ph--trash-bold"></i>
+                                    <i class="iconify size-4 solar--trash-bin-2-bold-duotone"></i>
                                 </Button>
                             </li>
                         {/each}

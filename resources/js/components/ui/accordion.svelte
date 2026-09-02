@@ -77,7 +77,7 @@
                             },
                         })}
                     {/if}
-                    <i class="iconify ph--caret-down-duotone {baseChevronClass}"></i>
+                    <i class="iconify solar--alt-arrow-down-line-duotone {baseChevronClass}"></i>
                 </AccordionPrimitive.Trigger>
             </AccordionPrimitive.Header>
             <AccordionPrimitive.Content data-slot="accordion-content" class={baseContentClass}>

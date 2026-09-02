@@ -55,10 +55,10 @@
     };
 
     const KNOWN_ICONS: Record<string, string> = {
-        'trending-up': 'ph--trend-up-bold',
-        'trending-down': 'ph--trend-down-bold',
-        'piggy-bank': 'ph--piggy-bank-bold',
-        clock: 'ph--clock-bold',
+        'trending-up': 'solar--course-up-bold-duotone',
+        'trending-down': 'solar--course-down-bold-duotone',
+        'piggy-bank': 'solar--safe-2-bold-duotone',
+        clock: 'solar--clock-circle-bold-duotone',
     };
 
     let iconClass = $derived(() => KNOWN_ICONS[icon] ?? icon);

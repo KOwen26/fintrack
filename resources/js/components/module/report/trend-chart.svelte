@@ -53,7 +53,7 @@
 
 {#if months.length === 0}
     <div class="flex flex-col items-center justify-center py-10 text-base-content/40">
-        <i class="iconify mb-2 size-8 ph--chart-bar-bold"></i>
+        <i class="mb-2 iconify size-8 solar--chart-2-bold-duotone"></i>
         <p class="text-sm">No transaction data yet</p>
     </div>
 {/if}

@@ -154,7 +154,7 @@
     {@const hasFilters = totalQty != filteredQty}
     <div class="flex flex-col-reverse items-center justify-between gap-y-3 px-5 md:flex-row">
         {#if withTotal}
-            <div class="text-muted-foreground flex-1 text-sm">
+            <div class="flex-1 text-sm text-muted-foreground">
                 Menampilkan
                 {hasFilters ? `${filteredQty} dari total` : ''}
                 {totalQty} data
@@ -195,7 +195,7 @@
                         onclick={() => table.setPageIndex(0)}
                         variant="outline">
                         <span class="sr-only">Go to first page</span>
-                        <i class="iconify ph--caret-double-left-duotone size-4"></i>
+                        <i class="iconify size-4 solar--double-alt-arrow-left-line-duotone"></i>
                     </Button>
                     <Button
                         class="size-8 p-0"
@@ -203,7 +203,7 @@
                         onclick={() => table.previousPage()}
                         variant="outline">
                         <span class="sr-only">Go to previous page</span>
-                        <i class="iconify ph--caret-left-duotone size-4"></i>
+                        <i class="iconify size-4 solar--alt-arrow-left-line-duotone"></i>
                     </Button>
                     <Button
                         class="size-8 p-0"
@@ -211,7 +211,7 @@
                         onclick={() => table.nextPage()}
                         variant="outline">
                         <span class="sr-only">Go to next page</span>
-                        <i class="iconify ph--caret-right-duotone size-4"></i>
+                        <i class="iconify size-4 solar--alt-arrow-right-line-duotone"></i>
                     </Button>
                     <Button
                         class="hidden size-8 p-0 lg:flex"
@@ -219,7 +219,7 @@
                         onclick={() => table.setPageIndex(table.getPageCount() - 1)}
                         variant="outline">
                         <span class="sr-only">Go to last page</span>
-                        <i class="iconify ph--caret-double-right-duotone size-4"></i>
+                        <i class="iconify size-4 solar--double-alt-arrow-right-line-duotone"></i>
                     </Button>
                 </div>
             </div>
