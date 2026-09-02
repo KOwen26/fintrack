@@ -80,7 +80,7 @@
 </script>
 
 <div class="space-y-5">
-    <AccountCard account={previewAccount} hideActions hideEdit hideMask />
+    <AccountCard account={previewAccount} hideActions hideEdit hideFooter />
     <Form
         id="account-form"
         class="space-y-5"

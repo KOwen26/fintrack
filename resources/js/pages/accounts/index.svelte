@@ -8,6 +8,7 @@
 
     import PageSection from '@components/layouts/page-section.svelte';
     import AccountList from '@components/module/account/account-list.svelte';
+    import BaseAccountCard from '@components/module/account/base-account-card.svelte';
     import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
     import Button from '@components/ui/button.svelte';
     import StatCard from '@components/ui/cards/stat-card.svelte';
@@ -82,15 +83,8 @@
 
     <!-- Add Account Placeholder -->
     <div class="col-span-full">
-        <Link
-            class="flex min-h-36 cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-base-200 bg-card transition-colors hover:border-primary/50 hover:bg-primary/5 md:min-h-40"
-            href={AccountController.create.url()}>
-            <div class="text-center">
-                <i
-                    class="mx-auto mb-1 iconify block size-5 text-base-content/50 solar--add-bold-duotone"
-                ></i>
-                <span class="text-sm font-medium text-base-content/50">Add Account</span>
-            </div>
+        <Link class="block cursor-pointer" href={AccountController.create.url()}>
+            <BaseAccountCard variant="create" />
         </Link>
     </div>
 
