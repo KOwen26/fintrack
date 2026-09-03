@@ -17,6 +17,7 @@
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "dev-next",
         "maatwebsite/excel": "^4.0",
+        "opcodesio/log-viewer": "^3.24",
         "spatie/laravel-data": "^4.13",
         "spatie/laravel-permission": "^8.0"
     },
