@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Models\Concerns\HasSushiJsonSource;
 use App\Models\DecorationColor;
 use App\Models\DecorationIcon;
-use App\Models\Traits\HasSushiJsonSource;
 use App\Observers\SushiJsonObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;

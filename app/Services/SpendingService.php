@@ -37,8 +37,8 @@ class SpendingService
             ->selectRaw("
                 c.id AS category_id,
                 c.name,
-                c.decorations->>'$.color' AS color,
-                c.decorations->>'$.icon' AS icon,
+                JSON_UNQUOTE(JSON_EXTRACT(c.decorations, '$.color')) AS color,
+                JSON_UNQUOTE(JSON_EXTRACT(c.decorations, '$.icon')) AS icon,
                 c.parent_id,
                 parent.name AS parent_name,
                 SUM(t.amount) AS total,

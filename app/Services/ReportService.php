@@ -118,8 +118,8 @@ class ReportService
                     ->join('categories as c', 'c.id', '=', 't.category_id')
                     ->selectRaw("
                         c.name,
-                        c.decorations->>'$.color' AS color,
-                        c.decorations->>'$.icon' AS icon,
+                        JSON_UNQUOTE(JSON_EXTRACT(c.decorations, '$.color')) AS color,
+                        JSON_UNQUOTE(JSON_EXTRACT(c.decorations, '$.icon')) AS icon,
                         SUM(t.amount) AS total,
                         ROUND(SUM(t.amount) / ? * 100, 2) AS percentage
                     ", [$periodTotal])

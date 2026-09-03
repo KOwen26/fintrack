@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Models\Traits;
+namespace App\Models\Concerns;
 
-use App\Models\SushiJsonBuilder;
 use Illuminate\Support\Facades\File;
 
 /**
