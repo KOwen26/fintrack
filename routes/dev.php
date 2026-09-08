@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DevController;
 use App\Http\Middleware\OnlyDevelopment;
 use App\Models\DecorationColor;
 use Inertia\Inertia;
@@ -25,4 +26,7 @@ Route::group([
     Route::get('design', fn () => Inertia::render('dev/design'))->name('design');
     Route::get('design-system/accounts', fn () => Inertia::render('dev/design-system/accounts'))->name('design-system.accounts');
     Route::get('form', fn () => Inertia::render('dev/form'))->name('form');
+    Route::get('table-v9', [DevController::class, 'tableV9'])->name('table-v9');
+
+    Route::get('table-v9/server', [DevController::class, 'tableV9Server'])->name('table-v9.server');
 });

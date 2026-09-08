@@ -58,6 +58,7 @@
     },
     "dependencies": {
         "@inertiajs/svelte": "^3.7.0",
+        "@tanstack/svelte-table": "^9.2.4",
         "bits-ui": "^2.19.0",
         "imask": "^7.6.1",
         "svelte-flatpickr-plus": "^2.1.2"
