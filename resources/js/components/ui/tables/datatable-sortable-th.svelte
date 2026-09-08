@@ -1,26 +1,18 @@
-<script lang="ts" module>
-    export interface SortableTableHeadProps extends Pick<HTMLAttributes<HTMLDivElement>, 'class'> {
-        column: any; //Use type any for easier column def use
-        title: string;
-    }
-</script>
-
-<script generics="TData, TValue" lang="ts">
-    import type { Column } from '@tanstack/table-core';
+<script generics="TData extends RowData" lang="ts">
+    import type { Column, RowData } from '@tanstack/svelte-table';
+    import type { AppTableFeatures } from '@utilities/datatable.svelte';
     import type { HTMLAttributes } from 'svelte/elements';
 
     import { cn } from '@utilities/shadcn';
 
     import Button from '@components/ui/button.svelte';
 
-    let {
-        column: _column,
-        title,
-        class: className,
-        ...restProps
-    }: SortableTableHeadProps = $props();
+    interface Props extends Pick<HTMLAttributes<HTMLDivElement>, 'class'> {
+        column: Column<AppTableFeatures, TData>;
+        title: string;
+    }
 
-    const column = $derived<Column<TData, TValue>>(_column); //Reapply type
+    let { column, title, class: className, ...restProps }: Props = $props();
 </script>
 
 {#if !column?.getCanSort()}
@@ -32,16 +24,7 @@
         <Button
             class="h-8 gap-2 rounded px-2"
             color="light"
-            onclick={() => {
-                const isDesc =
-                    column.getIsSorted() === undefined
-                        ? false
-                        : column.getIsSorted() === 'asc'
-                          ? true
-                          : undefined;
-
-                column.toggleSorting(isDesc);
-            }}
+            onclick={column.getToggleSortingHandler()}
             variant="ghost">
             <span>
                 {title}

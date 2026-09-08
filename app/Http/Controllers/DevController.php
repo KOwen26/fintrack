@@ -12,7 +12,7 @@ use Inertia\Response;
 
 class DevController extends Controller
 {
-    public function tableV9(): Response
+    public function table(): Response
     {
         $transactions = Transaction::query()
             ->select(['id', 'transaction_date', 'description', 'amount', 'type'])
@@ -20,12 +20,12 @@ class DevController extends Controller
             ->limit(50)
             ->get();
 
-        return Inertia::render('dev/table-v9', [
+        return Inertia::render('dev/table', [
             'transactions' => $transactions,
         ]);
     }
 
-    public function tableV9Server(Request $request): JsonResponse
+    public function tableServer(Request $request): JsonResponse
     {
         $payload = DataTablePayloadData::fromQueryParams($request->query());
 

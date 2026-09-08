@@ -1,11 +1,9 @@
-<script generics="TData extends RowData" lang="ts">
-    import type { RowData } from '@tanstack/svelte-table';
+<script generics="TData, TValue" lang="ts">
     import type { Snippet } from 'svelte';
 
-    import { FlexRender } from '@tanstack/svelte-table';
     import { twMerge } from 'tailwind-merge';
 
-    import { DataTable } from '@utilities/datatable-v9.svelte';
+    import { DataTable } from '@utilities/datatable-v8.svelte';
 
     import TableBody from '@components/ui/atoms/table/table-body.svelte';
     import TableCell from '@components/ui/atoms/table/table-cell.svelte';
@@ -15,6 +13,7 @@
     import TableRoot from '@components/ui/atoms/table/table-root.svelte';
     import TableRow from '@components/ui/atoms/table/table-row.svelte';
     import Button from '@components/ui/button.svelte';
+    import FlexRender from '@components/ui/flex-render.svelte';
     import Input from '@components/ui/forms/input.svelte';
     import { Select as SelectRoot } from '@components/ui/forms/select';
     import SelectContent from '@components/ui/forms/select/select-content.svelte';
@@ -50,17 +49,7 @@
         filter,
     }: DataTableProps = $props();
 
-    const { table, table_rows, table_meta, is_api } = $derived(dataTable);
-
-    const pagination = $derived(table.atoms.pagination.get());
-
-    const filteredQty = $derived(
-        is_api ? table_meta.filter_quantity : table.getFilteredRowModel().rows.length
-    );
-
-    const totalQty = $derived(is_api ? table_meta.total : table_rows.length);
-
-    const hasFilters = $derived(totalQty != filteredQty);
+    const { table, table_meta, is_api } = $derived(dataTable);
 
     const hasFooter = $derived(
         table
@@ -93,7 +82,9 @@
                             class={[header.column.columnDef?.meta?.headerClass]}
                             colspan={header.colSpan}>
                             {#if !header.isPlaceholder}
-                                <FlexRender {header} />
+                                <FlexRender
+                                    content={header.column.columnDef.header}
+                                    context={header.getContext()} />
                             {/if}
                         </TableHead>
                     {/each}
@@ -105,7 +96,9 @@
                 <TableRow data-state={row.getIsSelected() && 'selected'}>
                     {#each row.getVisibleCells() as cell (cell.id)}
                         <TableCell class={[cell.column.columnDef?.meta?.cellClass]}>
-                            <FlexRender {cell} />
+                            <FlexRender
+                                content={cell.column.columnDef.cell}
+                                context={cell.getContext()} />
                         </TableCell>
                     {/each}
                 </TableRow>
@@ -123,7 +116,9 @@
                     <TableRow>
                         {#each footerGroup.headers as footer (footer.id)}
                             <TableCell class={[footer.column.columnDef?.meta?.footerClass]}>
-                                <FlexRender {footer} />
+                                <FlexRender
+                                    content={footer.column.columnDef.footer}
+                                    context={footer.getContext()} />
                             </TableCell>
                         {/each}
                     </TableRow>
@@ -152,6 +147,11 @@
 {/snippet}
 
 {#snippet Pagination({ table }: SnippetProps)}
+    {@const filteredQty = is_api
+        ? (table_meta?.filter_quantity ?? table.getCoreRowModel()?.rows?.length)
+        : table.getFilteredRowModel()?.rows?.length}
+    {@const totalQty = is_api ? table_meta.total : table.getCoreRowModel()?.rows?.length}
+    {@const hasFilters = totalQty != filteredQty}
     <div class="flex flex-col-reverse items-center justify-between gap-y-3 px-5 md:flex-row">
         {#if withTotal}
             <div class="flex-1 text-sm text-muted-foreground">
@@ -171,9 +171,9 @@
                             table.setPageSize(Number(value));
                         }}
                         type="single"
-                        value={`${pagination.pageSize}`}>
+                        value={`${table.getState().pagination.pageSize}`}>
                         <SelectTrigger class="h-8 w-[70px]">
-                            {String(pagination.pageSize)}
+                            {String(table.getState().pagination.pageSize)}
                         </SelectTrigger>
                         <SelectContent side="top">
                             {#each pageSizes as pageSize (pageSize)}
@@ -185,7 +185,7 @@
                     </SelectRoot>
                 </div>
                 <div class="flex items-center justify-center text-sm font-medium">
-                    Halaman {pagination.pageIndex + 1} dari
+                    Halaman {table.getState().pagination.pageIndex + 1} dari
                     {table.getPageCount()}
                 </div>
                 <div class="flex items-center gap-x-2">

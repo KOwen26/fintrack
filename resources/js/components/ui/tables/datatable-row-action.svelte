@@ -1,5 +1,5 @@
 <script lang="ts" module>
-    import { type ButtonProps } from '../button.svelte';
+    import { type ButtonProps } from '@components/ui/button.svelte';
 
     type ButtonActionProps = Pick<ButtonProps, 'color' | 'href' | 'onclick'>;
 
@@ -21,10 +21,10 @@
 <script lang="ts">
     import type { RestProps } from '@type/index';
 
-    import Button from '../button.svelte';
-    import Tooltip from '../tooltip.svelte';
-
     import { twMerge } from 'tailwind-merge';
+
+    import Button from '@components/ui/button.svelte';
+    import Tooltip from '@components/ui/tooltip.svelte';
 
     interface Props extends RestProps {
         variant?: 'button' | 'dropdown';
@@ -93,7 +93,7 @@
                 {...props}
                 class="size-8 p-1"
                 color={type === 'action' ? 'secondary' : 'info'}
-                useRouter={action?.href?.length > 0}
+                useRouter={Boolean(action.href)}
                 variant="outline"
                 {...buttonProps}>
                 <svelte:element
@@ -101,7 +101,7 @@
                     class={twMerge('iconify stroke-current text-current', icon)} />
             </Button>
         {/snippet}
-        {action.label}
+        {label}
     </Tooltip>
 {/snippet}
 

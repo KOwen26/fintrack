@@ -1,12 +1,13 @@
+import type { AppTableFeatures } from './datatable.svelte';
 import type { FormGeneratorProps } from './form-helper.svelte';
-import type { ColumnDef } from '@tanstack/table-core';
+import type { ColumnDef } from '@tanstack/svelte-table';
 import type { AnyRecord, DotNotationKey, ValueOrFunction } from '@type/index';
 
 import { DataTable } from './datatable.svelte';
 
-type TableProps<T> = {
+type TableProps<T extends AnyRecord> = {
     headerSortable?: boolean;
-} & Partial<Omit<ColumnDef<T, any>, 'accessorKey'>>;
+} & Partial<Omit<ColumnDef<AppTableFeatures, T, any>, 'accessorKey'>>;
 
 export type DataSchemaItem<
     T extends AnyRecord = AnyRecord,
@@ -46,8 +47,7 @@ export type DataDisplay = {
 };
 
 type DataGetValue =
-    | (DataDisplay & { displayValue: any; formField: FormGeneratorProps })
-    | undefined;
+    (DataDisplay & { displayValue: any; formField: FormGeneratorProps }) | undefined;
 
 type FormGeneratorFields<T extends AnyRecord> = Partial<
     Record<DotNotationKey<T>, FormGeneratorProps>
@@ -55,7 +55,7 @@ type FormGeneratorFields<T extends AnyRecord> = Partial<
 
 type FormGeneratorData<T extends AnyRecord> = Partial<Record<DotNotationKey<T>, any>>;
 
-type DataTableColumns<T extends AnyRecord, V = any> = ColumnDef<T, V>[];
+type DataTableColumns<T extends AnyRecord, V = any> = ColumnDef<AppTableFeatures, T, V>[];
 
 /**
  * DataComposer is a utility class for transforming raw objects into structured display data.

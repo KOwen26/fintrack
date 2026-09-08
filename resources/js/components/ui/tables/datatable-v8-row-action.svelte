@@ -93,7 +93,7 @@
                 {...props}
                 class="size-8 p-1"
                 color={type === 'action' ? 'secondary' : 'info'}
-                useRouter={Boolean(action.href)}
+                useRouter={action?.href?.length > 0}
                 variant="outline"
                 {...buttonProps}>
                 <svelte:element
@@ -101,7 +101,7 @@
                     class={twMerge('iconify stroke-current text-current', icon)} />
             </Button>
         {/snippet}
-        {label}
+        {action.label}
     </Tooltip>
 {/snippet}
 

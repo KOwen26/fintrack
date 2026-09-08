@@ -1,24 +1,25 @@
-<script generics="TData, TValue" lang="ts">
+<script generics="TData extends RowData" lang="ts">
+    import type { RowData } from '@tanstack/svelte-table';
     import type { Snippet } from 'svelte';
 
-    import TableBody from '../atoms/table/table-body.svelte';
-    import TableCell from '../atoms/table/table-cell.svelte';
-    import TableFooter from '../atoms/table/table-footer.svelte';
-    import TableHead from '../atoms/table/table-head.svelte';
-    import TableHeader from '../atoms/table/table-header.svelte';
-    import TableRoot from '../atoms/table/table-root.svelte';
-    import TableRow from '../atoms/table/table-row.svelte';
-    import Button from '../button.svelte';
-    import FlexRender from '../flex-render.svelte';
-    import Input from '../forms/input.svelte';
-    import { Select as SelectRoot } from '../forms/select';
-    import SelectContent from '../forms/select/select-content.svelte';
-    import SelectItem from '../forms/select/select-item.svelte';
-    import SelectTrigger from '../forms/select/select-trigger.svelte';
-
+    import { FlexRender } from '@tanstack/svelte-table';
     import { twMerge } from 'tailwind-merge';
 
     import { DataTable } from '@utilities/datatable.svelte';
+
+    import TableBody from '@components/ui/atoms/table/table-body.svelte';
+    import TableCell from '@components/ui/atoms/table/table-cell.svelte';
+    import TableFooter from '@components/ui/atoms/table/table-footer.svelte';
+    import TableHead from '@components/ui/atoms/table/table-head.svelte';
+    import TableHeader from '@components/ui/atoms/table/table-header.svelte';
+    import TableRoot from '@components/ui/atoms/table/table-root.svelte';
+    import TableRow from '@components/ui/atoms/table/table-row.svelte';
+    import Button from '@components/ui/button.svelte';
+    import Input from '@components/ui/forms/input.svelte';
+    import { Select as SelectRoot } from '@components/ui/forms/select';
+    import SelectContent from '@components/ui/forms/select/select-content.svelte';
+    import SelectItem from '@components/ui/forms/select/select-item.svelte';
+    import SelectTrigger from '@components/ui/forms/select/select-trigger.svelte';
 
     type TDataTable = DataTable<TData>;
     type SnippetProps = {
@@ -49,7 +50,17 @@
         filter,
     }: DataTableProps = $props();
 
-    const { table, table_meta, is_api } = $derived(dataTable);
+    const { table, table_rows, table_meta, is_api } = $derived(dataTable);
+
+    const pagination = $derived(table.atoms.pagination.get());
+
+    const filteredQty = $derived(
+        is_api ? table_meta.filter_quantity : table.getFilteredRowModel().rows.length
+    );
+
+    const totalQty = $derived(is_api ? table_meta.total : table_rows.length);
+
+    const hasFilters = $derived(totalQty != filteredQty);
 
     const hasFooter = $derived(
         table
@@ -82,9 +93,7 @@
                             class={[header.column.columnDef?.meta?.headerClass]}
                             colspan={header.colSpan}>
                             {#if !header.isPlaceholder}
-                                <FlexRender
-                                    content={header.column.columnDef.header}
-                                    context={header.getContext()} />
+                                <FlexRender {header} />
                             {/if}
                         </TableHead>
                     {/each}
@@ -96,9 +105,7 @@
                 <TableRow data-state={row.getIsSelected() && 'selected'}>
                     {#each row.getVisibleCells() as cell (cell.id)}
                         <TableCell class={[cell.column.columnDef?.meta?.cellClass]}>
-                            <FlexRender
-                                content={cell.column.columnDef.cell}
-                                context={cell.getContext()} />
+                            <FlexRender {cell} />
                         </TableCell>
                     {/each}
                 </TableRow>
@@ -116,9 +123,7 @@
                     <TableRow>
                         {#each footerGroup.headers as footer (footer.id)}
                             <TableCell class={[footer.column.columnDef?.meta?.footerClass]}>
-                                <FlexRender
-                                    content={footer.column.columnDef.footer}
-                                    context={footer.getContext()} />
+                                <FlexRender {footer} />
                             </TableCell>
                         {/each}
                     </TableRow>
@@ -147,11 +152,6 @@
 {/snippet}
 
 {#snippet Pagination({ table }: SnippetProps)}
-    {@const filteredQty = is_api
-        ? (table_meta?.filter_quantity ?? table.getCoreRowModel()?.rows?.length)
-        : table.getFilteredRowModel()?.rows?.length}
-    {@const totalQty = is_api ? table_meta.total : table.getCoreRowModel()?.rows?.length}
-    {@const hasFilters = totalQty != filteredQty}
     <div class="flex flex-col-reverse items-center justify-between gap-y-3 px-5 md:flex-row">
         {#if withTotal}
             <div class="flex-1 text-sm text-muted-foreground">
@@ -171,9 +171,9 @@
                             table.setPageSize(Number(value));
                         }}
                         type="single"
-                        value={`${table.getState().pagination.pageSize}`}>
+                        value={`${pagination.pageSize}`}>
                         <SelectTrigger class="h-8 w-[70px]">
-                            {String(table.getState().pagination.pageSize)}
+                            {String(pagination.pageSize)}
                         </SelectTrigger>
                         <SelectContent side="top">
                             {#each pageSizes as pageSize (pageSize)}
@@ -185,7 +185,7 @@
                     </SelectRoot>
                 </div>
                 <div class="flex items-center justify-center text-sm font-medium">
-                    Halaman {table.getState().pagination.pageIndex + 1} dari
+                    Halaman {pagination.pageIndex + 1} dari
                     {table.getPageCount()}
                 </div>
                 <div class="flex items-center gap-x-2">

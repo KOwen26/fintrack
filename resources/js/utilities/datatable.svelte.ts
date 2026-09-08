@@ -1,39 +1,82 @@
 import type {
     Column,
+    ColumnDef,
     ColumnFiltersState,
-    GlobalFilterTableState,
+    ColumnVisibilityState,
     PaginationState,
     RowData,
     RowSelectionState,
     SortingState,
+    SvelteTable,
     TableOptions,
-    TableOptionsResolved,
-    TableState,
-    VisibilityState,
-} from '@tanstack/table-core';
+} from '@tanstack/svelte-table';
 import type { ComponentProps } from 'svelte';
-
-import { renderComponent } from './render-helper';
 
 import { useHttp } from '@inertiajs/svelte';
 import {
+    columnFilteringFeature,
+    columnVisibilityFeature,
+    createFilteredRowModel,
+    createPaginatedRowModel,
+    createSortedRowModel,
     createTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-} from '@tanstack/table-core';
-import { SvelteSet, SvelteURLSearchParams } from 'svelte/reactivity';
+    createTableState,
+    globalFilteringFeature,
+    metaHelper,
+    renderComponent,
+    rowPaginationFeature,
+    rowSelectionFeature,
+    rowSortingFeature,
+    tableFeatures,
+} from '@tanstack/svelte-table';
+import { SvelteURLSearchParams } from 'svelte/reactivity';
 
 import DatatableRowAction from '@components/ui/tables/datatable-row-action.svelte';
 import DatatableSortableTh from '@components/ui/tables/datatable-sortable-th.svelte';
+
+export interface DataTableColumnMeta {
+    headerClass?: string;
+    cellClass?: string;
+    footerClass?: string;
+}
+
+/**
+ * The feature set every `DataTable` instance is built with.
+ *
+ * Pass `AppTableFeatures` as the first generic of `ColumnDef` / `Column` when
+ * defining columns for a  table.
+ */
+export const dataTableFeatures = tableFeatures({
+    rowSortingFeature,
+    rowPaginationFeature,
+    columnFilteringFeature,
+    globalFilteringFeature,
+    columnVisibilityFeature,
+    rowSelectionFeature,
+
+    sortedRowModel: createSortedRowModel(),
+    filteredRowModel: createFilteredRowModel(),
+    paginatedRowModel: createPaginatedRowModel(),
+
+    // filterFns: { includesString: filterFn_includesString },
+    // sortFns: {
+    //     alphanumeric: sortFn_alphanumeric,
+    //     basic: sortFn_basic,
+    //     datetime: sortFn_datetime,
+    //     text: sortFn_text,
+    // },
+
+    columnMeta: metaHelper<DataTableColumnMeta>(),
+});
+
+export type AppTableFeatures = typeof dataTableFeatures;
 
 export type DataTableStates = {
     pagination: PaginationState;
     sorting: SortingState;
     columnFilters: ColumnFiltersState;
-    globalFilter: GlobalFilterTableState;
-    columnVisibility: VisibilityState;
+    globalFilter: unknown;
+    columnVisibility: ColumnVisibilityState;
     rowSelection: RowSelectionState;
 };
 
@@ -48,31 +91,45 @@ export type DataTableServerResponse<T> = {
     meta: DataTableMeta;
 };
 
-type DataTableOptions<T> = Partial<{
+type DataTableOptions<TData extends RowData> = Partial<{
     row_id?: string;
-    datatable_options?: Omit<TableOptions<T>, 'columns'>;
+    datatable_options?: Omit<
+        TableOptions<AppTableFeatures, TData>,
+        'features' | 'columns' | 'data' | 'state'
+    >;
 }>;
 
+/**
+ * TanStack Table  datatable orchestrator built on the official
+ * `@tanstack/svelte-table` adapter.
+ *
+ * Accepts either an in-memory row array (client mode — sorting, filtering and
+ * pagination run in the browser) or an API endpoint string (server mode —
+ * `manualPagination` / `manualSorting` / `manualFiltering` are enabled and
+ * state changes trigger a `useHttp` fetch expecting a
+ * `DataTableServerResponse` shape).
+ *
+ * Must be instantiated during component initialization (top-level `<script>`)
+ * — the underlying `createTable` registers a `$effect.pre` options sync.
+ */
 export class DataTable<TData extends RowData> {
     static readonly DEFAULT_PAGE_SIZES = [10, 20, 50, 100, 200];
 
     static readonly MONTH_YEAR_PAGE_SIZES = [12, 24, 36, 48, 60];
 
-    readonly #_data = $state<TData[] | string>(undefined);
+    readonly #source: TData[] | string;
 
-    #previous_states = $state<DataTableStates>(undefined);
+    readonly #http: ReturnType<
+        typeof useHttp<Record<string, never>, DataTableServerResponse<TData>>
+    >;
 
-    readonly is_api = $derived<boolean>(
-        !Array.isArray(this.#_data) && typeof this.#_data === 'string'
-    );
+    #previous_states = $state<string | undefined>(undefined);
 
     is_loading = $state<boolean>(false);
 
-    table = $state<ReturnType<typeof createSvelteTable<TData>>>(undefined);
+    readonly table: SvelteTable<AppTableFeatures, TData>;
 
-    table_rows = $state<TData[]>([]);
-
-    table_states = $state<DataTableStates>(DataTable.defaultStates());
+    table_rows = $state.raw<TData[]>([]);
 
     table_meta = $state<DataTableMeta>({
         total: 0,
@@ -80,14 +137,117 @@ export class DataTable<TData extends RowData> {
         filter_quantity: 0,
     });
 
+    readonly #pagination = createTableState<PaginationState>({ pageIndex: 0, pageSize: 10 });
+    readonly #sorting = createTableState<SortingState>([]);
+    readonly #column_filters = createTableState<ColumnFiltersState>([]);
+    readonly #global_filter = createTableState<unknown>(null);
+    readonly #column_visibility = createTableState<ColumnVisibilityState>({});
+    readonly #row_selection = createTableState<RowSelectionState>({});
+
+    /** Server mode — data is fetched from an endpoint instead of held in memory. */
+    readonly is_api: boolean;
+
     constructor(
         data: TData[] | string,
-        columns: TableOptions<TData>['columns'],
+        columns: ColumnDef<AppTableFeatures, TData>[],
         options?: DataTableOptions<TData>
     ) {
-        this.#_data = data;
+        this.#source = data;
+        this.is_api = !Array.isArray(data) && typeof data === 'string';
+        this.#http = useHttp<Record<string, never>, DataTableServerResponse<TData>>();
 
-        this.initTable(columns, options ?? {});
+        const [getPagination, setPagination] = this.#pagination;
+        const [getSorting, setSorting] = this.#sorting;
+        const [getColumnFilters, setColumnFilters] = this.#column_filters;
+        const [getGlobalFilter, setGlobalFilter] = this.#global_filter;
+        const [getColumnVisibility, setColumnVisibility] = this.#column_visibility;
+        const [getRowSelection, setRowSelection] = this.#row_selection;
+
+        const rowId = options?.row_id;
+
+        // Object-literal getters rebind `this` to the options object — alias the
+        // class instance so reactive option getters read the table's $state.
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const self = this;
+
+        this.table = createTable({
+            ...options?.datatable_options,
+
+            features: dataTableFeatures,
+            columns,
+
+            get data() {
+                return self.table_rows;
+            },
+
+            get pageCount() {
+                if (!self.is_api) return undefined;
+
+                const quantity = self.table_meta.has_filter
+                    ? self.table_meta.filter_quantity
+                    : self.table_meta.total;
+
+                return Math.ceil(quantity / getPagination().pageSize);
+            },
+
+            state: {
+                get pagination() {
+                    return getPagination();
+                },
+                get sorting() {
+                    return getSorting();
+                },
+                get columnFilters() {
+                    return getColumnFilters();
+                },
+                get globalFilter() {
+                    return getGlobalFilter();
+                },
+                get columnVisibility() {
+                    return getColumnVisibility();
+                },
+                get rowSelection() {
+                    return getRowSelection();
+                },
+            },
+
+            manualPagination: this.is_api,
+            manualSorting: this.is_api,
+            manualFiltering: this.is_api,
+
+            globalFilterFn: 'auto',
+
+            onPaginationChange: setPagination,
+            onSortingChange: setSorting,
+            // A filter change can shrink the result set below the current page —
+            // reset to the first page so server mode never renders "No results"
+            // for a page that no longer exists.
+            onColumnFiltersChange: (updater) => {
+                setColumnFilters(updater);
+                setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+            },
+            onGlobalFilterChange: (updater) => {
+                setGlobalFilter(updater);
+                setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+            },
+            onColumnVisibilityChange: setColumnVisibility,
+            onRowSelectionChange: setRowSelection,
+
+            getRowId: rowId ? (row) => row?.[rowId]?.toString() : undefined,
+        });
+
+        if (this.is_api) {
+            $effect(() => {
+                const snapshot = JSON.stringify(this.table_states);
+
+                if (snapshot !== this.#previous_states) {
+                    this.#previous_states = snapshot;
+                    void this.fetchData();
+                }
+            });
+        } else {
+            void this.fetchData();
+        }
     }
 
     static defaultStates(): DataTableStates {
@@ -96,336 +256,117 @@ export class DataTable<TData extends RowData> {
                 pageIndex: 0,
                 pageSize: 10,
             },
-            sorting: undefined,
-            columnFilters: undefined,
+            sorting: [],
+            columnFilters: [],
             globalFilter: null,
             columnVisibility: {},
             rowSelection: {},
         };
     }
 
-    static sortableHeader<TData extends RowData>(props: { column: Column<TData>; title: string }) {
+    static sortableHeader<TData extends RowData>(props: {
+        column: Column<AppTableFeatures, TData>;
+        title: string;
+    }) {
+        // renderComponent types generic components with their type params erased
+        // to the constraint (Column<F, RowData>), but v9 declares Column's TData
+        // as invariant — so Column<F, TData> cannot satisfy Column<F, RowData>
+        // even though TData extends RowData. Runtime-safe handoff; remove this
+        // suppression if the variance handling in @tanstack/svelte-table changes.
+        // @ts-expect-error -- v9 Column TData invariance vs ComponentProps generic erasure
         return renderComponent(DatatableSortableTh, props);
     }
 
-    static rowAction<TData extends RowData>(props: ComponentProps<typeof DatatableRowAction>) {
+    static rowAction(props: ComponentProps<typeof DatatableRowAction>) {
         return renderComponent(DatatableRowAction, props);
+    }
+
+    get table_states(): DataTableStates {
+        return {
+            pagination: this.#pagination[0](),
+            sorting: this.#sorting[0](),
+            columnFilters: this.#column_filters[0](),
+            globalFilter: this.#global_filter[0](),
+            columnVisibility: this.#column_visibility[0](),
+            rowSelection: this.#row_selection[0](),
+        };
     }
 
     refresh() {
         this.fetchData();
     }
 
-    reset({ states = false }: { states?: boolean }) {
+    reset({ states = false }: { states?: boolean } = {}) {
         if (states) {
-            this.table_states = DataTable.defaultStates();
+            const defaults = DataTable.defaultStates();
+
+            this.#pagination[1](defaults.pagination);
+            this.#sorting[1](defaults.sorting);
+            this.#column_filters[1](defaults.columnFilters);
+            this.#global_filter[1](defaults.globalFilter);
+            this.#column_visibility[1](defaults.columnVisibility);
+            this.#row_selection[1](defaults.rowSelection);
         }
 
         this.fetchData();
     }
 
-    private initTable(columns: TableOptions<TData>['columns'], options?: DataTableOptions<TData>) {
-        const states = $derived(this.table_states);
-
-        if (this.is_api) {
-            $effect(() => {
-                if (JSON.stringify(states) !== JSON.stringify(this.#previous_states)) {
-                    void this.fetchData();
-                    this.#previous_states = states;
-                }
-            });
-        } else {
-            void this.fetchData();
-        }
-
-        const pageCount = $derived(
-            this.is_api
-                ? Math.ceil(
-                      (this.table_meta?.has_filter
-                          ? this.table_meta?.filter_quantity
-                          : this.table_meta?.total) / states?.pagination?.pageSize
-                  )
-                : undefined
-        );
-
-        const tableOptions: TableOptions<TData> = $derived({
-            data: this.table_rows,
-            state: {
-                get pagination() {
-                    return states.pagination;
-                },
-                get sorting() {
-                    return states.sorting;
-                },
-                get columnVisibility() {
-                    return states.columnVisibility;
-                },
-                get columnFilters() {
-                    return states.columnFilters;
-                },
-                get globalFilter() {
-                    return states.globalFilter;
-                },
-                get rowSelection() {
-                    return states.rowSelection;
-                },
-            },
-            columns,
-            pageCount,
-
-            getCoreRowModel: getCoreRowModel(),
-
-            getSortedRowModel: getSortedRowModel(),
-            getPaginationRowModel: getPaginationRowModel(),
-            getFilteredRowModel: getFilteredRowModel(),
-            globalFilterFn: 'includesString',
-
-            manualPagination: this.is_api,
-            manualSorting: this.is_api,
-            manualFiltering: this.is_api,
-
-            onPaginationChange: async (updater) => {
-                states.pagination = this.updaterHelper(states.pagination, updater);
-
-                if (this.is_api) this.fetchData();
-            },
-            onSortingChange: async (updater) => {
-                states.sorting = this.updaterHelper(states.sorting, updater);
-
-                if (this.is_api) this.fetchData();
-            },
-            onColumnFiltersChange: async (updater) => {
-                states.columnFilters = this.updaterHelper(states.columnFilters, updater);
-
-                if (this.is_api) this.fetchData();
-            },
-            onGlobalFilterChange: async (updater) => {
-                states.globalFilter = this.updaterHelper(states.globalFilter, updater);
-
-                if (this.is_api) this.fetchData();
-            },
-
-            onColumnVisibilityChange: (updater) => {
-                states.columnVisibility = this.updaterHelper(states.columnVisibility, updater);
-            },
-            onRowSelectionChange: async (updater) => {
-                states.rowSelection = this.updaterHelper(states.rowSelection, updater);
-            },
-            getRowId: options?.row_id ? (row) => row?.[options.row_id]?.toString() : undefined,
-
-            ...options?.datatable_options,
-        });
-
-        if (this.is_api) {
-            $effect.pre(() => {
-                this.table = createSvelteTable(tableOptions);
-            });
-        } else {
-            this.table = createSvelteTable(tableOptions);
-        }
-    }
-
     private fetchData() {
-        const data = this.#_data;
+        const data = this.#source;
         const states = this.table_states;
 
-        if (Array.isArray(data) && data?.length > 0) {
+        if (Array.isArray(data) && data.length > 0) {
             this.table_rows = data;
 
             return;
         }
 
-        if (typeof data === 'string') {
-            this.is_loading = true;
+        if (typeof data !== 'string') return;
 
-            const queryParamsProps = {
-                rows_per_page: states.pagination?.pageSize,
-                current_page: states.pagination?.pageIndex + 1,
-                sort: states.sorting?.map(({ id, desc }) => ({
-                    id,
-                    direction: desc ? 'desc' : 'asc',
-                })),
-                filters: states.columnFilters,
-            };
+        this.is_loading = true;
 
-            const queryParams = new SvelteURLSearchParams(
-                Object.entries(queryParamsProps)
-                    .filter(([key, value]) => value != undefined)
-                    .map(([key, value]) => [key, JSON.stringify(value)])
+        const queryParams = new SvelteURLSearchParams([
+            ['rows_per_page', String(states.pagination?.pageSize)],
+            ['current_page', String((states.pagination?.pageIndex ?? 0) + 1)],
+        ]);
+
+        if (states.sorting?.length) {
+            queryParams.set(
+                'sort',
+                JSON.stringify(
+                    states.sorting.map(({ id, desc }) => ({
+                        id,
+                        direction: desc ? 'desc' : 'asc',
+                    }))
+                )
             );
-
-            const url = `${data}?${queryParams.toString()}`;
-
-            console.info('Fetch Datatable API', { url });
-
-            const http = useHttp<Record<string, never>, DataTableServerResponse<TData>>();
-
-            http.get(url)
-                .then((result) => {
-                    this.table_rows = result.data;
-
-                    this.table_meta.total = result?.meta?.total;
-                    this.table_meta.has_filter = result?.meta?.has_filter;
-                    this.table_meta.filter_quantity =
-                        result?.meta?.filter_quantity ?? result.data.length;
-
-                    return result.data;
-                })
-                .catch((error) => {
-                    console.error('Fetch Datatable API Error: ', { error });
-
-                    this.table_rows = [];
-                })
-                .finally(() => {
-                    this.is_loading = false;
-                });
-
-            return;
         }
-    }
 
-    private updaterHelper(value, updater) {
-        return typeof updater === 'function' ? updater(value) : updater;
-    }
-}
+        if (states.columnFilters?.length) {
+            queryParams.set('filters', JSON.stringify(states.columnFilters));
+        }
 
-// ==================================================================
-// Shadcn-Svelte TanStack Table Utilities
-// ==================================================================
+        const url = `${data}?${queryParams.toString()}`;
 
-/**
- * Creates a reactive TanStack table object for Svelte.
- * @param options Table options to create the table with.
- * @returns A reactive table object.
- * @example
- * ```svelte
- * <script>
- *   const table = createSvelteTable({ ... })
- * </script>
- *
- * <table>
- *   <thead>
- *     {#each table.getHeaderGroups() as headerGroup}
- *       <tr>
- *         {#each headerGroup.headers as header}
- *           <th colspan={header.colSpan}>
- *         	   <FlexRender content={header.column.columnDef.header} context={header.getContext()} />
- *         	 </th>
- *         {/each}
- *       </tr>
- *     {/each}
- *   </thead>
- * 	 <!-- ... -->
- * </table>
- * ```
- */
-export function createSvelteTable<TData extends RowData>(options: TableOptions<TData>) {
-    const resolvedOptions: TableOptionsResolved<TData> = mergeObjects(
-        {
-            state: {},
-            onStateChange() {},
-            renderFallbackValue: null,
-            mergeOptions: (
-                defaultOptions: TableOptions<TData>,
-                options: Partial<TableOptions<TData>>
-            ) => {
-                return mergeObjects(defaultOptions, options);
-            },
-        },
-        options
-    );
+        console.info('Fetch Datatable API', { url });
 
-    const table = createTable(resolvedOptions);
-    let state = $state<Partial<TableState>>(table.initialState);
+        this.#http
+            .get(url)
+            .then((result) => {
+                this.table_rows = result.data;
 
-    function updateOptions() {
-        table.setOptions((prev) => {
-            return mergeObjects(prev, options, {
-                state: mergeObjects(state, options.state || {}),
+                this.table_meta.total = result?.meta?.total ?? result.data.length;
+                this.table_meta.has_filter = result?.meta?.has_filter ?? false;
+                this.table_meta.filter_quantity =
+                    result?.meta?.filter_quantity ?? result.data.length;
+            })
+            .catch((error) => {
+                console.error('Fetch Datatable API Error: ', { error });
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onStateChange: (updater: any) => {
-                    if (updater instanceof Function) state = updater(state);
-                    else state = mergeObjects(state, updater);
-
-                    options.onStateChange?.(updater);
-                },
+                this.table_rows = [];
+            })
+            .finally(() => {
+                this.is_loading = false;
             });
-        });
     }
-
-    updateOptions();
-
-    $effect.pre(() => {
-        updateOptions();
-    });
-
-    return table;
-}
-
-type MaybeThunk<T extends object> = T | (() => T | null | undefined);
-type Intersection<T extends readonly unknown[]> = (T extends [infer H, ...infer R]
-    ? H & Intersection<R>
-    : unknown) & {};
-
-/**
- * Lazily merges several objects (or thunks) while preserving
- * getter semantics from every source.
- *
- * Proxy-based to avoid known WebKit recursion issue.
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function mergeObjects<Sources extends readonly MaybeThunk<any>[]>(
-    ...sources: Sources
-): Intersection<{ [K in keyof Sources]: Sources[K] }> {
-    const resolve = <T extends object>(src: MaybeThunk<T>): T | undefined =>
-        typeof src === 'function' ? (src() ?? undefined) : src;
-
-    const findSourceWithKey = (key: PropertyKey) => {
-        for (let i = sources.length - 1; i >= 0; i--) {
-            const obj = resolve(sources[i]);
-            if (obj && key in obj) return obj;
-        }
-
-        return undefined;
-    };
-
-    return new Proxy(Object.create(null), {
-        get(_, key) {
-            const src = findSourceWithKey(key);
-
-            return src?.[key as never];
-        },
-
-        has(_, key) {
-            return !!findSourceWithKey(key);
-        },
-
-        ownKeys(): (string | symbol)[] {
-            const all = new SvelteSet<string | symbol>();
-            for (const s of sources) {
-                const obj = resolve(s);
-                if (obj) {
-                    for (const k of Reflect.ownKeys(obj) as (string | symbol)[]) {
-                        all.add(k);
-                    }
-                }
-            }
-
-            return [...all];
-        },
-
-        getOwnPropertyDescriptor(_, key) {
-            const src = findSourceWithKey(key);
-            if (!src) return undefined;
-
-            return {
-                configurable: true,
-                enumerable: true,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                value: (src as any)[key],
-                writable: true,
-            };
-        },
-    }) as Intersection<{ [K in keyof Sources]: Sources[K] }>;
 }
