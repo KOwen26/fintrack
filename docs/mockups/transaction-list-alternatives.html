@@ -1,0 +1,1085 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Transaction List — Account-Vibe Alternatives</title>
+        <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+        <style>
+            :root {
+                --base-100: oklch(100% 0 0);
+                --base-200: oklch(96% 0.005 260);
+                --base-300: oklch(89% 0.008 260);
+                --base-content: oklch(24% 0.02 260);
+                --primary: oklch(55% 0.19 268);
+                --primary-800: oklch(42% 0.17 268);
+                --primary-content: oklch(98% 0.01 268);
+                --success: oklch(62% 0.15 155);
+                --error: oklch(60% 0.2 22);
+                --warning: oklch(72% 0.15 75);
+                --info: oklch(62% 0.15 230);
+                --secondary: oklch(60% 0.12 310);
+                --deco-food: oklch(72% 0.15 60);
+                --deco-transport: oklch(65% 0.15 240);
+                --deco-shopping: oklch(70% 0.16 330);
+                --deco-slate: oklch(60% 0.03 260);
+            }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: 'Segoe UI', system-ui, sans-serif;
+                background: oklch(94% 0.01 260);
+                color: var(--base-content);
+                padding: 40px 24px;
+            }
+            h1 {
+                font-size: 18px;
+                margin-bottom: 4px;
+            }
+            .sub {
+                font-size: 13px;
+                color: oklch(50% 0.02 260);
+                margin-bottom: 36px;
+            }
+            .board {
+                display: flex;
+                gap: 36px;
+                flex-wrap: wrap;
+                align-items: flex-start;
+            }
+            .frame-wrap {
+                width: 390px;
+            }
+            .frame-label {
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                margin-bottom: 6px;
+                color: var(--primary);
+            }
+            .frame-tag {
+                font-size: 12px;
+                color: oklch(45% 0.02 260);
+                margin-bottom: 10px;
+            }
+            .phone {
+                background: var(--base-100);
+                border-radius: 24px;
+                padding: 20px 16px;
+                box-shadow: 0 10px 40px oklch(20% 0.02 260 / 0.18);
+                min-height: 640px;
+            }
+            .notes {
+                font-size: 12px;
+                line-height: 1.65;
+                color: oklch(45% 0.02 260);
+                margin-top: 14px;
+                padding-left: 4px;
+            }
+            .notes b {
+                color: var(--base-content);
+            }
+            .mono {
+                font-family: 'Cascadia Mono', ui-monospace, monospace;
+            }
+            .muted {
+                opacity: 0.45;
+            }
+
+            .search {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                border-radius: 12px;
+                padding: 10px 14px;
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06);
+                border: 1px solid oklch(94% 0.005 260);
+            }
+            .search input {
+                border: 0;
+                outline: 0;
+                flex: 1;
+                font-size: 13px;
+                background: transparent;
+            }
+            .chips {
+                display: flex;
+                gap: 6px;
+                margin: 12px 0;
+            }
+            .chip {
+                font-size: 11px;
+                font-weight: 600;
+                padding: 6px 12px;
+                border-radius: 999px;
+                border: 1.5px solid oklch(89% 0.01 260);
+                color: oklch(45% 0.02 260);
+            }
+            .chip.active {
+                background: var(--primary);
+                border-color: var(--primary);
+                color: var(--primary-content);
+            }
+
+            .type-pill {
+                font-size: 9px;
+                font-weight: 500;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                border-radius: 999px;
+                padding: 2px 7px;
+            }
+            .pill-expense {
+                background: oklch(96% 0.03 22);
+                color: var(--error);
+            }
+            .pill-income {
+                background: oklch(96% 0.03 155);
+                color: var(--success);
+            }
+            .pill-fee {
+                background: oklch(96% 0.02 310);
+                color: var(--secondary);
+            }
+            .pill-white {
+                background: rgb(255 255 255 / 0.2);
+                color: inherit;
+            }
+
+            /* ══ ALT 1 — day hero cards ══ */
+            .hero-day {
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.08);
+                margin-bottom: 14px;
+            }
+            .hero-body {
+                position: relative;
+                overflow: hidden;
+                padding: 14px;
+                min-height: 118px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+            .hero-body.today {
+                background: linear-gradient(135deg, var(--primary), var(--primary-800));
+                color: var(--primary-content);
+            }
+            .hero-body.past {
+                background: linear-gradient(135deg, oklch(70% 0.03 260), oklch(58% 0.03 260));
+                color: var(--primary-content);
+            }
+            .hero-circle1 {
+                position: absolute;
+                top: -46px;
+                right: -46px;
+                width: 170px;
+                height: 170px;
+                border-radius: 999px;
+                background: rgb(255 255 255 / 0.1);
+            }
+            .hero-circle2 {
+                position: absolute;
+                right: 40px;
+                bottom: -32px;
+                width: 110px;
+                height: 110px;
+                border-radius: 999px;
+                background: rgb(255 255 255 / 0.05);
+            }
+            .hero-hdr {
+                position: relative;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .hero-tile {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: rgb(255 255 255 / 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .hero-hdr .t {
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .hero-hdr .n {
+                font-size: 10px;
+                opacity: 0.75;
+            }
+            .hero-net {
+                position: relative;
+            }
+            .hero-net .lbl {
+                font-size: 0.6rem;
+                font-weight: 600;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                opacity: 0.75;
+            }
+            .hero-net .num {
+                font-size: 22px;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                margin-top: 4px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .hero-foot {
+                background: var(--base-100);
+                border-top: 1px solid var(--base-300);
+                padding: 2px 14px;
+            }
+            .hrow {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 0;
+            }
+            .hrow + .hrow {
+                border-top: 1px solid oklch(94% 0.005 260);
+            }
+            .hrow .tile {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: var(--base-200);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .hrow .desc {
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .hrow .meta {
+                font-size: 11px;
+                color: oklch(50% 0.02 260);
+                margin-top: 2px;
+                display: flex;
+                gap: 6px;
+                align-items: center;
+            }
+            .hrow .amt {
+                font-size: 13px;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 3px;
+            }
+
+            /* ══ ALT 2 — grid mode ══ */
+            .grid-hdr {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin: 4px 2px 10px;
+            }
+            .grid-hdr .count {
+                font-size: 13px;
+                font-weight: 500;
+                opacity: 0.6;
+            }
+            .seg {
+                display: inline-flex;
+                border: 1px solid var(--base-300);
+                border-radius: 999px;
+                overflow: hidden;
+            }
+            .seg span {
+                font-size: 11px;
+                font-weight: 600;
+                padding: 5px 12px;
+                color: oklch(45% 0.02 260);
+                display: inline-flex;
+                gap: 5px;
+                align-items: center;
+            }
+            .seg span.on {
+                background: var(--primary);
+                color: var(--primary-content);
+            }
+            .tx-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .tx-tile {
+                border-radius: 8px;
+                background: var(--base-100);
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06);
+                padding: 12px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .tx-tile .top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .tx-tile .tile {
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .tx-tile .date {
+                font-size: 9px;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: oklch(55% 0.02 260);
+            }
+            .tx-tile .desc {
+                font-size: 13px;
+                font-weight: 600;
+                line-height: 1.35;
+            }
+            .tx-tile .sub {
+                font-size: 11px;
+                color: oklch(50% 0.02 260);
+                margin-top: 2px;
+            }
+            .tx-tile .amt {
+                font-size: 14px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 3px;
+                margin-top: auto;
+            }
+
+            /* ══ ALT 3 — quiet feed ══ */
+            .info-card {
+                border-radius: 8px;
+                background: var(--base-100);
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06);
+                padding: 14px 16px 4px;
+                margin-bottom: 16px;
+            }
+            .info-card h5 {
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                opacity: 0.7;
+                margin-bottom: 8px;
+            }
+            .irow {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 0;
+            }
+            .irow + .irow {
+                border-top: 1px solid oklch(91% 0.01 260);
+            }
+            .irow .l {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 13px;
+                color: oklch(40% 0.02 260);
+            }
+            .irow .v {
+                font-size: 13px;
+                font-weight: 500;
+            }
+            .day-label {
+                font-size: 0.66rem;
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: oklch(52% 0.02 260);
+                margin: 14px 2px 8px;
+            }
+            .feed-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                background: var(--base-200);
+                border-radius: 8px;
+                padding: 12px;
+            }
+            .feed-row + .feed-row {
+                margin-top: 8px;
+            }
+            .feed-tile {
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
+                background: var(--base-300);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .feed-desc {
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .feed-meta {
+                font-size: 11px;
+                color: oklch(50% 0.02 260);
+                margin-top: 3px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .feed-amt {
+                font-size: 13px;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 3px;
+            }
+
+            /* ══ ALT 4 — collapsible days ══ */
+            .col-day {
+                border-radius: 8px;
+                background: var(--base-100);
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06);
+                margin-bottom: 12px;
+                overflow: hidden;
+            }
+            .col-hdr {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 13px 16px;
+                cursor: pointer;
+            }
+            .col-hdr .d {
+                font-size: 0.72rem;
+                font-weight: 700;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+            }
+            .col-hdr .n {
+                font-size: 11px;
+                opacity: 0.5;
+            }
+            .col-hdr .net {
+                margin-left: auto;
+                font-size: 12px;
+                font-weight: 500;
+            }
+            .col-body {
+                border-top: 1px solid oklch(91% 0.01 260);
+                padding: 2px 16px;
+            }
+            .crow {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 11px 0;
+            }
+            .crow + .crow {
+                border-top: 1px solid oklch(94% 0.005 260);
+            }
+            .crow .tile {
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .crow .desc {
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .crow .meta {
+                font-size: 11px;
+                color: oklch(50% 0.02 260);
+                margin-top: 3px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .crow .amt {
+                font-size: 13px;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 3px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Transaction List — Account-Vibe Alternatives</h1>
+        <p class="sub">
+            Four directions, each borrowed from a different accounts surface. Compare with the
+            baseline alignment mockup (<code>transaction-list-alignment.html</code>).
+        </p>
+
+        <div class="board">
+            <!-- ════════ ALT 1 ════════ -->
+            <div class="frame-wrap">
+                <div class="frame-label">Alt 1 — Day Hero Cards</div>
+                <div class="frame-tag">
+                    Borrows: <b>BaseAccountCard</b> (gradient hero + decorative circles + white/20
+                    tiles + footer strip)
+                </div>
+                <div class="phone">
+                    <div class="search">
+                        <iconify-icon
+                            icon="solar:magnifer-linear"
+                            width="16"
+                            class="muted"></iconify-icon
+                        ><input placeholder="Cari transaksi atau merchant…" />
+                    </div>
+                    <div class="chips">
+                        <div class="chip active">Semua Akun ▾</div>
+                        <div class="chip">Semua Tipe ▾</div>
+                    </div>
+
+                    <!-- today -->
+                    <div class="hero-day">
+                        <div class="hero-body today">
+                            <div class="hero-circle1"></div>
+                            <div class="hero-circle2"></div>
+                            <div class="hero-hdr">
+                                <div class="hero-tile">
+                                    <iconify-icon
+                                        icon="solar:calendar-bold-duotone"
+                                        width="18"></iconify-icon>
+                                </div>
+                                <div>
+                                    <div class="t">Hari Ini</div>
+                                    <div class="n">3 transaksi</div>
+                                </div>
+                            </div>
+                            <div class="hero-net">
+                                <div class="lbl">Net Hari Ini</div>
+                                <div class="num mono">
+                                    <iconify-icon
+                                        icon="solar:add-bold-duotone"
+                                        width="16"></iconify-icon
+                                    >Rp8.469.500
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hero-foot">
+                            <div class="hrow">
+                                <div class="tile">
+                                    <iconify-icon
+                                        icon="solar:wallet-money-bold-duotone"
+                                        width="16"
+                                        style="color: var(--deco-food)"></iconify-icon>
+                                </div>
+                                <div style="flex: 1; min-width: 0">
+                                    <div class="desc">Gaji Bulanan</div>
+                                    <div class="meta">BCA Active</div>
+                                </div>
+                                <div class="amt mono" style="color: var(--success)">
+                                    <iconify-icon
+                                        icon="solar:add-bold-duotone"
+                                        width="13"></iconify-icon
+                                    >Rp8.500.000
+                                </div>
+                            </div>
+                            <div class="hrow">
+                                <div class="tile">
+                                    <iconify-icon
+                                        icon="solar:cup-star-bold-duotone"
+                                        width="16"
+                                        style="color: var(--deco-transport)"></iconify-icon>
+                                </div>
+                                <div style="flex: 1; min-width: 0">
+                                    <div class="desc">Kopi Senja</div>
+                                    <div class="meta">GoPay</div>
+                                </div>
+                                <div class="amt mono" style="color: var(--error)">
+                                    <iconify-icon
+                                        icon="solar:minus-bold-duotone"
+                                        width="13"></iconify-icon
+                                    >Rp28.000
+                                </div>
+                            </div>
+                            <div class="hrow">
+                                <div class="tile">
+                                    <iconify-icon
+                                        icon="solar:tag-bold-duotone"
+                                        width="16"
+                                        style="color: var(--secondary)"></iconify-icon>
+                                </div>
+                                <div style="flex: 1; min-width: 0">
+                                    <div class="desc">Biaya Admin</div>
+                                    <div class="meta">BCA Active</div>
+                                </div>
+                                <div class="amt mono" style="color: var(--secondary)">
+                                    <iconify-icon
+                                        icon="solar:minus-bold-duotone"
+                                        width="13"></iconify-icon
+                                    >Rp2.500
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- yesterday, muted variant -->
+                    <div class="hero-day">
+                        <div class="hero-body past">
+                            <div class="hero-circle1"></div>
+                            <div class="hero-circle2"></div>
+                            <div class="hero-hdr">
+                                <div class="hero-tile">
+                                    <iconify-icon
+                                        icon="solar:calendar-bold-duotone"
+                                        width="18"></iconify-icon>
+                                </div>
+                                <div>
+                                    <div class="t">Min, 6 Sep 26</div>
+                                    <div class="n">2 transaksi</div>
+                                </div>
+                            </div>
+                            <div class="hero-net">
+                                <div class="lbl">Net Hari Ini</div>
+                                <div class="num mono">
+                                    <iconify-icon
+                                        icon="solar:minus-bold-duotone"
+                                        width="16"></iconify-icon
+                                    >Rp310.000
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hero-foot">
+                            <div class="hrow">
+                                <div class="tile">
+                                    <iconify-icon
+                                        icon="solar:cart-large-bold-duotone"
+                                        width="16"
+                                        style="color: var(--deco-shopping)"></iconify-icon>
+                                </div>
+                                <div style="flex: 1; min-width: 0">
+                                    <div class="desc">Belanja Mingguan</div>
+                                    <div class="meta">BCA Active</div>
+                                </div>
+                                <div class="amt mono" style="color: var(--error)">
+                                    <iconify-icon
+                                        icon="solar:minus-bold-duotone"
+                                        width="13"></iconify-icon
+                                    >Rp305.000
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="notes">
+                    <b>The literal translation:</b> account card anatomy (header row → balance →
+                    footer) applied per <b>day</b>. Today gets the primary gradient; past days get a
+                    muted slate gradient — same way account cards vary by decoration. Rows live in
+                    the white footer strip. Top summary disappears (each day hero carries its net).
+                    Highest visual energy, lowest density.
+                </div>
+            </div>
+
+            <!-- ════════ ALT 2 ════════ -->
+            <div class="frame-wrap">
+                <div class="frame-label">Alt 2 — Grid Mode</div>
+                <div class="frame-tag">
+                    Borrows: <b>ToggleableGrid</b> + account grid cards (2-col, count header,
+                    list/grid toggle)
+                </div>
+                <div class="phone">
+                    <div class="search">
+                        <iconify-icon
+                            icon="solar:magnifer-linear"
+                            width="16"
+                            class="muted"></iconify-icon
+                        ><input placeholder="Cari transaksi atau merchant…" />
+                    </div>
+                    <div class="chips">
+                        <div class="chip active">Semua Akun ▾</div>
+                        <div class="chip">Semua Tipe ▾</div>
+                    </div>
+
+                    <div class="grid-hdr">
+                        <span class="count">12 Transaksi</span>
+                        <span class="seg">
+                            <span
+                                ><iconify-icon
+                                    icon="solar:list-bold-duotone"
+                                    width="13"></iconify-icon
+                            ></span>
+                            <span class="on"
+                                ><iconify-icon
+                                    icon="solar:widget-5-bold-duotone"
+                                    width="13"></iconify-icon
+                            ></span>
+                        </span>
+                    </div>
+
+                    <div class="tx-grid">
+                        <div class="tx-tile">
+                            <div class="top">
+                                <div class="tile" style="background: oklch(96% 0.04 60)">
+                                    <iconify-icon
+                                        icon="solar:wallet-money-bold-duotone"
+                                        style="color: var(--deco-food)"></iconify-icon>
+                                </div>
+                                <span class="date">SEN 7</span>
+                            </div>
+                            <div>
+                                <div class="desc">Gaji Bulanan</div>
+                                <div class="sub">
+                                    BCA Active ·
+                                    <span class="type-pill pill-income">Pemasukan</span>
+                                </div>
+                            </div>
+                            <div class="amt mono" style="color: var(--success)">
+                                <iconify-icon
+                                    icon="solar:add-bold-duotone"
+                                    width="14"></iconify-icon
+                                >Rp8.500.000
+                            </div>
+                        </div>
+                        <div class="tx-tile">
+                            <div class="top">
+                                <div class="tile" style="background: oklch(96% 0.04 240)">
+                                    <iconify-icon
+                                        icon="solar:cup-star-bold-duotone"
+                                        style="color: var(--deco-transport)"></iconify-icon>
+                                </div>
+                                <span class="date">SEN 7</span>
+                            </div>
+                            <div>
+                                <div class="desc">Kopi Senja</div>
+                                <div class="sub">
+                                    GoPay · <span class="type-pill pill-expense">Pengeluaran</span>
+                                </div>
+                            </div>
+                            <div class="amt mono" style="color: var(--error)">
+                                <iconify-icon
+                                    icon="solar:minus-bold-duotone"
+                                    width="14"></iconify-icon
+                                >Rp28.000
+                            </div>
+                        </div>
+                        <div class="tx-tile">
+                            <div class="top">
+                                <div class="tile" style="background: oklch(96% 0.04 330)">
+                                    <iconify-icon
+                                        icon="solar:cart-large-bold-duotone"
+                                        style="color: var(--deco-shopping)"></iconify-icon>
+                                </div>
+                                <span class="date">MIN 6</span>
+                            </div>
+                            <div>
+                                <div class="desc">Belanja Mingguan</div>
+                                <div class="sub">
+                                    BCA Active ·
+                                    <span class="type-pill pill-expense">Pengeluaran</span>
+                                </div>
+                            </div>
+                            <div class="amt mono" style="color: var(--error)">
+                                <iconify-icon
+                                    icon="solar:minus-bold-duotone"
+                                    width="14"></iconify-icon
+                                >Rp305.000
+                            </div>
+                        </div>
+                        <div class="tx-tile">
+                            <div class="top">
+                                <div class="tile" style="background: oklch(96% 0.03 310)">
+                                    <iconify-icon
+                                        icon="solar:tag-bold-duotone"
+                                        style="color: var(--secondary)"></iconify-icon>
+                                </div>
+                                <span class="date">MIN 6</span>
+                            </div>
+                            <div>
+                                <div class="desc">Biaya Admin</div>
+                                <div class="sub">
+                                    BCA Active · <span class="type-pill pill-fee">Biaya</span>
+                                </div>
+                            </div>
+                            <div class="amt mono" style="color: var(--secondary)">
+                                <iconify-icon
+                                    icon="solar:minus-bold-duotone"
+                                    width="14"></iconify-icon
+                                >Rp5.000
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="notes">
+                    <b>The grid-mode twin:</b> exactly how accounts index toggles between list and
+                    grid. Date grouping collapses into a tiny uppercase date chip per tile; category
+                    decoration drives the tile tint. Great scannability for small counts, poor for
+                    long histories — best shipped <b>as the second mode of a toggle</b>, not the
+                    default.
+                </div>
+            </div>
+
+            <!-- ════════ ALT 3 ════════ -->
+            <div class="frame-wrap">
+                <div class="frame-label">Alt 3 — Quiet Feed</div>
+                <div class="frame-tag">
+                    Borrows: <b>archived-accounts rows</b> (bg-base-200 pills, bg-base-300 tiles) +
+                    <b>Account Info card</b> (hr rows)
+                </div>
+                <div class="phone">
+                    <div class="search">
+                        <iconify-icon
+                            icon="solar:magnifer-linear"
+                            width="16"
+                            class="muted"></iconify-icon
+                        ><input placeholder="Cari transaksi atau merchant…" />
+                    </div>
+                    <div class="chips">
+                        <div class="chip active">Semua Akun ▾</div>
+                        <div class="chip">Semua Tipe ▾</div>
+                    </div>
+
+                    <div class="info-card">
+                        <h5>Ringkasan</h5>
+                        <div class="irow">
+                            <span class="l"
+                                ><iconify-icon
+                                    icon="solar:arrow-up-line-duotone"
+                                    width="15"
+                                    style="color: var(--success)"></iconify-icon
+                                >Masuk</span
+                            >
+                            <span class="v mono" style="color: var(--success)">Rp8.530.000</span>
+                        </div>
+                        <div class="irow">
+                            <span class="l"
+                                ><iconify-icon
+                                    icon="solar:arrow-down-line-duotone"
+                                    width="15"
+                                    style="color: var(--error)"></iconify-icon
+                                >Keluar</span
+                            >
+                            <span class="v mono" style="color: var(--error)">Rp1.312.000</span>
+                        </div>
+                        <div class="irow">
+                            <span class="l"
+                                ><iconify-icon
+                                    icon="solar:transfer-vertical-line-duotone"
+                                    width="15"
+                                    class="muted"></iconify-icon
+                                >Net</span
+                            >
+                            <span class="v mono" style="color: var(--success)">+Rp7.218.000</span>
+                        </div>
+                    </div>
+
+                    <div class="day-label">Sen, 7 Sep 26</div>
+                    <div class="feed-row">
+                        <div class="feed-tile">
+                            <iconify-icon
+                                icon="solar:wallet-money-bold-duotone"
+                                style="color: oklch(55% 0.02 260)"></iconify-icon>
+                        </div>
+                        <div style="flex: 1; min-width: 0">
+                            <div class="feed-desc">Gaji Bulanan</div>
+                            <div class="feed-meta">
+                                <span class="type-pill pill-income">Pemasukan</span
+                                ><span>BCA Active</span>
+                            </div>
+                        </div>
+                        <div class="feed-amt mono" style="color: var(--success)">
+                            <iconify-icon icon="solar:add-bold-duotone" width="13"></iconify-icon
+                            >Rp8.500.000
+                        </div>
+                    </div>
+                    <div class="feed-row">
+                        <div class="feed-tile">
+                            <iconify-icon
+                                icon="solar:cup-star-bold-duotone"
+                                style="color: oklch(55% 0.02 260)"></iconify-icon>
+                        </div>
+                        <div style="flex: 1; min-width: 0">
+                            <div class="feed-desc">Kopi Senja</div>
+                            <div class="feed-meta">
+                                <span class="type-pill pill-expense">Pengeluaran</span
+                                ><span>GoPay</span>
+                            </div>
+                        </div>
+                        <div class="feed-amt mono" style="color: var(--error)">
+                            <iconify-icon icon="solar:minus-bold-duotone" width="13"></iconify-icon
+                            >Rp28.000
+                        </div>
+                    </div>
+                    <div class="feed-row">
+                        <div class="feed-tile">
+                            <iconify-icon
+                                icon="solar:tag-bold-duotone"
+                                style="color: oklch(55% 0.02 260)"></iconify-icon>
+                        </div>
+                        <div style="flex: 1; min-width: 0">
+                            <div class="feed-desc">Biaya Admin</div>
+                            <div class="feed-meta">
+                                <span class="type-pill pill-fee">Biaya</span><span>BCA Active</span>
+                            </div>
+                        </div>
+                        <div class="feed-amt mono" style="color: var(--secondary)">
+                            <iconify-icon icon="solar:minus-bold-duotone" width="13"></iconify-icon
+                            >Rp2.500
+                        </div>
+                    </div>
+
+                    <div class="day-label">Min, 6 Sep 26</div>
+                    <div class="feed-row">
+                        <div class="feed-tile">
+                            <iconify-icon
+                                icon="solar:cart-large-bold-duotone"
+                                style="color: oklch(55% 0.02 260)"></iconify-icon>
+                        </div>
+                        <div style="flex: 1; min-width: 0">
+                            <div class="feed-desc">Belanja Mingguan</div>
+                            <div class="feed-meta">
+                                <span class="type-pill pill-expense">Pengeluaran</span
+                                ><span>BCA Active</span>
+                            </div>
+                        </div>
+                        <div class="feed-amt mono" style="color: var(--error)">
+                            <iconify-icon icon="solar:minus-bold-duotone" width="13"></iconify-icon
+                            >Rp305.000
+                        </div>
+                    </div>
+                </div>
+                <div class="notes">
+                    <b>The calmest:</b> summary becomes an Account-Info-style hr card; every
+                    transaction is its own base-200 rounded row with a neutral base-300 tile (icon
+                    at /50, like archived accounts). Decoration recedes to the type pill + amount
+                    color. Cheapest to implement, best for very long lists — no gradient fatigue.
+                </div>
+            </div>
+
+            <!-- ════════ ALT 4 ════════ -->
+            <div class="frame-wrap">
+                <div class="frame-label">Alt 4 — Collapsible Days</div>
+                <div class="frame-tag">
+                    Borrows: <b>Spending Category collapsible</b> (uppercase trigger + chevron, Card
+                    body) + detail info rows
+                </div>
+                <div class="phone">
+                    <div class="search">
+                        <iconify-icon
+                            icon="solar:magnifer-linear"
+                            width="16"
+                            class="muted"></iconify-icon
+                        ><input placeholder="Cari transaksi atau merchant…" />
+                    </div>
+                    <div class="chips">
+                        <div class="chip active">Semua Akun ▾</div>
+                        <div class="chip">Semua Tipe ▾</div>
+                    </div>
+
+                    <div class="col-day">
+                        <div class="col-hdr">
+                            <span class="d">Hari Ini</span>
+                            <span class="n">· 3 transaksi</span>
+                            <span class="net mono" style="color: var(--success)">+Rp8.469.500</span>
+                            <iconify-icon
+                                icon="solar:alt-arrow-up-line-duotone"
+                                width="16"
+                                class="muted"></iconify-icon>
+                        </div>
+                        <div class="col-body">
+                            <div class="crow">
+                                <div class="tile" style="background: oklch(96% 0.04 60)">
+                                    <iconify-icon
+                                        icon="solar:wallet-money-bold-duotone"
+                                        style="color: var(--deco-food)"></iconify-icon>
+                                </div>
+                                <div style="flex: 1; min-width: 0">
+                                    <div class="desc">Gaji Bulanan</div>
+                                    <div class="meta">BCA Active</div>
+                                </div>
+                                <div class="amt mono" style="color: var(--success)">
+                                    <iconify-icon
+                                        icon="solar:add-bold-duotone"
+                                        width="13"></iconify-icon
+                                    >Rp8.500.000
+                                </div>
+                            </div>
+                            <div class="crow">
+                                <div class="tile" style="background: oklch(96% 0.04 240)">
+                                    <iconify-icon
+                                        icon="solar:cup-star-bold-duotone"
+                                        style="color: var(--deco-transport)"></iconify-icon>
+                                </div>
+                                <div style="flex: 1; min-width: 0">
+                                    <div class="desc">Kopi Senja</div>
+                                    <div class="meta">GoPay</div>
+                                </div>
+                                <div class="amt mono" style="color: var(--error)">
+                                    <iconify-icon
+                                        icon="solar:minus-bold-duotone"
+                                        width="13"></iconify-icon
+                                    >Rp28.000
+                                </div>
+                            </div>
+                            <div class="crow">
+                                <div class="tile" style="background: oklch(96% 0.03 310)">
+                                    <iconify-icon
+                                        icon="solar:tag-bold-duotone"
+                                        style="color: var(--secondary)"></iconify-icon>
+                                </div>
+                                <div style="flex: 1; min-width: 0">
+                                    <div class="desc">Biaya Admin</div>
+                                    <div class="meta">BCA Active</div>
+                                </div>
+                                <div class="amt mono" style="color: var(--secondary)">
+                                    <iconify-icon
+                                        icon="solar:minus-bold-duotone"
+                                        width="13"></iconify-icon
+                                    >Rp2.500
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-day">
+                        <div class="col-hdr">
+                            <span class="d">Min, 6 Sep 26</span>
+                            <span class="n">· 2 transaksi</span>
+                            <span class="net mono" style="color: var(--error)">−Rp310.000</span>
+                            <iconify-icon
+                                icon="solar:alt-arrow-down-line-duotone"
+                                width="16"
+                                class="muted"></iconify-icon>
+                        </div>
+                    </div>
+
+                    <div class="col-day">
+                        <div class="col-hdr">
+                            <span class="d">Sab, 5 Sep 26</span>
+                            <span class="n">· 4 transaksi</span>
+                            <span class="net mono" style="color: var(--error)">−Rp845.000</span>
+                            <iconify-icon
+                                icon="solar:alt-arrow-down-line-duotone"
+                                width="16"
+                                class="muted"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+                <div class="notes">
+                    <b>The scalable one:</b> each day is a collapsible Card — trigger shows date,
+                    count and net, so a month of history fits one screen (Spending-Category pattern,
+                    Collapsible.Root already in the codebase). Today auto-expanded, older days
+                    collapsed. Decoration tiles + info-row dividers inside. Day net comes back here
+                    after we removed it — as the collapse affordance it earns its place.
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

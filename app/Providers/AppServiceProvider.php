@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use App\Events\TransactionDeleted;
 use App\Events\TransactionSaved;
-use App\Helpers\TypeScript\TypeScriptTransformer;
 use App\Listeners\InvalidateAccountBalanceCache;
 use App\Listeners\InvalidateAccountReportCache;
 use Exception;
@@ -36,11 +35,6 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }
-
-        $this->app->bind(
-            \Spatie\TypeScriptTransformer\TypeScriptTransformer::class,
-            TypeScriptTransformer::class,
-        );
     }
 
     /**
