@@ -30,6 +30,8 @@
     --font-arvo: 'Arvo';
     --font-solway: 'Solway';
 
+    --text-2xs: 0.625rem;
+
     --shadow-popover: 0px 7px 12px 3px hsla(0deg 0% 0% / 30%);
 
     --color-primary-50: color-mix(in oklab, var(--color-primary) 10%, #fff 100%);

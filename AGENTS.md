@@ -64,26 +64,21 @@ layout: (name) => {
     switch (true) {
         case name.startsWith('accounts'):
         case name.startsWith('transactions'):
-        case name.startsWith('budgets'):
         case name.startsWith('categories'):
         case name.startsWith('household'):
         case name.startsWith('settings/theme'):
-        case name.startsWith('transaction-presets'):
-        case name.startsWith('recurring-presets'):
         case name.startsWith('reports'):
-            return AppLayout;        // mobile bottom-nav layout
-
         case name.startsWith('dev'):
         case name.startsWith('dashboard'):
             return DashboardLayout;
 
         default:
-            return null;             // auth pages use no layout
+            return null;
     }
 },
 ```
 
-`AppLayout` wraps content with a bottom nav and calls `useTheme()` + `useFlashToast()`. `DashboardLayout` is a sidebar + header layout that reads `page.props.meta.current_route_name` for breadcrumbs. Auth pages use no layout wrapper.
+The switch maps all app-page prefixes (accounts, transactions, categories, household, settings/theme, reports, dev, dashboard) to `DashboardLayout` — a sidebar + header layout that calls `useFlashToast()` and reads `page.props.meta.current_route_name` for breadcrumbs — and returns `null` for everything else. Auth pages get `null` and self-wrap their content in `AuthLayout`; `home.svelte` self-wraps in `BaseLayout`. Never declare a layout inside a page component. `AppLayout` is unused — do not reference it.
 
 ## Page Props
 
@@ -190,6 +185,9 @@ components/module/
     trend-chart.svelte
   transaction/
     transaction-form.svelte
+    transaction-list-filter.svelte
+    transaction-list-item.svelte
+    transaction-list.svelte
     transaction-type-badge.svelte
   transaction-preset/
     preset-form.svelte
@@ -593,12 +591,12 @@ function destroyBudget() {
 
 <!-- As Inertia-navigating anchor (default when href provided) -->
 <Button href={AccountsController.create.url()} color="primary" size="sm">
-    <i class="iconify size-4 ph--plus-bold"></i> Add
+    <i class="iconify size-4 solar--add-bold-duotone"></i> Add
 </Button>
 
 <!-- Circle icon button -->
 <Button class="btn-circle btn-sm" color="light" variant="ghost">
-    <i class="iconify size-5 ph--arrow-left-bold"></i>
+    <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
 </Button>
 
 <!-- Sizes: default | sm | lg | icon -->
@@ -764,7 +762,7 @@ export function useTheme() {
 | `initializeFlashToast()` | `flash-handler.svelte.ts` | Wires `router.on('flash', ...)` at app boot                                             |
 | `useUrlHandler()`        | `url-handler.svelte.ts`   | Returns `currentUrl`, `isCurrentUrl()`, `isCurrentOrParentUrl()`, `whenCurrentUrl()`    |
 
-`useTheme()` and `useFlashToast()` are called inside `AppLayout` and `DashboardLayout` — do not call them again in individual page components.
+`useFlashToast()` is called inside `AuthLayout` and `DashboardLayout` — do not call it again in individual page components.
 
 ## Global Reactive State
 
@@ -800,12 +798,12 @@ Use existing components instead of raw HTML/CSS wherever possible:
 
 ## Icons
 
-Icons use the `iconify` CSS class with Phosphor icons (`ph--*`). The `-bold` suffix is the standard weight:
+Icons use the `iconify` CSS class with Solar icons (`solar--` prefix, primary) or Tabler icons (`tabler--`, secondary). The default weight suffix is `-bold-duotone`; the outline variant is `-line-duotone`. Only `solar` and `tabler` are enabled in the `@iconify/tailwind4` plugin config in `resources/css/app.css` — no other icon set is installed:
 
 ```svelte
-<i class="iconify size-5 ph--arrow-left-bold"></i>
-<i class="iconify size-4 ph--plus-bold"></i>
-<i class="iconify size-12 ph--wallet-bold"></i>
+<i class="iconify size-5 solar--arrow-left-line-duotone"></i>
+<i class="iconify size-4 solar--add-bold-duotone"></i>
+<i class="iconify size-12 solar--wallet-bold-duotone"></i>
 ```
 
 Use DaisyUI size utilities: `size-4`, `size-5`, `size-6`, `size-10`, `size-12`.
