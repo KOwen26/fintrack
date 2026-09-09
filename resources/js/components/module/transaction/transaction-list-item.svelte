@@ -10,37 +10,37 @@
         { label: string; color: string; bg: string; icon: string; signIcon: string }
     > = {
         [TransactionType.Income]: {
-            label: 'Pemasukan',
-            color: 'text-success',
-            bg: 'bg-success/12',
+            label: 'Income',
+            color: 'var(--color-success)',
+            bg: 'color-mix(in oklab, var(--color-success) 12%, transparent)',
             icon: 'solar--arrow-up-line-duotone',
             signIcon: 'solar--add-bold-duotone',
         },
         [TransactionType.Expense]: {
-            label: 'Pengeluaran',
-            color: 'text-error',
-            bg: 'bg-error/12',
+            label: 'Expense',
+            color: 'var(--color-error)',
+            bg: 'color-mix(in oklab, var(--color-error) 12%, transparent)',
             icon: 'solar--arrow-down-line-duotone',
             signIcon: 'solar--minus-bold-duotone',
         },
         [TransactionType.TransferOut]: {
-            label: 'Transfer Keluar',
-            color: 'text-warning',
-            bg: 'bg-warning/12',
+            label: 'Transfer Out',
+            color: 'var(--color-warning)',
+            bg: 'color-mix(in oklab, var(--color-warning) 12%, transparent)',
             icon: 'solar--transfer-horizontal-bold-duotone',
             signIcon: '',
         },
         [TransactionType.TransferIn]: {
-            label: 'Transfer Masuk',
-            color: 'text-info',
-            bg: 'bg-info/12',
+            label: 'Transfer In',
+            color: 'var(--color-info)',
+            bg: 'color-mix(in oklab, var(--color-info) 12%, transparent)',
             icon: 'solar--arrow-up-line-duotone',
             signIcon: 'solar--add-bold-duotone',
         },
         [TransactionType.Fee]: {
-            label: 'Biaya',
-            color: 'text-secondary',
-            bg: 'bg-secondary/12',
+            label: 'Fee',
+            color: 'var(--color-secondary)',
+            bg: 'color-mix(in oklab, var(--color-secondary) 12%, transparent)',
             icon: 'solar--transfer-horizontal-bold-duotone',
             signIcon: 'solar--minus-bold-duotone',
         },
@@ -74,8 +74,10 @@
         _class
     )}
     href={TransactionController.show.url(transaction)}>
-    <div class={cn('flex size-10 shrink-0 items-center justify-center rounded-xl', typeConfig.bg)}>
-        <i class={cn('iconify size-4', typeConfig.icon, typeConfig.color)}></i>
+    <div
+        class="flex size-10 shrink-0 items-center justify-center rounded-xl"
+        style:background={typeConfig.bg}>
+        <i class="iconify size-4 {typeConfig.icon}" style:color={typeConfig.color}></i>
     </div>
     <div class="min-w-0 flex-1">
         <div class="truncate text-sm font-semibold text-base-content">
@@ -90,14 +92,11 @@
         </div>
     </div>
     <div class="shrink-0 text-right">
-        <div class={cn('font-mono text-sm font-medium', typeConfig.color)}>
+        <div class="font-mono text-sm font-medium" style:color={typeConfig.color}>
             {#if typeConfig.signIcon}
                 <i
-                    class={cn(
-                        'iconify inline-block size-3.5',
-                        typeConfig.signIcon,
-                        typeConfig.color
-                    )}></i>
+                    class="iconify inline-block size-3.5 {typeConfig.signIcon}"
+                    style:color={typeConfig.color}></i>
             {/if}
             {Formatter.currency(transaction.amount)}
         </div>

@@ -1,8 +1,40 @@
-<script lang="ts">
-    import type { TransactionListFilters } from '@components/module/transaction/transaction-list-filter.svelte';
-    import type { RestProps } from '@type/index';
+<script lang="ts" module>
+    import type { SvelteTable } from '@tanstack/svelte-table';
     import type { App } from '@wayfinder/types';
 
+    import {
+        columnFilteringFeature,
+        createFilteredRowModel,
+        createSortedRowModel,
+        filterFn_arrHas,
+        globalFilteringFeature,
+        rowSortingFeature,
+        tableFeatures,
+    } from '@tanstack/svelte-table';
+
+    export const transactionListFeatures = tableFeatures({
+        rowSortingFeature,
+        columnFilteringFeature,
+        globalFilteringFeature,
+
+        sortedRowModel: createSortedRowModel(),
+        filteredRowModel: createFilteredRowModel(),
+
+        filterFns: {
+            arrayHas: filterFn_arrHas,
+        },
+    });
+
+    export type TransactionListFeatures = typeof transactionListFeatures;
+
+    export type TransactionListTable = SvelteTable<TransactionListFeatures, App.Models.Transaction>;
+</script>
+
+<script lang="ts">
+    import type { ColumnDef } from '@tanstack/svelte-table';
+    import type { RestProps } from '@type/index';
+
+    import { createTable } from '@tanstack/svelte-table';
     import TransactionType from '@wayfinder/App/Enums/TransactionType';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
     import { SvelteMap } from 'svelte/reactivity';
@@ -12,7 +44,11 @@
     import { cn } from '@utilities/shadcn';
 
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
-    import TransactionListFilter from '@components/module/transaction/transaction-list-filter.svelte';
+    import TransactionListFilter, {
+        FILTER_COLUMNS,
+        SORT_STATE,
+        toSortKey,
+    } from '@components/module/transaction/transaction-list-filter.svelte';
     import TransactionListItem from '@components/module/transaction/transaction-list-item.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
@@ -24,104 +60,111 @@
 
     let { transactions, class: _class }: Props = $props();
 
-    /* ── Filters (owned here, mutated via TransactionListFilter) ── */
+    const columns: ColumnDef<typeof transactionListFeatures, App.Models.Transaction>[] = [
+        { accessorKey: 'id', enableGlobalFilter: false },
+        { accessorKey: 'transaction_date', enableGlobalFilter: false },
+        { accessorKey: 'amount', enableGlobalFilter: true },
+        {
+            id: 'description',
+            accessorFn: (row) => row.description ?? '',
+            enableGlobalFilter: true,
+        },
+        {
+            id: 'category_name',
+            accessorFn: (row) => row.category?.name ?? '',
+            enableGlobalFilter: true,
+        },
+        {
+            id: 'account_name',
+            accessorFn: (row) => row.account?.name ?? '',
+            enableGlobalFilter: true,
+        },
+        {
+            id: FILTER_COLUMNS.account_id,
+            accessorFn: (row) => row.account?.id,
+            filterFn: 'arrayHas',
+            enableGlobalFilter: false,
+        },
+        {
+            id: FILTER_COLUMNS.category_id,
+            accessorFn: (row) => row.category?.id,
+            filterFn: 'arrayHas',
+            enableGlobalFilter: false,
+        },
+        {
+            accessorKey: 'type',
+            filterFn: 'arrayHas',
+            enableGlobalFilter: false,
+        },
+    ];
 
-    let filters = $state<TransactionListFilters>({
-        search: '',
-        accountIds: [],
-        categoryIds: [],
-        types: [],
-        sort: 'newest',
+    const table = createTable({
+        features: transactionListFeatures,
+        columns,
+        get data() {
+            return transactions;
+        },
+        getRowId: (row) => String(row.id),
     });
 
-    /* ── Derived filtered list ───────────────────────────── */
+    /* ── Derived views ───────────────────────────────────── */
 
-    const filteredTransactions = $derived.by<App.Models.Transaction[]>(() => {
-        let list = [...transactions];
-
-        const q = filters.search.trim().toLowerCase();
-        if (q) {
-            list = list.filter(
-                (t) =>
-                    t.description.toLowerCase().includes(q) ||
-                    t.category.name.toLowerCase().includes(q) ||
-                    t.account.name.toLowerCase().includes(q)
-            );
-        }
-
-        if (filters.accountIds.length) {
-            list = list.filter((t) => filters.accountIds.includes(t.account.id));
-        }
-        if (filters.categoryIds.length) {
-            list = list.filter((t) => filters.categoryIds.includes(t.category.id));
-        }
-        if (filters.types.length) {
-            list = list.filter((t) => filters.types.includes(t.type));
-        }
-
-        list.sort((a, b) => {
-            if (filters.sort === 'newest')
-                return b.transaction_date.localeCompare(a.transaction_date) || b.id - a.id;
-            if (filters.sort === 'oldest')
-                return a.transaction_date.localeCompare(b.transaction_date) || a.id - b.id;
-            if (filters.sort === 'highest') return b.amount - a.amount;
-            if (filters.sort === 'lowest') return a.amount - b.amount;
-
-            return 0;
-        });
-
-        return list;
-    });
+    const filteredTransactions = $derived(
+        table.getFilteredRowModel().rows.map((row) => row.original)
+    );
 
     /* ── Group by date ───────────────────────────────────── */
 
     const groupedTransactions = $derived.by<[string, App.Models.Transaction[]][]>(() => {
-        const map = new SvelteMap<string, App.Models.Transaction[]>();
-        for (const t of filteredTransactions) {
-            const g = map.get(t.transaction_date);
-            if (g) g.push(t);
-            else map.set(t.transaction_date, [t]);
-        }
-        const dates = [...map.keys()];
-        if (filters.sort === 'oldest') dates.sort();
-        else dates.sort().reverse();
+        const groups = new SvelteMap<string, App.Models.Transaction[]>();
 
-        return dates.map((d) => [d, map.get(d)!] as [string, App.Models.Transaction[]]);
+        for (const row of table.getRowModel().rows) {
+            const transaction = row.original;
+            const group = groups.get(transaction.transaction_date);
+
+            if (group) group.push(transaction);
+            else groups.set(transaction.transaction_date, [transaction]);
+        }
+
+        return [...groups.entries()];
     });
 
     /* ── Summary ─────────────────────────────────────────── */
 
     const summary = $derived.by(() => {
-        let inc = 0,
-            exp = 0;
-        for (const t of filteredTransactions) {
-            if (t.type === TransactionType.Income || t.type === TransactionType.TransferIn)
-                inc += t.amount;
-            else if (t.type === TransactionType.Expense || t.type === TransactionType.Fee)
-                exp += t.amount;
-        }
-        const net = inc - exp;
+        let income = 0;
+        let expense = 0;
 
-        return { income: inc, expense: exp, net };
+        for (const transaction of filteredTransactions) {
+            if (
+                transaction.type === TransactionType.Income ||
+                transaction.type === TransactionType.TransferIn
+            )
+                income += transaction.amount;
+            else if (
+                transaction.type === TransactionType.Expense ||
+                transaction.type === TransactionType.Fee
+            )
+                expense += transaction.amount;
+        }
+
+        return { income, expense, net: income - expense };
     });
 
     /* ── Active filter state ─────────────────────────────── */
 
     const hasActiveFilters = $derived(
-        filters.accountIds.length > 0 ||
-            filters.categoryIds.length > 0 ||
-            filters.types.length > 0 ||
-            filters.sort !== 'newest'
+        table.atoms.columnFilters.get().length > 0 ||
+            Boolean(table.atoms.globalFilter.get()) ||
+            toSortKey(table.atoms.sorting.get()) !== 'newest'
     );
 
     /* ── Reset ───────────────────────────────────────────── */
 
     function resetAllFilters() {
-        filters.search = '';
-        filters.accountIds = [];
-        filters.categoryIds = [];
-        filters.types = [];
-        filters.sort = 'newest';
+        table.resetGlobalFilter();
+        table.resetColumnFilters();
+        table.setSorting(SORT_STATE.newest);
     }
 
     /* ── Load more ───────────────────────────────────────── */
@@ -135,7 +178,7 @@
 
 <div class={cn('flex flex-col gap-3', _class)}>
     <!-- ── SEARCH + FILTERS ────────────────────────────────── -->
-    <TransactionListFilter {transactions} bind:filters />
+    <TransactionListFilter {table} {transactions} />
 
     <!-- ── SUMMARY STRIP ───────────────────────────────────── -->
     {#if transactions.length > 0}
@@ -145,22 +188,22 @@
     <!-- ── TRANSACTION LIST ────────────────────────────────── -->
     {#if filteredTransactions.length === 0}
         <!-- Empty state -->
-        {#if hasActiveFilters || filters.search}
+        {#if hasActiveFilters}
             <EmptyItemPlaceholder
-                ctaLabel="Reset semua filter"
+                ctaLabel="Reset all filters"
                 ctaOnclick={resetAllFilters}
                 icon="solar--magnifer-bold-duotone"
-                label="Tidak ada transaksi yang cocok dengan filter yang dipilih." />
+                label="No transactions match the selected filters." />
         {:else}
             <EmptyItemPlaceholder
-                ctaLabel="Tambah transaksi"
+                ctaLabel="Add transaction"
                 ctaUrl={TransactionController.create.url()}
                 icon="solar--magnifer-bold-duotone"
-                label="Tidak ada transaksi" />
+                label="No transactions" />
         {/if}
     {:else}
         <div class="flex flex-col">
-            {#each groupedTransactions as [date, txns], i (i)}
+            {#each groupedTransactions as [date, txns] (date)}
                 <!-- Day header -->
                 <div class="group mb-2">
                     <div class="flex items-center justify-between px-1 pb-2">
@@ -169,7 +212,7 @@
                                 >{DateTimeHelper.format(date, 'day-date')}</span>
                             <span
                                 class="rounded-full bg-base-content/10 px-2 py-0.5 text-2xs font-semibold text-base-content/40">
-                                {txns.length} transaksi
+                                {txns.length} transactions
                             </span>
                         </div>
                     </div>
@@ -190,12 +233,10 @@
                 class="mx-0 mt-2 mb-0 flex w-full items-center justify-center gap-2 rounded-2xl bg-base-100 px-4 py-3.5 font-sans text-sm font-semibold text-primary shadow-xs transition-colors duration-150 hover:bg-primary/10"
                 onclick={loadMore}>
                 <i class="iconify size-3.5 solar--alt-arrow-down-line-duotone"></i>
-                Muat lebih banyak
+                Load more
             </button>
         {:else}
-            <p class="py-3 text-center text-xs text-base-content/40">
-                Semua transaksi sudah ditampilkan
-            </p>
+            <p class="py-3 text-center text-xs text-base-content/40">All transactions are shown</p>
         {/if}
     {/if}
 </div>
@@ -207,7 +248,7 @@
                 <div
                     class="flex items-center gap-1 text-2xs font-bold tracking-wider text-base-content/40 uppercase">
                     <i class="iconify size-3 text-success solar--arrow-up-line-duotone"></i>
-                    Masuk
+                    Income
                 </div>
                 <div class="font-mono text-sm font-medium text-success">
                     {#if summary.income > 0}
@@ -222,7 +263,7 @@
                 <div
                     class="flex items-center gap-1 text-2xs font-bold tracking-wider text-base-content/40 uppercase">
                     <i class="iconify size-3 text-error solar--arrow-down-line-duotone"></i>
-                    Keluar
+                    Expense
                 </div>
                 <div class="font-mono text-sm font-medium text-error">
                     {#if summary.expense > 0}
@@ -240,7 +281,6 @@
                 </div>
                 <div
                     class="font-mono text-sm font-medium"
-                    class:font-medium={true}
                     class:text-error={summary.net < 0}
                     class:text-success={summary.net >= 0}>
                     {#if summary.net !== 0}

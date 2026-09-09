@@ -1,16 +1,53 @@
 <script lang="ts" module>
-    import type { App } from '@wayfinder/types';
+    import type { ColumnFiltersState, SortingState } from '@tanstack/svelte-table';
 
-    export interface TransactionListFilters {
-        search: string;
-        accountIds: number[];
-        categoryIds: number[];
-        types: App.Enums.TransactionType[];
-        sort: string; // 'newest' | 'oldest' | 'highest' | 'lowest'
+    /** Column ids (on the transaction list table) that this filter drives. */
+    export const FILTER_COLUMNS = {
+        account_id: 'account_id',
+        category_id: 'category_id',
+        type: 'type',
+    } as const;
+
+    /** Friendly sort keys used by the filter UI. */
+    export type SortKey = 'newest' | 'oldest' | 'highest' | 'lowest';
+
+    /** Maps a UI sort key to TanStack `SortingState`. */
+    export const SORT_STATE: Record<SortKey, SortingState> = {
+        newest: [
+            { id: 'transaction_date', desc: true },
+            { id: 'id', desc: true },
+        ],
+        oldest: [
+            { id: 'transaction_date', desc: false },
+            { id: 'id', desc: false },
+        ],
+        highest: [{ id: 'amount', desc: true }],
+        lowest: [{ id: 'amount', desc: false }],
+    };
+
+    /** Reverse-derives the UI sort key from the table's current sorting state. */
+    export function toSortKey(sorting: SortingState): SortKey {
+        const primary = sorting[0];
+
+        if (!primary) return 'newest';
+        if (primary.id === 'transaction_date') return primary.desc ? 'newest' : 'oldest';
+        if (primary.id === 'amount') return primary.desc ? 'highest' : 'lowest';
+
+        return 'newest';
+    }
+
+    /** Reads an array-valued column filter (empty array when the filter is off). */
+    export function getArrayFilter<T>(filters: ColumnFiltersState, columnId: string): T[] {
+        const value = filters.find((filter) => filter.id === columnId)?.value;
+
+        return Array.isArray(value) ? (value as T[]) : [];
     }
 </script>
 
 <script lang="ts">
+    import type { TransactionListTable } from './transaction-list.svelte';
+    import type { App } from '@wayfinder/types';
+
     import { TYPE_STYLE } from './transaction-list-item.svelte';
 
     import { getDecorationColor } from '@data/decoration-colors';
@@ -23,79 +60,128 @@
 
     interface Props {
         transactions: App.Models.Transaction[];
-        filters: TransactionListFilters;
+        table: TransactionListTable;
     }
 
-    let { transactions, filters = $bindable() }: Props = $props();
+    let { transactions, table }: Props = $props();
+
+    /* ── Table state (read reactively from the table atoms) ─ */
+
+    const columnFilters = $derived(table.atoms.columnFilters.get());
+    const search = $derived((table.atoms.globalFilter.get() as string | undefined) ?? '');
+    const sortKey = $derived(toSortKey(table.atoms.sorting.get()));
+
+    const accountIds = $derived(getArrayFilter<number>(columnFilters, FILTER_COLUMNS.account_id));
+    const categoryIds = $derived(getArrayFilter<number>(columnFilters, FILTER_COLUMNS.category_id));
+    const types = $derived(
+        getArrayFilter<App.Enums.TransactionType>(columnFilters, FILTER_COLUMNS.type)
+    );
 
     /* ── State ───────────────────────────────────────────── */
 
     // Sheet
+    type SheetKind = 'account' | 'category' | 'type' | 'sort';
+
+    /** Leading badge: an icon or short text on a tinted square (direct CSS). */
+    interface RowBadge {
+        icon?: string;
+        text?: string;
+        background: string;
+        color: string;
+    }
+
+    /** One selectable row inside the active sheet. */
+    interface SheetOption {
+        key: string;
+        label: string;
+        selected: boolean;
+        onSelect: () => void;
+        badge?: RowBadge;
+    }
+
     let sheetOpen = $state(false);
-    let sheetKind = $state<string | null>(null);
+    let sheetKind = $state<SheetKind | null>(null);
     let sheetTitle = $state('');
 
     // Temp filters (while sheet is open)
     let tAccountIds: number[] = $state([]);
     let tCategoryIds: number[] = $state([]);
     let tTypes: App.Enums.TransactionType[] = $state([]);
-    let tSort: string = $state('newest');
+    let tSort: SortKey = $state('newest');
 
     /* ── Derived options ─────────────────────────────────── */
 
     const uniqueAccounts = $derived<
         { id: number; name: string; decorations?: App.Models.Account['decorations'] }[]
-    >([...new Map(transactions.map((t) => [t.account.id, t.account])).values()] as any);
+    >([
+        ...new Map(
+            transactions.flatMap((t) => (t.account ? [[t.account.id, t.account]] : []))
+        ).values(),
+    ]);
 
     const uniqueCategories = $derived<
         { id: number; name: string; decorations?: App.Models.Category['decorations'] }[]
-    >([...new Map(transactions.map((t) => [t.category.id, t.category])).values()] as any);
+    >([
+        ...new Map(
+            transactions.flatMap((t) => (t.category ? [[t.category.id, t.category]] : []))
+        ).values(),
+    ]);
+
+    /* ── Table mutations ─────────────────────────────────── */
+
+    // An empty array must unset the filter, otherwise the in-array filter fn
+    // would reject every row.
+    function setArrayFilter(columnId: string, ids: unknown[]) {
+        table.getColumn(columnId)?.setFilterValue(ids.length ? [...ids] : undefined);
+    }
 
     /* ── Active filter tags ──────────────────────────────── */
-
     const activeFilters = $derived.by(() => {
         const tags: { label: string; icon?: string; onClear: () => void }[] = [];
 
-        for (const id of filters.accountIds) {
-            const a = uniqueAccounts.find((x) => x.id === id);
-            if (a)
+        for (const id of accountIds) {
+            const account = uniqueAccounts.find((x) => x.id === id);
+            if (account)
                 tags.push({
-                    label: a.name,
+                    label: account.name,
                     onClear: () => {
-                        filters.accountIds = filters.accountIds.filter((x) => x !== id);
+                        setArrayFilter(
+                            FILTER_COLUMNS.account_id,
+                            accountIds.filter((x) => x !== id)
+                        );
                     },
                 });
         }
-        for (const id of filters.categoryIds) {
-            const c = uniqueCategories.find((x) => x.id === id);
-            if (c)
+        for (const id of categoryIds) {
+            const category = uniqueCategories.find((x) => x.id === id);
+            if (category)
                 tags.push({
-                    label: c.name,
+                    label: category.name,
                     onClear: () => {
-                        filters.categoryIds = filters.categoryIds.filter((x) => x !== id);
+                        setArrayFilter(
+                            FILTER_COLUMNS.category_id,
+                            categoryIds.filter((x) => x !== id)
+                        );
                     },
                 });
         }
-        for (const t of filters.types) {
+        for (const type of types) {
             tags.push({
-                label: TYPE_STYLE[t].label,
+                label: TYPE_STYLE[type].label,
                 onClear: () => {
-                    filters.types = filters.types.filter((x) => x !== t);
+                    setArrayFilter(
+                        FILTER_COLUMNS.type,
+                        types.filter((x) => x !== type)
+                    );
                 },
             });
         }
-        if (filters.sort !== 'newest') {
-            const lbl =
-                filters.sort === 'oldest'
-                    ? 'Terlama'
-                    : filters.sort === 'highest'
-                      ? 'Terbesar'
-                      : 'Terkecil';
+        if (sortKey !== 'newest') {
             tags.push({
-                label: lbl,
+                label: SORT_LABELS[sortKey],
                 icon: 'solar--sort-vertical-line-duotone',
                 onClear: () => {
-                    filters.sort = 'newest';
+                    table.setSorting(SORT_STATE.newest);
                 },
             });
         }
@@ -105,19 +191,20 @@
 
     /* ── Sheet helpers ───────────────────────────────────── */
 
-    function openSheet(kind: string) {
-        tAccountIds = [...filters.accountIds];
-        tCategoryIds = [...filters.categoryIds];
-        tTypes = [...filters.types];
-        tSort = filters.sort;
+    const SHEET_TITLES: Record<SheetKind, string> = {
+        account: 'Account',
+        category: 'Category',
+        type: 'Transaction Type',
+        sort: 'Sort',
+    };
 
-        const titles: Record<string, string> = {
-            account: 'Akun',
-            category: 'Kategori',
-            type: 'Tipe Transaksi',
-            sort: 'Urutkan',
-        };
-        sheetTitle = titles[kind] ?? 'Filter';
+    function openSheet(kind: SheetKind) {
+        tAccountIds = [...accountIds];
+        tCategoryIds = [...categoryIds];
+        tTypes = [...types];
+        tSort = sortKey;
+
+        sheetTitle = SHEET_TITLES[kind];
         sheetKind = kind;
         sheetOpen = true;
     }
@@ -128,118 +215,174 @@
     }
 
     function applyFilter() {
-        filters.accountIds = tAccountIds;
-        filters.categoryIds = tCategoryIds;
-        filters.types = tTypes;
-        filters.sort = tSort;
+        setArrayFilter(FILTER_COLUMNS.account_id, tAccountIds);
+        setArrayFilter(FILTER_COLUMNS.category_id, tCategoryIds);
+        setArrayFilter(FILTER_COLUMNS.type, tTypes);
+        table.setSorting(SORT_STATE[tSort]);
         closeSheet();
     }
 
-    /* ── Sheet content builders ──────────────────────────── */
-
-    function toggleAccount(id: number) {
-        const i = tAccountIds.indexOf(id);
-        if (i >= 0) tAccountIds.splice(i, 1);
-        else tAccountIds.push(id);
-        tAccountIds = [...tAccountIds]; // trigger reactivity
+    /** Pure toggle — returns a new array with `item` added or removed. */
+    function toggled<T>(list: T[], item: T): T[] {
+        return list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
     }
 
-    function selectAllAccounts() {
-        tAccountIds = [];
-    }
+    /** Direct-CSS badge colors from an optional decoration color slug. */
+    function decorationBadgeColors(color?: string): { background: string; color: string } {
+        const hex = color ? getDecorationColor(color)?.hex : undefined;
 
-    function toggleCategory(id: number) {
-        const i = tCategoryIds.indexOf(id);
-        if (i >= 0) tCategoryIds.splice(i, 1);
-        else tCategoryIds.push(id);
-        tCategoryIds = [...tCategoryIds];
-    }
-
-    function toggleType(t: App.Enums.TransactionType) {
-        const i = tTypes.indexOf(t);
-        if (i >= 0) tTypes.splice(i, 1);
-        else tTypes.push(t);
-        tTypes = [...tTypes];
-    }
-
-    function selectAllTypes() {
-        tTypes = [];
+        return {
+            background: hex ? `${hex}20` : 'var(--color-base-300)',
+            color: hex ?? 'color-mix(in oklab, var(--color-base-content) 60%, transparent)',
+        };
     }
 
     /* ── Chip data ─────────────────────────────────────────── */
 
-    const filterChips = $derived<{ kind: string; label: string; active: boolean }[]>([
+    /** Single source for sort-key labels — active tags and sheet options. */
+    const SORT_LABELS: Record<SortKey, string> = {
+        newest: 'Newest',
+        oldest: 'Oldest',
+        highest: 'Highest',
+        lowest: 'Lowest',
+    };
+
+    const sortOptions = (Object.entries(SORT_LABELS) as [SortKey, string][]).map(([id, label]) => ({
+        id,
+        label,
+    }));
+
+    const filterChips = $derived<{ kind: SheetKind; label: string; active: boolean }[]>([
         {
             kind: 'account',
             label:
-                filters.accountIds.length === 0
-                    ? 'Semua Akun'
-                    : filters.accountIds.length === 1
-                      ? (uniqueAccounts.find((a) => a.id === filters.accountIds[0])?.name ??
-                        '1 Akun')
-                      : `${filters.accountIds.length} Akun`,
-            active: filters.accountIds.length > 0,
+                accountIds.length === 0
+                    ? 'All Accounts'
+                    : accountIds.length === 1
+                      ? (uniqueAccounts.find((a) => a.id === accountIds[0])?.name ?? '1 Account')
+                      : `${accountIds.length} Accounts`,
+            active: accountIds.length > 0,
         },
         {
             kind: 'category',
             label:
-                filters.categoryIds.length === 0
-                    ? 'Semua Kategori'
-                    : filters.categoryIds.length === 1
-                      ? (uniqueCategories.find((c) => c.id === filters.categoryIds[0])?.name ??
-                        '1 Kategori')
-                      : `${filters.categoryIds.length} Kategori`,
-            active: filters.categoryIds.length > 0,
+                categoryIds.length === 0
+                    ? 'All Categories'
+                    : categoryIds.length === 1
+                      ? (uniqueCategories.find((c) => c.id === categoryIds[0])?.name ??
+                        '1 Category')
+                      : `${categoryIds.length} Categories`,
+            active: categoryIds.length > 0,
         },
         {
             kind: 'type',
             label:
-                filters.types.length === 0
-                    ? 'Semua Tipe'
-                    : filters.types.length === 1
-                      ? TYPE_STYLE[filters.types[0]].label
-                      : `${filters.types.length} Tipe`,
-            active: filters.types.length > 0,
-        },
-        {
-            kind: 'sort',
-            label:
-                filters.sort === 'newest'
-                    ? 'Terbaru'
-                    : filters.sort === 'oldest'
-                      ? 'Terlama'
-                      : filters.sort === 'highest'
-                        ? 'Terbesar'
-                        : 'Terkecil',
-            active: filters.sort !== 'newest',
+                types.length === 0
+                    ? 'All Types'
+                    : types.length === 1
+                      ? TYPE_STYLE[types[0]].label
+                      : `${types.length} Types`,
+            active: types.length > 0,
         },
     ]);
+
+    /* ── Sheet content ───────────────────────────────────── */
+
+    /** Normalized option list for the active sheet — the markup stays generic. */
+    const sheetOptions = $derived.by<SheetOption[]>(() => {
+        switch (sheetKind) {
+            case 'account':
+                return [
+                    {
+                        key: 'all',
+                        label: 'All Accounts',
+                        selected: tAccountIds.length === 0,
+                        onSelect: () => (tAccountIds = []),
+                        badge: {
+                            text: 'ALL',
+                            background:
+                                'color-mix(in oklab, var(--color-primary) 10%, transparent)',
+                            color: 'var(--color-primary)',
+                        },
+                    },
+                    ...uniqueAccounts.map((acct): SheetOption => ({
+                        key: String(acct.id),
+                        label: acct.name,
+                        selected: tAccountIds.includes(acct.id),
+                        onSelect: () => (tAccountIds = toggled(tAccountIds, acct.id)),
+                        badge: {
+                            icon: 'solar--banknote-2-bold-duotone',
+                            ...decorationBadgeColors(acct.decorations?.color),
+                        },
+                    })),
+                ];
+            case 'category':
+                return [
+                    {
+                        key: 'all',
+                        label: 'All Categories',
+                        selected: tCategoryIds.length === 0,
+                        onSelect: () => (tCategoryIds = []),
+                        badge: {
+                            icon: 'solar--tag-bold-duotone',
+                            ...decorationBadgeColors(),
+                        },
+                    },
+                    ...uniqueCategories.map((cat): SheetOption => ({
+                        key: String(cat.id),
+                        label: cat.name,
+                        selected: tCategoryIds.includes(cat.id),
+                        onSelect: () => (tCategoryIds = toggled(tCategoryIds, cat.id)),
+                        badge: {
+                            icon: 'solar--tag-bold-duotone',
+                            ...decorationBadgeColors(cat.decorations?.color),
+                        },
+                    })),
+                ];
+            case 'type':
+                return Object.entries(TYPE_STYLE).map(([key, cfg]): SheetOption => {
+                    const type = key as App.Enums.TransactionType;
+
+                    return {
+                        key,
+                        label: cfg.label,
+                        selected: tTypes.includes(type),
+                        onSelect: () => (tTypes = toggled(tTypes, type)),
+                        badge: {
+                            text: cfg.label.charAt(0),
+                            background: cfg.bg,
+                            color: cfg.color,
+                        },
+                    };
+                });
+            case 'sort':
+                return sortOptions.map((opt): SheetOption => ({
+                    key: opt.id,
+                    label: opt.label,
+                    selected: tSort === opt.id,
+                    onSelect: () => (tSort = opt.id),
+                }));
+            default:
+                return [];
+        }
+    });
 </script>
 
 <div class="flex flex-col gap-3">
     <!-- ── SEARCH ───────────────────────────────────────────── -->
     <div class="flex items-center gap-2 rounded-xl bg-base-100 px-3.5 py-2.5 shadow-xs">
-        <svg
-            class="size-4 shrink-0 text-base-content/40"
-            fill="none"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2.2"
-            viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" x2="16.65" y1="21" y2="16.65" />
-        </svg>
+        <i class="iconify size-4 shrink-0 text-base-content/40 solar--magnifer-line-duotone"></i>
         <input
             class="flex-1 bg-transparent text-sm text-base-content outline-none placeholder:text-base-content/40"
-            placeholder="Cari transaksi atau merchant…"
+            oninput={(e) => table.setGlobalFilter(e.currentTarget.value || undefined)}
+            placeholder="Search transactions"
             type="text"
-            bind:value={filters.search} />
-        {#if filters.search}
+            value={search} />
+        {#if search}
             <button
                 class="flex items-center justify-center text-base-content/40 hover:text-base-content"
-                aria-label="Bersihkan pencarian"
-                onclick={() => (filters.search = '')}>
+                aria-label="Clear search"
+                onclick={() => table.setGlobalFilter(undefined)}>
                 <i class="iconify size-4 solar--close-line-duotone"></i>
             </button>
         {/if}
@@ -267,11 +410,11 @@
         <button
             class={cn(
                 'border-1.5 flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150',
-                filters.sort !== 'newest'
+                sortKey !== 'newest'
                     ? 'border-primary bg-primary text-primary-content'
                     : 'border-base-content/10 bg-base-100 text-base-content/60 hover:border-primary'
             )}
-            aria-label="Urutkan"
+            aria-label="Sort"
             onclick={() => openSheet('sort')}>
             <i class="iconify size-3.5 solar--sort-vertical-line-duotone"></i>
         </button>
@@ -294,201 +437,45 @@
 
     <!-- ── BOTTOM SHEET ────────────────────────────────────── -->
     <DrawerModal
-        contentClass="mx-auto w-full max-w-md rounded-t-2xl"
+        contentClass="mx-auto w-full max-w-md rounded-t-xl"
         title={sheetTitle}
         bind:open={sheetOpen}>
         {#snippet actionButton()}
             <button
                 class="btn btn-block rounded-2xl font-bold normal-case btn-primary"
                 onclick={applyFilter}>
-                Terapkan Filter
+                Apply Filters
             </button>
         {/snippet}
 
-        {#if sheetKind === 'account'}
-            <!-- Account filter -->
+        {#each sheetOptions as option (option.key)}
             <button
                 class={cn(
                     'flex w-full items-center gap-3 px-5 py-3 text-left font-sans transition-colors duration-100',
-                    tAccountIds.length === 0 ? 'bg-info/10' : 'hover:bg-base-200/60'
+                    option.selected ? 'bg-info/10' : 'hover:bg-base-200/60'
                 )}
-                onclick={selectAllAccounts}>
-                <div
-                    class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-xs font-bold text-primary">
-                    ALL
-                </div>
-                <div class="flex-1">
-                    <div class="text-sm font-semibold text-base-content">Semua Akun</div>
-                </div>
-                <div
-                    class={cn(
-                        'flex size-5 shrink-0 items-center justify-center rounded-md border-2 transition-all',
-                        tAccountIds.length === 0
-                            ? 'border-info bg-info text-white'
-                            : 'border-base-content/20'
-                    )}>
-                    {#if tAccountIds.length === 0}
-                        <i class="iconify text-[10px] text-white solar--check-circle-bold-duotone"
-                        ></i>
-                    {/if}
-                </div>
-            </button>
-            <div class="mx-5 border-t border-base-content/10"></div>
-            {#each uniqueAccounts as acct, i (i)}
-                {@const selected = tAccountIds.includes(acct.id)}
-                <button
-                    class={cn(
-                        'flex w-full items-center gap-3 px-5 py-3 text-left font-sans transition-colors duration-100',
-                        selected ? 'bg-info/10' : 'hover:bg-base-200/60'
-                    )}
-                    onclick={() => toggleAccount(acct.id)}>
-                    <div
-                        style:background={acct.decorations?.color
-                            ? getDecorationColor(acct.decorations.color)?.value + '20'
-                            : 'var(--color-base-300)'}
-                        style:color={acct.decorations?.color
-                            ? getDecorationColor(acct.decorations.color)?.value
-                            : 'var(--color-base-content/60)'}
-                        class="flex size-9 shrink-0 items-center justify-center rounded-xl text-base">
-                        <i class="iconify size-4 solar--banknote-2-bold-duotone"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div class="text-sm font-semibold text-base-content">
-                            {acct.name}
-                        </div>
-                    </div>
-                    <div
-                        class={cn(
-                            'flex size-5 shrink-0 items-center justify-center rounded-md border-2 transition-all',
-                            selected ? 'border-info bg-info text-white' : 'border-base-content/20'
-                        )}>
-                        {#if selected}
-                            <i
-                                class="iconify text-[10px] text-white solar--check-circle-bold-duotone"
-                            ></i>
-                        {/if}
-                    </div>
-                </button>
-            {/each}
-        {:else if sheetKind === 'category'}
-            <!-- Category filter -->
-            <div class="flex items-center justify-between px-5 pt-3 pb-1">
-                <span
-                    class="text-[0.65rem] font-bold tracking-widest text-base-content/40 uppercase">
-                    {tCategoryIds.length > 0 ? `${tCategoryIds.length} dipilih` : 'Semua kategori'}
-                </span>
-                {#if tCategoryIds.length > 0}
-                    <button
-                        class="text-xs font-semibold text-info"
-                        onclick={() => (tCategoryIds = [])}>
-                        Reset
-                    </button>
+                onclick={option.onSelect}>
+                {@render optionBadge(option.badge)}
+
+                <div class="flex-1 text-sm font-medium text-base-content">{option.label}</div>
+
+                {#if option.selected}
+                    <i class="iconify size-5 shrink-0 text-info solar--check-read-line-duotone"></i>
                 {/if}
-            </div>
-            <div class="grid grid-cols-3 gap-2 px-5 py-3">
-                {#each uniqueCategories as cat, i (i)}
-                    {@const selected = tCategoryIds.includes(cat.id)}
-                    <button
-                        class={cn(
-                            'border-1.5 flex flex-col items-center gap-1.5 rounded-2xl px-2 py-3 font-sans transition-all duration-140',
-                            selected
-                                ? 'border-info bg-info/10'
-                                : 'border-base-content/10 bg-transparent hover:border-primary'
-                        )}
-                        onclick={() => toggleCategory(cat.id)}>
-                        <div
-                            style:color={cat.decorations?.color
-                                ? getDecorationColor(cat.decorations.color)?.value
-                                : undefined}
-                            class="text-lg">
-                            <i class="iconify size-5 solar--tag-bold-duotone"></i>
-                        </div>
-                        <span
-                            class={cn(
-                                'text-center text-[0.67rem] leading-tight font-semibold',
-                                selected ? 'text-info' : 'text-base-content/60'
-                            )}>
-                            {cat.name}
-                        </span>
-                    </button>
-                {/each}
-            </div>
-        {:else if sheetKind === 'type'}
-            <!-- Type filter -->
-            <button
-                class={cn(
-                    'flex w-full items-center justify-between px-5 py-3 text-left font-sans transition-colors duration-100',
-                    tTypes.length === 0 ? 'bg-info/10' : 'hover:bg-base-200/60'
-                )}
-                onclick={selectAllTypes}>
-                <span class="flex items-center gap-2.5 text-sm font-medium text-base-content">
-                    Semua Tipe
-                </span>
-                <div
-                    class={cn(
-                        'flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-all',
-                        tTypes.length === 0 ? 'border-info bg-info' : 'border-base-content/20'
-                    )}>
-                    {#if tTypes.length === 0}
-                        <span class="size-2 rounded-full bg-white"></span>
-                    {/if}
-                </div>
             </button>
-            <div class="mx-5 border-t border-base-content/10"></div>
-            {#each Object.entries(TYPE_STYLE) as [key, cfg], i (i)}
-                {@const t = key as App.Enums.TransactionType}
-                {@const selected = tTypes.includes(t)}
-                <button
-                    class={cn(
-                        'flex w-full items-center justify-between px-5 py-3 text-left font-sans transition-colors duration-100',
-                        selected ? 'bg-info/10' : 'hover:bg-base-200/60'
-                    )}
-                    onclick={() => toggleType(t)}>
-                    <span class="flex items-center gap-2.5 text-sm font-medium text-base-content">
-                        <span
-                            class={cn(
-                                'flex size-7 items-center justify-center rounded-lg text-xs font-bold',
-                                cfg.bg,
-                                cfg.color
-                            )}>
-                            {cfg.label.charAt(0)}
-                        </span>
-                        {cfg.label}
-                    </span>
-                    <div
-                        class={cn(
-                            'flex size-5 shrink-0 items-center justify-center rounded-md border-2 transition-all',
-                            selected ? 'border-info bg-info text-white' : 'border-base-content/20'
-                        )}>
-                        {#if selected}
-                            <i
-                                class="iconify text-[10px] text-white solar--check-circle-bold-duotone"
-                            ></i>
-                        {/if}
-                    </div>
-                </button>
-            {/each}
-        {:else if sheetKind === 'sort'}
-            <!-- Sort options -->
-            {#each [{ id: 'newest', label: 'Terbaru dulu' }, { id: 'oldest', label: 'Terlama dulu' }, { id: 'highest', label: 'Nominal terbesar' }, { id: 'lowest', label: 'Nominal terkecil' }] as opt, i (i)}
-                <button
-                    class={cn(
-                        'flex w-full items-center justify-between px-5 py-3 text-left font-sans transition-colors duration-100',
-                        tSort === opt.id ? 'bg-info/10' : 'hover:bg-base-200/60'
-                    )}
-                    onclick={() => (tSort = opt.id)}>
-                    <span class="text-sm font-medium text-base-content">{opt.label}</span>
-                    <div
-                        class={cn(
-                            'flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-all',
-                            tSort === opt.id ? 'border-info bg-info' : 'border-base-content/20'
-                        )}>
-                        {#if tSort === opt.id}
-                            <span class="size-2 rounded-full bg-white"></span>
-                        {/if}
-                    </div>
-                </button>
-            {/each}
-        {/if}
+        {/each}
     </DrawerModal>
 </div>
+
+{#snippet optionBadge(badge)}
+    <div
+        style:background={badge.background}
+        style:color={badge.color}
+        class="flex size-8 shrink-0 items-center justify-center rounded text-2xs font-semibold">
+        {#if badge.icon}
+            <i class="iconify size-5 {badge.icon}"></i>
+        {:else}
+            {badge.text}
+        {/if}
+    </div>
+{/snippet}
