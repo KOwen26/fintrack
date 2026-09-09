@@ -2,9 +2,14 @@
     import type { ColumnDef } from '@tanstack/svelte-table';
     import type { AppTableFeatures } from '@utilities/datatable.svelte';
 
+    import { createTable } from '@tanstack/svelte-table';
     import DevController from '@wayfinder/App/Http/Controllers/DevController';
 
-    import { DataTable } from '@utilities/datatable.svelte';
+    import {
+        DataTable,
+        dataTableFeatures,
+        defaultDatatableOptions,
+    } from '@utilities/datatable.svelte';
     import DateTimeHelper from '@utilities/date-time-helper';
     import { debounce } from '@utilities/helper.svelte';
 
@@ -52,10 +57,49 @@
         DevController.tableServer.url(),
         columns
     );
+
+    // Plain string headers — no sortableHeader helper; sort buttons are
+    // wired inline in the markup below.
+    const rawColumns: ColumnDef<typeof dataTableFeatures, TransactionRow>[] = [
+        { accessorKey: 'id', header: '#' },
+        {
+            accessorKey: 'transaction_date',
+            header: 'Date',
+            cell: ({ row }) => DateTimeHelper.format(row.original.transaction_date, 'date'),
+        },
+        { accessorKey: 'description', header: 'Description' },
+        {
+            accessorKey: 'amount',
+            header: ({ column }) => DataTable.sortableHeader({ column, title: 'Amount' }),
+            cell: ({ row }) => row.original.amount,
+        },
+        { accessorKey: 'type', header: 'Type' },
+    ];
+
+    const rawTable = createTable({
+        ...defaultDatatableOptions,
+        columns: rawColumns,
+        get data() {
+            return transactions;
+        },
+    });
+
+    const rawDatatable = $state({
+        table: rawTable,
+        table_rows: [],
+        table_meta: {
+            total: 0,
+            has_filter: false,
+            filter_quantity: 0,
+        },
+        is_api: false,
+    });
 </script>
 
 <Datatable dataTable={transactionTable} />
+
 <hr />
+
 <Datatable dataTable={transactionTableServer}>
     {#snippet filter({ table })}
         <Field title="Description">
@@ -66,3 +110,7 @@
         </Field>
     {/snippet}
 </Datatable>
+
+<hr />
+
+<Datatable dataTable={rawDatatable} />

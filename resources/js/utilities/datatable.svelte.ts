@@ -28,6 +28,7 @@ import {
     rowSelectionFeature,
     rowSortingFeature,
     tableFeatures,
+    tableOptions,
 } from '@tanstack/svelte-table';
 import { SvelteURLSearchParams } from 'svelte/reactivity';
 
@@ -49,10 +50,10 @@ export interface DataTableColumnMeta {
 export const dataTableFeatures = tableFeatures({
     rowSortingFeature,
     rowPaginationFeature,
-    columnFilteringFeature,
-    globalFilteringFeature,
-    columnVisibilityFeature,
     rowSelectionFeature,
+    columnFilteringFeature,
+    columnVisibilityFeature,
+    globalFilteringFeature,
 
     sortedRowModel: createSortedRowModel(),
     filteredRowModel: createFilteredRowModel(),
@@ -67,6 +68,11 @@ export const dataTableFeatures = tableFeatures({
     // },
 
     columnMeta: metaHelper<DataTableColumnMeta>(),
+});
+
+export const defaultDatatableOptions = tableOptions({
+    features: dataTableFeatures,
+    globalFilterFn: 'auto',
 });
 
 export type AppTableFeatures = typeof dataTableFeatures;
