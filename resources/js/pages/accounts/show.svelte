@@ -20,7 +20,10 @@
     import StatCard from '@components/ui/cards/stat-card.svelte';
     import DonutChart from '@components/ui/charts/donut-chart.svelte';
 
-    let { account }: { account: App.Models.Account } = $props();
+    let {
+        account,
+        transactions,
+    }: { account: App.Models.Account; transactions: TransactionList[] } = $props();
 
     setLayoutProps({ title: account?.name, backUrl: AccountController.index.url() });
 
@@ -40,8 +43,6 @@
         color: string;
         percentage: number;
     }
-
-    const transactions = $derived(account.transactions ?? []);
 
     const categorySpending = $derived.by<CategoryItem[]>(() => {
         const groups = new SvelteMap<string, { name: string; amount: number; color: string }>();
@@ -334,7 +335,7 @@
         <!-- ════════════════════════════════════════════ -->
         <!--  RECENT TRANSACTIONS                         -->
         <!-- ════════════════════════════════════════════ -->
-        <PageSection>
+        <PageSection breakMargin>
             <Collapsible.Root bind:open={transactionsOpen}>
                 <Card class=" {!transactionsOpen ? 'gap-0' : ''}">
                     {#snippet header()}

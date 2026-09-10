@@ -15,9 +15,10 @@ use Illuminate\Support\Str;
 
 class TransactionService
 {
-    public static function getTransactions(): Collection
+    public static function getTransactions(User $user): Collection
     {
         return Transaction::query()
+            ->where('created_by', $user->id)
             ->with(['account', 'category', 'relatedTransaction.account'])
             ->latest('transaction_date')
             ->get();
@@ -29,7 +30,7 @@ class TransactionService
             ->where('account_id', $account->id)
             ->with(['account', 'category'])
             ->latest('transaction_date')
-            ->get(30);
+            ->get();
     }
 
     public static function getCategoryTransactions(Category $category): Collection
@@ -38,7 +39,7 @@ class TransactionService
             ->where('category_id', $category->id)
             ->with(['account', 'category'])
             ->latest('transaction_date')
-            ->get(30);
+            ->get();
     }
 
     public function create(Account $account, User $creator, array $data): Transaction

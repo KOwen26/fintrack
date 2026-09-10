@@ -32,9 +32,11 @@
 </script>
 
 <script lang="ts">
+    import type { TransactionListData } from '@type/generated';
     import type { RestProps } from '@type/index';
-    import type { Data } from '@type/type';
 
+    import { getDecorationColor } from '@data/decoration-colors';
+    import { getDecorationIcon } from '@data/decoration-icons';
     import { Link } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
@@ -43,48 +45,71 @@
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
 
+    import IconBadge from '@components/ui/icon-badge.svelte';
+
     /* ── Props ───────────────────────────────────────────── */
 
     interface Props extends RestProps {
-        transaction: Data.TransactionListData;
+        transaction: TransactionListData;
         class?: string;
+        hideIcon?: boolean;
     }
 
-    let { transaction, class: _class }: Props = $props();
+    let { transaction, hideIcon = false, class: _class }: Props = $props();
 
     const typeConfig = $derived(TYPE_STYLE[resolveKind(transaction.type)]);
+
+    /* Category decoration drives the tile; kind styling is the fallback
+       (transfers and uncategorized rows keep the kind-colored tile). */
+    const decoColor = $derived(
+        transaction.category?.decorations?.color
+            ? (getDecorationColor(transaction.category.decorations.color)?.hex ?? undefined)
+            : undefined
+    );
+
+    const decoIcon = $derived(
+        transaction.category?.decorations?.icon
+            ? (getDecorationIcon(transaction.category.decorations.icon)?.value ??
+                  'solar--tag-bold-duotone')
+            : undefined
+    );
+
+    /* Resolved tile config — passed to <IconBadge>. */
+    const tileIcon = $derived(decoIcon ?? typeConfig.icon);
+    const tileBackground = $derived(decoColor ? `${decoColor}20` : typeConfig.bg);
+    const tileColor = $derived(decoColor ?? typeConfig.color);
 </script>
 
 <Link
     class={cn(
-        'flex items-center gap-3 border-b border-base-content/10 px-4 py-3 transition-colors duration-100 last:border-b-0 hover:bg-base-200/40',
+        'flex items-center gap-2 border-b border-base-content/10 p-3 transition-colors duration-100 last:border-b-0 hover:bg-base-200/40',
         _class
     )}
     href={TransactionController.show.url(transaction)}>
-    <div
-        class="flex size-10 shrink-0 items-center justify-center rounded-xl"
-        style:background={typeConfig.bg}>
-        <i class="iconify size-4 {typeConfig.icon}" style:color={typeConfig.color}></i>
-    </div>
+    <!-- Icon -->
+    {#if !hideIcon}
+        <IconBadge background={tileBackground} color={tileColor} icon={tileIcon} size="sm" />
+    {/if}
+
     <div class="min-w-0 flex-1">
-        <div class="truncate text-sm font-semibold text-base-content">
+        <div class="truncate text-sm font-medium text-base-content">
             {transaction.description}
         </div>
-        <div class="mt-0.5 flex items-center gap-1.5 text-xs text-base-content/40">
-            <span>{transaction?.category?.name}</span>
+        <div class="mt-0.5 flex items-center gap-1.5 text-xs">
+            {#if transaction.category}
+                <span class="truncate">{transaction.category.name}</span>
+            {/if}
+            {#if transaction.category && transaction.account}
+                <span class="size-0.5 shrink-0 rounded-full bg-base-content/20"></span>
+            {/if}
             {#if transaction.account}
-                <span class="size-0.5 rounded-full bg-base-content/20"></span>
-                <span>{transaction.account.name}</span>
+                <span class="truncate">{transaction.account.name}</span>
             {/if}
         </div>
     </div>
+
     <div class="shrink-0 text-right">
-        <div class="font-mono text-sm font-medium" style:color={typeConfig.color}>
-            {#if typeConfig.signIcon}
-                <i
-                    class="iconify inline-block size-3.5 {typeConfig.signIcon}"
-                    style:color={typeConfig.color}></i>
-            {/if}
+        <div style:color={typeConfig.color} class="font-mono text-sm font-semibold">
             {Formatter.currency(transaction.amount)}
         </div>
     </div>

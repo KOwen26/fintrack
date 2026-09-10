@@ -58,6 +58,7 @@
     import { cn } from '@utilities/shadcn';
 
     import DrawerModal from '@components/ui/drawer-modal.svelte';
+    import IconBadge from '@components/ui/icon-badge.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
 
@@ -469,14 +470,13 @@
 </div>
 
 {#snippet optionBadge(badge)}
-    <div
-        style:background={badge.background}
-        style:color={badge.color}
-        class="flex size-8 shrink-0 items-center justify-center rounded text-2xs font-semibold">
-        {#if badge.icon}
-            <i class="iconify size-5 {badge.icon}"></i>
-        {:else}
-            {badge.text}
-        {/if}
-    </div>
+    {#if badge}
+        <IconBadge
+            class="size-8 rounded"
+            iconClass="size-5"
+            background={badge.background}
+            color={badge.color}
+            icon={badge.icon}
+            text={badge.text} />
+    {/if}
 {/snippet}

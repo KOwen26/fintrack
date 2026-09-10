@@ -39,6 +39,7 @@
 
     import { createTable } from '@tanstack/svelte-table';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
+    import { Collapsible } from 'bits-ui';
     import { SvelteMap } from 'svelte/reactivity';
 
     import { resolveKind } from '@schema/transaction.schema';
@@ -54,6 +55,7 @@
         toSortKey,
     } from '@components/module/transaction/transaction-list-filter.svelte';
     import TransactionListItem from '@components/module/transaction/transaction-list-item.svelte';
+    import TransactionSummaryCard from '@components/module/transaction/transaction-summary-card.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
 
@@ -120,7 +122,27 @@
 
     /* ── Group by date ───────────────────────────────────── */
 
-    const groupedTransactions = $derived.by<[string, Data.TransactionListData[]][]>(() => {
+    interface DayGroup {
+        date: string;
+        transactions: Data.TransactionListData[];
+        net: number;
+    }
+
+    /** Inflows minus outflows for a set of transactions; transfers excluded. */
+    function dayNet(transactions: Data.TransactionListData[]): number {
+        let net = 0;
+
+        for (const transaction of transactions) {
+            const kind = resolveKind(transaction.type);
+
+            if (kind === 'income') net += transaction.amount;
+            else if (kind === 'expense') net -= transaction.amount;
+        }
+
+        return net;
+    }
+
+    const groupedTransactions = $derived.by<DayGroup[]>(() => {
         const groups = new SvelteMap<string, Data.TransactionListData[]>();
 
         for (const row of table.getRowModel().rows) {
@@ -131,8 +153,18 @@
             else groups.set(transaction.transaction_date, [transaction]);
         }
 
-        return [...groups.entries()];
+        return [...groups.entries()].map(([date, txns]) => ({
+            date,
+            transactions: txns,
+            net: dayNet(txns),
+        }));
     });
+
+    /* ── Day collapse state ──────────────────────────────── */
+
+    // Explicit open/closed choices per day; untouched days fall back to the
+    // default: the first group (today) open, all others collapsed.
+    const dayOpenOverrides = new SvelteMap<string, boolean>();
 
     /* ── Summary ─────────────────────────────────────────── */
 
@@ -176,13 +208,13 @@
 </script>
 
 <div class={cn('flex flex-col gap-3', _class)}>
+    <!-- ── SUMMARY CARD ────────────────────────────────────── -->
+    {#if transactions.length > 0}
+        <TransactionSummaryCard {summary} />
+    {/if}
+
     <!-- ── SEARCH + FILTERS ────────────────────────────────── -->
     <TransactionListFilter {table} {transactions} />
-
-    <!-- ── SUMMARY STRIP ───────────────────────────────────── -->
-    {#if transactions.length > 0}
-        {@render Summary()}
-    {/if}
 
     <!-- ── TRANSACTION LIST ────────────────────────────────── -->
     {#if filteredTransactions.length === 0}
@@ -201,35 +233,61 @@
                 label="No transactions" />
         {/if}
     {:else}
-        <div class="flex flex-col">
-            {#each groupedTransactions as [date, txns] (date)}
-                <!-- Day header -->
-                <div class="group mb-2">
-                    <div class="flex items-center justify-between px-1 pb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold text-base-content/60"
-                                >{DateTimeHelper.format(date, 'day-date')}</span>
-                            <span
-                                class="rounded-full bg-base-content/10 px-2 py-0.5 text-2xs font-semibold text-base-content/40">
-                                {txns.length} transactions
-                            </span>
-                        </div>
-                    </div>
+        <!-- Count header -->
+        <p class="mx-0.5 mt-1 mb-0 text-sm text-base-content/60">
+            {filteredTransactions.length}
+            transactions
+        </p>
+
+        <div class="flex flex-col gap-2">
+            {#each groupedTransactions as group, i (group.date)}
+                <Collapsible.Root
+                    class="overflow-hidden rounded-lg bg-base-100 shadow-xs"
+                    onOpenChange={(open) => dayOpenOverrides.set(group.date, open)}
+                    open={dayOpenOverrides.get(group.date) ?? i === 0}>
+                    <!-- Day header (trigger) -->
+                    <Collapsible.Trigger
+                        class="flex w-full cursor-pointer items-center gap-2 p-3 text-left select-none">
+                        <span class="text-xs font-semibold text-base-content uppercase">
+                            {DateTimeHelper.format(group.date, 'date')}
+                        </span>
+
+                        <span
+                            class={cn(
+                                'ml-auto flex items-center font-mono text-sm font-semibold whitespace-nowrap',
+                                group.net > 0
+                                    ? 'text-success'
+                                    : group.net < 0
+                                      ? 'text-error'
+                                      : 'text-base-content'
+                            )}>
+                            {Formatter.currency(group.net)}
+                        </span>
+                        <i
+                            class={cn(
+                                'iconify size-4 shrink-0 text-base-content/40 transition-transform duration-150',
+                                (dayOpenOverrides.get(group.date) ?? i === 0)
+                                    ? 'solar--alt-arrow-up-line-duotone'
+                                    : 'solar--alt-arrow-down-line-duotone'
+                            )}></i>
+                    </Collapsible.Trigger>
 
                     <!-- Group card -->
-                    <div class="overflow-hidden rounded-2xl bg-base-100 shadow-xs">
-                        {#each txns as txn (txn.id)}
-                            <TransactionListItem transaction={txn} />
-                        {/each}
-                    </div>
-                </div>
+                    <Collapsible.Content>
+                        <div class="border-t border-base-content/10">
+                            {#each group.transactions as txn (txn.id)}
+                                <TransactionListItem transaction={txn} />
+                            {/each}
+                        </div>
+                    </Collapsible.Content>
+                </Collapsible.Root>
             {/each}
         </div>
 
         <!-- Load more -->
         {#if !allLoaded}
             <button
-                class="mx-0 mt-2 mb-0 flex w-full items-center justify-center gap-2 rounded-2xl bg-base-100 px-4 py-3.5 font-sans text-sm font-semibold text-primary shadow-xs transition-colors duration-150 hover:bg-primary/10"
+                class="mx-0 mt-2 mb-0 flex w-full items-center justify-center gap-2 rounded-lg bg-base-100 p-3.5 font-sans text-sm font-semibold text-primary shadow-xs transition-colors duration-150 hover:bg-primary/10"
                 onclick={loadMore}>
                 <i class="iconify size-3.5 solar--alt-arrow-down-line-duotone"></i>
                 Load more
@@ -239,64 +297,3 @@
         {/if}
     {/if}
 </div>
-
-{#snippet Summary()}
-    <div class="overflow-hidden rounded-2xl bg-base-100 shadow-xs">
-        <div class="flex">
-            <div class="flex-1 space-y-1 px-4 py-3.5">
-                <div
-                    class="flex items-center gap-1 text-2xs font-bold tracking-wider text-base-content/40 uppercase">
-                    <i class="iconify size-3 text-success solar--arrow-up-line-duotone"></i>
-                    Income
-                </div>
-                <div class="font-mono text-sm font-medium text-success">
-                    {#if summary.income > 0}
-                        {Formatter.currency(summary.income)}
-                    {:else}
-                        <i class="iconify size-3.5 text-base-content/25 solar--minus-line-duotone"
-                        ></i>
-                    {/if}
-                </div>
-            </div>
-            <div class="flex-1 space-y-1 border-l border-base-content/10 px-4 py-3.5">
-                <div
-                    class="flex items-center gap-1 text-2xs font-bold tracking-wider text-base-content/40 uppercase">
-                    <i class="iconify size-3 text-error solar--arrow-down-line-duotone"></i>
-                    Expense
-                </div>
-                <div class="font-mono text-sm font-medium text-error">
-                    {#if summary.expense > 0}
-                        {Formatter.currency(summary.expense)}
-                    {:else}
-                        <i class="iconify size-3.5 text-base-content/25 solar--minus-line-duotone"
-                        ></i>
-                    {/if}
-                </div>
-            </div>
-            <div class="flex-1 space-y-1 border-l border-base-content/10 px-4 py-3.5">
-                <div class="text-2xs font-bold tracking-wider text-base-content/40 uppercase">
-                    <i class="iconify size-3 solar--transfer-vertical-line-duotone"></i>
-                    Net
-                </div>
-                <div
-                    class="font-mono text-sm font-medium"
-                    class:text-error={summary.net < 0}
-                    class:text-success={summary.net >= 0}>
-                    {#if summary.net !== 0}
-                        <i
-                            class={cn(
-                                'iconify size-3.5',
-                                summary.net > 0
-                                    ? 'solar--add-bold-duotone'
-                                    : 'solar--minus-bold-duotone'
-                            )}></i>
-                        {Formatter.currency(Math.abs(summary.net))}
-                    {:else}
-                        <i class="iconify size-3.5 text-base-content/25 solar--minus-line-duotone"
-                        ></i>
-                    {/if}
-                </div>
-            </div>
-        </div>
-    </div>
-{/snippet}

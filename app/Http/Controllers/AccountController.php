@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\Transaction\TransactionListData;
 use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
 use App\Models\Account;
 use App\Models\Provider;
 use App\Services\AccountService;
+use App\Services\TransactionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -35,17 +37,17 @@ class AccountController extends Controller
         ]);
     }
 
-    public function show(Request $request, Account $account): Response
+    public function show(Request $request, Account $account, TransactionService $transactionService): Response
     {
         $this->authorize('view', $account);
 
-        $account->load([
-            'provider',
-            'transactions' => fn ($transaction) => $transaction->with(['category'])->take(10),
-        ]);
+        $account->load(['provider']);
+
+        $transactions = TransactionListData::collect($transactionService->getAccountTransactions($account));
 
         return Inertia::render('accounts/show', [
             'account' => $account,
+            'transactions' => $transactions,
         ]);
     }
 
