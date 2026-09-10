@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[ObservedBy([TransactionObserver::class])]
@@ -41,5 +42,15 @@ class Transaction extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function relatedTransaction(): HasOne
+    {
+        $oppositeType = $this->type === TransactionType::TransferIn
+            ? TransactionType::TransferOut
+            : TransactionType::TransferIn;
+
+        return $this->hasOne(Transaction::class, 'transfer_link_id', 'transfer_link_id')
+            ->where('type', $oppositeType);
     }
 }

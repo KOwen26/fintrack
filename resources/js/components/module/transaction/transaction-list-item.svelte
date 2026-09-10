@@ -1,57 +1,44 @@
 <script lang="ts" module>
-    import type { App } from '@wayfinder/types';
+    import type { TransactionKind } from '@schema/transaction.schema';
 
-    import TransactionType from '@wayfinder/App/Enums/TransactionType';
-
-    /* ── Type helpers ────────────────────────────────────── */
+    /* ── Kind style map ──────────────────────────────────── */
 
     export const TYPE_STYLE: Record<
-        App.Enums.TransactionType,
+        TransactionKind,
         { label: string; color: string; bg: string; icon: string; signIcon: string }
     > = {
-        [TransactionType.Income]: {
+        income: {
             label: 'Income',
             color: 'var(--color-success)',
             bg: 'color-mix(in oklab, var(--color-success) 12%, transparent)',
             icon: 'solar--arrow-up-line-duotone',
             signIcon: 'solar--add-bold-duotone',
         },
-        [TransactionType.Expense]: {
+        expense: {
             label: 'Expense',
             color: 'var(--color-error)',
             bg: 'color-mix(in oklab, var(--color-error) 12%, transparent)',
             icon: 'solar--arrow-down-line-duotone',
             signIcon: 'solar--minus-bold-duotone',
         },
-        [TransactionType.TransferOut]: {
-            label: 'Transfer Out',
-            color: 'var(--color-warning)',
-            bg: 'color-mix(in oklab, var(--color-warning) 12%, transparent)',
-            icon: 'solar--transfer-horizontal-bold-duotone',
-            signIcon: '',
-        },
-        [TransactionType.TransferIn]: {
-            label: 'Transfer In',
+        transfer: {
+            label: 'Transfer',
             color: 'var(--color-info)',
             bg: 'color-mix(in oklab, var(--color-info) 12%, transparent)',
-            icon: 'solar--arrow-up-line-duotone',
-            signIcon: 'solar--add-bold-duotone',
-        },
-        [TransactionType.Fee]: {
-            label: 'Fee',
-            color: 'var(--color-secondary)',
-            bg: 'color-mix(in oklab, var(--color-secondary) 12%, transparent)',
             icon: 'solar--transfer-horizontal-bold-duotone',
-            signIcon: 'solar--minus-bold-duotone',
+            signIcon: '',
         },
     };
 </script>
 
 <script lang="ts">
     import type { RestProps } from '@type/index';
+    import type { Data } from '@type/type';
 
     import { Link } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
+
+    import { resolveKind } from '@schema/transaction.schema';
 
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
@@ -59,13 +46,13 @@
     /* ── Props ───────────────────────────────────────────── */
 
     interface Props extends RestProps {
-        transaction: App.Models.Transaction;
+        transaction: Data.TransactionListData;
         class?: string;
     }
 
     let { transaction, class: _class }: Props = $props();
 
-    const typeConfig = $derived(TYPE_STYLE[transaction.type]);
+    const typeConfig = $derived(TYPE_STYLE[resolveKind(transaction.type)]);
 </script>
 
 <Link

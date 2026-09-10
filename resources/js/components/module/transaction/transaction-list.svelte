@@ -1,6 +1,6 @@
 <script lang="ts" module>
     import type { SvelteTable } from '@tanstack/svelte-table';
-    import type { App } from '@wayfinder/types';
+    import type { Data } from '@type/type';
 
     import {
         columnFilteringFeature,
@@ -27,7 +27,10 @@
 
     export type TransactionListFeatures = typeof transactionListFeatures;
 
-    export type TransactionListTable = SvelteTable<TransactionListFeatures, App.Models.Transaction>;
+    export type TransactionListTable = SvelteTable<
+        TransactionListFeatures,
+        Data.TransactionListData
+    >;
 </script>
 
 <script lang="ts">
@@ -35,9 +38,10 @@
     import type { RestProps } from '@type/index';
 
     import { createTable } from '@tanstack/svelte-table';
-    import TransactionType from '@wayfinder/App/Enums/TransactionType';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
     import { SvelteMap } from 'svelte/reactivity';
+
+    import { resolveKind } from '@schema/transaction.schema';
 
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
@@ -54,13 +58,13 @@
     /* ── Props ───────────────────────────────────────────── */
 
     interface Props extends RestProps {
-        transactions: App.Models.Transaction[];
+        transactions: Data.TransactionListData[];
         class?: string;
     }
 
     let { transactions, class: _class }: Props = $props();
 
-    const columns: ColumnDef<typeof transactionListFeatures, App.Models.Transaction>[] = [
+    const columns: ColumnDef<typeof transactionListFeatures, Data.TransactionListData>[] = [
         { accessorKey: 'id', enableGlobalFilter: false },
         { accessorKey: 'transaction_date', enableGlobalFilter: false },
         { accessorKey: 'amount', enableGlobalFilter: true },
@@ -92,7 +96,8 @@
             enableGlobalFilter: false,
         },
         {
-            accessorKey: 'type',
+            id: 'type',
+            accessorFn: (row) => resolveKind(row.type),
             filterFn: 'arrayHas',
             enableGlobalFilter: false,
         },
@@ -115,8 +120,8 @@
 
     /* ── Group by date ───────────────────────────────────── */
 
-    const groupedTransactions = $derived.by<[string, App.Models.Transaction[]][]>(() => {
-        const groups = new SvelteMap<string, App.Models.Transaction[]>();
+    const groupedTransactions = $derived.by<[string, Data.TransactionListData[]][]>(() => {
+        const groups = new SvelteMap<string, Data.TransactionListData[]>();
 
         for (const row of table.getRowModel().rows) {
             const transaction = row.original;
@@ -136,16 +141,10 @@
         let expense = 0;
 
         for (const transaction of filteredTransactions) {
-            if (
-                transaction.type === TransactionType.Income ||
-                transaction.type === TransactionType.TransferIn
-            )
-                income += transaction.amount;
-            else if (
-                transaction.type === TransactionType.Expense ||
-                transaction.type === TransactionType.Fee
-            )
-                expense += transaction.amount;
+            const kind = resolveKind(transaction.type);
+
+            if (kind === 'income') income += transaction.amount;
+            else if (kind === 'expense') expense += transaction.amount;
         }
 
         return { income, expense, net: income - expense };

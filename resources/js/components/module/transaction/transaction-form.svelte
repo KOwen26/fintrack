@@ -5,6 +5,8 @@
     import { useForm } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
+    import { resolveKind } from '@schema/transaction.schema';
+
     import AccountSelect from '@components/ui/forms/account-select.svelte';
     import CategorySelect from '@components/ui/forms/category-select.svelte';
     import DateInput from '@components/ui/forms/date-input.svelte';
@@ -33,22 +35,8 @@
 
     const today = new Date().toISOString().split('T')[0];
 
-    const isTransferType = $derived(
-        isEdit &&
-            !!transaction &&
-            (transaction.type === 'transfer_out' ||
-                transaction.type === 'transfer_in' ||
-                transaction.type === 'fee')
-    );
-
     const resolvedType = $derived<string>(
-        isEdit && transaction
-            ? isTransferType
-                ? 'transfer'
-                : transaction.type === 'income'
-                  ? 'income'
-                  : 'expense'
-            : type
+        isEdit && transaction ? resolveKind(transaction.type) : type
     );
 
     const typeConfig = $derived.by(() => {

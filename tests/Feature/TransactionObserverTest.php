@@ -69,20 +69,6 @@ it('adjusts balance correctly for transfer_in and transfer_out', function (): vo
     expect($dest->fresh()->current_balance)->toEqual(200_000.0);
 });
 
-it('handles fee transactions as outflows', function (): void {
-    [$user, $account] = createBalanceAccount();
-
-    Transaction::factory()->create([
-        'account_id' => $account->id,
-        'created_by' => $user->id,
-        'amount' => 10_000,
-        'type' => TransactionType::Fee->value,
-        'transfer_link_id' => null,
-    ]);
-
-    expect($account->fresh()->current_balance)->toEqual(-10_000.0);
-});
-
 // ── updated ─────────────────────────────────────────────────────
 
 it('adjusts balance when transaction amount is increased', function (): void {
@@ -180,6 +166,7 @@ it('re-applies balance impact when transaction is restored', function (): void {
     ]);
 
     $transaction->delete();
+
     expect($account->fresh()->current_balance)->toEqual(0.0);
 
     $transaction->restore();
@@ -197,6 +184,7 @@ it('re-applies expense impact when transaction is restored', function (): void {
     ]);
 
     $transaction->delete();
+
     expect($account->fresh()->current_balance)->toEqual(0.0);
 
     $transaction->restore();

@@ -46,11 +46,14 @@
 
 <script lang="ts">
     import type { TransactionListTable } from './transaction-list.svelte';
+    import type { Data } from '@type/type';
     import type { App } from '@wayfinder/types';
 
     import { TYPE_STYLE } from './transaction-list-item.svelte';
 
     import { getDecorationColor } from '@data/decoration-colors';
+
+    import { type TransactionKind } from '@schema/transaction.schema';
 
     import { cn } from '@utilities/shadcn';
 
@@ -59,7 +62,7 @@
     /* ── Props ───────────────────────────────────────────── */
 
     interface Props {
-        transactions: App.Models.Transaction[];
+        transactions: Data.TransactionListData[];
         table: TransactionListTable;
     }
 
@@ -73,9 +76,7 @@
 
     const accountIds = $derived(getArrayFilter<number>(columnFilters, FILTER_COLUMNS.account_id));
     const categoryIds = $derived(getArrayFilter<number>(columnFilters, FILTER_COLUMNS.category_id));
-    const types = $derived(
-        getArrayFilter<App.Enums.TransactionType>(columnFilters, FILTER_COLUMNS.type)
-    );
+    const types = $derived(getArrayFilter<TransactionKind>(columnFilters, FILTER_COLUMNS.type));
 
     /* ── State ───────────────────────────────────────────── */
 
@@ -106,7 +107,7 @@
     // Temp filters (while sheet is open)
     let tAccountIds: number[] = $state([]);
     let tCategoryIds: number[] = $state([]);
-    let tTypes: App.Enums.TransactionType[] = $state([]);
+    let tTypes: TransactionKind[] = $state([]);
     let tSort: SortKey = $state('newest');
 
     /* ── Derived options ─────────────────────────────────── */
@@ -341,13 +342,13 @@
                 ];
             case 'type':
                 return Object.entries(TYPE_STYLE).map(([key, cfg]): SheetOption => {
-                    const type = key as App.Enums.TransactionType;
+                    const kind = key as TransactionKind;
 
                     return {
                         key,
                         label: cfg.label,
-                        selected: tTypes.includes(type),
-                        onSelect: () => (tTypes = toggled(tTypes, type)),
+                        selected: tTypes.includes(kind),
+                        onSelect: () => (tTypes = toggled(tTypes, kind)),
                         badge: {
                             text: cfg.label.charAt(0),
                             background: cfg.bg,

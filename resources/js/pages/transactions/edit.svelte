@@ -4,6 +4,8 @@
     import { router } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
+    import { resolveKind } from '@schema/transaction.schema';
+
     import PageSection from '@components/layouts/page-section.svelte';
     import TransactionForm from '@components/module/transaction/transaction-form.svelte';
     import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
@@ -29,12 +31,7 @@
         );
     }
 
-    // Transfer rows cannot have their type changed — show a read-only badge instead of the type select
-    const isTransferRow = $derived(
-        transaction.type === 'transfer_out' ||
-            transaction.type === 'transfer_in' ||
-            transaction.type === 'fee'
-    );
+    const isTransferRow = $derived(resolveKind(transaction.type) === 'transfer');
 </script>
 
 <DashboardPageHeader title="">

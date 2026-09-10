@@ -9,33 +9,36 @@ use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class TransactionService
 {
-    public static function getTransactions(): LengthAwarePaginator
+    public static function getTransactions(): Collection
     {
-        return Transaction::query()->with(['account', 'category'])->latest('transaction_date')->paginate(30);
+        return Transaction::query()
+            ->with(['account', 'category', 'relatedTransaction.account'])
+            ->latest('transaction_date')
+            ->get();
     }
 
-    public static function getAccountTransactions(Account $account): LengthAwarePaginator
+    public static function getAccountTransactions(Account $account): Collection
     {
         return Transaction::query()
             ->where('account_id', $account->id)
             ->with(['account', 'category'])
             ->latest('transaction_date')
-            ->paginate(30);
+            ->get(30);
     }
 
-    public static function getCategoryTransactions(Category $category): LengthAwarePaginator
+    public static function getCategoryTransactions(Category $category): Collection
     {
         return Transaction::query()
             ->where('category_id', $category->id)
             ->with(['account', 'category'])
             ->latest('transaction_date')
-            ->paginate(30);
+            ->get(30);
     }
 
     public function create(Account $account, User $creator, array $data): Transaction
@@ -127,14 +130,28 @@ class TransactionService
             if ($feeAmount !== null && $feeAmount > 0) {
                 $this->create($sourceAccount, $creator, [
                     'amount' => $feeAmount,
-                    'type' => TransactionType::Fee->value,
+                    'type' => TransactionType::Expense->value,
                     'transfer_link_id' => $linkId,
                     'transaction_date' => $transactionDate,
+                    'category_id' => $this->resolveTransferFeeCategory(),
                     'description' => 'Transfer fee',
                 ]);
             }
 
             return $outflow;
         });
+    }
+
+    /**
+     * Resolve the Admin Fees child category for booking transfer fees.
+     * Returns null when it does not exist — the fee then books as uncategorized.
+     */
+    private function resolveTransferFeeCategory(): ?int
+    {
+        return Category::query()
+            ->where('name', 'Admin Fees')
+            ->levelChildren()
+            ->first()
+            ?->id;
     }
 }

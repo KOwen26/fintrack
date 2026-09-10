@@ -45,8 +45,8 @@ class ReportService
                     $result = DB::table('transactions')
                         ->selectRaw('
                             SUM(CASE WHEN type IN (?, ?) THEN amount ELSE 0 END) AS total_income,
-                            SUM(CASE WHEN type IN (?, ?) THEN amount ELSE 0 END) AS total_expense
-                        ', ['income', 'transfer_in', 'expense', 'fee'])
+                            SUM(CASE WHEN type IN (?) THEN amount ELSE 0 END) AS total_expense
+                        ', ['income', 'transfer_in', 'expense'])
                         ->where('account_id', $account->id)
                         ->whereNull('deleted_at')
                         ->whereYear('transaction_date', $year)
@@ -82,7 +82,7 @@ class ReportService
     }
 
     /**
-     * Category Leak — expense + fee totals ranked by category for a given period.
+     * Category Leak — expense totals ranked by category for a given period.
      * Cached per (from, to) window — past months permanently, current month for 5 minutes.
      */
     public function categorySpending(Account $account, Carbon $from, Carbon $to): CategorySpendingReportData
@@ -100,7 +100,7 @@ class ReportService
                 // Compute the period total first (used to calculate percentages inside the DB)
                 $periodTotal = (float) DB::table('transactions')
                     ->where('account_id', $account->id)
-                    ->whereIn('type', ['expense', 'fee'])
+                    ->whereIn('type', ['expense'])
                     ->whereBetween('transaction_date', [$from->toDateString(), $to->toDateString()])
                     ->whereNull('deleted_at')
                     ->sum('amount');
@@ -124,7 +124,7 @@ class ReportService
                         ROUND(SUM(t.amount) / ? * 100, 2) AS percentage
                     ", [$periodTotal])
                     ->where('t.account_id', $account->id)
-                    ->whereIn('t.type', ['expense', 'fee'])
+                    ->whereIn('t.type', ['expense'])
                     ->whereBetween('t.transaction_date', [$from->toDateString(), $to->toDateString()])
                     ->whereNull('t.deleted_at')
                     ->groupBy('t.category_id', 'c.name', 'color', 'icon')
@@ -240,7 +240,7 @@ class ReportService
                     ->join('categories as c', 'c.id', '=', 't.category_id')
                     ->selectRaw('c.is_fixed_cost, SUM(t.amount) AS total')
                     ->where('t.account_id', $account->id)
-                    ->whereIn('t.type', ['expense', 'fee'])
+                    ->whereIn('t.type', ['expense'])
                     ->whereBetween('t.transaction_date', [$from->toDateString(), $to->toDateString()])
                     ->whereNull('t.deleted_at')
                     ->groupBy('c.is_fixed_cost')

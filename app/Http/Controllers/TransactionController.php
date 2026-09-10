@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Data\Transaction\TransactionDetailData;
+use App\Data\Transaction\TransactionListData;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Account;
@@ -29,7 +30,8 @@ class TransactionController extends Controller
         $this->authorize('viewAny', [Transaction::class, $account]);
 
         return Inertia::render('transactions/index', [
-            'transactions' => $this->transactionService->getTransactions(),
+            'transactions' => $this->transactionService->getTransactions()
+                ->through(fn (Transaction $transaction): TransactionListData => TransactionListData::fromTransaction($transaction)),
             'summary' => [],
         ]);
     }
@@ -88,7 +90,7 @@ class TransactionController extends Controller
         return Inertia::render('transactions/edit', [
             'account' => $account,
             'transaction' => $transaction->load('category'),
-            'categories' => $this->transactionService->getCategories(),
+            'categories' => CategoryService::getCategories(),
         ]);
     }
 

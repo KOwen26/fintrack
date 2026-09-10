@@ -17,7 +17,7 @@ class SpendingService
     {
         $periodTotal = (float) DB::table('transactions')
             ->whereIn('account_id', $accountIds)
-            ->whereIn('type', ['expense', 'fee'])
+            ->whereIn('type', ['expense'])
             ->whereBetween('transaction_date', [$from, $to])
             ->whereNull('deleted_at')
             ->sum('amount');
@@ -45,7 +45,7 @@ class SpendingService
                 ROUND(SUM(t.amount) / ? * 100, 2) AS percentage
             ", [$periodTotal])
             ->whereIn('t.account_id', $accountIds)
-            ->whereIn('t.type', ['expense', 'fee'])
+            ->whereIn('t.type', ['expense'])
             ->whereBetween('t.transaction_date', [$from, $to])
             ->whereNull('t.deleted_at')
             ->groupBy('t.category_id', 'c.id', 'c.name', 'color', 'icon', 'c.parent_id', 'parent.name')

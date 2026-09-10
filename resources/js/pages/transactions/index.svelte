@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { App } from '@wayfinder/types';
+    import type { Data } from '@type/type';
 
     import { Link } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
@@ -10,7 +10,7 @@
     import Button from '@components/ui/button.svelte';
 
     interface PaginatedTransactions {
-        data: App.Models.Transaction[];
+        data: Data.TransactionListData[];
         links: { url: string | null; label: string; active: boolean }[];
         current_page: number;
         last_page: number;

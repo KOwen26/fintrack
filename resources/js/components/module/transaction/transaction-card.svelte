@@ -4,6 +4,8 @@
 
     import CategoryBadge from '../category/category-badge.svelte';
 
+    import { resolveKind } from '@schema/transaction.schema';
+
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
@@ -18,8 +20,17 @@
 
     let { transaction, withoutAccount = false, class: _class }: Props = $props();
 
-    const isInflow = $derived(['income', 'transfer_in'].includes(transaction.type));
-    const color = $derived(isInflow ? 'text-success' : 'text-error');
+    const kind = $derived(resolveKind(transaction.type));
+    const color = $derived(
+        kind === 'income' ? 'text-success' : kind === 'expense' ? 'text-error' : 'text-info'
+    );
+    const signIcon = $derived(
+        kind === 'income'
+            ? 'solar--add-bold-duotone'
+            : kind === 'expense'
+              ? 'solar--minus-bold-duotone'
+              : 'solar--transfer-horizontal-bold-duotone'
+    );
 </script>
 
 <Card class={cn('transition-transform active:scale-95', _class, 'rounded-md p-3')}>
@@ -46,11 +57,7 @@
             </p>
 
             <p class="flex items-center justify-end gap-1 font-semibold {color}">
-                <i
-                    class={cn([
-                        'iconify size-3 text-current',
-                        isInflow ? 'solar--add-bold-duotone' : 'solar--minus-bold-duotone',
-                    ])}></i>
+                <i class={cn(['iconify size-3 text-current', signIcon])}></i>
 
                 {Formatter.currency(transaction.amount)}
             </p>

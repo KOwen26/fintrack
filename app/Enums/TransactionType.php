@@ -8,7 +8,6 @@ enum TransactionType: string
     case Expense = 'expense';
     case TransferOut = 'transfer_out';
     case TransferIn = 'transfer_in';
-    case Fee = 'fee';
 
     /**
      * Types that increase the account balance (inflows).
@@ -27,16 +26,6 @@ enum TransactionType: string
      */
     public static function outflows(): array
     {
-        return [self::Expense->value, self::TransferOut->value, self::Fee->value];
-    }
-
-    /**
-     * Types that count toward budget spend.
-     *
-     * @return array<string>
-     */
-    public static function spendTypes(): array
-    {
-        return [self::Expense->value, self::Fee->value];
+        return [self::Expense->value, self::TransferOut->value];
     }
 }

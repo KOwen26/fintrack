@@ -1,10 +1,12 @@
 <script lang="ts">
+    import type { TransactionKind } from '@schema/transaction.schema';
     import type { App } from '@wayfinder/types';
 
     import { getDecorationColor } from '@data/decoration-colors';
-    import TransactionType from '@wayfinder/App/Enums/TransactionType';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
+
+    import { resolveKind } from '@schema/transaction.schema';
 
     import Formatter from '@utilities/formatter';
 
@@ -105,39 +107,12 @@
     /* ── Transaction type helpers ────────────────────────── */
 
     const TYPE_STYLE: Record<
-        App.Enums.TransactionType,
+        TransactionKind,
         { label: string; color: string; bg: string; sign: string }
     > = {
-        [TransactionType.Income]: {
-            label: 'Income',
-            color: 'text-success',
-            bg: 'bg-success/12',
-            sign: '+',
-        },
-        [TransactionType.Expense]: {
-            label: 'Expense',
-            color: 'text-error',
-            bg: 'bg-error/12',
-            sign: '−',
-        },
-        [TransactionType.TransferOut]: {
-            label: 'Transfer Out',
-            color: 'text-warning',
-            bg: 'bg-warning/12',
-            sign: '−',
-        },
-        [TransactionType.TransferIn]: {
-            label: 'Transfer In',
-            color: 'text-info',
-            bg: 'bg-info/12',
-            sign: '+',
-        },
-        [TransactionType.Fee]: {
-            label: 'Fee',
-            color: 'text-secondary',
-            bg: 'bg-secondary/12',
-            sign: '−',
-        },
+        income: { label: 'Income', color: 'text-success', bg: 'bg-success/12', sign: '+' },
+        expense: { label: 'Expense', color: 'text-error', bg: 'bg-error/12', sign: '−' },
+        transfer: { label: 'Transfer', color: 'text-info', bg: 'bg-info/12', sign: '' },
     };
 
     /* ── Budget helpers (derived from category spending) ─── */
@@ -363,7 +338,7 @@
 
                 <div class="-mx-5 divide-y divide-base-200">
                     {#each recent_transactions as tx (tx.id)}
-                        {@const style = TYPE_STYLE[tx.type]}
+                        {@const style = TYPE_STYLE[resolveKind(tx.type)]}
                         <a
                             class="flex cursor-pointer items-center gap-3 px-5 py-3 transition-colors hover:bg-base-200/50"
                             href={TransactionController.show.url({ transaction: tx.id })}>

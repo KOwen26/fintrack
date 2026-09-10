@@ -1,5 +1,6 @@
 <?php
 
+use App\Data\Transaction\TransactionListData;
 use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Category;
@@ -78,7 +79,37 @@ it('creates a transfer with 2 rows sharing the same transfer_link_id', function 
     expect(Transaction::where('transfer_link_id', $linkId)->where('account_id', $destAccount->id)->where('type', TransactionType::TransferIn->value)->exists())->toBeTrue();
 });
 
-it('creates a transfer with fee when fee_amount is provided', function (): void {
+it('books a transfer fee as an expense in the Admin Fees category', function (): void {
+    [$user, $sourceAccount] = createAccountForUser();
+    $destAccount = Account::factory()->create(['owner_id' => $user->id]);
+
+    $parent = Category::factory()->create(['name' => 'Finance']);
+    $adminFees = Category::factory()->create(['name' => 'Admin Fees', 'parent_id' => $parent->id]);
+
+    $this->actingAs($user)->post(route('transactions.store', $sourceAccount), [
+        'type' => 'transfer',
+        'amount' => 500_000,
+        'transaction_date' => now()->toDateString(),
+        'destination_account_id' => $destAccount->id,
+        'fee_amount' => 6_500,
+    ])->assertRedirect();
+
+    $linkId = Transaction::where('account_id', $sourceAccount->id)
+        ->where('type', TransactionType::TransferOut->value)
+        ->value('transfer_link_id');
+
+    $feeRow = Transaction::where('transfer_link_id', $linkId)
+        ->where('type', TransactionType::Expense->value)
+        ->first();
+
+    expect(Transaction::where('transfer_link_id', $linkId)->count())->toBe(3);
+    expect($feeRow)->not->toBeNull();
+    expect($feeRow->account_id)->toBe($sourceAccount->id);
+    expect($feeRow->category_id)->toBe($adminFees->id);
+    expect((float) $feeRow->amount)->toBe(6_500.0);
+});
+
+it('books a transfer fee as uncategorized when no Admin Fees category exists', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
@@ -94,8 +125,12 @@ it('creates a transfer with fee when fee_amount is provided', function (): void 
         ->where('type', TransactionType::TransferOut->value)
         ->value('transfer_link_id');
 
-    expect(Transaction::where('transfer_link_id', $linkId)->count())->toBe(3);
-    expect(Transaction::where('transfer_link_id', $linkId)->where('type', TransactionType::Fee->value)->exists())->toBeTrue();
+    $feeRow = Transaction::where('transfer_link_id', $linkId)
+        ->where('type', TransactionType::Expense->value)
+        ->first();
+
+    expect($feeRow)->not->toBeNull();
+    expect($feeRow->category_id)->toBeNull();
 });
 
 it('soft-deletes all transfer rows when one is deleted', function (): void {
@@ -136,4 +171,32 @@ it('soft-deletes a transaction', function (): void {
         ->assertRedirect();
 
     expect(Transaction::withTrashed()->find($transaction->id))->not->toBeNull();
+});
+
+it('resolves destination_account_id for both sides of a transfer pair', function (): void {
+    [$user, $sourceAccount] = createAccountForUser();
+    $destAccount = Account::factory()->create(['owner_id' => $user->id]);
+
+    $this->actingAs($user)->post(route('transactions.store', $sourceAccount), [
+        'type' => 'transfer',
+        'amount' => 250_000,
+        'transaction_date' => now()->toDateString(),
+        'destination_account_id' => $destAccount->id,
+    ])->assertRedirect();
+
+    $outflow = Transaction::where('type', TransactionType::TransferOut->value)->first();
+    $inflow = Transaction::where('type', TransactionType::TransferIn->value)->first();
+
+    expect(TransactionListData::fromTransaction($outflow)->destination_account_id)->toBe($destAccount->id);
+    expect(TransactionListData::fromTransaction($inflow)->destination_account_id)->toBe($sourceAccount->id);
+});
+
+it('sets destination_account_id to null for non-transfer transactions', function (): void {
+    [$user, $account] = createAccountForUser();
+    $transaction = Transaction::factory()->expense()->create([
+        'account_id' => $account->id,
+        'created_by' => $user->id,
+    ]);
+
+    expect(TransactionListData::fromTransaction($transaction)->destination_account_id)->toBeNull();
 });

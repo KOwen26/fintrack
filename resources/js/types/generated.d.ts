@@ -115,6 +115,21 @@ export type TransactionDetailData = {
     creator: App.Models.User;
 };
 
+export type TransactionListData = {
+    id: number;
+    type: App.Enums.TransactionType;
+    amount: number;
+    description: string | null;
+    transaction_date: string;
+    category_id: number | null;
+    account_id: number;
+    transfer_link_id: string | null;
+    destination_account_id: number | null;
+    related_transaction: App.Models.Transaction;
+    account: App.Models.Account;
+    category: App.Models.Category;
+};
+
 export type UserTestData = {
     name: string;
     age: number;

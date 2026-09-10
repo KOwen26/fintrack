@@ -3,6 +3,23 @@ import type { App } from '@wayfinder/types';
 
 import { DataComposer } from '@utilities/data-composer';
 
+export type TransactionKind = 'income' | 'expense' | 'transfer';
+
+/**
+ * Exhaustive map from the raw transaction type enum to the 3-kind UI view.
+ * Adding an enum case without updating this map is a compile error.
+ */
+const KIND_BY_TYPE: Record<App.Enums.TransactionType, TransactionKind> = {
+    income: 'income',
+    expense: 'expense',
+    transfer_out: 'transfer',
+    transfer_in: 'transfer',
+};
+
+export function resolveKind(type: App.Enums.TransactionType): TransactionKind {
+    return KIND_BY_TYPE[type];
+}
+
 export type TransactionFormData = {
     type: string;
     amount: number;

@@ -4,6 +4,8 @@
     import { router } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
+    import { resolveKind } from '@schema/transaction.schema';
+
     import PageSection from '@components/layouts/page-section.svelte';
     import TransactionDetail from '@components/module/transaction/transaction-detail.svelte';
     import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
@@ -19,11 +21,7 @@
         router.delete(TransactionController.destroy.url({ transaction: transaction.id }));
     }
 
-    const isTransferRow = $derived(
-        transaction.type === 'transfer_out' ||
-            transaction.type === 'transfer_in' ||
-            transaction.type === 'fee'
-    );
+    const isTransferRow = $derived(resolveKind(transaction.type) === 'transfer');
 </script>
 
 <DashboardPageHeader title="">

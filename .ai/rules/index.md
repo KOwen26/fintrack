@@ -8,6 +8,7 @@ relevant keywords — a path match alone can miss cross-cutting rules.
 | --------------------------------- | ------------------------------------------------------- |
 | `app/Http/Controllers/**`         | `backend-http.md`                                       |
 | `routes/**`                       | `backend-http.md`                                       |
+| `app/Data/**`                     | `.ai/rules/data.md`                                     |
 | `app/Services/**`                 | `backend-architecture.md`                               |
 | `app/Listeners/**`                | `backend-architecture.md`                               |
 | `app/Helpers/**`                  | `backend-architecture.md`                               |
