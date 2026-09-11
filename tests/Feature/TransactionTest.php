@@ -1,11 +1,15 @@
 <?php
 
 use App\Data\Transaction\TransactionListData;
+use App\Data\Transaction\TransferData;
+use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
+use App\Models\Transfer;
 use App\Models\User;
+use App\Services\TransferService;
 
 function createAccountForUser(): array
 {
@@ -61,105 +65,155 @@ it('stores an expense transaction', function (): void {
     expect(Transaction::where('account_id', $account->id)->where('type', TransactionType::Expense->value)->exists())->toBeTrue();
 });
 
-it('creates a transfer with 2 rows sharing the same transfer_link_id', function (): void {
+it('creates a transfer unit with member rows via POST /transfers', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
-    $this->actingAs($user)->post(route('transactions.store'), [
+    $this->actingAs($user)->post(route('transfers.store'), [
         'account_id' => $sourceAccount->id,
-        'type' => 'transfer',
+        'destination_account_id' => $destAccount->id,
         'amount' => 1_000_000,
         'transaction_date' => now()->toDateString(),
-        'destination_account_id' => $destAccount->id,
         'description' => 'Savings move',
-    ])->assertRedirect();
+    ])->assertRedirect(route('transactions.index'));
 
-    $linkId = Transaction::where('account_id', $sourceAccount->id)
-        ->where('type', TransactionType::TransferOut->value)
-        ->value('transfer_link_id');
+    $transfer = Transfer::first();
+    expect($transfer)->not->toBeNull();
 
-    expect($linkId)->not->toBeNull();
-    expect(Transaction::where('transfer_link_id', $linkId)->count())->toBe(2);
-    expect(Transaction::where('transfer_link_id', $linkId)->where('account_id', $destAccount->id)->where('type', TransactionType::TransferIn->value)->exists())->toBeTrue();
+    $rows = $transfer->transactions()->get();
+    expect($rows)->toHaveCount(2);
+
+    $outflow = $rows->first(fn ($row): bool => $row->flow === TransactionFlow::Outflow && $row->type === TransactionType::Transfer);
+    $inflow = $rows->first(fn ($row): bool => $row->flow === TransactionFlow::Inflow && $row->type === TransactionType::Transfer);
+
+    expect($outflow->account_id)->toBe($sourceAccount->id)
+        ->and($inflow->account_id)->toBe($destAccount->id)
+        ->and($outflow->transfer_id)->toBe($transfer->id)
+        ->and($inflow->transfer_id)->toBe($transfer->id);
 });
 
-it('books a transfer fee as an expense in the Admin Fees category', function (): void {
+it('books a transfer fee row in the Admin Fees category via POST /transfers', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
     $parent = Category::factory()->create(['name' => 'Finance']);
     $adminFees = Category::factory()->create(['name' => 'Admin Fees', 'parent_id' => $parent->id]);
 
-    $this->actingAs($user)->post(route('transactions.store'), [
+    $this->actingAs($user)->post(route('transfers.store'), [
         'account_id' => $sourceAccount->id,
-        'type' => 'transfer',
+        'destination_account_id' => $destAccount->id,
         'amount' => 500_000,
         'transaction_date' => now()->toDateString(),
-        'destination_account_id' => $destAccount->id,
         'fee_amount' => 6_500,
     ])->assertRedirect();
 
-    $linkId = Transaction::where('account_id', $sourceAccount->id)
-        ->where('type', TransactionType::TransferOut->value)
-        ->value('transfer_link_id');
+    $transfer = Transfer::first();
+    $feeRow = $transfer->transactions()->get()->firstWhere('type', TransactionType::Expense);
 
-    $feeRow = Transaction::where('transfer_link_id', $linkId)
-        ->where('type', TransactionType::Expense->value)
-        ->first();
-
-    expect(Transaction::where('transfer_link_id', $linkId)->count())->toBe(3);
-    expect($feeRow)->not->toBeNull();
-    expect($feeRow->account_id)->toBe($sourceAccount->id);
-    expect($feeRow->category_id)->toBe($adminFees->id);
-    expect((float) $feeRow->amount)->toBe(6_500.0);
+    expect($feeRow)->not->toBeNull()
+        ->and($feeRow->account_id)->toBe($sourceAccount->id)
+        ->and($feeRow->category_id)->toBe($adminFees->id)
+        ->and($feeRow->description)->toBe('Transfer fee')
+        ->and((float) $feeRow->amount)->toEqual(6_500.0)
+        ->and((float) $transfer->fee_amount)->toEqual(6_500.0);
 });
 
 it('books a transfer fee as uncategorized when no Admin Fees category exists', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
-    $this->actingAs($user)->post(route('transactions.store'), [
+    $this->actingAs($user)->post(route('transfers.store'), [
         'account_id' => $sourceAccount->id,
-        'type' => 'transfer',
+        'destination_account_id' => $destAccount->id,
         'amount' => 500_000,
         'transaction_date' => now()->toDateString(),
-        'destination_account_id' => $destAccount->id,
         'fee_amount' => 6_500,
     ])->assertRedirect();
 
-    $linkId = Transaction::where('account_id', $sourceAccount->id)
-        ->where('type', TransactionType::TransferOut->value)
-        ->value('transfer_link_id');
-
-    $feeRow = Transaction::where('transfer_link_id', $linkId)
-        ->where('type', TransactionType::Expense->value)
-        ->first();
-
-    expect($feeRow)->not->toBeNull();
+    $feeRow = Transfer::first()->transactions()->get()->firstWhere('type', TransactionType::Expense);
     expect($feeRow->category_id)->toBeNull();
 });
 
-it('soft-deletes all transfer rows when one is deleted', function (): void {
+it('rejects the legacy transfer pseudo-type on POST /transactions', function (): void {
+    [$user, $account] = createAccountForUser();
+
+    $this->actingAs($user)->post(route('transactions.store'), [
+        'account_id' => $account->id,
+        'type' => 'transfer',
+        'amount' => 1_000,
+        'transaction_date' => now()->toDateString(),
+        'category_id' => Category::factory()->create()->id,
+    ])->assertInvalid('type');
+});
+
+it('rejects direct unit-member edits with 422 on PUT /transactions', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
-    $this->actingAs($user)->post(route('transactions.store'), [
+    $transfer = resolve(TransferService::class)->create($user, new TransferData(
+        account_id: $sourceAccount->id,
+        destination_account_id: $destAccount->id,
+        amount: 250_000,
+        transaction_date: now()->toDateString(),
+    ));
+    $outflow = $transfer->transactions()->get()->first(fn ($row): bool => $row->flow === TransactionFlow::Outflow);
+
+    $this->actingAs($user)->put(route('transactions.update', $outflow), [
         'account_id' => $sourceAccount->id,
-        'type' => 'transfer',
+        'type' => 'expense',
+        'amount' => 250_000,
+        'transaction_date' => now()->toDateString(),
+        'category_id' => Category::factory()->create()->id,
+    ])->assertStatus(422);
+});
+
+it('edits a transfer unit via PUT /transfers keeping the id stable', function (): void {
+    [$user, $sourceAccount] = createAccountForUser();
+    $destAccount = Account::factory()->create(['owner_id' => $user->id]);
+
+    $this->actingAs($user)->post(route('transfers.store'), [
+        'account_id' => $sourceAccount->id,
+        'destination_account_id' => $destAccount->id,
         'amount' => 200_000,
         'transaction_date' => now()->toDateString(),
+    ])->assertRedirect();
+
+    $transfer = Transfer::first();
+
+    $this->actingAs($user)->put(route('transfers.update', $transfer), [
+        'account_id' => $sourceAccount->id,
         'destination_account_id' => $destAccount->id,
-    ]);
+        'amount' => 300_000,
+        'transaction_date' => now()->toDateString(),
+        'fee_amount' => 5_000,
+    ])->assertRedirect();
 
-    $outflow = Transaction::where('account_id', $sourceAccount->id)
-        ->where('type', TransactionType::TransferOut->value)
-        ->first();
+    $fresh = $transfer->fresh();
+    expect($fresh->id)->toBe($transfer->id)
+        ->and((float) $fresh->amount)->toEqual(300_000.0)
+        ->and($fresh->transactions()->get())->toHaveCount(3); // source + destination + fee
+});
 
-    $this->actingAs($user)->delete(route('transactions.destroy', $outflow))
-        ->assertRedirect();
+it('soft-deletes the whole unit (aggregate, member rows, fee) when any member is deleted', function (): void {
+    [$user, $sourceAccount] = createAccountForUser();
+    $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
-    expect(Transaction::where('transfer_link_id', $outflow->transfer_link_id)->count())->toBe(0);
-    expect(Transaction::withTrashed()->where('transfer_link_id', $outflow->transfer_link_id)->count())->toBe(2);
+    $this->actingAs($user)->post(route('transfers.store'), [
+        'account_id' => $sourceAccount->id,
+        'destination_account_id' => $destAccount->id,
+        'amount' => 200_000,
+        'transaction_date' => now()->toDateString(),
+        'fee_amount' => 2_500,
+    ])->assertRedirect();
+
+    $transfer = Transfer::first();
+    $inflow = $transfer->transactions()->get()->first(fn ($row): bool => $row->flow === TransactionFlow::Inflow);
+
+    $this->actingAs($user)->delete(route('transactions.destroy', $inflow))->assertRedirect();
+
+    expect($transfer->fresh()->trashed())->toBeTrue()
+        ->and(Transaction::where('transfer_id', $transfer->id)->count())->toBe(0)
+        ->and(Transaction::withTrashed()->where('transfer_id', $transfer->id)->count())->toBe(3);
 });
 
 it('lists transactions for any authenticated user', function (): void {
@@ -179,23 +233,23 @@ it('soft-deletes a transaction', function (): void {
     expect(Transaction::withTrashed()->find($transaction->id))->not->toBeNull();
 });
 
-it('resolves destination_account_id for both sides of a transfer pair', function (): void {
+it('resolves destination_account_id for both sides of a transfer unit', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
-    $this->actingAs($user)->post(route('transactions.store'), [
-        'account_id' => $sourceAccount->id,
-        'type' => 'transfer',
-        'amount' => 250_000,
-        'transaction_date' => now()->toDateString(),
-        'destination_account_id' => $destAccount->id,
-    ])->assertRedirect();
+    $transfer = resolve(TransferService::class)->create($user, new TransferData(
+        account_id: $sourceAccount->id,
+        destination_account_id: $destAccount->id,
+        amount: 250_000,
+        transaction_date: now()->toDateString(),
+    ));
+    $rows = $transfer->transactions()->get();
 
-    $outflow = Transaction::where('type', TransactionType::TransferOut->value)->first();
-    $inflow = Transaction::where('type', TransactionType::TransferIn->value)->first();
+    $outflow = $rows->first(fn ($row): bool => $row->flow === TransactionFlow::Outflow);
+    $inflow = $rows->first(fn ($row): bool => $row->flow === TransactionFlow::Inflow);
 
-    expect(TransactionListData::fromTransaction($outflow)->destination_account_id)->toBe($destAccount->id);
-    expect(TransactionListData::fromTransaction($inflow)->destination_account_id)->toBe($sourceAccount->id);
+    expect(TransactionListData::fromTransaction($outflow)->destination_account_id)->toBe($destAccount->id)
+        ->and(TransactionListData::fromTransaction($inflow)->destination_account_id)->toBe($sourceAccount->id);
 });
 
 it('sets destination_account_id to null for non-transfer transactions', function (): void {

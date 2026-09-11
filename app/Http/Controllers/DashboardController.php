@@ -43,13 +43,13 @@ class DashboardController extends Controller
             ->sum('current_balance');
 
         $monthlyIncome = (float) Transaction::whereIn('account_id', $accountIds)
-            ->whereIn('type', TransactionType::inflows())
+            ->where('type', TransactionType::Income->value)
             ->whereBetween('transaction_date', [$from, $to])
             ->whereNull('deleted_at')
             ->sum('amount');
 
         $monthlyExpenses = (float) Transaction::whereIn('account_id', $accountIds)
-            ->whereIn('type', TransactionType::outflows())
+            ->where('type', TransactionType::Expense->value)
             ->whereBetween('transaction_date', [$from, $to])
             ->whereNull('deleted_at')
             ->sum('amount');

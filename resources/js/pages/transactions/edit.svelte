@@ -4,8 +4,6 @@
     import { router } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
-    import { resolveKind } from '@schema/transaction.schema';
-
     import PageSection from '@components/layouts/page-section.svelte';
     import TransactionForm from '@components/module/transaction/transaction-form.svelte';
     import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
@@ -31,7 +29,7 @@
         );
     }
 
-    const isTransferRow = $derived(resolveKind(transaction.type) === 'transfer');
+    const isTransferRow = $derived(transaction.type === 'transfer');
 </script>
 
 <DashboardPageHeader title="">
@@ -40,7 +38,7 @@
         <div class="flex items-center gap-1.5">
             <TransactionTypeBadge type={transaction.type} />
             {#if isTransferRow}
-                <span class="text-xs text-base-content/50">Transfer — type cannot be changed</span>
+                <span class="text-xs text-base-content/50">Transfer — edit the whole unit</span>
             {/if}
         </div>
     </div>

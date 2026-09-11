@@ -4,8 +4,6 @@
 
     import CategoryBadge from '../category/category-badge.svelte';
 
-    import { resolveKind } from '@schema/transaction.schema';
-
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
@@ -20,14 +18,14 @@
 
     let { transaction, withoutAccount = false, class: _class }: Props = $props();
 
-    const kind = $derived(resolveKind(transaction.type));
+    const type = $derived(transaction.type);
     const color = $derived(
-        kind === 'income' ? 'text-success' : kind === 'expense' ? 'text-error' : 'text-info'
+        type === 'income' ? 'text-success' : type === 'expense' ? 'text-error' : 'text-info'
     );
     const signIcon = $derived(
-        kind === 'income'
+        type === 'income'
             ? 'solar--add-bold-duotone'
-            : kind === 'expense'
+            : type === 'expense'
               ? 'solar--minus-bold-duotone'
               : 'solar--transfer-horizontal-bold-duotone'
     );

@@ -6,6 +6,7 @@ use App\Data\Report\CategorySpendingItemData;
 use App\Data\Report\CategorySpendingReportData;
 use App\Data\Report\ChildSpendingItemData;
 use App\Data\Report\ParentSpendingItemData;
+use App\Enums\TransactionType;
 use Illuminate\Support\Facades\DB;
 
 class SpendingService
@@ -17,7 +18,7 @@ class SpendingService
     {
         $periodTotal = (float) DB::table('transactions')
             ->whereIn('account_id', $accountIds)
-            ->whereIn('type', ['expense'])
+            ->where('type', TransactionType::Expense->value)
             ->whereBetween('transaction_date', [$from, $to])
             ->whereNull('deleted_at')
             ->sum('amount');
@@ -45,7 +46,7 @@ class SpendingService
                 ROUND(SUM(t.amount) / ? * 100, 2) AS percentage
             ", [$periodTotal])
             ->whereIn('t.account_id', $accountIds)
-            ->whereIn('t.type', ['expense'])
+            ->where('t.type', TransactionType::Expense->value)
             ->whereBetween('t.transaction_date', [$from, $to])
             ->whereNull('t.deleted_at')
             ->groupBy('t.category_id', 'c.id', 'c.name', 'color', 'icon', 'c.parent_id', 'parent.name')

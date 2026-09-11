@@ -1,32 +1,29 @@
 <script lang="ts" module>
-    import type { TransactionKind } from '@schema/transaction.schema';
+    import type { App } from '@wayfinder/types';
 
-    /* ── Kind style map ──────────────────────────────────── */
+    import TransactionType from '@wayfinder/App/Enums/TransactionType';
 
     export const TYPE_STYLE: Record<
-        TransactionKind,
-        { label: string; color: string; bg: string; icon: string; signIcon: string }
+        App.Enums.TransactionType,
+        { label: string; color: string; bg: string; icon: string }
     > = {
-        income: {
+        [TransactionType.Income]: {
             label: 'Income',
             color: 'var(--color-success)',
             bg: 'color-mix(in oklab, var(--color-success) 12%, transparent)',
             icon: 'solar--arrow-up-line-duotone',
-            signIcon: 'solar--add-bold-duotone',
         },
-        expense: {
+        [TransactionType.Expense]: {
             label: 'Expense',
             color: 'var(--color-error)',
             bg: 'color-mix(in oklab, var(--color-error) 12%, transparent)',
             icon: 'solar--arrow-down-line-duotone',
-            signIcon: 'solar--minus-bold-duotone',
         },
-        transfer: {
+        [TransactionType.Transfer]: {
             label: 'Transfer',
             color: 'var(--color-info)',
             bg: 'color-mix(in oklab, var(--color-info) 12%, transparent)',
             icon: 'solar--transfer-horizontal-bold-duotone',
-            signIcon: '',
         },
     };
 </script>
@@ -39,8 +36,6 @@
     import { getDecorationIcon } from '@data/decoration-icons';
     import { Link } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
-
-    import { resolveKind } from '@schema/transaction.schema';
 
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
@@ -57,7 +52,11 @@
 
     let { transaction, hideIcon = false, class: _class }: Props = $props();
 
-    const typeConfig = $derived(TYPE_STYLE[resolveKind(transaction.type)]);
+    const typeConfig = $derived(TYPE_STYLE[transaction.type]);
+
+    const signIcon = $derived(
+        transaction.flow === 'inflow' ? 'solar--add-bold-duotone' : 'solar--minus-bold-duotone'
+    );
 
     /* Category decoration drives the tile; kind styling is the fallback
        (transfers and uncategorized rows keep the kind-colored tile). */

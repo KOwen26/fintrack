@@ -1,0 +1,3061 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Fintrack — Logo Exploration</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Arvo:wght@400;700&family=Solway:wght@500;700;800&display=swap"
+            rel="stylesheet" />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                --paper: #f7f6f2;
+                --card: #ffffff;
+                --hairline: #e5e3da;
+                --ink: #20241f;
+                --muted: #6d7268;
+                --faint: #a0a49a;
+            }
+
+            body {
+                font-family: 'Figtree', system-ui, sans-serif;
+                background: var(--paper);
+                color: var(--ink);
+                -webkit-font-smoothing: antialiased;
+            }
+
+            .wrap {
+                max-width: 1180px;
+                margin: 0 auto;
+                padding: 0 28px;
+            }
+
+            /* ── Header ── */
+
+            header {
+                padding: 72px 0 40px;
+            }
+
+            .eyebrow {
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.22em;
+                text-transform: uppercase;
+                color: var(--muted);
+                margin-bottom: 14px;
+            }
+
+            h1 {
+                font-family: 'Solway', serif;
+                font-weight: 800;
+                font-size: clamp(34px, 5vw, 52px);
+                letter-spacing: -0.01em;
+                line-height: 1.05;
+            }
+
+            .lede {
+                max-width: 680px;
+                margin-top: 16px;
+                font-size: 16.5px;
+                line-height: 1.55;
+                color: var(--muted);
+            }
+
+            .meta-row {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
+                margin-top: 26px;
+            }
+
+            .chip {
+                font-size: 12.5px;
+                font-weight: 600;
+                color: var(--muted);
+                border: 1px solid var(--hairline);
+                background: var(--card);
+                border-radius: 999px;
+                padding: 5px 12px;
+            }
+
+            .toggle-btn {
+                margin-left: auto;
+                font-family: inherit;
+                font-size: 12.5px;
+                font-weight: 700;
+                background: var(--ink);
+                color: #fff;
+                border: none;
+                border-radius: 999px;
+                padding: 8px 16px;
+                cursor: pointer;
+                transition: opacity 0.15s ease;
+            }
+            .toggle-btn:hover {
+                opacity: 0.82;
+            }
+            .toggle-btn:focus-visible {
+                outline: 2px solid var(--ink);
+                outline-offset: 2px;
+            }
+            body.flip .toggle-btn {
+                background: #fff;
+                color: var(--ink);
+            }
+
+            /* ── Step divider (board motif) ── */
+
+            .step-rule {
+                display: block;
+                margin: 8px 0 18px;
+            }
+
+            /* ── Sections ── */
+
+            section.direction {
+                padding: 44px 0 10px;
+            }
+
+            .dir-head {
+                display: flex;
+                align-items: baseline;
+                gap: 14px;
+                flex-wrap: wrap;
+            }
+
+            .dir-letter {
+                font-size: 12px;
+                font-weight: 800;
+                letter-spacing: 0.18em;
+                color: var(--faint);
+            }
+
+            h2 {
+                font-family: 'Solway', serif;
+                font-weight: 700;
+                font-size: 24px;
+                letter-spacing: -0.005em;
+            }
+
+            .dir-note {
+                margin-top: 8px;
+                max-width: 640px;
+                font-size: 14.5px;
+                line-height: 1.5;
+                color: var(--muted);
+            }
+
+            /* ── Cards ── */
+
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(252px, 1fr));
+                gap: 20px;
+                margin-top: 26px;
+            }
+
+            .card {
+                background: var(--card);
+                border: 1px solid var(--hairline);
+                border-radius: 18px;
+                padding: 14px;
+                animation: rise 0.5s ease backwards;
+                transition:
+                    box-shadow 0.18s ease,
+                    transform 0.18s ease;
+            }
+            .card:hover {
+                box-shadow: 0 10px 28px -14px rgba(32, 36, 31, 0.22);
+                transform: translateY(-2px);
+            }
+            @keyframes rise {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+            }
+
+            .hero {
+                position: relative;
+                height: 172px;
+                border-radius: 12px;
+                background: var(--bg-l);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.25s ease;
+            }
+            body.flip .hero {
+                background: var(--bg-d);
+            }
+
+            .hero .mk {
+                width: 112px;
+                height: 112px;
+            }
+
+            .dark-chip {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 46px;
+                height: 46px;
+                border-radius: 999px;
+                background: var(--bg-d);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .dark-chip .mk {
+                width: 27px;
+                height: 27px;
+            }
+
+            .card-body {
+                padding: 14px 6px 4px;
+            }
+
+            .card-id {
+                font-size: 11px;
+                font-weight: 800;
+                letter-spacing: 0.14em;
+                color: var(--faint);
+            }
+
+            .card-name {
+                font-size: 16.5px;
+                font-weight: 700;
+                margin-top: 2px;
+            }
+
+            .card-desc {
+                font-size: 13px;
+                line-height: 1.45;
+                color: var(--muted);
+                margin-top: 4px;
+                min-height: 38px;
+            }
+
+            .card-tags {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin-top: 10px;
+            }
+
+            .tag {
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--muted);
+                background: var(--paper);
+                border-radius: 6px;
+                padding: 3px 8px;
+            }
+            .tag--pal {
+                color: var(--ink);
+                border: 1px solid var(--hairline);
+                background: #fff;
+            }
+
+            .scale-row {
+                display: flex;
+                align-items: flex-end;
+                gap: 18px;
+                padding: 12px 6px;
+                border-top: 1px solid var(--hairline);
+                margin-top: 12px;
+            }
+
+            .scale-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+            .scale-item span {
+                font-size: 10px;
+                font-weight: 600;
+                color: var(--faint);
+            }
+
+            .lockup {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 6px 2px;
+                border-top: 1px solid var(--hairline);
+                margin-top: 2px;
+            }
+            .lockup .mk {
+                width: 24px;
+                height: 24px;
+                flex: none;
+            }
+            .lockup-word {
+                font-size: 19px;
+                color: var(--ink);
+                letter-spacing: -0.015em;
+            }
+            .lockup-font {
+                margin-left: auto;
+                font-size: 10.5px;
+                font-weight: 600;
+                color: var(--faint);
+            }
+
+            .lw-figtree {
+                font-weight: 600;
+            }
+            .lw-figtree-b {
+                font-weight: 700;
+            }
+            .lw-figtree-x {
+                font-weight: 800;
+            }
+            .lw-arvo {
+                font-family: 'Arvo', serif;
+                font-weight: 700;
+                letter-spacing: 0;
+            }
+
+            /* ── Marks: palette variable sets ── */
+
+            .mk {
+                display: block;
+            }
+
+            .p-verdant .mk {
+                --c1: #0a4a38;
+                --c2: #157a5f;
+                --c3: #9fdec6;
+                --ac: #c9a96a;
+            }
+            .p-verdant .mk.on-dark,
+            body.flip .p-verdant .hero .mk {
+                --c1: #8fe0c3;
+                --c2: #55c7a3;
+                --c3: #10604a;
+                --ac: #d8bc82;
+            }
+
+            .p-cobalt-ink .mk {
+                --c1: #16334f;
+                --c2: #2e5e8f;
+                --c3: #b9d3ea;
+                --ac: #7e9cc4;
+            }
+            .p-cobalt-ink .mk.on-dark,
+            body.flip .p-cobalt-ink .hero .mk {
+                --c1: #a9c8e8;
+                --c2: #7fa9d2;
+                --c3: #1e4368;
+                --ac: #9db9dd;
+            }
+
+            .p-cobalt-gold .mk {
+                --c1: #1b3a6b;
+                --c2: #2e5aa8;
+                --c3: #d6e1f2;
+                --ac: #c9a24b;
+            }
+            .p-cobalt-gold .mk.on-dark,
+            body.flip .p-cobalt-gold .hero .mk {
+                --c1: #bccdeb;
+                --c2: #8fa9dc;
+                --c3: #24437a;
+                --ac: #d9bc72;
+            }
+
+            .p-petrol .mk {
+                --c1: #0b5a54;
+                --c2: #12897e;
+                --c3: #a5e3d9;
+                --ac: #e3c77f;
+            }
+            .p-petrol .mk.on-dark,
+            body.flip .p-petrol .hero .mk {
+                --c1: #92e3d7;
+                --c2: #5ecbbb;
+                --c3: #0f6e64;
+                --ac: #edd89e;
+            }
+
+            .p-emerald-gold .mk {
+                --c1: #0b512f;
+                --c2: #12804c;
+                --c3: #a7ddbe;
+                --ac: #c9a227;
+            }
+            .p-emerald-gold .mk.on-dark,
+            body.flip .p-emerald-gold .hero .mk {
+                --c1: #95dbb2;
+                --c2: #5ec68f;
+                --c3: #0f6b41;
+                --ac: #dbba57;
+            }
+
+            .p-midnight .mk {
+                --c1: #1a2029;
+                --c2: #465062;
+                --c3: #c6cdd8;
+                --ac: #19a97c;
+            }
+            .p-midnight .mk.on-dark,
+            body.flip .p-midnight .hero .mk {
+                --c1: #d5dae3;
+                --c2: #9aa6b8;
+                --c3: #232b37;
+                --ac: #2bc795;
+            }
+
+            /* Card hero / dark-chip backgrounds per palette */
+
+            .p-verdant {
+                --bg-l: #eef6f1;
+                --bg-d: #0a241c;
+            }
+            .p-cobalt-ink {
+                --bg-l: #edf2f8;
+                --bg-d: #0d1d30;
+            }
+            .p-cobalt-gold {
+                --bg-l: #eef1f8;
+                --bg-d: #10203e;
+            }
+            .p-petrol {
+                --bg-l: #ecf6f4;
+                --bg-d: #07302c;
+            }
+            .p-emerald-gold {
+                --bg-l: #edf6ef;
+                --bg-d: #062f1c;
+            }
+            .p-midnight {
+                --bg-l: #f0f1f4;
+                --bg-d: #10141b;
+            }
+
+            /* ── Palette strips ── */
+
+            .palettes {
+                padding: 52px 0 20px;
+            }
+
+            .pal-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+                gap: 18px;
+                margin-top: 24px;
+            }
+
+            .pal-card {
+                background: var(--card);
+                border: 1px solid var(--hairline);
+                border-radius: 16px;
+                padding: 18px;
+            }
+
+            .pal-name {
+                font-weight: 700;
+                font-size: 15.5px;
+            }
+            .pal-anchor {
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--faint);
+                margin-left: 8px;
+            }
+
+            .pal-note {
+                font-size: 13px;
+                color: var(--muted);
+                margin-top: 4px;
+                line-height: 1.45;
+            }
+
+            .swatches {
+                display: flex;
+                gap: 8px;
+                margin-top: 14px;
+            }
+            .sw {
+                flex: 1;
+                border-radius: 8px;
+                height: 44px;
+                display: flex;
+                align-items: flex-end;
+                justify-content: center;
+                padding-bottom: 4px;
+            }
+            .sw span {
+                font-size: 9.5px;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.85);
+                letter-spacing: 0.02em;
+            }
+            .sw--light span {
+                color: rgba(0, 0, 0, 0.55);
+            }
+
+            /* ── Footer ── */
+
+            footer {
+                padding: 40px 0 72px;
+                border-top: 1px solid var(--hairline);
+                margin-top: 40px;
+            }
+            footer p {
+                font-size: 13.5px;
+                color: var(--muted);
+                line-height: 1.6;
+                max-width: 680px;
+            }
+
+            /* ── Motion & responsive ── */
+
+            @media (prefers-reduced-motion: reduce) {
+                .card,
+                .hero,
+                .toggle-btn {
+                    animation: none !important;
+                    transition: none !important;
+                }
+            }
+
+            @media (max-width: 640px) {
+                header {
+                    padding-top: 48px;
+                }
+                .toggle-btn {
+                    margin-left: 0;
+                }
+                .hero {
+                    height: 150px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ── Mark definitions ── -->
+        <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs>
+                <!-- A1 · Jar of Coins : coins stack in a jar + gold arrow -->
+                <symbol id="m-a1" viewBox="0 0 64 64">
+                    <rect x="14" y="24" width="30" height="30" rx="10" fill="var(--c3)" />
+                    <rect
+                        x="14"
+                        y="24"
+                        width="30"
+                        height="30"
+                        rx="10"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="3" />
+                    <rect x="18" y="17" width="22" height="8" rx="3" fill="var(--c1)" />
+                    <ellipse cx="29" cy="46" rx="9" ry="3.5" fill="var(--c2)" />
+                    <ellipse cx="29" cy="39.5" rx="9" ry="3.5" fill="var(--c2)" />
+                    <ellipse cx="29" cy="33" rx="9" ry="3.5" fill="var(--ac)" />
+                    <path
+                        d="M36 13 44 6"
+                        stroke="var(--ac)"
+                        stroke-width="3.5"
+                        stroke-linecap="round"
+                        fill="none" />
+                    <path
+                        d="M40 5.5 H45 V10.5"
+                        fill="none"
+                        stroke="var(--ac)"
+                        stroke-width="3.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- A2 · Rising Wallet : coin-dots trend out of the wallet + arrow -->
+                <symbol id="m-a2" viewBox="0 0 64 64">
+                    <rect x="8" y="30" width="48" height="24" rx="9" fill="var(--c3)" />
+                    <rect
+                        x="8"
+                        y="30"
+                        width="48"
+                        height="24"
+                        rx="9"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="3" />
+                    <rect x="43" y="38" width="13" height="9" rx="4" fill="var(--c2)" />
+                    <path
+                        d="M16 42 27 34 38 26 46 18"
+                        stroke="var(--c2)"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        fill="none" />
+                    <circle cx="16" cy="42" r="4.5" fill="var(--c2)" />
+                    <circle cx="27" cy="34" r="4.5" fill="var(--c2)" />
+                    <circle cx="38" cy="26" r="4.5" fill="var(--ac)" />
+                    <path
+                        d="M42.5 12.5 H49 V19"
+                        fill="none"
+                        stroke="var(--ac)"
+                        stroke-width="3.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- A3 · Ledger Bars : coin-bars rise off an open journal + gold coin -->
+                <symbol id="m-a3" viewBox="0 0 64 64">
+                    <path d="M10 50 Q21 44 32 48 Q43 44 54 50 L54 55 H10 Z" fill="var(--c2)" />
+                    <rect x="15" y="40" width="9" height="11" rx="4.5" fill="var(--c3)" />
+                    <rect x="26" y="33" width="9" height="18" rx="4.5" fill="var(--c2)" />
+                    <rect x="37" y="25" width="9" height="26" rx="4.5" fill="var(--c1)" />
+                    <circle cx="41.5" cy="17" r="4.5" fill="var(--ac)" />
+                    <path
+                        d="M36.5 13 41.5 8 46.5 13"
+                        fill="none"
+                        stroke="var(--ac)"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- A4 · Trend Pocket : coin-dots leave the wallet on a trend + arrow -->
+                <symbol id="m-a4" viewBox="0 0 64 64">
+                    <rect x="8" y="32" width="48" height="22" rx="8" fill="var(--c3)" />
+                    <rect
+                        x="8"
+                        y="32"
+                        width="48"
+                        height="22"
+                        rx="8"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="3" />
+                    <rect x="44" y="40" width="11" height="8" rx="3.5" fill="var(--c2)" />
+                    <path
+                        d="M16 26 27 19 38 12"
+                        stroke="var(--c2)"
+                        stroke-width="3.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        fill="none" />
+                    <circle cx="16" cy="26" r="4.5" fill="var(--c2)" />
+                    <circle cx="27" cy="19" r="4.5" fill="var(--c2)" />
+                    <circle cx="38" cy="12" r="4.5" fill="var(--ac)" />
+                    <path
+                        d="M41 5 H47 V11"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="3.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- B1 · Safe Dial : vault dial, rising bars + chevron in the coin window -->
+                <symbol id="m-b1" viewBox="0 0 64 64">
+                    <rect x="6" y="6" width="52" height="52" rx="14" fill="var(--c1)" />
+                    <circle cx="32" cy="32" r="16" fill="none" stroke="#ffffff" stroke-width="5" />
+                    <path
+                        d="M32 14 V9 M32 50 V55 M14 32 H9 M50 32 H55"
+                        stroke="#ffffff"
+                        stroke-width="3"
+                        stroke-linecap="round" />
+                    <rect x="22" y="36" width="5" height="8" rx="1.5" fill="#ffffff" />
+                    <rect x="29.5" y="32" width="5" height="12" rx="1.5" fill="#ffffff" />
+                    <rect x="37" y="27" width="5" height="17" rx="1.5" fill="#ffffff" />
+                    <path
+                        d="M34.5 22.5 39.5 17.5 44.5 22.5"
+                        fill="none"
+                        stroke="#ffffff"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- B2 · Note Arrow : banknote ($) rises from the wallet as an arrow -->
+                <symbol id="m-b2" viewBox="0 0 64 64">
+                    <path d="M24 34 V14 L36 5 L48 14 V34 Z" fill="var(--ac)" />
+                    <text
+                        x="36"
+                        y="27.5"
+                        text-anchor="middle"
+                        font-family="Figtree, sans-serif"
+                        font-size="12"
+                        font-weight="800"
+                        fill="var(--c1)">
+                        $
+                    </text>
+                    <rect x="5" y="30" width="46" height="26" rx="7" fill="var(--c1)" />
+                    <rect x="37" y="39" width="14" height="9" rx="4.5" fill="var(--c3)" />
+                </symbol>
+
+                <!-- B3 · Ledger Peak : stacked ledgers climb to a gold coin summit -->
+                <symbol id="m-b3" viewBox="0 0 64 64">
+                    <rect x="11" y="45" width="42" height="9" rx="2" fill="var(--c1)" />
+                    <rect x="16" y="35" width="34" height="9" rx="2" fill="var(--c2)" />
+                    <rect x="21" y="25" width="26" height="9" rx="2" fill="var(--c1)" />
+                    <rect x="26" y="15" width="18" height="9" rx="2" fill="var(--c2)" />
+                    <path
+                        d="M15 47.5 V51.5 M20 37.5 V41.5 M25 27.5 V31.5 M30 17.5 V21.5"
+                        stroke="#ffffff"
+                        stroke-width="1.6"
+                        opacity="0.75" />
+                    <circle cx="46" cy="8" r="5" fill="var(--ac)" />
+                </symbol>
+
+                <!-- B4 · Coin Vault : safe fills through its slot, bars rise in the window -->
+                <symbol id="m-b4" viewBox="0 0 64 64">
+                    <rect x="10" y="16" width="44" height="40" rx="7" fill="var(--c1)" />
+                    <rect x="15" y="56" width="7" height="4" rx="1.5" fill="var(--c1)" />
+                    <rect x="42" y="56" width="7" height="4" rx="1.5" fill="var(--c1)" />
+                    <rect x="26" y="10" width="12" height="3.5" rx="1.75" fill="var(--c2)" />
+                    <circle cx="32" cy="4.5" r="3.5" fill="var(--ac)" />
+                    <circle cx="32" cy="36" r="13" fill="var(--bg-d, #10141b)" />
+                    <rect x="25" y="39" width="4" height="7" rx="1.5" fill="var(--c3)" />
+                    <rect x="30.5" y="35" width="4" height="11" rx="1.5" fill="var(--c3)" />
+                    <rect x="36" y="30.5" width="4" height="15.5" rx="1.5" fill="var(--ac)" />
+                </symbol>
+
+                <!-- C1 · Dial Orbit : notched safe dial, orbiting coin, break-out arc -->
+                <symbol id="m-c1" viewBox="0 0 64 64">
+                    <linearGradient id="g-c1a" x1="0" y1="1" x2="1" y2="0">
+                        <stop offset="0" style="stop-color: var(--c1)" />
+                        <stop offset="1" style="stop-color: var(--c2)" />
+                    </linearGradient>
+                    <linearGradient id="g-c1b" x1="0" y1="1" x2="1" y2="0">
+                        <stop offset="0" style="stop-color: var(--c2)" />
+                        <stop offset="1" style="stop-color: var(--ac)" />
+                    </linearGradient>
+                    <circle
+                        cx="32"
+                        cy="35"
+                        r="16"
+                        fill="none"
+                        stroke="url(#g-c1a)"
+                        stroke-width="7" />
+                    <path
+                        d="M43.3 23.7 46.8 20.2 M20.7 23.7 17.2 20.2 M43.3 46.3 46.8 49.8 M20.7 46.3 17.2 49.8"
+                        stroke="var(--c1)"
+                        stroke-width="3"
+                        stroke-linecap="round" />
+                    <circle cx="43.3" cy="46.3" r="4" fill="var(--ac)" />
+                    <path
+                        d="M11 53 Q22 34 40 25"
+                        stroke="url(#g-c1b)"
+                        stroke-width="5"
+                        fill="none"
+                        stroke-linecap="round" />
+                    <path
+                        d="M39.5 15.5 H47 V23"
+                        stroke="url(#g-c1b)"
+                        stroke-width="4.5"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- C2 · Jar Waves : waves + coin-dots rise inside a jar -->
+                <symbol id="m-c2" viewBox="0 0 64 64">
+                    <linearGradient id="g-c2a" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" style="stop-color: var(--c2)" />
+                        <stop offset="1" style="stop-color: var(--c1)" />
+                    </linearGradient>
+                    <clipPath id="cl-c2">
+                        <rect x="18" y="22" width="28" height="32" rx="9" />
+                    </clipPath>
+                    <rect x="20" y="9" width="24" height="6" rx="3" fill="var(--c1)" />
+                    <rect
+                        x="21"
+                        y="15"
+                        width="22"
+                        height="7"
+                        rx="2"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="3" />
+                    <rect
+                        x="18"
+                        y="22"
+                        width="28"
+                        height="32"
+                        rx="9"
+                        fill="var(--c3)"
+                        opacity="0.4" />
+                    <g clip-path="url(#cl-c2)">
+                        <path
+                            d="M18 44 Q26 36 33 41 T46 32 V54 H18 Z"
+                            fill="var(--c3)"
+                            opacity="0.65" />
+                        <path
+                            d="M18 49 Q27 41 35 46 T46 37 V54 H18 Z"
+                            fill="var(--c2)"
+                            opacity="0.6" />
+                        <path
+                            d="M18 54 Q28 45 38 48 L46 38"
+                            stroke="url(#g-c2a)"
+                            stroke-width="4.5"
+                            fill="none"
+                            stroke-linecap="round" />
+                        <path
+                            d="M41 33.5 H45.5 V38"
+                            fill="none"
+                            stroke="url(#g-c2a)"
+                            stroke-width="4"
+                            stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <circle cx="24" cy="42" r="3" fill="#ffffff" opacity="0.9" />
+                        <circle cx="33" cy="39" r="3" fill="#ffffff" opacity="0.9" />
+                    </g>
+                    <rect
+                        x="18"
+                        y="22"
+                        width="28"
+                        height="32"
+                        rx="9"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="3" />
+                </symbol>
+
+                <!-- C3 · Vault Gem : gold coin pierced by the trend line inside the gem -->
+                <symbol id="m-c3" viewBox="0 0 64 64">
+                    <linearGradient id="g-c3a" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" style="stop-color: var(--c2)" />
+                        <stop offset="1" style="stop-color: var(--c1)" />
+                    </linearGradient>
+                    <polygon
+                        points="32,5 53,17.5 53,46.5 32,59 11,46.5 11,17.5"
+                        fill="url(#g-c3a)" />
+                    <path
+                        d="M11 17.5 32 30 53 17.5 M32 30 V59"
+                        stroke="#ffffff"
+                        stroke-width="1.5"
+                        opacity="0.28"
+                        fill="none" />
+                    <path
+                        d="M17 47 26.5 41.5"
+                        stroke="#ffffff"
+                        stroke-width="4.5"
+                        stroke-linecap="round"
+                        fill="none" />
+                    <circle cx="32" cy="36" r="7.5" fill="var(--ac)" />
+                    <path
+                        d="M37.5 30.5 46 22"
+                        stroke="#ffffff"
+                        stroke-width="4.5"
+                        stroke-linecap="round"
+                        fill="none" />
+                    <path
+                        d="M42.5 17 H48 V22.5"
+                        fill="none"
+                        stroke="#ffffff"
+                        stroke-width="4.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- C4 · Dial Pulse : pulse turns uptrend past a gold ($) coin on the dial -->
+                <symbol id="m-c4" viewBox="0 0 64 64">
+                    <linearGradient id="g-c4a" x1="0" y1="1" x2="1" y2="0">
+                        <stop offset="0" style="stop-color: var(--c1)" />
+                        <stop offset="0.62" style="stop-color: var(--c2)" />
+                        <stop offset="1" style="stop-color: var(--ac)" />
+                    </linearGradient>
+                    <circle cx="32" cy="32" r="23" fill="url(#g-c4a)" />
+                    <path
+                        d="M32 12.5 V8.5 M32 55.5 V51.5 M12.5 32 H8.5 M55.5 32 H51.5"
+                        stroke="#ffffff"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        opacity="0.8" />
+                    <path
+                        d="M13 42 H20 L24 46 L29 28 L33 35 H37 L42 26"
+                        stroke="#ffffff"
+                        stroke-width="3.75"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path
+                        d="M39.5 20.5 H44.5 V25.5"
+                        fill="none"
+                        stroke="#ffffff"
+                        stroke-width="3.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <circle cx="29" cy="18.5" r="6" fill="var(--ac)" />
+                    <text
+                        x="29"
+                        y="21.5"
+                        text-anchor="middle"
+                        font-family="Figtree, sans-serif"
+                        font-size="8.5"
+                        font-weight="800"
+                        fill="var(--c1)">
+                        $
+                    </text>
+                </symbol>
+
+                <!-- D1 · Clasp Arrow : the wallet's coin sends a line up through the top -->
+                <symbol id="m-d1" viewBox="0 0 64 64">
+                    <rect
+                        x="9"
+                        y="26"
+                        width="46"
+                        height="27"
+                        rx="9"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3" />
+                    <path
+                        d="M9 41 H15.5"
+                        stroke="var(--c1)"
+                        stroke-width="2.75"
+                        stroke-linecap="round"
+                        fill="none" />
+                    <circle
+                        cx="21.5"
+                        cy="41"
+                        r="4.75"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="2.75" />
+                    <path
+                        d="M26.5 41 H55"
+                        stroke="var(--c1)"
+                        stroke-width="2.75"
+                        stroke-linecap="round"
+                        fill="none" />
+                    <path
+                        d="M21.5 36 V15"
+                        stroke="var(--c1)"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        fill="none" />
+                    <path
+                        d="M15 21 21.5 14.5 28 21"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- D2 · Note Rise : a banknote ($) climbs out of the wallet -->
+                <symbol id="m-d2" viewBox="0 0 64 64">
+                    <rect
+                        x="7"
+                        y="30"
+                        width="50"
+                        height="24"
+                        rx="8"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3" />
+                    <rect
+                        x="22"
+                        y="10"
+                        width="20"
+                        height="26"
+                        rx="2.5"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3" />
+                    <text
+                        x="32"
+                        y="27.5"
+                        text-anchor="middle"
+                        font-family="Figtree, sans-serif"
+                        font-size="12"
+                        font-weight="700"
+                        fill="var(--c1)">
+                        $
+                    </text>
+                    <path
+                        d="M26.5 8.5 32 3 37.5 8.5"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- D3 · Jar Note : folded note stairs up inside the jar, arrow beside -->
+                <symbol id="m-d3" viewBox="0 0 64 64">
+                    <rect
+                        x="17"
+                        y="20"
+                        width="30"
+                        height="34"
+                        rx="9"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3" />
+                    <rect
+                        x="20"
+                        y="13"
+                        width="24"
+                        height="6"
+                        rx="3"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="2.75" />
+                    <path
+                        d="M23 46 H30 V39 H37 V32 H43"
+                        fill="none"
+                        stroke="var(--ac)"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <circle
+                        cx="26"
+                        cy="48.5"
+                        r="3.5"
+                        fill="none"
+                        stroke="var(--ac)"
+                        stroke-width="2.5" />
+                    <path
+                        d="M52 42 V26"
+                        stroke="var(--c1)"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        fill="none" />
+                    <path
+                        d="M46.5 31 52 25.5 57.5 31"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- D4 · Ledger Signal : open journal, coin page + rising signal page -->
+                <symbol id="m-d4" viewBox="0 0 64 64">
+                    <path
+                        d="M32 24 Q22 18 10 21 V50 Q22 47 32 52 Z"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3"
+                        stroke-linejoin="round" />
+                    <path
+                        d="M32 24 Q42 18 54 21 V50 Q42 47 32 52 Z"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3"
+                        stroke-linejoin="round" />
+                    <path
+                        d="M32 24 V52"
+                        stroke="var(--c1)"
+                        stroke-width="3"
+                        stroke-linecap="round" />
+                    <circle
+                        cx="19"
+                        cy="34"
+                        r="5"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="2.75" />
+                    <path
+                        d="M38 43 44 37 50 28"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="2.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <circle cx="38" cy="43" r="2.5" fill="var(--c1)" />
+                    <circle cx="44" cy="37" r="2.5" fill="var(--c1)" />
+                    <path
+                        d="M50 21.5 H54 V25.5"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="2.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+                <!-- E1 · Hallmark F : gold F on a navy coin, dial-ticked, arrow arm -->
+                <symbol id="m-e1" viewBox="0 0 64 64">
+                    <circle cx="32" cy="32" r="24" fill="var(--c1)" />
+                    <path
+                        d="M32 8 V4 M32 60 V56 M8 32 H4 M60 32 H56"
+                        stroke="var(--ac)"
+                        stroke-width="2.5"
+                        stroke-linecap="round" />
+                    <rect x="23.5" y="16" width="5" height="32" rx="2.5" fill="var(--ac)" />
+                    <rect x="23.5" y="16" width="17" height="5" rx="2.5" fill="var(--ac)" />
+                    <rect x="23.5" y="38" width="11" height="5" rx="2.5" fill="var(--ac)" />
+                    <polygon points="34.5,35.5 44,40.5 34.5,45.5" fill="var(--ac)" />
+                </symbol>
+
+                <!-- E2 · Ledger F : note crossbar + rising chart arm on a ledger base -->
+                <symbol id="m-e2" viewBox="0 0 64 64">
+                    <path
+                        d="M14 55 Q23 50.5 32 54 Q41 50.5 50 55"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="3"
+                        stroke-linecap="round" />
+                    <path
+                        d="M24 14 V50"
+                        stroke="var(--c1)"
+                        stroke-width="4.5"
+                        stroke-linecap="round"
+                        fill="none" />
+                    <rect x="24" y="13" width="18" height="7.5" rx="2" fill="var(--ac)" />
+                    <circle cx="33" cy="16.75" r="1.6" fill="var(--c1)" />
+                    <path
+                        d="M24 36 37 28"
+                        stroke="var(--c1)"
+                        stroke-width="4.5"
+                        stroke-linecap="round"
+                        fill="none" />
+                    <path
+                        d="M40.5 22.5 H46 V28"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- E3 · Arch F : vault arch guards the F, gold keystone coin -->
+                <symbol id="m-e3" viewBox="0 0 64 64">
+                    <path
+                        d="M15 53 V32 A17 17 0 0 1 49 32 V53"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3" />
+                    <path
+                        d="M9 53 H55"
+                        stroke="var(--c1)"
+                        stroke-width="3"
+                        stroke-linecap="round" />
+                    <circle cx="32" cy="12" r="3.5" fill="var(--ac)" />
+                    <path
+                        d="M26 25 V45 M26 27 H39"
+                        stroke="var(--c1)"
+                        stroke-width="3.25"
+                        stroke-linecap="round"
+                        fill="none" />
+                    <path
+                        d="M26 38 H34 M33 34.5 37.5 38 33 41.5"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- E4 · Heirloom F : serif F minted on a dial-ticked coin, arrow within -->
+                <symbol id="m-e4" viewBox="0 0 64 64">
+                    <circle cx="32" cy="32" r="23" fill="var(--c3)" />
+                    <circle
+                        cx="32"
+                        cy="32"
+                        r="23"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="3" />
+                    <circle
+                        cx="32"
+                        cy="32"
+                        r="18.5"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="1.5"
+                        opacity="0.45" />
+                    <path
+                        d="M32 11.5 V8 M32 56 V52.5 M11.5 32 H8 M56 32 H52.5"
+                        stroke="var(--c2)"
+                        stroke-width="2"
+                        stroke-linecap="round" />
+                    <text
+                        x="32"
+                        y="41"
+                        text-anchor="middle"
+                        font-family="Arvo, serif"
+                        font-size="25"
+                        font-weight="700"
+                        fill="var(--c1)">
+                        F
+                    </text>
+                    <path
+                        d="M37 23 41 19"
+                        stroke="var(--ac)"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        fill="none" />
+                    <path
+                        d="M39.5 14.5 H44.5 V19.5"
+                        fill="none"
+                        stroke="var(--ac)"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- F1 · One-line Pocket : one stroke draws wallet, coin spiral, arrow -->
+                <symbol id="m-f1" viewBox="0 0 64 64">
+                    <path
+                        d="M27 47 H10 V39 Q10 33 16 33 H33 V28 A5.5 5.5 0 1 1 44 28 V21 L49 16"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3.25"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path
+                        d="M44.5 15 H50 V20.5"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- F2 · Ribbon Jar : silk ribbon lifts a gold coin out of its jar -->
+                <symbol id="m-f2" viewBox="0 0 64 64">
+                    <rect
+                        x="9"
+                        y="40"
+                        width="22"
+                        height="15"
+                        rx="5"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="2.75" />
+                    <rect
+                        x="12"
+                        y="34.5"
+                        width="16"
+                        height="5"
+                        rx="2.5"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="2.5" />
+                    <path
+                        d="M15 44 C13 36 21 30 27 31 C34 32 35 26 39 22 C42 19 46 18 50 15"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="4"
+                        stroke-linecap="round" />
+                    <circle cx="15" cy="44" r="3.5" fill="var(--ac)" />
+                    <path
+                        d="M45.5 14.5 H51 V20"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="3.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- F3 · Pocket Eight : infinity loop over the wallet, coin at center -->
+                <symbol id="m-f3" viewBox="0 0 64 64">
+                    <rect
+                        x="8"
+                        y="44"
+                        width="22"
+                        height="11"
+                        rx="5"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="2.75" />
+                    <circle cx="26" cy="49.5" r="2" fill="var(--c1)" />
+                    <path
+                        d="M14 46 C9 40 12 30 20 30 C28 30 28 40 35 40 C41 40 43 32 47 24 C48.5 21 50 18.5 52 16"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="3.5"
+                        stroke-linecap="round" />
+                    <circle cx="20" cy="35" r="3.25" fill="var(--ac)" />
+                    <path
+                        d="M47.5 15 H53 V20.5"
+                        fill="none"
+                        stroke="var(--c2)"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- F4 · Ink Rise : calligraphic blade out of the wallet, coin riding -->
+                <symbol id="m-f4" viewBox="0 0 64 64">
+                    <rect
+                        x="6"
+                        y="46"
+                        width="21"
+                        height="12"
+                        rx="5"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="2.75" />
+                    <path
+                        d="M13 51 C16 40 24 34 32 30 C40 26 44 20 44 12 L49 12 C49 21 44 28 36 32 C28 36 21 41 18 51 Z"
+                        fill="var(--c2)" />
+                    <circle cx="25" cy="39" r="3.75" fill="var(--ac)" />
+                    <path
+                        d="M40 10.5 46 4 52 10.5"
+                        fill="none"
+                        stroke="var(--ac)"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- G1 · Glass Coin : glass vault ring holds a dollar coin -->
+                <symbol id="m-g1" viewBox="0 0 64 64">
+                    <linearGradient id="g-g1a" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" style="stop-color: var(--c1)" />
+                        <stop offset="1" style="stop-color: var(--c2)" />
+                    </linearGradient>
+                    <rect x="6" y="6" width="52" height="52" rx="14" fill="url(#g-g1a)" />
+                    <circle
+                        cx="32"
+                        cy="34"
+                        r="15"
+                        fill="none"
+                        stroke="#ffffff"
+                        stroke-width="2"
+                        opacity="0.85" />
+                    <circle
+                        cx="32"
+                        cy="34"
+                        r="11.5"
+                        fill="none"
+                        stroke="#ffffff"
+                        stroke-width="1.25"
+                        opacity="0.4" />
+                    <path
+                        d="M21.5 29 A12.5 12.5 0 0 1 27 22.5"
+                        fill="none"
+                        stroke="#ffffff"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        opacity="0.9" />
+                    <circle cx="32" cy="34" r="6.5" fill="var(--ac)" />
+                    <text
+                        x="32"
+                        y="37"
+                        text-anchor="middle"
+                        font-family="Figtree, sans-serif"
+                        font-size="8"
+                        font-weight="800"
+                        fill="var(--c1)">
+                        $
+                    </text>
+                    <path
+                        d="M36.5 28 40 24 43.5 28"
+                        fill="none"
+                        stroke="#ffffff"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- G2 · Tile Vault : product tile — vault door, dial, slot, rising bars -->
+                <symbol id="m-g2" viewBox="0 0 64 64">
+                    <rect x="6" y="6" width="52" height="52" rx="14" fill="var(--c1)" />
+                    <circle cx="31" cy="34" r="15" fill="var(--c2)" />
+                    <circle
+                        cx="31"
+                        cy="34"
+                        r="15"
+                        fill="none"
+                        stroke="#ffffff"
+                        stroke-width="1.5"
+                        opacity="0.25" />
+                    <rect x="24" y="39" width="4" height="6.5" rx="1.5" fill="#ffffff" />
+                    <rect x="29.5" y="35" width="4" height="10.5" rx="1.5" fill="#ffffff" />
+                    <rect x="35" y="31" width="4" height="14.5" rx="1.5" fill="#ffffff" />
+                    <circle cx="48" cy="34" r="4" fill="var(--ac)" />
+                    <rect
+                        x="26"
+                        y="8.5"
+                        width="10"
+                        height="3"
+                        rx="1.5"
+                        fill="#ffffff"
+                        opacity="0.5" />
+                    <circle cx="31" cy="4.5" r="3" fill="var(--ac)" />
+                    <rect x="13" y="58" width="7" height="3" rx="1.5" fill="var(--c1)" />
+                    <rect x="42" y="58" width="7" height="3" rx="1.5" fill="var(--c1)" />
+                </symbol>
+
+                <!-- G3 · Paper Stack : journal layers climb into a gold ($) note -->
+                <symbol id="m-g3" viewBox="0 0 64 64">
+                    <rect x="10" y="30" width="30" height="30" rx="8" fill="var(--c2)" />
+                    <circle cx="15" cy="38" r="1.75" fill="#ffffff" opacity="0.7" />
+                    <circle cx="15" cy="46" r="1.75" fill="#ffffff" opacity="0.7" />
+                    <circle cx="15" cy="54" r="1.75" fill="#ffffff" opacity="0.7" />
+                    <rect
+                        x="17"
+                        y="22"
+                        width="30"
+                        height="30"
+                        rx="8"
+                        fill="var(--c3)"
+                        opacity="0.95" />
+                    <rect x="24" y="14" width="30" height="30" rx="8" fill="var(--ac)" />
+                    <circle
+                        cx="39"
+                        cy="29"
+                        r="5.5"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="2" />
+                    <text
+                        x="39"
+                        y="32"
+                        text-anchor="middle"
+                        font-family="Figtree, sans-serif"
+                        font-size="7.5"
+                        font-weight="800"
+                        fill="var(--c1)">
+                        $
+                    </text>
+                    <path
+                        d="M51 8.5 55 4.5 59 8.5"
+                        fill="none"
+                        stroke="var(--c1)"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </symbol>
+
+                <!-- G4 · Soft Bars : rounded coin-bars rise from a wallet base -->
+                <symbol id="m-g4" viewBox="0 0 64 64">
+                    <linearGradient id="g-g4a" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" style="stop-color: var(--c2)" />
+                        <stop offset="1" style="stop-color: var(--c1)" />
+                    </linearGradient>
+                    <rect x="8" y="52" width="48" height="8" rx="4" fill="var(--c3)" />
+                    <circle cx="51" cy="56" r="2.5" fill="var(--c2)" />
+                    <rect x="13" y="38" width="12" height="16" rx="6" fill="url(#g-g4a)" />
+                    <ellipse cx="19" cy="39.5" rx="4.5" ry="2" fill="#ffffff" opacity="0.35" />
+                    <rect x="26" y="28" width="12" height="26" rx="6" fill="url(#g-g4a)" />
+                    <ellipse cx="32" cy="29.5" rx="4.5" ry="2" fill="#ffffff" opacity="0.35" />
+                    <rect x="39" y="18" width="12" height="36" rx="6" fill="url(#g-g4a)" />
+                    <ellipse cx="45" cy="19.5" rx="4.5" ry="2" fill="#ffffff" opacity="0.35" />
+                    <circle cx="45" cy="12" r="4.5" fill="var(--ac)" />
+                    <circle cx="43.5" cy="10.5" r="1.2" fill="#ffffff" opacity="0.85" />
+                </symbol>
+            </defs>
+        </svg>
+
+        <div class="wrap">
+            <header>
+                <p class="eyebrow">Fintrack · Identity Exploration</p>
+                <h1>Money, kept &amp; growing</h1>
+                <p class="lede">
+                    Twenty-eight marks, each fusing all three layers of the brief — money (coins,
+                    banknotes, the dollar sign), a keeper (wallet, safe, ledger, jar), and growth
+                    (rising lines, stacks, steps, arrows). Seven stylistic directions, from friendly
+                    duotone to premium product icon, in six elegant palettes anchored in green and
+                    blue.
+                </p>
+                <div class="meta-row">
+                    <span class="chip">28 marks</span>
+                    <span class="chip">7 directions</span>
+                    <span class="chip">money × keeper × growth</span>
+                    <span class="chip">6 palettes</span>
+                    <span class="chip">Figtree · Arvo · Solway</span>
+                    <button class="toggle-btn" id="flipBtn" type="button">Preview on dark</button>
+                </div>
+            </header>
+
+            <!-- ── Direction A ── -->
+            <section class="direction">
+                <div class="dir-head">
+                    <span class="dir-letter">DIRECTION A</span>
+                    <h2>Duotone &amp; friendly</h2>
+                </div>
+                <svg
+                    class="step-rule"
+                    width="46"
+                    height="14"
+                    viewBox="0 0 46 14"
+                    aria-hidden="true">
+                    <path
+                        d="M1 12 H11 V8 H21 V4 H31 V1"
+                        fill="none"
+                        stroke="#a0a49a"
+                        stroke-width="1.5" />
+                </svg>
+                <p class="dir-note">
+                    Two-tone rounded shapes that speak the same language as the app's Solar duotone
+                    icons. Warm, approachable, already at home in the interface.
+                </p>
+
+                <div class="grid">
+                    <article class="p-verdant card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-a1" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-a1" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">A1</div>
+                            <div class="card-name">Jar of Coins</div>
+                            <p class="card-desc">
+                                Coins stack toward the mouth of a jar; a gold arrow flies up beside
+                                it.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coins</span><span class="tag">jar</span
+                                ><span class="tag">arrow</span>
+                                <span class="tag tag--pal">Verdant Luxe</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-a1" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-a1" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-a1" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-a1" /></svg>
+                            <span class="lockup-word lw-figtree">Fintrack</span>
+                            <span class="lockup-font">Figtree 600</span>
+                        </div>
+                    </article>
+
+                    <article class="p-cobalt-gold card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-a2" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-a2" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">A2</div>
+                            <div class="card-name">Rising Wallet</div>
+                            <p class="card-desc">
+                                Coin-dots leave the wallet on an ascending trend, the last one gold.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coins</span><span class="tag">wallet</span
+                                ><span class="tag">trend</span>
+                                <span class="tag tag--pal">Cobalt &amp; Gold</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-a2" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-a2" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-a2" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-a2" /></svg>
+                            <span class="lockup-word lw-figtree">Fintrack</span>
+                            <span class="lockup-font">Figtree 600</span>
+                        </div>
+                    </article>
+
+                    <article class="p-petrol card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-a3" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-a3" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">A3</div>
+                            <div class="card-name">Ledger Bars</div>
+                            <p class="card-desc">
+                                Coin-bars rise off the spine of an open journal, a gold coin on top.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coins</span><span class="tag">journal</span
+                                ><span class="tag">bars</span>
+                                <span class="tag tag--pal">Petrol</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-a3" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-a3" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-a3" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-a3" /></svg>
+                            <span class="lockup-word lw-figtree">Fintrack</span>
+                            <span class="lockup-font">Figtree 600</span>
+                        </div>
+                    </article>
+
+                    <article class="p-emerald-gold card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-a4" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-a4" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">A4</div>
+                            <div class="card-name">Trend Pocket</div>
+                            <p class="card-desc">
+                                Coin-dots leave the wallet's pocket on a trend, led by gold.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coins</span><span class="tag">wallet</span
+                                ><span class="tag">trend</span>
+                                <span class="tag tag--pal">Emerald &amp; Gold</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-a4" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-a4" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-a4" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-a4" /></svg>
+                            <span class="lockup-word lw-figtree">Fintrack</span>
+                            <span class="lockup-font">Figtree 600</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ── Direction B ── -->
+            <section class="direction">
+                <div class="dir-head">
+                    <span class="dir-letter">DIRECTION B</span>
+                    <h2>Flat geometric &amp; modern</h2>
+                </div>
+                <svg
+                    class="step-rule"
+                    width="46"
+                    height="14"
+                    viewBox="0 0 46 14"
+                    aria-hidden="true">
+                    <path
+                        d="M1 12 H11 V8 H21 V4 H31 V1"
+                        fill="none"
+                        stroke="#a0a49a"
+                        stroke-width="1.5" />
+                </svg>
+                <p class="dir-note">
+                    Solid, crisp forms with negative-space cuts. The serious-fintech register —
+                    confident at every size, from app tile to favicon.
+                </p>
+
+                <div class="grid">
+                    <article class="p-cobalt-ink card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-b1" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-b1" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">B1</div>
+                            <div class="card-name">Safe Dial</div>
+                            <p class="card-desc">
+                                A vault dial; inside the coin window, bars rise to a chevron.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">dial coin</span><span class="tag">safe</span
+                                ><span class="tag">bars</span>
+                                <span class="tag tag--pal">Cobalt Ink</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-b1" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-b1" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-b1" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-b1" /></svg>
+                            <span class="lockup-word lw-figtree-b">Fintrack</span>
+                            <span class="lockup-font">Figtree 700</span>
+                        </div>
+                    </article>
+
+                    <article class="p-verdant card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-b2" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-b2" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">B2</div>
+                            <div class="card-name">Note Arrow</div>
+                            <p class="card-desc">
+                                A dollar banknote rises from the wallet, its head folded into an
+                                arrow.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">note ($)</span><span class="tag">wallet</span
+                                ><span class="tag">arrow</span>
+                                <span class="tag tag--pal">Verdant Luxe</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-b2" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-b2" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-b2" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-b2" /></svg>
+                            <span class="lockup-word lw-figtree-b">Fintrack</span>
+                            <span class="lockup-font">Figtree 700</span>
+                        </div>
+                    </article>
+
+                    <article class="p-cobalt-gold card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-b3" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-b3" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">B3</div>
+                            <div class="card-name">Ledger Peak</div>
+                            <p class="card-desc">
+                                Stacked ledgers climb to a summit; a gold coin rests on top.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coin</span><span class="tag">ledgers</span
+                                ><span class="tag">climb</span>
+                                <span class="tag tag--pal">Cobalt &amp; Gold</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-b3" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-b3" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-b3" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-b3" /></svg>
+                            <span class="lockup-word lw-figtree-b">Fintrack</span>
+                            <span class="lockup-font">Figtree 700</span>
+                        </div>
+                    </article>
+
+                    <article class="p-midnight card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-b4" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-b4" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">B4</div>
+                            <div class="card-name">Coin Vault</div>
+                            <p class="card-desc">
+                                A safe fills through its coin slot; inside the window, bars rise.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coin + bars</span><span class="tag">safe</span
+                                ><span class="tag">rising</span>
+                                <span class="tag tag--pal">Midnight</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-b4" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-b4" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-b4" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-b4" /></svg>
+                            <span class="lockup-word lw-figtree-b">Fintrack</span>
+                            <span class="lockup-font">Figtree 700</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ── Direction C ── -->
+            <section class="direction">
+                <div class="dir-head">
+                    <span class="dir-letter">DIRECTION C</span>
+                    <h2>Gradient fintech</h2>
+                </div>
+                <svg
+                    class="step-rule"
+                    width="46"
+                    height="14"
+                    viewBox="0 0 46 14"
+                    aria-hidden="true">
+                    <path
+                        d="M1 12 H11 V8 H21 V4 H31 V1"
+                        fill="none"
+                        stroke="#a0a49a"
+                        stroke-width="1.5" />
+                </svg>
+                <p class="dir-note">
+                    Layered color and motion. Energetic and product-led — the register of the modern
+                    banking apps — with gradients blended from each palette's own tones.
+                </p>
+
+                <div class="grid">
+                    <article class="p-petrol card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-c1" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-c1" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">C1</div>
+                            <div class="card-name">Dial Orbit</div>
+                            <p class="card-desc">
+                                An orbiting coin breaks out of a notched safe dial toward gold.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coin</span><span class="tag">safe dial</span
+                                ><span class="tag">arc</span>
+                                <span class="tag tag--pal">Petrol</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-c1" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-c1" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-c1" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-c1" /></svg>
+                            <span class="lockup-word lw-figtree-x">Fintrack</span>
+                            <span class="lockup-font">Figtree 800</span>
+                        </div>
+                    </article>
+
+                    <article class="p-cobalt-ink card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-c2" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-c2" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">C2</div>
+                            <div class="card-name">Jar Waves</div>
+                            <p class="card-desc">
+                                Waves of balance lift coin-dots inside a jar, into an arrow.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coins</span><span class="tag">jar</span
+                                ><span class="tag">waves</span>
+                                <span class="tag tag--pal">Cobalt Ink</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-c2" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-c2" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-c2" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-c2" /></svg>
+                            <span class="lockup-word lw-figtree-x">Fintrack</span>
+                            <span class="lockup-font">Figtree 800</span>
+                        </div>
+                    </article>
+
+                    <article class="p-emerald-gold card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-c3" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-c3" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">C3</div>
+                            <div class="card-name">Vault Gem</div>
+                            <p class="card-desc">
+                                A gold coin sits pierced by the trend line inside the vault gem.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">gold coin</span><span class="tag">vault</span
+                                ><span class="tag">trend</span>
+                                <span class="tag tag--pal">Emerald &amp; Gold</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-c3" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-c3" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-c3" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-c3" /></svg>
+                            <span class="lockup-word lw-figtree-x">Fintrack</span>
+                            <span class="lockup-font">Figtree 800</span>
+                        </div>
+                    </article>
+
+                    <article class="p-cobalt-gold card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-c4" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-c4" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">C4</div>
+                            <div class="card-name">Dial Pulse</div>
+                            <p class="card-desc">
+                                A pulse turns into an uptrend past a dollar coin on the safe dial.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coin ($)</span><span class="tag">dial</span
+                                ><span class="tag">pulse</span>
+                                <span class="tag tag--pal">Cobalt &amp; Gold</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-c4" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-c4" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-c4" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-c4" /></svg>
+                            <span class="lockup-word lw-figtree-x">Fintrack</span>
+                            <span class="lockup-font">Figtree 800</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ── Direction D ── -->
+            <section class="direction">
+                <div class="dir-head">
+                    <span class="dir-letter">DIRECTION D</span>
+                    <h2>Minimal outline</h2>
+                </div>
+                <svg
+                    class="step-rule"
+                    width="46"
+                    height="14"
+                    viewBox="0 0 46 14"
+                    aria-hidden="true">
+                    <path
+                        d="M1 12 H11 V8 H21 V4 H31 V1"
+                        fill="none"
+                        stroke="#a0a49a"
+                        stroke-width="1.5" />
+                </svg>
+                <p class="dir-note">
+                    A single stroke weight, drawn like a signature. Quiet luxury — and the one
+                    direction that pairs naturally with the Arvo serif wordmark.
+                </p>
+
+                <div class="grid">
+                    <article class="p-midnight card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-d1" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-d1" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">D1</div>
+                            <div class="card-name">Clasp Arrow</div>
+                            <p class="card-desc">
+                                The wallet's coin sends a line straight up through the top edge.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coin</span><span class="tag">wallet</span
+                                ><span class="tag">arrow</span>
+                                <span class="tag tag--pal">Midnight</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-d1" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-d1" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-d1" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-d1" /></svg>
+                            <span class="lockup-word lw-arvo">Fintrack</span>
+                            <span class="lockup-font">Arvo 700</span>
+                        </div>
+                    </article>
+
+                    <article class="p-verdant card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-d2" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-d2" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">D2</div>
+                            <div class="card-name">Note Rise</div>
+                            <p class="card-desc">
+                                A dollar banknote climbs out of the wallet toward a chevron.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">note ($)</span><span class="tag">wallet</span
+                                ><span class="tag">rise</span>
+                                <span class="tag tag--pal">Verdant Luxe</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-d2" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-d2" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-d2" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-d2" /></svg>
+                            <span class="lockup-word lw-arvo">Fintrack</span>
+                            <span class="lockup-font">Arvo 700</span>
+                        </div>
+                    </article>
+
+                    <article class="p-petrol card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-d3" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-d3" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">D3</div>
+                            <div class="card-name">Jar Note</div>
+                            <p class="card-desc">
+                                A folded note stairs up inside the jar; an arrow stands by.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">note + coin</span><span class="tag">jar</span
+                                ><span class="tag">steps</span>
+                                <span class="tag tag--pal">Petrol</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-d3" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-d3" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-d3" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-d3" /></svg>
+                            <span class="lockup-word lw-arvo">Fintrack</span>
+                            <span class="lockup-font">Arvo 700</span>
+                        </div>
+                    </article>
+
+                    <article class="p-cobalt-ink card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-d4" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-d4" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">D4</div>
+                            <div class="card-name">Ledger Signal</div>
+                            <p class="card-desc">
+                                An open journal — a coin on one page, a rising signal on the other.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coin</span><span class="tag">journal</span
+                                ><span class="tag">signal</span>
+                                <span class="tag tag--pal">Cobalt Ink</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-d4" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-d4" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-d4" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-d4" /></svg>
+                            <span class="lockup-word lw-arvo">Fintrack</span>
+                            <span class="lockup-font">Arvo 700</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ── Direction E ── -->
+            <section class="direction">
+                <div class="dir-head">
+                    <span class="dir-letter">DIRECTION E</span>
+                    <h2>Monogram luxe</h2>
+                </div>
+                <svg
+                    class="step-rule"
+                    width="46"
+                    height="14"
+                    viewBox="0 0 46 14"
+                    aria-hidden="true">
+                    <path
+                        d="M1 12 H11 V8 H21 V4 H31 V1"
+                        fill="none"
+                        stroke="#a0a49a"
+                        stroke-width="1.5" />
+                </svg>
+                <p class="dir-note">
+                    The brand's initial, cut like a hallmark. Money and keeper merge into one
+                    refined letterform — the quickest route to feeling like an established product.
+                </p>
+
+                <div class="grid">
+                    <article class="p-cobalt-gold card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-e1" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-e1" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">E1</div>
+                            <div class="card-name">Hallmark F</div>
+                            <p class="card-desc">
+                                A gold F struck on a navy coin, dial-ticked, its middle arm leaving
+                                as an arrow.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">F monogram</span><span class="tag">coin safe</span
+                                ><span class="tag">arrow</span>
+                                <span class="tag tag--pal">Cobalt &amp; Gold</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-e1" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-e1" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-e1" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-e1" /></svg>
+                            <span class="lockup-word lw-arvo">Fintrack</span>
+                            <span class="lockup-font">Arvo 700</span>
+                        </div>
+                    </article>
+
+                    <article class="p-emerald-gold card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-e2" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-e2" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">E2</div>
+                            <div class="card-name">Ledger F</div>
+                            <p class="card-desc">
+                                An F whose crossbars are a gold note and a rising chart, resting on
+                                its ledger.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">F</span><span class="tag">note + ledger</span
+                                ><span class="tag">chart</span>
+                                <span class="tag tag--pal">Emerald &amp; Gold</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-e2" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-e2" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-e2" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-e2" /></svg>
+                            <span class="lockup-word lw-arvo">Fintrack</span>
+                            <span class="lockup-font">Arvo 700</span>
+                        </div>
+                    </article>
+
+                    <article class="p-cobalt-ink card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-e3" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-e3" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">E3</div>
+                            <div class="card-name">Arch F</div>
+                            <p class="card-desc">
+                                A vault arch guards the F; the keystone is a gold coin.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">F</span><span class="tag">vault arch</span
+                                ><span class="tag">keystone coin</span>
+                                <span class="tag tag--pal">Cobalt Ink</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-e3" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-e3" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-e3" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-e3" /></svg>
+                            <span class="lockup-word lw-arvo">Fintrack</span>
+                            <span class="lockup-font">Arvo 700</span>
+                        </div>
+                    </article>
+
+                    <article class="p-verdant card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-e4" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-e4" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">E4</div>
+                            <div class="card-name">Heirloom F</div>
+                            <p class="card-desc">
+                                A serif F minted on a dial-ticked coin, a small gold arrow within.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">serif F</span><span class="tag">coin safe</span
+                                ><span class="tag">arrow</span>
+                                <span class="tag tag--pal">Verdant Luxe</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-e4" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-e4" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-e4" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-e4" /></svg>
+                            <span class="lockup-word lw-arvo">Fintrack</span>
+                            <span class="lockup-font">Arvo 700</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ── Direction F ── -->
+            <section class="direction">
+                <div class="dir-head">
+                    <span class="dir-letter">DIRECTION F</span>
+                    <h2>Silk line</h2>
+                </div>
+                <svg
+                    class="step-rule"
+                    width="46"
+                    height="14"
+                    viewBox="0 0 46 14"
+                    aria-hidden="true">
+                    <path
+                        d="M1 12 H11 V8 H21 V4 H31 V1"
+                        fill="none"
+                        stroke="#a0a49a"
+                        stroke-width="1.5" />
+                </svg>
+                <p class="dir-note">
+                    One continuous stroke draws the whole story — keeper, coin, rise. Calligraphic
+                    restraint; the signature of a confident modern brand.
+                </p>
+
+                <div class="grid">
+                    <article class="p-petrol card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-f1" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-f1" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">F1</div>
+                            <div class="card-name">One-line Pocket</div>
+                            <p class="card-desc">
+                                One stroke draws the wallet, spirals a coin, and leaves as an arrow.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">wallet</span><span class="tag">coin spiral</span
+                                ><span class="tag">arrow</span>
+                                <span class="tag tag--pal">Petrol</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-f1" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-f1" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-f1" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-f1" /></svg>
+                            <span class="lockup-word lw-figtree">Fintrack</span>
+                            <span class="lockup-font">Figtree 600</span>
+                        </div>
+                    </article>
+
+                    <article class="p-cobalt-gold card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-f2" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-f2" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">F2</div>
+                            <div class="card-name">Ribbon Jar</div>
+                            <p class="card-desc">
+                                A silk ribbon lifts a gold coin out of its jar into an arrow.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coin</span><span class="tag">jar</span
+                                ><span class="tag">ribbon</span>
+                                <span class="tag tag--pal">Cobalt &amp; Gold</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-f2" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-f2" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-f2" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-f2" /></svg>
+                            <span class="lockup-word lw-figtree">Fintrack</span>
+                            <span class="lockup-font">Figtree 600</span>
+                        </div>
+                    </article>
+
+                    <article class="p-verdant card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-f3" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-f3" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">F3</div>
+                            <div class="card-name">Pocket Eight</div>
+                            <p class="card-desc">
+                                An infinity loop over the wallet — saved, rising, saved again.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">wallet</span><span class="tag">loop coin</span
+                                ><span class="tag">rise</span>
+                                <span class="tag tag--pal">Verdant Luxe</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-f3" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-f3" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-f3" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-f3" /></svg>
+                            <span class="lockup-word lw-figtree">Fintrack</span>
+                            <span class="lockup-font">Figtree 600</span>
+                        </div>
+                    </article>
+
+                    <article class="p-emerald-gold card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-f4" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-f4" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">F4</div>
+                            <div class="card-name">Ink Rise</div>
+                            <p class="card-desc">
+                                A calligraphic blade sweeps out of the wallet, coin riding its back.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">wallet</span><span class="tag">coin</span
+                                ><span class="tag">swoosh</span>
+                                <span class="tag tag--pal">Emerald &amp; Gold</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-f4" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-f4" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-f4" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-f4" /></svg>
+                            <span class="lockup-word lw-figtree">Fintrack</span>
+                            <span class="lockup-font">Figtree 600</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ── Direction G ── -->
+            <section class="direction">
+                <div class="dir-head">
+                    <span class="dir-letter">DIRECTION G</span>
+                    <h2>Premium icon</h2>
+                </div>
+                <svg
+                    class="step-rule"
+                    width="46"
+                    height="14"
+                    viewBox="0 0 46 14"
+                    aria-hidden="true">
+                    <path
+                        d="M1 12 H11 V8 H21 V4 H31 V1"
+                        fill="none"
+                        stroke="#a0a49a"
+                        stroke-width="1.5" />
+                </svg>
+                <p class="dir-note">
+                    Soft depth, glass, and light — the register of the modern product icon, built to
+                    sit on an app tile or a device home screen.
+                </p>
+
+                <div class="grid">
+                    <article class="p-cobalt-gold card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-g1" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-g1" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">G1</div>
+                            <div class="card-name">Glass Coin</div>
+                            <p class="card-desc">
+                                A glass vault ring holds a dollar coin; light catches the rim.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">$ coin</span><span class="tag">glass vault</span
+                                ><span class="tag">chevron</span>
+                                <span class="tag tag--pal">Cobalt &amp; Gold</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-g1" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-g1" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-g1" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-g1" /></svg>
+                            <span class="lockup-word lw-figtree-x">Fintrack</span>
+                            <span class="lockup-font">Figtree 800</span>
+                        </div>
+                    </article>
+
+                    <article class="p-cobalt-ink card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-g2" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-g2" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">G2</div>
+                            <div class="card-name">Tile Vault</div>
+                            <p class="card-desc">
+                                A product tile — vault door, side dial, coin slot, rising bars.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coin + bars</span
+                                ><span class="tag">safe tile</span><span class="tag">rising</span>
+                                <span class="tag tag--pal">Cobalt Ink</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-g2" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-g2" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-g2" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-g2" /></svg>
+                            <span class="lockup-word lw-figtree-x">Fintrack</span>
+                            <span class="lockup-font">Figtree 800</span>
+                        </div>
+                    </article>
+
+                    <article class="p-petrol card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-g3" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-g3" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">G3</div>
+                            <div class="card-name">Paper Stack</div>
+                            <p class="card-desc">
+                                Journal layers climb into a gold dollar note, an arrow above.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">note ($)</span
+                                ><span class="tag">journal stack</span
+                                ><span class="tag">climb</span>
+                                <span class="tag tag--pal">Petrol</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-g3" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-g3" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-g3" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-g3" /></svg>
+                            <span class="lockup-word lw-figtree-x">Fintrack</span>
+                            <span class="lockup-font">Figtree 800</span>
+                        </div>
+                    </article>
+
+                    <article class="p-verdant card">
+                        <div class="hero">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-g4" /></svg>
+                            <span class="dark-chip"
+                                ><svg class="mk on-dark" viewBox="0 0 64 64">
+                                    <use href="#m-g4" /></svg
+                            ></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-id">G4</div>
+                            <div class="card-name">Soft Bars</div>
+                            <p class="card-desc">
+                                Rounded coin-bars rise from a wallet base; gold caps the tallest.
+                            </p>
+                            <div class="card-tags">
+                                <span class="tag">coin bars</span><span class="tag">wallet</span
+                                ><span class="tag">rise</span>
+                                <span class="tag tag--pal">Verdant Luxe</span>
+                            </div>
+                        </div>
+                        <div class="scale-row">
+                            <span class="scale-item"
+                                ><svg class="mk" width="48" height="48" viewBox="0 0 64 64">
+                                    <use href="#m-g4" /></svg
+                                ><span>48</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="32" height="32" viewBox="0 0 64 64">
+                                    <use href="#m-g4" /></svg
+                                ><span>32</span></span
+                            >
+                            <span class="scale-item"
+                                ><svg class="mk" width="16" height="16" viewBox="0 0 64 64">
+                                    <use href="#m-g4" /></svg
+                                ><span>16</span></span
+                            >
+                        </div>
+                        <div class="lockup">
+                            <svg class="mk" viewBox="0 0 64 64"><use href="#m-g4" /></svg>
+                            <span class="lockup-word lw-figtree-x">Fintrack</span>
+                            <span class="lockup-font">Figtree 800</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ── Palettes ── -->
+            <section class="palettes">
+                <div class="dir-head">
+                    <span class="dir-letter">SYSTEM</span>
+                    <h2>Six palettes</h2>
+                </div>
+                <svg
+                    class="step-rule"
+                    width="46"
+                    height="14"
+                    viewBox="0 0 46 14"
+                    aria-hidden="true">
+                    <path
+                        d="M1 12 H11 V8 H21 V4 H31 V1"
+                        fill="none"
+                        stroke="#a0a49a"
+                        stroke-width="1.5" />
+                </svg>
+                <p class="dir-note">
+                    Green and blue anchors first, then the richer pairings. Every mark above is
+                    colored from one of these six — palette and form can be shortlisted
+                    independently.
+                </p>
+
+                <div class="pal-grid">
+                    <div class="pal-card p-verdant">
+                        <div>
+                            <span class="pal-name">Verdant Luxe</span
+                            ><span class="pal-anchor">green</span>
+                        </div>
+                        <p class="pal-note">
+                            Deep emerald, mint, champagne. Fintrack's home theme, refined.
+                        </p>
+                        <div class="swatches">
+                            <div class="sw" style="background: #0a4a38"><span>0A4A38</span></div>
+                            <div class="sw" style="background: #157a5f"><span>157A5F</span></div>
+                            <div class="sw sw--light" style="background: #9fdec6">
+                                <span>9FDEC6</span>
+                            </div>
+                            <div class="sw" style="background: #c9a96a"><span>C9A96A</span></div>
+                            <div class="sw sw--light" style="background: #eef6f1">
+                                <span>EEF6F1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pal-card p-cobalt-ink">
+                        <div>
+                            <span class="pal-name">Cobalt Ink</span
+                            ><span class="pal-anchor">blue</span>
+                        </div>
+                        <p class="pal-note">
+                            Navy ink, slate blue, pale sky. Trust in a quiet register.
+                        </p>
+                        <div class="swatches">
+                            <div class="sw" style="background: #16334f"><span>16334F</span></div>
+                            <div class="sw" style="background: #2e5e8f"><span>2E5E8F</span></div>
+                            <div class="sw sw--light" style="background: #b9d3ea">
+                                <span>B9D3EA</span>
+                            </div>
+                            <div class="sw" style="background: #7e9cc4"><span>7E9CC4</span></div>
+                            <div class="sw sw--light" style="background: #edf2f8">
+                                <span>EDF2F8</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pal-card p-petrol">
+                        <div>
+                            <span class="pal-name">Petrol</span
+                            ><span class="pal-anchor">green × blue</span>
+                        </div>
+                        <p class="pal-note">
+                            Dark teal and seafoam — the bridge between the two anchors.
+                        </p>
+                        <div class="swatches">
+                            <div class="sw" style="background: #0b5a54"><span>0B5A54</span></div>
+                            <div class="sw" style="background: #12897e"><span>12897E</span></div>
+                            <div class="sw sw--light" style="background: #a5e3d9">
+                                <span>A5E3D9</span>
+                            </div>
+                            <div class="sw" style="background: #e3c77f"><span>E3C77F</span></div>
+                            <div class="sw sw--light" style="background: #ecf6f4">
+                                <span>ECF6F4</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pal-card p-emerald-gold">
+                        <div>
+                            <span class="pal-name">Emerald &amp; Gold</span
+                            ><span class="pal-anchor">rich green</span>
+                        </div>
+                        <p class="pal-note">
+                            The classic wealth pairing — rich green against warm gold.
+                        </p>
+                        <div class="swatches">
+                            <div class="sw" style="background: #0b512f"><span>0B512F</span></div>
+                            <div class="sw" style="background: #12804c"><span>12804C</span></div>
+                            <div class="sw sw--light" style="background: #a7ddbe">
+                                <span>A7DDBE</span>
+                            </div>
+                            <div class="sw" style="background: #c9a227"><span>C9A227</span></div>
+                            <div class="sw sw--light" style="background: #edf6ef">
+                                <span>EDF6EF</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pal-card p-cobalt-gold">
+                        <div>
+                            <span class="pal-name">Cobalt &amp; Gold</span
+                            ><span class="pal-anchor">blue × gold</span>
+                        </div>
+                        <p class="pal-note">
+                            Royal navy with a gold signature. Bank-grade elegance.
+                        </p>
+                        <div class="swatches">
+                            <div class="sw" style="background: #1b3a6b"><span>1B3A6B</span></div>
+                            <div class="sw" style="background: #2e5aa8"><span>2E5AA8</span></div>
+                            <div class="sw sw--light" style="background: #d6e1f2">
+                                <span>D6E1F2</span>
+                            </div>
+                            <div class="sw" style="background: #c9a24b"><span>C9A24B</span></div>
+                            <div class="sw sw--light" style="background: #eef1f8">
+                                <span>EEF1F8</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pal-card p-midnight">
+                        <div>
+                            <span class="pal-name">Midnight</span
+                            ><span class="pal-anchor">wildcard</span>
+                        </div>
+                        <p class="pal-note">
+                            Near-black slate, silver, one emerald spark. The wildcard.
+                        </p>
+                        <div class="swatches">
+                            <div class="sw" style="background: #1a2029"><span>1A2029</span></div>
+                            <div class="sw" style="background: #465062"><span>465062</span></div>
+                            <div class="sw sw--light" style="background: #c6cdd8">
+                                <span>C6CDD8</span>
+                            </div>
+                            <div class="sw" style="background: #19a97c"><span>19A97C</span></div>
+                            <div class="sw sw--light" style="background: #f0f1f4">
+                                <span>F0F1F4</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer>
+                <p>
+                    Each card shows the mark at full size, on dark, at favicon scales (48 / 32 / 16
+                    px), and in a wordmark lockup. Every mark carries the three layers — money, a
+                    keeper, growth — so palette and form can be shortlisted independently. Once a
+                    direction is chosen, the final mark can be recolored into any of the six
+                    systems.
+                </p>
+            </footer>
+        </div>
+
+        <script>
+            const btn = document.getElementById('flipBtn');
+            btn.addEventListener('click', () => {
+                const on = document.body.classList.toggle('flip');
+                btn.textContent = on ? 'Back to light' : 'Preview on dark';
+            });
+        </script>
+    </body>
+</html>

@@ -81,13 +81,13 @@
 
     const incomeTotal = $derived(
         transactions
-            .filter((t) => t.type === 'income' || t.type === 'transfer_in')
+            .filter((t) => t.type === 'income')
             .reduce((sum, t) => sum + Number(t.amount), 0)
     );
 
     const expenseTotal = $derived(
         transactions
-            .filter((t) => t.type !== 'income' && t.type !== 'transfer_in')
+            .filter((t) => t.type === 'expense')
             .reduce((sum, t) => sum + Number(t.amount), 0)
     );
 

@@ -1,12 +1,9 @@
 <script lang="ts">
-    import type { TransactionKind } from '@schema/transaction.schema';
     import type { App } from '@wayfinder/types';
 
     import { getDecorationColor } from '@data/decoration-colors';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
-
-    import { resolveKind } from '@schema/transaction.schema';
 
     import Formatter from '@utilities/formatter';
 
@@ -14,6 +11,7 @@
     import BalanceHeroCard from '@components/module/dashboard/balance-hero-card.svelte';
     import DashboardWelcomeCard from '@components/module/dashboard/dashboard-welcome-card.svelte';
     import CategorySpendingChart from '@components/module/report/category-spending-chart.svelte';
+    import { TYPE_STYLE } from '@components/module/transaction/transaction-list-item.svelte';
     import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
@@ -103,17 +101,6 @@
             ? Math.round((summary.monthly_expenses / summary.monthly_income) * 100)
             : null
     );
-
-    /* ── Transaction type helpers ────────────────────────── */
-
-    const TYPE_STYLE: Record<
-        TransactionKind,
-        { label: string; color: string; bg: string; sign: string }
-    > = {
-        income: { label: 'Income', color: 'text-success', bg: 'bg-success/12', sign: '+' },
-        expense: { label: 'Expense', color: 'text-error', bg: 'bg-error/12', sign: '−' },
-        transfer: { label: 'Transfer', color: 'text-info', bg: 'bg-info/12', sign: '' },
-    };
 
     /* ── Budget helpers (derived from category spending) ─── */
 
@@ -338,20 +325,21 @@
 
                 <div class="-mx-5 divide-y divide-base-200">
                     {#each recent_transactions as tx (tx.id)}
-                        {@const style = TYPE_STYLE[resolveKind(tx.type)]}
+                        {@const style = TYPE_STYLE[tx.type]}
                         <a
                             class="flex cursor-pointer items-center gap-3 px-5 py-3 transition-colors hover:bg-base-200/50"
                             href={TransactionController.show.url({ transaction: tx.id })}>
                             <div
-                                class="flex size-9 shrink-0 items-center justify-center rounded-lg {style.bg}">
+                                class="flex size-9 shrink-0 items-center justify-center rounded-lg"
+                                style:background={style.bg}>
                                 {#if tx.category?.decorations?.icon}
                                     <i
-                                        class="iconify size-4 {style.color} {tx.category.decorations
-                                            .icon}"></i>
+                                        class="iconify size-4 {tx.category.decorations.icon}"
+                                        style:color={style.color}></i>
                                 {:else}
                                     <i
-                                        class="iconify size-4 {style.color} solar--dollar-minimalistic-bold-duotone"
-                                    ></i>
+                                        class="iconify size-4 solar--dollar-minimalistic-bold-duotone"
+                                        style:color={style.color}></i>
                                 {/if}
                             </div>
                             <div class="min-w-0 flex-1">
@@ -365,8 +353,11 @@
                                     {/if}
                                 </p>
                             </div>
-                            <span class="shrink-0 text-sm font-semibold {style.color}">
-                                {style.sign}{Formatter.currency(tx.amount, true)}
+                            <span class="shrink-0 text-sm font-semibold" style:color={style.color}>
+                                {tx.flow === 'inflow' ? '+' : '−'}{Formatter.currency(
+                                    tx.amount,
+                                    true
+                                )}
                             </span>
                         </a>
                     {/each}

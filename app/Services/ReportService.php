@@ -10,6 +10,7 @@ use App\Data\Report\FixedVariableData;
 use App\Data\Report\TrendMonthData;
 use App\Data\Report\TrendReportData;
 use App\Enums\AccountAccessType;
+use App\Enums\TransactionType;
 use App\Models\Account;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -44,9 +45,9 @@ class ReportService
                 function () use ($account, $year, $month): TrendMonthData {
                     $result = DB::table('transactions')
                         ->selectRaw('
-                            SUM(CASE WHEN type IN (?, ?) THEN amount ELSE 0 END) AS total_income,
-                            SUM(CASE WHEN type IN (?) THEN amount ELSE 0 END) AS total_expense
-                        ', ['income', 'transfer_in', 'expense'])
+                            SUM(CASE WHEN type = ? THEN amount ELSE 0 END) AS total_income,
+                            SUM(CASE WHEN type = ? THEN amount ELSE 0 END) AS total_expense
+                        ', [TransactionType::Income->value, TransactionType::Expense->value])
                         ->where('account_id', $account->id)
                         ->whereNull('deleted_at')
                         ->whereYear('transaction_date', $year)
@@ -100,7 +101,7 @@ class ReportService
                 // Compute the period total first (used to calculate percentages inside the DB)
                 $periodTotal = (float) DB::table('transactions')
                     ->where('account_id', $account->id)
-                    ->whereIn('type', ['expense'])
+                    ->where('type', TransactionType::Expense->value)
                     ->whereBetween('transaction_date', [$from->toDateString(), $to->toDateString()])
                     ->whereNull('deleted_at')
                     ->sum('amount');
@@ -124,7 +125,7 @@ class ReportService
                         ROUND(SUM(t.amount) / ? * 100, 2) AS percentage
                     ", [$periodTotal])
                     ->where('t.account_id', $account->id)
-                    ->whereIn('t.type', ['expense'])
+                    ->where('t.type', TransactionType::Expense->value)
                     ->whereBetween('t.transaction_date', [$from->toDateString(), $to->toDateString()])
                     ->whereNull('t.deleted_at')
                     ->groupBy('t.category_id', 'c.name', 'color', 'icon')
@@ -240,7 +241,7 @@ class ReportService
                     ->join('categories as c', 'c.id', '=', 't.category_id')
                     ->selectRaw('c.is_fixed_cost, SUM(t.amount) AS total')
                     ->where('t.account_id', $account->id)
-                    ->whereIn('t.type', ['expense'])
+                    ->where('t.type', TransactionType::Expense->value)
                     ->whereBetween('t.transaction_date', [$from->toDateString(), $to->toDateString()])
                     ->whereNull('t.deleted_at')
                     ->groupBy('c.is_fixed_cost')

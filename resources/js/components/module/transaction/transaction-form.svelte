@@ -4,8 +4,7 @@
 
     import { useForm } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
-
-    import { resolveKind } from '@schema/transaction.schema';
+    import TransferController from '@wayfinder/App/Http/Controllers/TransferController';
 
     import AccountSelect from '@components/ui/forms/account-select.svelte';
     import CategorySelect from '@components/ui/forms/category-select.svelte';
@@ -35,9 +34,7 @@
 
     const today = new Date().toISOString().split('T')[0];
 
-    const resolvedType = $derived<string>(
-        isEdit && transaction ? resolveKind(transaction.type) : type
-    );
+    const resolvedType = $derived<string>(isEdit && transaction ? transaction.type : type);
 
     const typeConfig = $derived.by(() => {
         switch (resolvedType) {
@@ -104,8 +101,10 @@
 
     const action = $derived(
         isEdit && transaction
-            ? TransactionController.update.url(transaction.id)
-            : TransactionController.store.url()
+            ? TransactionController.update.url({ transaction: transaction.id })
+            : resolvedType === 'transfer'
+              ? TransferController.store.url()
+              : TransactionController.store.url()
     );
 
     const method = $derived<'put' | undefined>(isEdit ? 'put' : undefined);
@@ -230,6 +229,23 @@
                                     placeholder="Pilih tujuan"
                                     bind:value={form.destination_account_id} />
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="mx-5 border-t border-base-content/10"></div>
+
+                    <div class="flex items-center px-5 py-3">
+                        <div class="flex-1">
+                            <span
+                                class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
+                                Biaya Transfer (opsional)
+                            </span>
+                            <input
+                                class="input mt-0.5 w-full border-none bg-transparent px-0 font-mono text-sm font-medium placeholder:text-base-content/30"
+                                inputmode="numeric"
+                                placeholder="0"
+                                type="text"
+                                bind:value={form.fee_amount} />
                         </div>
                     </div>
                 {/if}

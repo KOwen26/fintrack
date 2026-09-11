@@ -2,6 +2,7 @@
 
 namespace App\Data\Transaction;
 
+use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Helpers\TypeScript\Attributes\TypeScriptModel;
 use App\Models\Account;
@@ -17,6 +18,10 @@ class TransactionDetailData extends Data
         public int $id,
 
         public TransactionType $type,
+
+        public TransactionFlow $flow,
+
+        public ?int $transfer_id,
 
         public float $amount,
 

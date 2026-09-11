@@ -3,8 +3,7 @@
 
     import { router } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
-
-    import { resolveKind } from '@schema/transaction.schema';
+    import TransferController from '@wayfinder/App/Http/Controllers/TransferController';
 
     import PageSection from '@components/layouts/page-section.svelte';
     import TransactionDetail from '@components/module/transaction/transaction-detail.svelte';
@@ -21,7 +20,13 @@
         router.delete(TransactionController.destroy.url({ transaction: transaction.id }));
     }
 
-    const isTransferRow = $derived(resolveKind(transaction.type) === 'transfer');
+    const isTransferRow = $derived(transaction.type === 'transfer');
+
+    const editHref = $derived(
+        transaction.transfer_id !== null
+            ? TransferController.edit.url({ transfer: transaction.transfer_id })
+            : TransactionController.edit.url({ transaction: transaction.id })
+    );
 </script>
 
 <DashboardPageHeader title="">
@@ -36,10 +41,7 @@
     </div>
 
     {#snippet actions()}
-        <Button
-            color="light"
-            // href={TransactionController.edit.url({ transaction: transaction.id })}
-            variant="outline">
+        <Button color="light" href={editHref} variant="outline">
             <i class="iconify size-5 solar--pen-bold-duotone"></i>
             Edit
         </Button>
@@ -51,11 +53,7 @@
 
     <!-- Action Buttons -->
     <div class="mt-4 flex gap-3">
-        <Button
-            class="flex-1"
-            color="light"
-            // href={TransactionController.edit.url({ transaction: transaction.id })}
-            variant="outline">
+        <Button class="flex-1" color="light" href={editHref} variant="outline">
             <i class="iconify size-4 solar--pen-bold-duotone"></i>
             Edit
         </Button>

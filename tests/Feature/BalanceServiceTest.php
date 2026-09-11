@@ -52,7 +52,7 @@ it('subtracts expense from initial balance', function (): void {
     expect((float) $service->forAccount($account))->toBe(750_000.0);
 });
 
-it('computes balance correctly across mixed transaction types', function (): void {
+it('computes balance correctly across mixed types and flows', function (): void {
     [$user, $account] = setupBalanceAccount(500_000);
 
     Transaction::factory()->income()->create([
@@ -65,15 +65,19 @@ it('computes balance correctly across mixed transaction types', function (): voi
         'created_by' => $user->id,
         'amount' => 100_000,
     ]);
-    Transaction::factory()->transferIn('link-123')->create([
+    Transaction::factory()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
         'amount' => 200_000,
+        'type' => 'transfer',
+        'flow' => 'inflow',
     ]);
-    Transaction::factory()->transferOut('link-456')->create([
+    Transaction::factory()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
         'amount' => 150_000,
+        'type' => 'transfer',
+        'flow' => 'outflow',
     ]);
 
     $service = new BalanceService;

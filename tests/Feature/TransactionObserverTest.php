@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
@@ -45,7 +44,7 @@ it('decrements account balance on expense transaction created', function (): voi
     expect($account->fresh()->current_balance)->toEqual(-250_000.0);
 });
 
-it('adjusts balance correctly for transfer_in and transfer_out', function (): void {
+it('adjusts balance correctly for transfer rows by flow', function (): void {
     [$user, $source] = createBalanceAccount();
     $dest = Account::factory()->create(['owner_id' => $user->id, 'initial_balance' => 0]);
 
@@ -53,16 +52,16 @@ it('adjusts balance correctly for transfer_in and transfer_out', function (): vo
         'account_id' => $source->id,
         'created_by' => $user->id,
         'amount' => 200_000,
-        'type' => TransactionType::TransferOut->value,
-        'transfer_link_id' => null,
+        'type' => 'transfer',
+        'flow' => 'outflow',
     ]);
 
     Transaction::factory()->create([
         'account_id' => $dest->id,
         'created_by' => $user->id,
         'amount' => 200_000,
-        'type' => TransactionType::TransferIn->value,
-        'transfer_link_id' => null,
+        'type' => 'transfer',
+        'flow' => 'inflow',
     ]);
 
     expect($source->fresh()->current_balance)->toEqual(-200_000.0);
@@ -118,6 +117,24 @@ it('does not double-count on no-op update', function (): void {
     $transaction->update(['amount' => 100_000]);
 
     expect($account->fresh()->current_balance)->toEqual(-100_000.0);
+});
+
+it('reverses the old impact on the original account when the account changes', function (): void {
+    [$user, $source] = createBalanceAccount();
+    $dest = Account::factory()->create(['owner_id' => $user->id, 'initial_balance' => 0]);
+
+    $transaction = Transaction::factory()->expense()->create([
+        'account_id' => $source->id,
+        'created_by' => $user->id,
+        'amount' => 250_000,
+    ]);
+
+    expect($source->fresh()->current_balance)->toEqual(-250_000.0);
+
+    $transaction->update(['account_id' => $dest->id]);
+
+    expect($source->fresh()->current_balance)->toEqual(0.0);
+    expect($dest->fresh()->current_balance)->toEqual(-250_000.0);
 });
 
 // ── deleted (soft delete) ───────────────────────────────────────

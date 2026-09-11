@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
+use App\Models\Transfer;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,7 +24,8 @@ class TransactionFactory extends Factory
             'created_by' => User::factory(),
             'amount' => fake()->randomFloat(2, 1_000_000, 10_000_000),
             'type' => TransactionType::Expense,
-            'transfer_link_id' => null,
+            'flow' => TransactionFlow::Outflow,
+            'transfer_id' => null,
             'transaction_date' => fake()->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
             'description' => fake()->optional(0.6)->sentence(),
         ];
@@ -30,35 +33,50 @@ class TransactionFactory extends Factory
 
     public function income(): static
     {
-        return $this->state(['type' => TransactionType::Income]);
+        return $this->state([
+            'type' => TransactionType::Income,
+            'flow' => TransactionFlow::Inflow,
+        ]);
     }
 
     public function expense(): static
     {
-        return $this->state(['type' => TransactionType::Expense]);
-    }
-
-    public function transferOut(string $linkId): static
-    {
         return $this->state([
-            'type' => TransactionType::TransferOut,
-            'transfer_link_id' => $linkId,
+            'type' => TransactionType::Expense,
+            'flow' => TransactionFlow::Outflow,
         ]);
     }
 
-    public function transferIn(string $linkId): static
+    /** Outflow member row of a transfer unit — booked on the source account. */
+    public function transferOutflow(Transfer | int $transfer): static
     {
         return $this->state([
-            'type' => TransactionType::TransferIn,
-            'transfer_link_id' => $linkId,
+            'type' => TransactionType::Transfer,
+            'flow' => TransactionFlow::Outflow,
+            'transfer_id' => $transfer instanceof Transfer ? $transfer->id : $transfer,
+            'category_id' => null,
         ]);
     }
 
-    public function fee(string $linkId): static
+    /** Inflow member row of a transfer unit — booked on the destination account. */
+    public function transferInflow(Transfer | int $transfer): static
     {
         return $this->state([
-            'type' => TransactionType::Fee,
-            'transfer_link_id' => $linkId,
+            'type' => TransactionType::Transfer,
+            'flow' => TransactionFlow::Inflow,
+            'transfer_id' => $transfer instanceof Transfer ? $transfer->id : $transfer,
+            'category_id' => null,
+        ]);
+    }
+
+    /** Fee member row of a transfer unit — an expense on the source account. */
+    public function transferFee(Transfer | int $transfer): static
+    {
+        return $this->state([
+            'type' => TransactionType::Expense,
+            'flow' => TransactionFlow::Outflow,
+            'transfer_id' => $transfer instanceof Transfer ? $transfer->id : $transfer,
+            'category_id' => null,
         ]);
     }
 

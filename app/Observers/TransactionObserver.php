@@ -2,20 +2,19 @@
 
 namespace App\Observers;
 
-use App\Enums\TransactionType;
+use App\Enums\TransactionFlow;
+use App\Models\Account;
 use App\Models\Transaction;
 
 class TransactionObserver
 {
     /**
-     * The multiplier applied to the transaction amount based on its type.
+     * The multiplier applied to the transaction amount based on its flow.
      * +1 for inflows (increase balance), -1 for outflows (decrease balance).
      */
-    private static function directionMultiplier(TransactionType | string $type): int
+    private static function directionMultiplier(Transaction $transaction): int
     {
-        $value = $type instanceof TransactionType ? $type->value : $type;
-
-        return in_array($value, TransactionType::inflows(), true) ? 1 : -1;
+        return $transaction->flow === TransactionFlow::Inflow ? 1 : -1;
     }
 
     /**
@@ -27,36 +26,32 @@ class TransactionObserver
             return;
         }
 
-        $multiplier = self::directionMultiplier($transaction->type->value);
-
-        $transaction->account()->increment('current_balance', $multiplier * $transaction->amount);
+        $transaction->account()->increment('current_balance', self::directionMultiplier($transaction) * $transaction->amount);
     }
 
     /**
-     * Adjust the account balance when a transaction is updated.
+     * Adjust balances when a transaction is updated.
      *
-     * Handles amount changes by computing the delta between old and new values.
-     * Also handles type changes by reversing the old impact and applying the new.
+     * The OLD impact is reversed against the ORIGINAL account (using
+     * getOriginal) so that account changes move the impact instead of
+     * duplicating it. The NEW impact lands on the current account.
      */
     public function updated(Transaction $transaction): void
     {
-        if ($transaction->account_id === null) {
-            return;
+        $originalAccountId = $transaction->getOriginal('account_id');
+
+        if ($originalAccountId !== null) {
+            $originalAmount = (float) $transaction->getOriginal('amount');
+            $originalFlow = TransactionFlow::from($transaction->getOriginal('flow'));
+            $originalMultiplier = $originalFlow === TransactionFlow::Inflow ? 1 : -1;
+
+            Account::whereKey($originalAccountId)
+                ->decrement('current_balance', $originalMultiplier * $originalAmount);
         }
 
-        $originalAmount = $transaction->getOriginal('amount');
-        $originalType = $transaction->getOriginal('type');
-
-        $currentAmount = $transaction->amount;
-        $currentType = $transaction->type->value;
-
-        // Reverse the old impact
-        $oldMultiplier = self::directionMultiplier($originalType);
-        $transaction->account()->decrement('current_balance', $oldMultiplier * $originalAmount);
-
-        // Apply the new impact
-        $newMultiplier = self::directionMultiplier($currentType);
-        $transaction->account()->increment('current_balance', $newMultiplier * $currentAmount);
+        if ($transaction->account_id !== null) {
+            $transaction->account()->increment('current_balance', self::directionMultiplier($transaction) * $transaction->amount);
+        }
     }
 
     /**
@@ -68,10 +63,7 @@ class TransactionObserver
             return;
         }
 
-        $multiplier = self::directionMultiplier($transaction->type->value);
-
-        // Reverse: decrement what was incremented, increment what was decremented
-        $transaction->account()->decrement('current_balance', $multiplier * $transaction->amount);
+        $transaction->account()->decrement('current_balance', self::directionMultiplier($transaction) * $transaction->amount);
     }
 
     /**

@@ -11,11 +11,7 @@ use App\Models\User;
  *
  * A transaction is visible to its creator always, and to everyone else when
  * the owning account is shared (joint). Writes (update/delete) are reserved
- * to the creator alone — this is what keeps the transfer cascade safe:
- * TransactionService::softDelete() removes every transaction sharing a
- * transfer_link_id, but createTransfer() stamps the same creator on all legs,
- * so a cascade can only ever be triggered by the user who created every
- * affected row. No per-account pair check is needed.
+ * to the creator alone — this is what keeps the transfer cascade safe.
  */
 class TransactionPolicy
 {

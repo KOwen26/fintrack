@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Observers\TransactionObserver;
 use Database\Factories\TransactionFactory;
@@ -9,7 +10,6 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[ObservedBy([TransactionObserver::class])]
@@ -24,6 +24,7 @@ class Transaction extends Model
     {
         return [
             'type' => TransactionType::class,
+            'flow' => TransactionFlow::class,
             'amount' => 'decimal:0',
             'transaction_date' => 'datetime',
         ];
@@ -44,13 +45,9 @@ class Transaction extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function relatedTransaction(): HasOne
+    /** The transfer unit this row belongs to — null for plain rows. */
+    public function transfer(): BelongsTo
     {
-        $oppositeType = $this->type === TransactionType::TransferIn
-            ? TransactionType::TransferOut
-            : TransactionType::TransferIn;
-
-        return $this->hasOne(Transaction::class, 'transfer_link_id', 'transfer_link_id')
-            ->where('type', $oppositeType);
+        return $this->belongsTo(Transfer::class);
     }
 }

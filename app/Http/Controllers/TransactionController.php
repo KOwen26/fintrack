@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\AccountService;
 use App\Services\CategoryService;
 use App\Services\TransactionService;
+use App\Services\TransferService;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ class TransactionController extends Controller
 {
     public function __construct(
         private readonly TransactionService $transactionService,
+        private readonly TransferService $transferService,
         private readonly AccountService $accountService,
         #[CurrentUser] private readonly ?User $user
     ) {}
@@ -61,9 +63,13 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function edit(Request $request, Transaction $transaction): Response
+    public function edit(Request $request, Transaction $transaction): Response | RedirectResponse
     {
         $this->authorize('update', $transaction);
+
+        if ($transaction->transfer_id !== null) {
+            return to_route('transfers.edit', $transaction->transfer_id);
+        }
 
         $accounts = $this->accountService->getAccountsByUser($this->user);
 
@@ -78,13 +84,7 @@ class TransactionController extends Controller
     {
         $this->authorize('create', Transaction::class);
 
-        $data = TransactionData::from($request->validated());
-
-        if ($data->isTransfer()) {
-            $this->transactionService->createTransfer($this->user, $data);
-        } else {
-            $this->transactionService->create($this->user, $data);
-        }
+        $this->transactionService->create($this->user, TransactionData::from($request->validated()));
 
         return to_route('transactions.index')->flash('Transaction saved.');
     }
@@ -92,6 +92,8 @@ class TransactionController extends Controller
     public function update(SaveTransactionRequest $request, Transaction $transaction): RedirectResponse
     {
         $this->authorize('update', $transaction);
+
+        abort_unless($transaction->transfer_id === null, 422, 'Transfer unit members must be edited via their transfer.');
 
         $this->transactionService->update($transaction, TransactionData::from($request->validated()));
 
@@ -102,7 +104,11 @@ class TransactionController extends Controller
     {
         $this->authorize('delete', $transaction);
 
-        $this->transactionService->softDelete($transaction);
+        if ($transaction->transfer_id !== null) {
+            $this->transferService->deleteUnit($transaction);
+        } else {
+            $this->transactionService->softDelete($transaction);
+        }
 
         return to_route('transactions.index')->flash('Transaction deleted.');
     }

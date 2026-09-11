@@ -8,14 +8,12 @@ export type CategorySpendingItemData = {
     parentId: number | null;
     parentName: string | null;
 };
-
 export type CategorySpendingReportData = {
     categories: ParentSpendingItemData[];
     period_total: number;
     from: string;
     to: string;
 };
-
 export type ChildSpendingItemData = {
     categoryId: number;
     name: string;
@@ -24,9 +22,7 @@ export type ChildSpendingItemData = {
     total: number;
     percentage: number;
 };
-
 export type CursorPaginatedDataCollection<TKey, TValue> = CursorPaginator<TKey, TValue>;
-
 export type CursorPaginator<TKey, TValue> = {
     data: TKey extends string ? Record<TKey, TValue> : TValue[];
     links: {
@@ -43,9 +39,7 @@ export type CursorPaginator<TKey, TValue> = {
         prev_page_url: string | null;
     };
 };
-
 export type CursorPaginatorInterface<TKey, TValue> = CursorPaginator<TKey, TValue>;
-
 export type DataTablePayloadData = {
     has_sort: boolean;
     has_filters: boolean;
@@ -54,18 +48,15 @@ export type DataTablePayloadData = {
     sort: Array<any> | null;
     filters: Array<any> | null;
 };
-
 export type DecorationData = {
     icon: string | null;
     color: string | null;
 };
-
 export type DecorationItemData = {
     id: string;
     value: string;
     text_color: string | null;
 };
-
 export type LengthAwarePaginator<TKey, TValue> = {
     data: TKey extends string ? Record<TKey, TValue> : TValue[];
     links: {
@@ -87,11 +78,8 @@ export type LengthAwarePaginator<TKey, TValue> = {
         to: number | null;
     };
 };
-
 export type LengthAwarePaginatorInterface<TKey, TValue> = LengthAwarePaginator<TKey, TValue>;
-
 export type PaginatedDataCollection<TKey, TValue> = LengthAwarePaginator<TKey, TValue>;
-
 export type ParentSpendingItemData = {
     categoryId: number;
     name: string;
@@ -101,10 +89,21 @@ export type ParentSpendingItemData = {
     percentage: number;
     children: ChildSpendingItemData[];
 };
-
+export type TransactionData = {
+    account_id: number;
+    type: App.Enums.TransactionType;
+    amount: number;
+    transaction_date: string;
+    category_id: number | null;
+    description: string | null;
+    flow: App.Enums.TransactionFlow | null;
+    transfer_id: number | null;
+};
 export type TransactionDetailData = {
     id: number;
     type: App.Enums.TransactionType;
+    flow: App.Enums.TransactionFlow;
+    transfer_id: number | null;
     amount: number;
     description: string;
     transaction_date: string;
@@ -114,22 +113,29 @@ export type TransactionDetailData = {
     category: App.Models.Category;
     creator: App.Models.User;
 };
-
 export type TransactionListData = {
     id: number;
     type: App.Enums.TransactionType;
+    flow: App.Enums.TransactionFlow;
     amount: number;
     description: string | null;
     transaction_date: string;
     category_id: number | null;
     account_id: number;
-    transfer_link_id: string | null;
+    transfer_id: number | null;
     destination_account_id: number | null;
     related_transaction: App.Models.Transaction;
     account: App.Models.Account;
     category: App.Models.Category;
 };
-
+export type TransferData = {
+    account_id: number;
+    destination_account_id: number;
+    amount: number;
+    transaction_date: string;
+    fee_amount: number | null;
+    description: string | null;
+};
 export type UserTestData = {
     name: string;
     age: number;

@@ -2,6 +2,7 @@
 
 namespace App\Data\Transaction;
 
+use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Helpers\TypeScript\Attributes\TypeScriptModel;
 use App\Models\Account;
@@ -18,6 +19,8 @@ class TransactionListData extends Data
 
         public TransactionType $type,
 
+        public TransactionFlow $flow,
+
         public float $amount,
 
         public ?string $description,
@@ -28,7 +31,7 @@ class TransactionListData extends Data
 
         public int $account_id,
 
-        public ?string $transfer_link_id,
+        public ?int $transfer_id,
 
         public ?int $destination_account_id,
 
@@ -43,26 +46,36 @@ class TransactionListData extends Data
     ) {}
 
     /**
-     * Build from a transaction, mapping the transfer counterpart from the
-     * relatedTransaction relation. No DB queries here (standing rule:
-     * relational loading, mapping, filtering only) — `loadMissing` covers
-     * ad-hoc callers; eager-loaded callers skip it entirely.
+     * Build from a transaction, folding the transfer counterpart through the
+     * aggregate. Movement rows fold to their opposite-flow counterpart; fee
+     * rows and plain rows fold to nothing (destination stays NULL). No DB
+     * queries beyond loadMissing — eager-loaded callers skip it entirely.
      */
     public static function fromTransaction(Transaction $transaction): self
     {
-        $related = $transaction->loadMissing('relatedTransaction')->getRelation('relatedTransaction');
+        $transaction->loadMissing('transfer.transactions.account');
+
+        $transfer = $transaction->getRelation('transfer');
+
+        $counterpart = null;
+        if ($transfer !== null && $transaction->type === TransactionType::Transfer) {
+            $counterpart = $transfer->transactions
+                ->first(fn (Transaction $member): bool => $member->id !== $transaction->id
+                    && $member->flow !== $transaction->flow);
+        }
 
         return new self(
             id: $transaction->id,
             type: $transaction->type,
+            flow: $transaction->flow,
             amount: (float) $transaction->amount,
             description: $transaction->description,
             transaction_date: $transaction->transaction_date->toDateString(),
             category_id: $transaction->category_id,
             account_id: $transaction->account_id,
-            transfer_link_id: $transaction->transfer_link_id,
-            destination_account_id: $related?->account_id,
-            related_transaction: $related,
+            transfer_id: $transaction->transfer_id,
+            destination_account_id: $counterpart?->account_id,
+            related_transaction: $counterpart,
             account: $transaction->relationLoaded('account') ? $transaction->account : null,
             category: $transaction->relationLoaded('category') ? $transaction->category : null,
         );

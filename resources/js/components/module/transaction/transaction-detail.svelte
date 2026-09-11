@@ -15,11 +15,9 @@
 
     let { transaction }: Props = $props();
 
-    const isInflow = $derived(['income', 'transfer_in'].includes(transaction.type));
+    const isInflow = $derived(transaction.flow === 'inflow');
 
-    const isTransfer = $derived(
-        transaction.type === 'transfer_out' || transaction.type === 'transfer_in'
-    );
+    const isTransfer = $derived(transaction.type === 'transfer');
 
     const accentClass = $derived(isInflow ? 'bg-success' : isTransfer ? 'bg-warning' : 'bg-error');
 

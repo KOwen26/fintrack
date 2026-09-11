@@ -42,8 +42,6 @@
     import { Collapsible } from 'bits-ui';
     import { SvelteMap } from 'svelte/reactivity';
 
-    import { resolveKind } from '@schema/transaction.schema';
-
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
@@ -99,7 +97,7 @@
         },
         {
             id: 'type',
-            accessorFn: (row) => resolveKind(row.type),
+            accessorFn: (row) => row.type,
             filterFn: 'arrayHas',
             enableGlobalFilter: false,
         },
@@ -133,10 +131,8 @@
         let net = 0;
 
         for (const transaction of transactions) {
-            const kind = resolveKind(transaction.type);
-
-            if (kind === 'income') net += transaction.amount;
-            else if (kind === 'expense') net -= transaction.amount;
+            if (transaction.type === 'income') net += transaction.amount;
+            else if (transaction.type === 'expense') net -= transaction.amount;
         }
 
         return net;
@@ -173,10 +169,8 @@
         let expense = 0;
 
         for (const transaction of filteredTransactions) {
-            const kind = resolveKind(transaction.type);
-
-            if (kind === 'income') income += transaction.amount;
-            else if (kind === 'expense') expense += transaction.amount;
+            if (transaction.type === 'income') income += transaction.amount;
+            else if (transaction.type === 'expense') expense += transaction.amount;
         }
 
         return { income, expense, net: income - expense };
