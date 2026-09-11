@@ -60,7 +60,7 @@ This is the **transfer-specific parent** form of the industry pattern — not fu
 | Report semantics | **type-based**: dashboard/trend "income" = `type = income` only, "expense" = `type = expense` only; transfer rows excluded (behavior change — §11). Balance math stays flow-based |
 | Plain row edit | `PUT /transactions/{id}`: direct field update (no unit involved) |
 | Service ownership | `TransferService` owns the unit lifecycle — `create(User, TransferData)`, `update(Transfer, TransferData)`, `deleteUnit(Transaction)`, fee/Admin-Fees resolution included. `TransactionService` owns plain-row CRUD + list queries. `TransactionController::destroy` routes unit members to `TransferService::deleteUnit` (controller-level branch avoids circular service injection) |
-| Frontend organization | transfer UI is part of the **transactions** namespace: create = tab on `transactions/create`, unit edit = `pages/transactions/edit-transfer.svelte` (form in `components/module/transaction/`). No `transfers` pages/module directory. Route URLs remain `/transfers/*` |
+| Frontend organization | transfer UI is part of the **transactions** namespace: create = tab on `transactions/create`; **one** edit page — `pages/transactions/edit.svelte` — switches `TransactionForm` vs `TransferForm` on which prop arrived (`transaction` from `transactions/{id}/edit`, `transfer` from `transfers/{transfer}/edit`; the form lives in `components/module/transaction/`). No `transfers` pages/module directory. Route URLs remain `/transfers/*` |
 | **Endpoint split** | `POST/PUT /transactions` for plain rows; `POST/PUT /transfers` for transfer units (§7). `GET` index/show and `DELETE /transactions/{id}` stay unified — unit resolution in the service |
 | **`type` in payloads** | absent from transfer payloads (the endpoint implies it); plain payloads carry `income \| expense` only |
 | Authorization | transaction policy unchanged (creator-based); new `TransferPolicy` (`created_by` check) for the transfer endpoints; every member row shares the aggregate's creator, so any unit cascade is creator-initiated |
@@ -117,7 +117,7 @@ SUM(CASE WHEN t.flow = 'inflow' THEN t.amount ELSE -t.amount END)
 - `dashboard.svelte`: its **duplicated** local `TYPE_STYLE` + `resolveKind` usage → shared 3-type styling
 - `accounts/show.svelte`: client-side inflow/outflow filters on type strings → type-based
 - `types/generated.d.ts`: `transfer_id: number | null` (replaces `transfer_link_id`); `type` narrows to 3 values; `flow` added
-- **Endpoint routing:** create form's active tab selects the submit URL (`TransactionsController.store.url()` vs `TransfersController.store.url()`); transfer edits post to `TransfersController.update.url({ transfer })` from `pages/transactions/edit-transfer.svelte`; a fee row's edit action links to the **parent transfer's** edit page (§9)
+- **Endpoint routing:** create form's active tab selects the submit URL (`TransactionsController.store.url()` vs `TransfersController.store.url()`); the single `transactions/edit` page switches forms by prop — plain rows post to `TransactionsController.update`, units post to `TransfersController.update.url({ transfer })`; a fee row's edit action links to the **parent transfer's** edit page (§9)
 
 ### 5.6 Report & summary semantics (decided: type-based)
 
@@ -300,7 +300,7 @@ Called out so none of this ships silently:
 ## 12. Open questions
 
 - One deferred: unit-level restore behavior if a transaction restore route is ever added — under B it keys naturally off the aggregate.
-- Resolved 2026-09-11: endpoint split (plain vs transfer writes, unified delete); direct unit-member API edits rejected (422) to protect aggregate authority; approach revised A → B before implementation (domain-pattern analysis); relation naming — `transactions()` + source/destination/fee accessors; service ownership — `TransferService` owns the unit lifecycle; frontend — transfer UI folded into the transactions namespace (`transactions/edit-transfer` page, `module/transaction/transfer-form`).
+- Resolved 2026-09-11: endpoint split (plain vs transfer writes, unified delete); direct unit-member API edits rejected (422) to protect aggregate authority; approach revised A → B before implementation (domain-pattern analysis); relation naming — `transactions()` + source/destination/fee accessors; service ownership — `TransferService` owns the unit lifecycle; frontend — transfer UI folded into the transactions namespace (single `transactions/edit` page switching forms, `module/transaction/transfer-form`).
 
 ## 13. Alternatives considered
 

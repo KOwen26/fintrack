@@ -14,7 +14,7 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-11-transfer-aggregate-design.md` (authoritative). Decision record: `docs/superpowers/specs/2026-09-10-transaction-transfer-linking-design.md`.
 
-**Post-execution revision (2026-09-11):** transfer lifecycle extracted from `TransactionService` into `TransferService` (`create` / `update` / `deleteUnit`, fee handling included); `TransactionController::destroy` dispatches unit members there; transfer edit page moved to `pages/transactions/edit-transfer.svelte` with the form in `components/module/transaction/` (no `transfers` frontend namespace). See spec §4 / §8.
+**Post-execution revision (2026-09-11):** transfer lifecycle extracted from `TransactionService` into `TransferService` (`create` / `update` / `deleteUnit`, fee handling included); `TransactionController::destroy` dispatches unit members there; **one** edit page — `pages/transactions/edit.svelte` — switches `TransactionForm` vs `TransferForm` by prop (plain: `transactions/{id}/edit`; unit: `transfers/{transfer}/edit` rendering the same page; form in `components/module/transaction/`, no `transfers` frontend namespace). See spec §4 / §8.
 
 **Note on the working tree:** there are pre-existing staged WIP changes (mutual-pointer work) in the files this plan rewrites. Work on top of them — the plan's file contents are the final state.
 

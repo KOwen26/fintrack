@@ -27,7 +27,7 @@ class TransferController extends Controller
     {
         $this->authorize('update', $transfer);
 
-        return Inertia::render('transactions/edit-transfer', [
+        return Inertia::render('transactions/edit', [
             'transfer' => $transfer->load('transactions.account'),
             'accounts' => $this->accountService->getAccountsByUser($this->user),
         ]);
