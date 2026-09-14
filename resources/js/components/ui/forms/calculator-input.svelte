@@ -25,25 +25,25 @@
     }: CalculatorInputProps = $props();
 
     type KeyType = 'digit' | 'clear' | 'backspace' | 'operator' | 'equals';
-    type Key = { label: string; type: KeyType };
+    type Key = { label: string; type: KeyType; icon?: string };
 
     const KEYS: Key[] = [
         { label: 'C', type: 'clear' },
-        { label: '⌫', type: 'backspace' },
-        { label: '÷', type: 'operator' },
-        { label: '×', type: 'operator' },
+        { label: '⌫', type: 'backspace', icon: 'tabler--backspace' },
+        { label: '÷', type: 'operator', icon: 'tabler--divide' },
+        { label: '×', type: 'operator', icon: 'tabler--x' },
         { label: '7', type: 'digit' },
         { label: '8', type: 'digit' },
         { label: '9', type: 'digit' },
-        { label: '-', type: 'operator' },
+        { label: '-', type: 'operator', icon: 'tabler--minus' },
         { label: '4', type: 'digit' },
         { label: '5', type: 'digit' },
         { label: '6', type: 'digit' },
-        { label: '+', type: 'operator' },
+        { label: '+', type: 'operator', icon: 'tabler--plus' },
         { label: '1', type: 'digit' },
         { label: '2', type: 'digit' },
         { label: '3', type: 'digit' },
-        { label: '=', type: 'equals' },
+        { label: '=', type: 'equals', icon: 'tabler--equal' },
         { label: '000', type: 'digit' },
         { label: '0', type: 'digit' },
         { label: '00', type: 'digit' },
@@ -215,8 +215,8 @@
             {disabled}
             onclick={() => onclick(key)}
             type="button">
-            {#if key.type === 'backspace'}
-                <i class="iconify size-5 solar--backspace-bold-duotone"></i>
+            {#if key.icon}
+                <i class="iconify size-5 {key.icon}"></i>
             {:else}
                 {key.label}
             {/if}

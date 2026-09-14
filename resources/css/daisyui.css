@@ -2,8 +2,8 @@
 
 @plugin 'daisyui' {
     themes:
-        verdant --default,
-        cobalt,
+        cobalt --default,
+        verdant,
         ember,
         amethyst;
 }
@@ -11,7 +11,7 @@
 /* ── Verdant (Default) ── */
 @plugin 'daisyui/theme' {
     name: verdant;
-    default: true;
+    default: false;
 
     --color-base-100: oklch(98% 0.012 85);
     --color-base-200: oklch(94% 0.018 85);

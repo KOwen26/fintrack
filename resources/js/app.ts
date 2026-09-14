@@ -2,6 +2,7 @@ import './bootstrap';
 
 import type { ResolvedComponent } from '@inertiajs/svelte';
 
+import { initializeTheme } from '@hooks/use-theme.svelte';
 import { createInertiaApp } from '@inertiajs/svelte';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
@@ -36,3 +37,5 @@ createInertiaApp({
         }
     },
 });
+
+initializeTheme();

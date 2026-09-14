@@ -31,8 +31,7 @@ class TransactionController extends Controller
     {
         $this->authorize('viewAny', Transaction::class);
 
-        $transactions = $this->transactionService->getTransactions($this->user)
-            ->map(fn (Transaction $transaction): TransactionListData => TransactionListData::fromTransaction($transaction));
+        $transactions = TransactionListData::collect($this->transactionService->getTransactions($this->user));
 
         return Inertia::render('transactions/index', [
             'transactions' => $transactions,
