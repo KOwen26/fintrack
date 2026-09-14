@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="id" data-theme="verdant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Mockup — Transaction Form (2026-09-11) · FinTrack</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap"
+            rel="stylesheet" />
+        <style>
+            /* ── Theme tokens (verbatim from resources/css/colors.css) ── */
+            :root,
+            [data-theme='verdant'] {
+                --base-100: oklch(0.98 0.012 85);
+                --base-200: oklch(0.94 0.018 85);
+                --base-300: oklch(0.88 0.022 85);
+                --content: oklch(0.18 0.02 160);
+                --primary: oklch(0.42 0.11 160);
+                --primary-content: oklch(0.95 0.01 160);
+                --success: oklch(0.55 0.12 150);
+                --info: oklch(0.55 0.1 210);
+                --error: oklch(0.55 0.12 30);
+            }
+            [data-theme='cobalt'] {
+                --base-100: oklch(0.98 0.008 80);
+                --base-200: oklch(0.93 0.012 80);
+                --base-300: oklch(0.87 0.015 80);
+                --content: oklch(0.18 0.02 268);
+                --primary: oklch(0.38 0.12 268);
+                --primary-content: oklch(0.95 0.005 268);
+                --success: oklch(0.52 0.12 162);
+                --info: oklch(0.55 0.12 230);
+                --error: oklch(0.55 0.12 28);
+            }
+            [data-theme='ember'] {
+                --base-100: oklch(0.97 0.018 70);
+                --base-200: oklch(0.92 0.022 70);
+                --base-300: oklch(0.86 0.025 70);
+                --content: oklch(0.2 0.02 40);
+                --primary: oklch(0.42 0.12 40);
+                --primary-content: oklch(0.95 0.01 40);
+                --success: oklch(0.48 0.08 145);
+                --info: oklch(0.52 0.08 220);
+                --error: oklch(0.45 0.1 35);
+            }
+            [data-theme='amethyst'] {
+                --base-100: oklch(0.99 0.004 280);
+                --base-200: oklch(0.95 0.008 280);
+                --base-300: oklch(0.89 0.012 280);
+                --content: oklch(0.18 0.02 280);
+                --primary: oklch(0.38 0.13 280);
+                --primary-content: oklch(0.95 0.01 280);
+                --success: oklch(0.55 0.1 165);
+                --info: oklch(0.58 0.12 240);
+                --error: oklch(0.58 0.12 18);
+            }
+
+            /* ── Derived tokens ── */
+            :root {
+                --line: color-mix(in oklab, var(--content) 15%, transparent);
+                --line-soft: color-mix(in oklab, var(--content) 10%, transparent);
+                --muted: color-mix(in oklab, var(--content) 42%, transparent);
+                --faint: color-mix(in oklab, var(--content) 30%, transparent);
+                --row-hover: color-mix(in oklab, var(--content) 3%, transparent);
+                --sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+                --mono:
+                    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+                    'Courier New', monospace;
+            }
+
+            /* Type-driven accent (mirrors typeConfig in transaction-form.svelte) */
+            [data-type='expense'] {
+                --accent: var(--error);
+                --accent-soft: color-mix(in oklab, var(--error) 12%, transparent);
+            }
+            [data-type='income'] {
+                --accent: var(--success);
+                --accent-soft: color-mix(in oklab, var(--success) 12%, transparent);
+            }
+            [data-type='transfer'] {
+                --accent: var(--info);
+                --accent-soft: color-mix(in oklab, var(--info) 12%, transparent);
+            }
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: var(--sans);
+                background: var(--base-200);
+                color: var(--content);
+                min-height: 100dvh;
+                -webkit-font-smoothing: antialiased;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            /* Visible focus for keyboard nav (ux: focus-states) */
+            :focus-visible {
+                outline: 2px solid var(--primary);
+                outline-offset: 2px;
+                border-radius: 6px;
+            }
+            input:focus-visible,
+            select:focus-visible,
+            textarea:focus-visible {
+                outline: none;
+            }
+
+            button {
+                font-family: inherit;
+                cursor: pointer;
+                border: none;
+                background: none;
+                color: inherit;
+            }
+
+            /* ── Mockup control bar (not part of the design) ── */
+            .mockup-bar {
+                position: sticky;
+                top: 0;
+                z-index: 50;
+                background: color-mix(in oklab, var(--base-100) 88%, transparent);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px dashed var(--line);
+                padding: 8px 14px 10px;
+            }
+            .mockup-bar-row {
+                max-width: 430px;
+                margin: 0 auto;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+            }
+            .mockup-tag {
+                font-family: var(--mono);
+                font-size: 0.62rem;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--muted);
+                white-space: nowrap;
+            }
+            .theme-dots {
+                display: flex;
+                gap: 6px;
+            }
+            .theme-dot {
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                border: 2px solid var(--line);
+                transition:
+                    transform 0.15s ease-out,
+                    border-color 0.15s ease-out;
+            }
+            .theme-dot:hover {
+                transform: scale(1.12);
+            }
+            .theme-dot[aria-pressed='true'] {
+                border-color: var(--content);
+            }
+            .theme-dot[data-theme-swatch='verdant'] {
+                background: oklch(0.42 0.11 160);
+            }
+            .theme-dot[data-theme-swatch='cobalt'] {
+                background: oklch(0.38 0.12 268);
+            }
+            .theme-dot[data-theme-swatch='ember'] {
+                background: oklch(0.42 0.12 40);
+            }
+            .theme-dot[data-theme-swatch='amethyst'] {
+                background: oklch(0.38 0.13 280);
+            }
+
+            /* Segmented type switcher */
+            .switcher {
+                max-width: 430px;
+                margin: 8px auto 0;
+                display: flex;
+                gap: 4px;
+                padding: 4px;
+                background: var(--base-200);
+                border-radius: 12px;
+            }
+            .sw-btn {
+                flex: 1;
+                min-height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                border-radius: 9px;
+                font-size: 0.76rem;
+                font-weight: 600;
+                color: var(--muted);
+                transition:
+                    background 0.2s ease-out,
+                    color 0.2s ease-out;
+            }
+            .sw-btn:hover {
+                color: var(--content);
+            }
+            .sw-btn[aria-pressed='true'] {
+                background: var(--base-100);
+                color: var(--accent);
+                box-shadow: 0 1px 3px color-mix(in oklab, var(--content) 12%, transparent);
+            }
+            .sw-btn:active {
+                transform: scale(0.97);
+            }
+            .sw-btn svg {
+                width: 15px;
+                height: 15px;
+            }
+
+            /* ── Shell ── */
+            .shell {
+                max-width: 430px;
+                margin: 0 auto;
+                padding: 4px 16px 56px;
+            }
+
+            /* Back header */
+            .topbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 0 12px;
+            }
+            .icon-btn {
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--content);
+                transition: background 0.15s ease-out;
+            }
+            .icon-btn:hover {
+                background: var(--base-200);
+            }
+            .icon-btn:active {
+                transform: scale(0.94);
+            }
+            .topbar-title {
+                font-size: 0.92rem;
+                font-weight: 600;
+                letter-spacing: -0.01em;
+                transition: color 0.2s ease-out;
+            }
+
+            /* ── Cards ── */
+            .card {
+                background: var(--base-100);
+                border: 1px solid var(--line);
+                border-radius: 16px;
+                overflow: hidden;
+            }
+            .card + .card {
+                margin-top: 12px;
+            }
+            .accent {
+                height: 4px;
+                background: var(--accent);
+                transition: background 0.25s ease-out;
+            }
+
+            /* Section micro label (text-[0.625rem] tracking-[0.09em] uppercase) */
+            .sec-label {
+                display: block;
+                font-size: 0.625rem;
+                font-weight: 700;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                color: var(--muted);
+                transition: color 0.15s ease-out;
+            }
+
+            /* Rows inside detail card */
+            .row {
+                display: flex;
+                flex-direction: column;
+                padding: 12px 20px;
+                transition: background 0.15s ease-out;
+            }
+            .row:focus-within {
+                background: var(--row-hover);
+            }
+            .row + .divider + .row {
+                border-top: none;
+            }
+            .divider {
+                border-top: 1px solid var(--line-soft);
+                margin: 0 20px;
+            }
+
+            .input-field {
+                width: 100%;
+                border: none;
+                outline: none;
+                background: transparent;
+                font-family: inherit;
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: var(--content);
+                margin-top: 3px;
+                min-height: 28px;
+            }
+            .input-field::placeholder {
+                color: var(--faint);
+                font-weight: 400;
+            }
+
+            /* Select wrapper with inline chevron (current-color aware) */
+            .select-wrap {
+                position: relative;
+                margin-top: 3px;
+            }
+            .select-wrap svg {
+                position: absolute;
+                right: 2px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 15px;
+                height: 15px;
+                color: var(--muted);
+                pointer-events: none;
+            }
+            select.input-field {
+                appearance: none;
+                cursor: pointer;
+                padding-right: 24px;
+                min-height: 32px;
+            }
+            select.input-field:invalid,
+            select.input-field option[value=''] {
+                color: var(--faint);
+            }
+
+            /* ── Amount card ── */
+            .amount-body {
+                padding: 16px 20px 18px;
+            }
+            .amount-line {
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                margin-top: 4px;
+            }
+            .amt-prefix {
+                font-family: var(--mono);
+                font-size: 0.95rem;
+                font-weight: 500;
+                color: var(--muted);
+            }
+            .amt-input {
+                font-family: var(--mono);
+                font-variant-numeric: tabular-nums;
+                font-size: clamp(2rem, 9vw, 2.6rem);
+                font-weight: 500;
+                letter-spacing: -0.025em;
+                line-height: 1;
+                width: 100%;
+                border: none;
+                outline: none;
+                background: transparent;
+                color: var(--accent);
+                caret-color: var(--accent);
+                transition: color 0.25s ease-out;
+                min-height: 44px;
+            }
+            .amt-input::placeholder {
+                color: var(--faint);
+            }
+            .quick-chips {
+                display: flex;
+                gap: 8px;
+                margin-top: 12px;
+            }
+            .quick-chip {
+                min-height: 34px;
+                padding: 0 13px;
+                border-radius: 999px;
+                border: 1px solid var(--line);
+                font-size: 0.74rem;
+                font-weight: 600;
+                font-family: var(--mono);
+                color: var(--muted);
+                background: transparent;
+                transition:
+                    background 0.15s ease-out,
+                    color 0.15s ease-out,
+                    border-color 0.15s ease-out;
+            }
+            .quick-chip:hover {
+                background: var(--accent-soft);
+                border-color: var(--accent);
+                color: var(--accent);
+            }
+            .quick-chip:active {
+                transform: scale(0.95);
+            }
+
+            /* Transfer: destination + swap */
+            .row-split {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+            }
+            .swap-btn {
+                width: 34px;
+                height: 34px;
+                flex: 0 0 auto;
+                border-radius: 50%;
+                border: 1px solid var(--line);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--muted);
+                transition:
+                    background 0.15s ease-out,
+                    color 0.15s ease-out,
+                    transform 0.2s ease-out;
+            }
+            .swap-btn:hover {
+                background: var(--accent-soft);
+                color: var(--accent);
+            }
+            .swap-btn:active {
+                transform: rotate(180deg);
+            }
+            .swap-btn svg {
+                width: 15px;
+                height: 15px;
+            }
+
+            .fee-prefix {
+                display: flex;
+                align-items: baseline;
+                gap: 6px;
+            }
+            .fee-prefix .rp {
+                font-family: var(--mono);
+                font-size: 0.8rem;
+                color: var(--muted);
+            }
+
+            .helper {
+                margin-top: 4px;
+                font-size: 0.72rem;
+                line-height: 1.45;
+                color: var(--muted);
+            }
+
+            /* ── Validation (ux: error-placement, aria-live) ── */
+            .error-msg {
+                display: none;
+                margin-top: 4px;
+                font-size: 0.74rem;
+                font-weight: 500;
+                color: var(--error);
+            }
+            .row.invalid .error-msg,
+            .amount-body .error-msg.show {
+                display: block;
+            }
+            .row.invalid .sec-label {
+                color: var(--error);
+            }
+
+            /* Date input */
+            input[type='date'].input-field {
+                cursor: pointer;
+            }
+            input[type='date'].input-field::-webkit-calendar-picker-indicator {
+                opacity: 0.45;
+            }
+
+            /* Notes */
+            textarea.input-field {
+                resize: none;
+                font-weight: 400;
+                font-size: 0.86rem;
+                line-height: 1.6;
+                min-height: 52px;
+            }
+
+            /* ── Actions ── */
+            .actions {
+                display: flex;
+                gap: 12px;
+                margin-top: 20px;
+            }
+            .btn {
+                flex: 1;
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                border-radius: 14px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                transition:
+                    background 0.15s ease-out,
+                    transform 0.12s ease-out,
+                    opacity 0.15s ease-out;
+            }
+            .btn:active:not(:disabled) {
+                transform: scale(0.98);
+            }
+            .btn-cancel {
+                background: var(--base-200);
+                color: var(--content);
+                border: 1px solid var(--line-soft);
+            }
+            .btn-cancel:hover {
+                background: var(--base-300);
+            }
+            .btn-submit {
+                background: var(--primary);
+                color: var(--primary-content);
+            }
+            .btn-submit:hover:not(:disabled) {
+                filter: brightness(1.08);
+            }
+            .btn-submit:disabled {
+                opacity: 0.7;
+                cursor: wait;
+            }
+            .spinner {
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                border: 2px solid color-mix(in oklab, var(--primary-content) 35%, transparent);
+                border-top-color: var(--primary-content);
+                animation: spin 0.7s linear infinite;
+            }
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* ── Toast (aria-live) ── */
+            .toast {
+                position: fixed;
+                left: 50%;
+                bottom: 24px;
+                transform: translate(-50%, 16px);
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                background: var(--success);
+                color: var(--primary-content);
+                padding: 12px 18px;
+                border-radius: 14px;
+                font-size: 0.84rem;
+                font-weight: 600;
+                box-shadow: 0 8px 24px color-mix(in oklab, var(--content) 25%, transparent);
+                opacity: 0;
+                pointer-events: none;
+                transition:
+                    opacity 0.2s ease-out,
+                    transform 0.2s ease-out;
+                z-index: 60;
+                max-width: calc(100vw - 32px);
+            }
+            .toast.show {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+            .toast svg {
+                width: 17px;
+                height: 17px;
+                flex: 0 0 auto;
+            }
+
+            /* Reduced motion */
+            @media (prefers-reduced-motion: reduce) {
+                *,
+                *::before,
+                *::after {
+                    transition: none !important;
+                    animation: none !important;
+                }
+            }
+
+            .icon {
+                width: 20px;
+                height: 20px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- SVG sprite (Solar-style line icons, consistent 1.8 stroke) -->
+        <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs>
+                <symbol id="i-arrow-left" viewBox="0 0 24 24">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </symbol>
+                <symbol id="i-chevron-down" viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </symbol>
+                <symbol id="i-swap" viewBox="0 0 24 24">
+                    <path d="M7 7h13M17 3.5 20.5 7 17 10.5M17 17H4M7 13.5 3.5 17 7 20.5" />
+                </symbol>
+                <symbol id="i-check" viewBox="0 0 24 24">
+                    <path d="M5 12.5l4.5 4.5L19 7.5" />
+                </symbol>
+                <symbol id="i-shopping" viewBox="0 0 24 24">
+                    <circle cx="9" cy="20" r="1.4" />
+                    <circle cx="17" cy="20" r="1.4" />
+                    <path
+                        d="M3 3h2l2.4 12.1a1.5 1.5 0 0 0 1.5 1.2h8.2a1.5 1.5 0 0 0 1.5-1.2L20.5 8H6" />
+                </symbol>
+                <symbol id="i-invest" viewBox="0 0 24 24">
+                    <path d="M3 17l6-6 4 4 8-8M15 7h6v6" />
+                </symbol>
+            </defs>
+        </svg>
+
+        <!-- ── Mockup-only controls (not part of the component design) ── -->
+        <div class="mockup-bar">
+            <div class="mockup-bar-row">
+                <span class="mockup-tag">transaction-form · pratinjau</span>
+                <div class="theme-dots" role="group" aria-label="Pilih tema">
+                    <button
+                        class="theme-dot"
+                        data-theme-swatch="verdant"
+                        aria-pressed="true"
+                        aria-label="Tema Verdant"
+                        title="Verdant"
+                        onclick="setTheme('verdant', this)"></button>
+                    <button
+                        class="theme-dot"
+                        data-theme-swatch="cobalt"
+                        aria-pressed="false"
+                        aria-label="Tema Cobalt"
+                        title="Cobalt"
+                        onclick="setTheme('cobalt', this)"></button>
+                    <button
+                        class="theme-dot"
+                        data-theme-swatch="ember"
+                        aria-pressed="false"
+                        aria-label="Tema Ember"
+                        title="Ember"
+                        onclick="setTheme('ember', this)"></button>
+                    <button
+                        class="theme-dot"
+                        data-theme-swatch="amethyst"
+                        aria-pressed="false"
+                        aria-label="Tema Amethyst"
+                        title="Amethyst"
+                        onclick="setTheme('amethyst', this)"></button>
+                </div>
+            </div>
+            <div class="switcher" role="group" aria-label="Jenis transaksi">
+                <button
+                    class="sw-btn"
+                    data-type="expense"
+                    aria-pressed="true"
+                    onclick="setType('expense')">
+                    <svg class="icon"><use href="#i-shopping" /></svg>
+                    Pengeluaran
+                </button>
+                <button
+                    class="sw-btn"
+                    data-type="income"
+                    aria-pressed="false"
+                    onclick="setType('income')">
+                    <svg class="icon"><use href="#i-invest" /></svg>
+                    Pemasukan
+                </button>
+                <button
+                    class="sw-btn"
+                    data-type="transfer"
+                    aria-pressed="false"
+                    onclick="setType('transfer')">
+                    <svg class="icon"><use href="#i-swap" /></svg>
+                    Transfer
+                </button>
+            </div>
+        </div>
+
+        <div class="shell" id="form-root" data-type="expense">
+            <!-- ── Back header ── -->
+            <div class="topbar">
+                <button class="icon-btn" aria-label="Kembali" type="button">
+                    <svg class="icon"><use href="#i-arrow-left" /></svg>
+                </button>
+                <span class="topbar-title" id="form-title">Tambah Pengeluaran</span>
+                <div style="width: 40px"></div>
+            </div>
+
+            <!-- ── Card: Amount ── -->
+            <div class="card">
+                <div class="accent"></div>
+                <div class="amount-body">
+                    <label class="sec-label" for="amount-input">Nominal Transaksi</label>
+                    <div class="amount-line">
+                        <span class="amt-prefix">Rp</span>
+                        <input
+                            class="amt-input"
+                            id="amount-input"
+                            inputmode="numeric"
+                            placeholder="0"
+                            type="text"
+                            value="258.000"
+                            aria-describedby="amount-error"
+                            oninput="handleAmount(this)" />
+                    </div>
+                    <div class="quick-chips" role="group" aria-label="Tambah nominal cepat">
+                        <button class="quick-chip" type="button" onclick="bumpAmount(10000)">
+                            +10 rb
+                        </button>
+                        <button class="quick-chip" type="button" onclick="bumpAmount(50000)">
+                            +50 rb
+                        </button>
+                        <button class="quick-chip" type="button" onclick="bumpAmount(100000)">
+                            +100 rb
+                        </button>
+                    </div>
+                    <p class="error-msg" id="amount-error" role="alert">
+                        Nominal harus lebih dari 0.
+                    </p>
+                </div>
+            </div>
+
+            <!-- ── Card: Details ── -->
+            <div class="card">
+                <div class="row">
+                    <label class="sec-label" for="merchant-input" id="merchant-label"
+                        >Deskripsi *</label
+                    >
+                    <input
+                        class="input-field"
+                        id="merchant-input"
+                        placeholder="Contoh: Makan siang warteg, isi bensin"
+                        type="text"
+                        value="Warteg Bu Sri"
+                        aria-describedby="merchant-error" />
+                    <p class="error-msg" id="merchant-error" role="alert">Deskripsi wajib diisi.</p>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="row">
+                    <label class="sec-label" for="account-from" id="account-from-label"
+                        >Akun Sumber *</label
+                    >
+                    <div class="select-wrap">
+                        <select class="input-field" id="account-from">
+                            <option value="bca" selected>BCA Tabungan</option>
+                            <option value="gopay">GoPay Utama</option>
+                            <option value="cash">Dompet Harian</option>
+                            <option value="cc">BCA Kartu Kredit</option>
+                        </select>
+                        <svg class="icon"><use href="#i-chevron-down" /></svg>
+                    </div>
+                </div>
+
+                <div id="transfer-block" style="display: none">
+                    <div class="divider"></div>
+
+                    <div class="row">
+                        <div class="row-split">
+                            <label class="sec-label" for="account-to">Akun Tujuan *</label>
+                            <button
+                                class="swap-btn"
+                                type="button"
+                                aria-label="Tukar akun asal dan tujuan"
+                                onclick="swapAccounts()">
+                                <svg class="icon"><use href="#i-swap" /></svg>
+                            </button>
+                        </div>
+                        <div class="select-wrap">
+                            <select class="input-field" id="account-to">
+                                <option value="">Pilih tujuan…</option>
+                                <option value="gopay" selected>GoPay Utama</option>
+                                <option value="bca">BCA Tabungan</option>
+                                <option value="cash">Dompet Harian</option>
+                            </select>
+                            <svg class="icon"><use href="#i-chevron-down" /></svg>
+                        </div>
+                        <p class="error-msg" id="account-to-error" role="alert">
+                            Pilih akun tujuan.
+                        </p>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="row">
+                        <label class="sec-label" for="fee-input">Biaya Transfer (opsional)</label>
+                        <div class="fee-prefix">
+                            <span class="rp">Rp</span>
+                            <input
+                                class="input-field"
+                                id="fee-input"
+                                inputmode="numeric"
+                                placeholder="0"
+                                style="margin-top: 0"
+                                type="text"
+                                oninput="handleAmount(this)" />
+                        </div>
+                        <p class="helper">
+                            Biaya admin bank / e-wallet — kosongkan jika tanpa potongan.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="row">
+                    <label class="sec-label" for="category-select">Kategori</label>
+                    <div class="select-wrap">
+                        <select class="input-field" id="category-select"></select>
+                        <svg class="icon"><use href="#i-chevron-down" /></svg>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="row">
+                    <label class="sec-label" for="date-input">Tanggal</label>
+                    <input class="input-field" id="date-input" type="date" />
+                </div>
+            </div>
+
+            <!-- ── Card: Notes ── -->
+            <div class="card">
+                <div class="row">
+                    <label class="sec-label" for="notes-input">Catatan</label>
+                    <textarea
+                        class="input-field"
+                        id="notes-input"
+                        placeholder="Tambahkan catatan detail transaksi di sini..."></textarea>
+                </div>
+            </div>
+
+            <!-- ── Actions ── -->
+            <div class="actions">
+                <button class="btn-cancel btn" type="button">Batal</button>
+                <button class="btn-submit btn" id="submit-btn" type="button" onclick="submitForm()">
+                    <span id="submit-label">Tambah Pengeluaran</span>
+                    <span class="spinner" id="submit-spinner" style="display: none"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Toast (aria-live polite, auto-dismiss 3.5s) -->
+        <div class="toast" id="toast" role="status" aria-live="polite">
+            <svg class="icon"><use href="#i-check" /></svg>
+            <span id="toast-text">Transaksi tersimpan</span>
+        </div>
+
+        <script>
+            // ── Config mirroring typeConfig in transaction-form.svelte ──
+            const CONFIG = {
+                expense: {
+                    title: 'Tambah Pengeluaran',
+                    submit: 'Tambah Pengeluaran',
+                    toast: 'Pengeluaran tersimpan',
+                    descriptionPlaceholder: 'Contoh: Makan siang warteg, isi bensin',
+                    accountLabel: 'Akun Sumber *',
+                    showTransfer: false,
+                    categories: [
+                        { id: 'makan', label: 'Makan & Minuman' },
+                        { id: 'transport', label: 'Transportasi' },
+                        { id: 'belanja', label: 'Belanja' },
+                        { id: 'tagihan', label: 'Tagihan & Utilitas' },
+                        { id: 'hiburan', label: 'Hiburan' },
+                        { id: 'kesehatan', label: 'Kesehatan' },
+                        { id: 'pendidikan', label: 'Pendidikan' },
+                        { id: 'rumah', label: 'Rumah Tangga' },
+                        { id: 'donasi', label: 'Donasi & Zakat' },
+                        { id: 'perawatan', label: 'Perawatan & Kecantikan' },
+                        { id: 'liburan', label: 'Liburan' },
+                        { id: 'lainnya', label: 'Lainnya' },
+                    ],
+                    defaultCategory: 'makan',
+                },
+                income: {
+                    title: 'Tambah Pemasukan',
+                    submit: 'Tambah Pemasukan',
+                    toast: 'Pemasukan tersimpan',
+                    descriptionPlaceholder: 'Contoh: Gaji bulanan, bonus proyek',
+                    accountLabel: 'Akun Tujuan Penerimaan *',
+                    showTransfer: false,
+                    categories: [
+                        { id: 'gaji', label: 'Gaji' },
+                        { id: 'bonus', label: 'Bonus & THR' },
+                        { id: 'freelance', label: 'Freelance' },
+                        { id: 'invest', label: 'Hasil Investasi' },
+                        { id: 'penjualan', label: 'Penjualan' },
+                        { id: 'hadiah', label: 'Hadiah' },
+                        { id: 'lainnya', label: 'Lainnya' },
+                    ],
+                    defaultCategory: 'gaji',
+                },
+                transfer: {
+                    title: 'Tambah Transfer',
+                    submit: 'Tambah Transfer',
+                    toast: 'Transfer tersimpan',
+                    descriptionPlaceholder: 'Contoh: Kirim uang bulanan, top-up wallet',
+                    accountLabel: 'Akun Asal (Dari) *',
+                    showTransfer: true,
+                    categories: [
+                        { id: 'antar', label: 'Antar Rekening' },
+                        { id: 'topup', label: 'Top-up e-Wallet' },
+                        { id: 'tarik', label: 'Tarik Tunai' },
+                        { id: 'invest', label: 'Setoran Investasi' },
+                    ],
+                    defaultCategory: 'antar',
+                },
+            };
+
+            const root = document.getElementById('form-root');
+            const amountInput = document.getElementById('amount-input');
+            const merchantInput = document.getElementById('merchant-input');
+            const accountTo = document.getElementById('account-to');
+            const categorySelect = document.getElementById('category-select');
+
+            let currentType = 'expense';
+            let toastTimer = null;
+
+            // ── Init ──
+            document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
+            renderCategoryOptions(CONFIG.expense);
+
+            // ── Type switching ──
+            function setType(type) {
+                if (type === currentType) return;
+                currentType = type;
+                const cfg = CONFIG[type];
+
+                root.dataset.type = type;
+
+                document.querySelectorAll('.sw-btn').forEach((btn) => {
+                    btn.setAttribute('aria-pressed', String(btn.dataset.type === type));
+                });
+
+                document.getElementById('form-title').textContent = cfg.title;
+                document.getElementById('submit-label').textContent = cfg.submit;
+
+                const merchantLabel = document.getElementById('merchant-label');
+                merchantLabel.textContent = 'Deskripsi *';
+                merchantInput.placeholder = cfg.descriptionPlaceholder;
+                document.getElementById('account-from-label').textContent = cfg.accountLabel;
+
+                document.getElementById('transfer-block').style.display = cfg.showTransfer
+                    ? 'block'
+                    : 'none';
+
+                renderCategoryOptions(cfg);
+                clearErrors();
+            }
+
+            function renderCategoryOptions(cfg) {
+                categorySelect.innerHTML = '';
+                cfg.categories.forEach((cat) => {
+                    const opt = document.createElement('option');
+                    opt.value = cat.id;
+                    opt.textContent = cat.label;
+                    categorySelect.appendChild(opt);
+                });
+                categorySelect.value = cfg.defaultCategory;
+            }
+
+            // ── Amount (id-ID thousand separators, tabular-nums) ──
+            function handleAmount(input) {
+                const raw = input.value.replace(/\D/g, '');
+                const num = parseInt(raw, 10) || 0;
+                input.value = num ? num.toLocaleString('id-ID') : '';
+                if (input === amountInput) dismissError(amountInput, 'amount-error');
+            }
+
+            function bumpAmount(delta) {
+                const raw = amountInput.value.replace(/\D/g, '');
+                const num = (parseInt(raw, 10) || 0) + delta;
+                amountInput.value = num.toLocaleString('id-ID');
+                dismissError(amountInput, 'amount-error');
+            }
+
+            // ── Transfer helpers ──
+            function swapAccounts() {
+                const from = document.getElementById('account-from');
+                [from.value, accountTo.value] = [
+                    accountTo.value || from.querySelector('option').value,
+                    from.value,
+                ];
+                if (
+                    accountTo.value === from.value &&
+                    accountTo.querySelector(`option[value="${from.value}"]`)
+                ) {
+                    const options = [...accountTo.options]
+                        .map((o) => o.value)
+                        .filter((v) => v && v !== from.value);
+                    accountTo.value = options[0] ?? '';
+                }
+                dismissError(accountTo, 'account-to-error');
+            }
+
+            // ── Validation (inline, below field, aria-live) ──
+            function setError(rowEl, msgEl, inputEl) {
+                if (rowEl) rowEl.classList.add('invalid');
+                if (msgEl) msgEl.style.display = 'block';
+                if (inputEl) inputEl.setAttribute('aria-invalid', 'true');
+            }
+            function dismissError(inputEl, msgId) {
+                const msg = document.getElementById(msgId);
+                if (msg) msg.style.display = 'none';
+                if (inputEl) inputEl.removeAttribute('aria-invalid');
+            }
+            function clearErrors() {
+                document
+                    .querySelectorAll('.error-msg')
+                    .forEach((el) => (el.style.display = 'none'));
+                document
+                    .querySelectorAll('[aria-invalid]')
+                    .forEach((el) => el.removeAttribute('aria-invalid'));
+            }
+
+            // ── Submit (loading state → toast) ──
+            function submitForm() {
+                clearErrors();
+                let firstInvalid = null;
+
+                const rawAmount = amountInput.value.replace(/\D/g, '');
+                if (!rawAmount || parseInt(rawAmount, 10) <= 0) {
+                    setError(null, document.getElementById('amount-error'), amountInput);
+                    document.getElementById('amount-error').classList.add('show');
+                    firstInvalid ??= amountInput;
+                }
+                if (!merchantInput.value.trim()) {
+                    setError(
+                        merchantInput.closest('.row'),
+                        document.getElementById('merchant-error'),
+                        merchantInput
+                    );
+                    firstInvalid ??= merchantInput;
+                }
+                if (CONFIG[currentType].showTransfer && !accountTo.value) {
+                    setError(
+                        accountTo.closest('.row'),
+                        document.getElementById('account-to-error'),
+                        accountTo
+                    );
+                    firstInvalid ??= accountTo;
+                }
+
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                    return;
+                }
+
+                const btn = document.getElementById('submit-btn');
+                const spinner = document.getElementById('submit-spinner');
+                btn.disabled = true;
+                spinner.style.display = 'block';
+
+                setTimeout(() => {
+                    btn.disabled = false;
+                    spinner.style.display = 'none';
+                    showToast(`${CONFIG[currentType].toast} · Rp ${amountInput.value}`);
+                }, 900);
+            }
+
+            function showToast(message) {
+                const toast = document.getElementById('toast');
+                document.getElementById('toast-text').textContent = message;
+                toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+            }
+
+            // ── Theme switching (app's real DaisyUI themes) ──
+            function setTheme(theme, btn) {
+                document.documentElement.dataset.theme = theme;
+                document
+                    .querySelectorAll('.theme-dot')
+                    .forEach((d) => d.setAttribute('aria-pressed', 'false'));
+                btn.setAttribute('aria-pressed', 'true');
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,1276 @@
+<!doctype html>
+<html lang="id" data-theme="verdant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Mockup — Alternatif Kartu Nominal (2026-09-11) · FinTrack</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap"
+            rel="stylesheet" />
+        <style>
+            /* ── Theme tokens (verbatim from resources/css/colors.css) ── */
+            :root,
+            [data-theme='verdant'] {
+                --base-100: oklch(0.98 0.012 85);
+                --base-200: oklch(0.94 0.018 85);
+                --base-300: oklch(0.88 0.022 85);
+                --content: oklch(0.18 0.02 160);
+                --primary: oklch(0.42 0.11 160);
+                --primary-content: oklch(0.95 0.01 160);
+                --success: oklch(0.55 0.12 150);
+                --info: oklch(0.55 0.1 210);
+                --error: oklch(0.55 0.12 30);
+            }
+            [data-theme='cobalt'] {
+                --base-100: oklch(0.98 0.008 80);
+                --base-200: oklch(0.93 0.012 80);
+                --base-300: oklch(0.87 0.015 80);
+                --content: oklch(0.18 0.02 268);
+                --primary: oklch(0.38 0.12 268);
+                --primary-content: oklch(0.95 0.005 268);
+                --success: oklch(0.52 0.12 162);
+                --info: oklch(0.55 0.12 230);
+                --error: oklch(0.55 0.12 28);
+            }
+            [data-theme='ember'] {
+                --base-100: oklch(0.97 0.018 70);
+                --base-200: oklch(0.92 0.022 70);
+                --base-300: oklch(0.86 0.025 70);
+                --content: oklch(0.2 0.02 40);
+                --primary: oklch(0.42 0.12 40);
+                --primary-content: oklch(0.95 0.01 40);
+                --success: oklch(0.48 0.08 145);
+                --info: oklch(0.52 0.08 220);
+                --error: oklch(0.45 0.1 35);
+            }
+            [data-theme='amethyst'] {
+                --base-100: oklch(0.99 0.004 280);
+                --base-200: oklch(0.95 0.008 280);
+                --base-300: oklch(0.89 0.012 280);
+                --content: oklch(0.18 0.02 280);
+                --primary: oklch(0.38 0.13 280);
+                --primary-content: oklch(0.95 0.01 280);
+                --success: oklch(0.55 0.1 165);
+                --info: oklch(0.58 0.12 240);
+                --error: oklch(0.58 0.12 18);
+            }
+
+            /* ── Derived tokens ── */
+            :root {
+                --line: color-mix(in oklab, var(--content) 15%, transparent);
+                --line-soft: color-mix(in oklab, var(--content) 10%, transparent);
+                --muted: color-mix(in oklab, var(--content) 42%, transparent);
+                --faint: color-mix(in oklab, var(--content) 30%, transparent);
+                --sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+                --mono:
+                    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+                    'Courier New', monospace;
+            }
+
+            [data-type='expense'] {
+                --accent: var(--error);
+                --accent-soft: color-mix(in oklab, var(--error) 12%, transparent);
+            }
+            [data-type='income'] {
+                --accent: var(--success);
+                --accent-soft: color-mix(in oklab, var(--success) 12%, transparent);
+            }
+            [data-type='transfer'] {
+                --accent: var(--info);
+                --accent-soft: color-mix(in oklab, var(--info) 12%, transparent);
+            }
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: var(--sans);
+                background: var(--base-200);
+                color: var(--content);
+                min-height: 100dvh;
+                -webkit-font-smoothing: antialiased;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            :focus-visible {
+                outline: 2px solid var(--primary);
+                outline-offset: 2px;
+                border-radius: 6px;
+            }
+            input:focus-visible {
+                outline: none;
+            }
+
+            button {
+                font-family: inherit;
+                cursor: pointer;
+                border: none;
+                background: none;
+                color: inherit;
+            }
+
+            /* ── Mockup control bar ── */
+            .mockup-bar {
+                position: sticky;
+                top: 0;
+                z-index: 50;
+                background: color-mix(in oklab, var(--base-100) 88%, transparent);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px dashed var(--line);
+                padding: 8px 14px 10px;
+            }
+            .mockup-bar-row {
+                max-width: 430px;
+                margin: 0 auto;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+            }
+            .mockup-tag {
+                font-family: var(--mono);
+                font-size: 0.62rem;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--muted);
+                white-space: nowrap;
+            }
+            .theme-dots {
+                display: flex;
+                gap: 6px;
+            }
+            .theme-dot {
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                border: 2px solid var(--line);
+                transition: transform 0.15s ease-out;
+            }
+            .theme-dot:hover {
+                transform: scale(1.12);
+            }
+            .theme-dot[aria-pressed='true'] {
+                border-color: var(--content);
+            }
+            .theme-dot[data-theme-swatch='verdant'] {
+                background: oklch(0.42 0.11 160);
+            }
+            .theme-dot[data-theme-swatch='cobalt'] {
+                background: oklch(0.38 0.12 268);
+            }
+            .theme-dot[data-theme-swatch='ember'] {
+                background: oklch(0.42 0.12 40);
+            }
+            .theme-dot[data-theme-swatch='amethyst'] {
+                background: oklch(0.38 0.13 280);
+            }
+
+            .switcher {
+                max-width: 430px;
+                margin: 8px auto 0;
+                display: flex;
+                gap: 4px;
+                padding: 4px;
+                background: var(--base-200);
+                border-radius: 12px;
+            }
+            .sw-btn {
+                flex: 1;
+                min-height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                border-radius: 9px;
+                font-size: 0.76rem;
+                font-weight: 600;
+                color: var(--muted);
+                transition:
+                    background 0.2s ease-out,
+                    color 0.2s ease-out;
+            }
+            .sw-btn:hover {
+                color: var(--content);
+            }
+            .sw-btn[aria-pressed='true'] {
+                background: var(--base-100);
+                color: var(--accent);
+                box-shadow: 0 1px 3px color-mix(in oklab, var(--content) 12%, transparent);
+            }
+            .sw-btn:active {
+                transform: scale(0.97);
+            }
+            .sw-btn svg {
+                width: 15px;
+                height: 15px;
+            }
+
+            /* ── Shell ── */
+            .shell {
+                max-width: 430px;
+                margin: 0 auto;
+                padding: 8px 16px 56px;
+            }
+
+            .intro {
+                border: 1px dashed var(--line);
+                border-radius: 14px;
+                padding: 12px 16px;
+                margin-bottom: 8px;
+                font-size: 0.78rem;
+                line-height: 1.55;
+                color: var(--muted);
+            }
+            .intro strong {
+                color: var(--content);
+                font-weight: 600;
+            }
+
+            /* ── Variant sections ── */
+            .variant {
+                margin-top: 26px;
+                padding-top: 22px;
+                border-top: 1px dashed var(--line);
+            }
+            .variant-head {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+            .variant-badge {
+                flex: 0 0 auto;
+                min-width: 26px;
+                padding: 0 7px;
+                height: 26px;
+                border-radius: 9px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: var(--mono);
+                font-size: 0.8rem;
+                font-weight: 700;
+                background: color-mix(in oklab, var(--primary) 12%, transparent);
+                color: var(--primary);
+            }
+            .variant-name {
+                font-size: 0.86rem;
+                font-weight: 600;
+                letter-spacing: -0.01em;
+            }
+            .variant-name .tag {
+                font-weight: 500;
+                color: var(--muted);
+            }
+            .variant-desc {
+                margin-top: 2px;
+                font-size: 0.74rem;
+                line-height: 1.5;
+                color: var(--muted);
+            }
+
+            .card {
+                background: var(--base-100);
+                border: 1px solid var(--line);
+                border-radius: 16px;
+                overflow: hidden;
+            }
+            .accent {
+                height: 4px;
+                background: var(--accent);
+                transition: background 0.25s ease-out;
+            }
+
+            .sec-label {
+                display: block;
+                font-size: 0.625rem;
+                font-weight: 700;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                color: var(--muted);
+            }
+
+            .amt-font {
+                font-family: var(--mono);
+                font-variant-numeric: tabular-nums;
+            }
+
+            .amt-input {
+                width: 100%;
+                border: none;
+                outline: none;
+                background: transparent;
+                font-family: var(--mono);
+                font-variant-numeric: tabular-nums;
+                font-weight: 500;
+                letter-spacing: -0.025em;
+                color: var(--accent);
+                caret-color: var(--accent);
+                transition: color 0.25s ease-out;
+            }
+            .amt-input::placeholder {
+                color: var(--faint);
+            }
+
+            .quick-chips {
+                display: flex;
+                gap: 8px;
+            }
+            .quick-chip {
+                min-height: 34px;
+                padding: 0 13px;
+                border-radius: 999px;
+                border: 1px solid var(--line);
+                font-size: 0.74rem;
+                font-weight: 600;
+                font-family: var(--mono);
+                color: var(--muted);
+                background: transparent;
+                transition:
+                    background 0.15s ease-out,
+                    color 0.15s ease-out,
+                    border-color 0.15s ease-out;
+            }
+            .quick-chip:hover {
+                background: var(--accent-soft);
+                border-color: var(--accent);
+                color: var(--accent);
+            }
+            .quick-chip:active {
+                transform: scale(0.95);
+            }
+
+            /* ══ A — Hero amount (basis) ══ */
+            .a-body {
+                padding: 16px 20px 18px;
+            }
+            .a-line {
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                margin-top: 4px;
+            }
+            .a-prefix {
+                font-family: var(--mono);
+                font-size: 0.95rem;
+                font-weight: 500;
+                color: var(--muted);
+            }
+            .a-input {
+                font-size: clamp(2rem, 9vw, 2.6rem);
+                line-height: 1;
+                min-height: 44px;
+            }
+            .a-body .quick-chips {
+                margin-top: 12px;
+            }
+
+            /* ══ B — Keypad kalkulator ══ */
+            .b-display {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 16px 20px;
+                border-bottom: 1px solid var(--line-soft);
+            }
+            .b-value {
+                display: flex;
+                align-items: baseline;
+                gap: 7px;
+                min-width: 0;
+            }
+            .b-rp {
+                font-family: var(--mono);
+                font-size: 0.95rem;
+                font-weight: 500;
+                color: var(--muted);
+            }
+            .b-number {
+                font-family: var(--mono);
+                font-variant-numeric: tabular-nums;
+                font-size: clamp(1.7rem, 7.5vw, 2.1rem);
+                font-weight: 500;
+                letter-spacing: -0.02em;
+                color: var(--accent);
+                line-height: 1;
+                transition: color 0.25s ease-out;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .b-clear {
+                flex: 0 0 auto;
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                border: 1px solid var(--line);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--muted);
+                transition:
+                    background 0.15s ease-out,
+                    color 0.15s ease-out;
+            }
+            .b-clear:hover {
+                background: var(--accent-soft);
+                color: var(--accent);
+            }
+            .b-clear svg {
+                width: 15px;
+                height: 15px;
+            }
+            .keypad {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                padding: 14px 20px 18px;
+            }
+            .key {
+                min-height: 48px;
+                border-radius: 13px;
+                background: var(--base-200);
+                font-family: var(--mono);
+                font-size: 1.05rem;
+                font-weight: 600;
+                color: var(--content);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition:
+                    background 0.12s ease-out,
+                    transform 0.1s ease-out;
+            }
+            .key:hover {
+                background: var(--base-300);
+            }
+            .key:active {
+                transform: scale(0.94);
+                background: var(--accent-soft);
+                color: var(--accent);
+            }
+            .key svg {
+                width: 19px;
+                height: 19px;
+            }
+
+            /* ══ B2 — Attached keypad (pop-out) ══ */
+            .card-e {
+                position: relative;
+                overflow: visible;
+            }
+            .e-body {
+                padding: 14px 20px 18px;
+            }
+            .e-anchor {
+                position: relative;
+                margin-top: 10px;
+            }
+            .e-field {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                width: 100%;
+                min-height: 58px;
+                padding: 0 16px;
+                background: var(--base-200);
+                border-radius: 14px;
+                cursor: pointer;
+                text-align: left;
+                transition:
+                    background 0.15s ease-out,
+                    box-shadow 0.15s ease-out;
+            }
+            .e-field:hover {
+                background: var(--base-300);
+            }
+            .e-field[aria-expanded='true'] {
+                background: var(--base-300);
+                box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 45%, transparent);
+            }
+            .e-rp {
+                font-family: var(--mono);
+                font-size: 1rem;
+                font-weight: 500;
+                color: var(--muted);
+            }
+            .e-value {
+                flex: 1;
+                font-size: 1.55rem;
+                font-weight: 500;
+                letter-spacing: -0.02em;
+                color: var(--accent);
+                transition: color 0.25s ease-out;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .e-field > svg {
+                flex: 0 0 auto;
+                width: 18px;
+                height: 18px;
+                color: var(--muted);
+                transition: transform 0.2s ease-out;
+            }
+            .e-field[aria-expanded='true'] > svg {
+                transform: rotate(180deg);
+            }
+            .e-hint {
+                margin-top: 8px;
+                font-size: 0.72rem;
+                color: var(--muted);
+            }
+            .e-panel {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: calc(100% + 8px);
+                z-index: 50;
+                background: var(--base-100);
+                border: 1px solid var(--line);
+                border-radius: 16px;
+                box-shadow: 0 14px 32px color-mix(in oklab, var(--content) 16%, transparent);
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-8px);
+                transition:
+                    opacity 0.2s ease-out,
+                    transform 0.2s ease-out,
+                    visibility 0s linear 0.2s;
+            }
+            .e-panel.open {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+                transition:
+                    opacity 0.2s ease-out,
+                    transform 0.2s ease-out;
+            }
+            .e-panel .b-display {
+                border-bottom: none;
+                padding: 14px 16px 6px;
+            }
+            .e-panel .keypad {
+                padding: 8px 16px 4px;
+                gap: 7px;
+            }
+            .e-panel .key {
+                min-height: 46px;
+            }
+            .e-done {
+                width: calc(100% - 32px);
+                margin: 6px 16px 16px;
+                min-height: 46px;
+                border-radius: 12px;
+                background: var(--primary);
+                color: var(--primary-content);
+                font-size: 0.88rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                transition: transform 0.12s ease-out;
+            }
+            .e-done:active {
+                transform: scale(0.98);
+            }
+            .e-done svg {
+                width: 16px;
+                height: 16px;
+            }
+            .e-scrim {
+                position: fixed;
+                inset: 0;
+                z-index: 40;
+                background: color-mix(in oklab, var(--content) 8%, transparent);
+                opacity: 0;
+                visibility: hidden;
+                transition:
+                    opacity 0.2s ease-out,
+                    visibility 0s linear 0.2s;
+            }
+            .e-scrim.show {
+                opacity: 1;
+                visibility: visible;
+                transition: opacity 0.2s ease-out;
+            }
+
+            /* ══ C — Filled field + ikon tipe ══ */
+            .c-body {
+                padding: 14px 20px 18px;
+            }
+            .c-head {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .c-icon {
+                flex: 0 0 auto;
+                width: 34px;
+                height: 34px;
+                border-radius: 11px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--accent-soft);
+                color: var(--accent);
+                transition:
+                    background 0.25s ease-out,
+                    color 0.25s ease-out;
+            }
+            .c-icon svg {
+                width: 18px;
+                height: 18px;
+            }
+            .c-field {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 12px;
+                padding: 0 16px;
+                min-height: 60px;
+                background: var(--base-200);
+                border-radius: 14px;
+                transition: background 0.15s ease-out;
+            }
+            .c-field:focus-within {
+                background: var(--base-300);
+            }
+            .c-rp {
+                font-family: var(--mono);
+                font-size: 1rem;
+                font-weight: 500;
+                color: var(--muted);
+            }
+            .c-input {
+                font-size: 1.55rem;
+                min-height: 44px;
+            }
+            .c-body .quick-chips {
+                margin-top: 12px;
+            }
+
+            /* ══ D — Ledger minimal ══ */
+            .d-wrap {
+                padding: 20px 8px 22px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .d-pill {
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                min-height: 32px;
+                padding: 0 14px;
+                border-radius: 999px;
+                background: var(--accent-soft);
+                color: var(--accent);
+                font-size: 0.76rem;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+                transition:
+                    background 0.25s ease-out,
+                    color 0.25s ease-out;
+            }
+            .d-pill svg {
+                width: 15px;
+                height: 15px;
+            }
+            .d-line {
+                display: flex;
+                align-items: baseline;
+                gap: 8px;
+                margin-top: 14px;
+            }
+            .d-rp {
+                font-family: var(--mono);
+                font-size: 1.1rem;
+                font-weight: 500;
+                color: var(--muted);
+            }
+            .d-input {
+                font-size: clamp(2.2rem, 10vw, 2.8rem);
+                line-height: 1;
+                text-align: center;
+                min-height: 48px;
+                max-width: 100%;
+            }
+            .d-wrap .quick-chips {
+                margin-top: 16px;
+                justify-content: center;
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                *,
+                *::before,
+                *::after {
+                    transition: none !important;
+                    animation: none !important;
+                }
+            }
+
+            .icon {
+                width: 20px;
+                height: 20px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+        </style>
+    </head>
+    <body>
+        <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs>
+                <symbol id="i-shopping" viewBox="0 0 24 24">
+                    <circle cx="9" cy="20" r="1.4" />
+                    <circle cx="17" cy="20" r="1.4" />
+                    <path
+                        d="M3 3h2l2.4 12.1a1.5 1.5 0 0 0 1.5 1.2h8.2a1.5 1.5 0 0 0 1.5-1.2L20.5 8H6" />
+                </symbol>
+                <symbol id="i-invest" viewBox="0 0 24 24">
+                    <path d="M3 17l6-6 4 4 8-8M15 7h6v6" />
+                </symbol>
+                <symbol id="i-swap" viewBox="0 0 24 24">
+                    <path d="M7 7h13M17 3.5 20.5 7 17 10.5M17 17H4M7 13.5 3.5 17 7 20.5" />
+                </symbol>
+                <symbol id="i-x" viewBox="0 0 24 24">
+                    <path d="M6 6l12 12M18 6 6 18" />
+                </symbol>
+                <symbol id="i-backspace" viewBox="0 0 24 24">
+                    <path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z" />
+                    <path d="m18 9-6 6M12 9l6 6" />
+                </symbol>
+                <symbol id="i-check" viewBox="0 0 24 24">
+                    <path d="M5 12.5l4.5 4.5L19 7.5" />
+                </symbol>
+                <symbol id="i-chevron-down" viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </symbol>
+            </defs>
+        </svg>
+
+        <!-- Scrim for attached keypad panel (closes on outside tap) -->
+        <div class="e-scrim" id="e-scrim" onclick="closePanel()" aria-hidden="true"></div>
+
+        <div class="mockup-bar">
+            <div class="mockup-bar-row">
+                <span class="mockup-tag">alternatif kartu nominal · pratinjau</span>
+                <div class="theme-dots" role="group" aria-label="Pilih tema">
+                    <button
+                        class="theme-dot"
+                        data-theme-swatch="verdant"
+                        aria-pressed="true"
+                        aria-label="Tema Verdant"
+                        title="Verdant"
+                        onclick="setTheme('verdant', this)"></button>
+                    <button
+                        class="theme-dot"
+                        data-theme-swatch="cobalt"
+                        aria-pressed="false"
+                        aria-label="Tema Cobalt"
+                        title="Cobalt"
+                        onclick="setTheme('cobalt', this)"></button>
+                    <button
+                        class="theme-dot"
+                        data-theme-swatch="ember"
+                        aria-pressed="false"
+                        aria-label="Tema Ember"
+                        title="Ember"
+                        onclick="setTheme('ember', this)"></button>
+                    <button
+                        class="theme-dot"
+                        data-theme-swatch="amethyst"
+                        aria-pressed="false"
+                        aria-label="Tema Amethyst"
+                        title="Amethyst"
+                        onclick="setTheme('amethyst', this)"></button>
+                </div>
+            </div>
+            <div class="switcher" role="group" aria-label="Jenis transaksi">
+                <button
+                    class="sw-btn"
+                    data-type="expense"
+                    aria-pressed="true"
+                    onclick="setType('expense')">
+                    <svg class="icon"><use href="#i-shopping" /></svg>
+                    Pengeluaran
+                </button>
+                <button
+                    class="sw-btn"
+                    data-type="income"
+                    aria-pressed="false"
+                    onclick="setType('income')">
+                    <svg class="icon"><use href="#i-invest" /></svg>
+                    Pemasukan
+                </button>
+                <button
+                    class="sw-btn"
+                    data-type="transfer"
+                    aria-pressed="false"
+                    onclick="setType('transfer')">
+                    <svg class="icon"><use href="#i-swap" /></svg>
+                    Transfer
+                </button>
+            </div>
+        </div>
+
+        <div class="shell" id="form-root" data-type="expense">
+            <div class="intro">
+                <strong>5 alternatif kartu nominal.</strong> Semua varian berbagi state jenis
+                transaksi — ganti jenis di atas untuk melihat warna aksen. Setiap varian bisa dicoba
+                langsung.
+            </div>
+
+            <!-- ═══ A — Hero Amount ═══ -->
+            <section class="variant" style="border-top: none; margin-top: 18px; padding-top: 0">
+                <div class="variant-head">
+                    <span class="variant-badge">A</span>
+                    <div>
+                        <p class="variant-name">
+                            Hero Amount <span class="tag">— basis saat ini</span>
+                        </p>
+                        <p class="variant-desc">
+                            Bar aksen di atas + angka besar langsung bisa diketik. Fokus visual
+                            penuh ke nominal.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="accent"></div>
+                    <div class="a-body">
+                        <label class="sec-label" for="amt-a">Nominal Transaksi</label>
+                        <div class="a-line">
+                            <span class="a-prefix">Rp</span>
+                            <input
+                                class="amt-input a-input"
+                                id="amt-a"
+                                inputmode="numeric"
+                                placeholder="0"
+                                type="text"
+                                value="258.000"
+                                oninput="handleAmount(this)" />
+                        </div>
+                        <div class="quick-chips">
+                            <button class="quick-chip" type="button" onclick="bump(amtA, 10000)">
+                                +10 rb
+                            </button>
+                            <button class="quick-chip" type="button" onclick="bump(amtA, 50000)">
+                                +50 rb
+                            </button>
+                            <button class="quick-chip" type="button" onclick="bump(amtA, 100000)">
+                                +100 rb
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ B — Keypad ═══ -->
+            <section class="variant">
+                <div class="variant-head">
+                    <span class="variant-badge">B</span>
+                    <div>
+                        <p class="variant-name">Keypad Kalkulator</p>
+                        <p class="variant-desc">
+                            Tampilan nominal + tombol angka, pola umum aplikasi m-banking &amp;
+                            money tracker. Enan untuk input satu tangan, tanpa perlu keyboard
+                            sistem.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="b-display">
+                        <div class="b-value">
+                            <span class="b-rp">Rp</span>
+                            <span class="b-number" id="amt-b">258.000</span>
+                        </div>
+                        <button
+                            class="b-clear"
+                            type="button"
+                            aria-label="Hapus nominal"
+                            onclick="clearKeypad()">
+                            <svg class="icon"><use href="#i-x" /></svg>
+                        </button>
+                    </div>
+                    <div class="keypad" role="group" aria-label="Keypad nominal">
+                        <button class="key" type="button" onclick="pressKey('1')">1</button>
+                        <button class="key" type="button" onclick="pressKey('2')">2</button>
+                        <button class="key" type="button" onclick="pressKey('3')">3</button>
+                        <button class="key" type="button" onclick="pressKey('4')">4</button>
+                        <button class="key" type="button" onclick="pressKey('5')">5</button>
+                        <button class="key" type="button" onclick="pressKey('6')">6</button>
+                        <button class="key" type="button" onclick="pressKey('7')">7</button>
+                        <button class="key" type="button" onclick="pressKey('8')">8</button>
+                        <button class="key" type="button" onclick="pressKey('9')">9</button>
+                        <button class="key" type="button" onclick="pressKey('000')">000</button>
+                        <button class="key" type="button" onclick="pressKey('0')">0</button>
+                        <button
+                            class="key"
+                            type="button"
+                            aria-label="Hapus satu angka"
+                            onclick="backspace()">
+                            <svg class="icon"><use href="#i-backspace" /></svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ B2 — Attached Keypad (pop-out) ═══ -->
+            <section class="variant">
+                <div class="variant-head">
+                    <span class="variant-badge">B2</span>
+                    <div>
+                        <p class="variant-name">
+                            Attached Keypad <span class="tag">— pop-out kalkulator</span>
+                        </p>
+                        <p class="variant-desc">
+                            Kolom nominal ringkas; ketuk untuk memunculkan panel kalkulator menempel
+                            di bawahnya. Tutup lewat <strong>Selesai</strong>, tap di luar, atau
+                            Escape — keyboard sistem tidak pernah muncul. Pola "attached panel"
+                            seperti iOS input accessory view.
+                        </p>
+                    </div>
+                </div>
+                <div class="card-e card">
+                    <div class="e-body">
+                        <span class="sec-label" id="e-label">Nominal Transaksi</span>
+                        <div class="e-anchor">
+                            <button
+                                class="e-field"
+                                id="e-trigger"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="e-panel"
+                                onclick="togglePanel()">
+                                <span class="e-rp">Rp</span>
+                                <span class="e-value amt-font" id="amt-e">258.000</span>
+                                <svg class="icon"><use href="#i-chevron-down" /></svg>
+                            </button>
+
+                            <div
+                                class="e-panel"
+                                id="e-panel"
+                                role="group"
+                                aria-label="Panel kalkulator">
+                                <div class="b-display">
+                                    <div class="b-value">
+                                        <span class="b-rp">Rp</span>
+                                        <span class="b-number" id="amt-e-display" aria-live="polite"
+                                            >258.000</span
+                                        >
+                                    </div>
+                                    <button
+                                        class="b-clear"
+                                        type="button"
+                                        aria-label="Hapus nominal"
+                                        onclick="eClear()">
+                                        <svg class="icon"><use href="#i-x" /></svg>
+                                    </button>
+                                </div>
+                                <div class="keypad" role="group" aria-label="Keypad nominal">
+                                    <button class="key" type="button" onclick="ePress('1')">
+                                        1
+                                    </button>
+                                    <button class="key" type="button" onclick="ePress('2')">
+                                        2
+                                    </button>
+                                    <button class="key" type="button" onclick="ePress('3')">
+                                        3
+                                    </button>
+                                    <button class="key" type="button" onclick="ePress('4')">
+                                        4
+                                    </button>
+                                    <button class="key" type="button" onclick="ePress('5')">
+                                        5
+                                    </button>
+                                    <button class="key" type="button" onclick="ePress('6')">
+                                        6
+                                    </button>
+                                    <button class="key" type="button" onclick="ePress('7')">
+                                        7
+                                    </button>
+                                    <button class="key" type="button" onclick="ePress('8')">
+                                        8
+                                    </button>
+                                    <button class="key" type="button" onclick="ePress('9')">
+                                        9
+                                    </button>
+                                    <button class="key" type="button" onclick="ePress('000')">
+                                        000
+                                    </button>
+                                    <button class="key" type="button" onclick="ePress('0')">
+                                        0
+                                    </button>
+                                    <button
+                                        class="key"
+                                        type="button"
+                                        aria-label="Hapus satu angka"
+                                        onclick="eBackspace()">
+                                        <svg class="icon"><use href="#i-backspace" /></svg>
+                                    </button>
+                                </div>
+                                <button class="e-done" type="button" onclick="closePanel()">
+                                    <svg class="icon"><use href="#i-check" /></svg>
+                                    Selesai
+                                </button>
+                            </div>
+                        </div>
+                        <p class="e-hint">
+                            Ketuk kolom di atas untuk membuka keypad — nilainya langsung ter-update.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ C — Filled field ═══ -->
+            <section class="variant">
+                <div class="variant-head">
+                    <span class="variant-badge">C</span>
+                    <div>
+                        <p class="variant-name">Filled Field + Ikon Tipe</p>
+                        <p class="variant-desc">
+                            Nominal dalam input terisi (base-200) konsisten dengan gaya form
+                            DaisyUI. Aksen tipe dipindah ke ikon — lebih tenang, tidak ada bar
+                            warna.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="c-body">
+                        <div class="c-head">
+                            <span class="c-icon" id="c-icon-wrap">
+                                <svg class="icon" id="c-icon"><use href="#i-shopping" /></svg>
+                            </span>
+                            <label class="sec-label" for="amt-c">Nominal Transaksi</label>
+                        </div>
+                        <div class="c-field">
+                            <span class="c-rp">Rp</span>
+                            <input
+                                class="amt-input c-input"
+                                id="amt-c"
+                                inputmode="numeric"
+                                placeholder="0"
+                                type="text"
+                                value="258.000"
+                                oninput="handleAmount(this)" />
+                        </div>
+                        <div class="quick-chips">
+                            <button class="quick-chip" type="button" onclick="bump(amtC, 10000)">
+                                +10 rb
+                            </button>
+                            <button class="quick-chip" type="button" onclick="bump(amtC, 50000)">
+                                +50 rb
+                            </button>
+                            <button class="quick-chip" type="button" onclick="bump(amtC, 100000)">
+                                +100 rb
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ D — Ledger minimal ═══ -->
+            <section class="variant">
+                <div class="variant-head">
+                    <span class="variant-badge">D</span>
+                    <div>
+                        <p class="variant-name">Ledger Minimal</p>
+                        <p class="variant-desc">
+                            Tanpa kartu — pill tipe di atas, angka besar di tengah langsung di latar
+                            halaman. Paling ringan secara visual; kartu detail tetap memisahkan
+                            bagian form.
+                        </p>
+                    </div>
+                </div>
+                <div class="d-wrap">
+                    <span class="d-pill" id="d-pill">
+                        <svg class="icon" id="d-pill-icon"><use href="#i-shopping" /></svg>
+                        <span id="d-pill-text">Pengeluaran</span>
+                    </span>
+                    <div class="d-line">
+                        <span class="d-rp">Rp</span>
+                        <input
+                            class="amt-input d-input"
+                            id="amt-d"
+                            inputmode="numeric"
+                            placeholder="0"
+                            type="text"
+                            value="258.000"
+                            oninput="handleAmount(this)" />
+                    </div>
+                    <div class="quick-chips">
+                        <button class="quick-chip" type="button" onclick="bump(amtD, 10000)">
+                            +10 rb
+                        </button>
+                        <button class="quick-chip" type="button" onclick="bump(amtD, 50000)">
+                            +50 rb
+                        </button>
+                        <button class="quick-chip" type="button" onclick="bump(amtD, 100000)">
+                            +100 rb
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <script>
+            const TYPE_META = {
+                expense: { pill: 'Pengeluaran', icon: 'i-shopping' },
+                income: { pill: 'Pemasukan', icon: 'i-invest' },
+                transfer: { pill: 'Transfer', icon: 'i-swap' },
+            };
+
+            const root = document.getElementById('form-root');
+            const amtA = document.getElementById('amt-a');
+            const amtC = document.getElementById('amt-c');
+            const amtD = document.getElementById('amt-d');
+
+            let currentType = 'expense';
+
+            // ── Type switching ──
+            function setType(type) {
+                currentType = type;
+                root.dataset.type = type;
+
+                document.querySelectorAll('.sw-btn').forEach((btn) => {
+                    btn.setAttribute('aria-pressed', String(btn.dataset.type === type));
+                });
+
+                const meta = TYPE_META[type];
+                document.getElementById('d-pill-text').textContent = meta.pill;
+                document
+                    .getElementById('d-pill-icon')
+                    .firstElementChild.setAttribute('href', `#${meta.icon}`);
+                document
+                    .getElementById('c-icon')
+                    .firstElementChild.setAttribute('href', `#${meta.icon}`);
+            }
+
+            // ── Amount inputs (id-ID separators) ──
+            function handleAmount(input) {
+                const raw = input.value.replace(/\D/g, '').slice(0, 12);
+                const num = parseInt(raw, 10) || 0;
+                input.value = num ? num.toLocaleString('id-ID') : '';
+            }
+
+            function bump(input, delta) {
+                const raw = input.value.replace(/\D/g, '');
+                const num = Math.min((parseInt(raw, 10) || 0) + delta, 999999999999);
+                input.value = num ? num.toLocaleString('id-ID') : '';
+            }
+
+            // ── Keypad (variant B) ──
+            let keypadValue = '258000';
+
+            function renderKeypad() {
+                const num = parseInt(keypadValue, 10) || 0;
+                document.getElementById('amt-b').textContent = num
+                    ? num.toLocaleString('id-ID')
+                    : '0';
+            }
+
+            function pressKey(digits) {
+                if (keypadValue === '0') keypadValue = '';
+                keypadValue = (keypadValue + digits).replace(/^0+(?=\d)/, '').slice(0, 12);
+                renderKeypad();
+            }
+
+            function backspace() {
+                keypadValue = keypadValue.slice(0, -1);
+                renderKeypad();
+            }
+
+            function clearKeypad() {
+                keypadValue = '';
+                renderKeypad();
+            }
+
+            // ── Attached keypad (variant B2) ──
+            const eTrigger = document.getElementById('e-trigger');
+            const ePanel = document.getElementById('e-panel');
+            const eScrim = document.getElementById('e-scrim');
+            let eValue = '258000';
+            let ePanelOpen = false;
+
+            function renderE() {
+                const num = parseInt(eValue, 10) || 0;
+                const txt = num ? num.toLocaleString('id-ID') : '0';
+                document.getElementById('amt-e').textContent = txt;
+                document.getElementById('amt-e-display').textContent = txt;
+            }
+
+            function openPanel() {
+                if (ePanelOpen) return;
+                ePanelOpen = true;
+                ePanel.classList.add('open');
+                eScrim.classList.add('show');
+                eTrigger.setAttribute('aria-expanded', 'true');
+                const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                setTimeout(
+                    () =>
+                        ePanel.scrollIntoView({
+                            behavior: reduced ? 'auto' : 'smooth',
+                            block: 'nearest',
+                        }),
+                    80
+                );
+            }
+
+            function closePanel() {
+                if (!ePanelOpen) return;
+                ePanelOpen = false;
+                ePanel.classList.remove('open');
+                eScrim.classList.remove('show');
+                eTrigger.setAttribute('aria-expanded', 'false');
+            }
+
+            function togglePanel() {
+                ePanelOpen ? closePanel() : openPanel();
+            }
+
+            function ePress(digits) {
+                if (eValue === '0') eValue = '';
+                eValue = (eValue + digits).replace(/^0+(?=\d)/, '').slice(0, 12);
+                renderE();
+            }
+
+            function eBackspace() {
+                eValue = eValue.slice(0, -1);
+                renderE();
+            }
+
+            function eClear() {
+                eValue = '';
+                renderE();
+            }
+
+            document.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Escape' && ePanelOpen) closePanel();
+            });
+
+            renderE();
+
+            // ── Theme switching ──
+            function setTheme(theme, btn) {
+                document.documentElement.dataset.theme = theme;
+                document
+                    .querySelectorAll('.theme-dot')
+                    .forEach((d) => d.setAttribute('aria-pressed', 'false'));
+                btn.setAttribute('aria-pressed', 'true');
+            }
+        </script>
+    </body>
+</html>
