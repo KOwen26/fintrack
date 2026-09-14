@@ -1,0 +1,2813 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>FinTrack — Transaction &amp; Transfer Create Mockups (Cobalt)</title>
+        <style>
+            /* ══════════════════════════════════════════════════════════════════
+   FinTrack Mockups — Theme: Cobalt (exact vars from resources/css/colors.css)
+   5 designs: A keypad · B split-panel · C account-flow · D & E faithful
+   ══════════════════════════════════════════════════════════════════ */
+
+            :root,
+            [data-theme='cobalt'] {
+                --color-base-100: oklch(0.98 0.008 80);
+                --color-base-200: oklch(0.93 0.012 80);
+                --color-base-300: oklch(0.87 0.015 80);
+                --color-base-content: oklch(0.18 0.02 268);
+
+                --color-primary: oklch(0.38 0.12 268);
+                --color-primary-content: oklch(0.95 0.005 268);
+                --color-secondary: oklch(0.62 0.06 255);
+                --color-secondary-content: oklch(0.18 0.02 268);
+                --color-accent: oklch(0.72 0.16 78);
+                --color-accent-content: oklch(0.18 0.02 268);
+
+                --color-neutral: oklch(0.18 0.02 268);
+                --color-neutral-content: oklch(0.95 0.005 268);
+                --color-success: oklch(0.52 0.12 162);
+                --color-success-content: oklch(0.95 0.005 268);
+                --color-info: oklch(0.55 0.12 230);
+                --color-info-content: oklch(0.95 0.005 268);
+                --color-warning: oklch(0.72 0.16 78);
+                --color-warning-content: oklch(0.18 0.02 268);
+                --color-error: oklch(0.55 0.12 28);
+                --color-error-content: oklch(0.95 0.005 268);
+            }
+
+            /* ── Derived tints & helpers ─────────────────────────────── */
+            :root {
+                --hairline: color-mix(in oklab, var(--color-base-content) 10%, transparent);
+                --card-line: color-mix(in oklab, var(--color-base-content) 15%, transparent);
+                --ink-40: color-mix(in oklab, var(--color-base-content) 42%, transparent);
+                --ink-60: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+                --font-sans:
+                    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+                    Arial, sans-serif;
+                --font-mono:
+                    ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+                --soft-success: color-mix(in oklab, var(--color-success) 14%, transparent);
+                --soft-error: color-mix(in oklab, var(--color-error) 14%, transparent);
+                --soft-info: color-mix(in oklab, var(--color-info) 14%, transparent);
+                --soft-primary: color-mix(in oklab, var(--color-primary) 12%, transparent);
+                --soft-accent: color-mix(in oklab, var(--color-accent) 20%, transparent);
+                --soft-warning: color-mix(in oklab, var(--color-warning) 18%, transparent);
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+            html {
+                scroll-behavior: smooth;
+            }
+            body {
+                margin: 0;
+                font-family: var(--font-sans);
+                background: var(--color-base-200);
+                color: var(--color-base-content);
+                -webkit-font-smoothing: antialiased;
+            }
+            button {
+                font-family: inherit;
+                cursor: pointer;
+            }
+            input,
+            textarea,
+            select {
+                font-family: inherit;
+                color: inherit;
+            }
+            input:focus-visible,
+            textarea:focus-visible,
+            button:focus-visible {
+                outline: 2px solid var(--color-info);
+                outline-offset: 2px;
+            }
+            svg {
+                display: block;
+            }
+
+            .t-success {
+                color: var(--color-success);
+            }
+            .t-error {
+                color: var(--color-error);
+            }
+            .t-info {
+                color: var(--color-info);
+            }
+            .t-primary {
+                color: var(--color-primary);
+            }
+            .t-accent {
+                color: var(--color-accent);
+            }
+            .t-ink40 {
+                color: var(--ink-40);
+            }
+            .t-ink60 {
+                color: var(--ink-60);
+            }
+            .t-mono {
+                font-family: var(--font-mono);
+            }
+
+            .soft-success {
+                background: var(--soft-success);
+                color: var(--color-success);
+            }
+            .soft-error {
+                background: var(--soft-error);
+                color: var(--color-error);
+            }
+            .soft-info {
+                background: var(--soft-info);
+                color: var(--color-info);
+            }
+            .soft-primary {
+                background: var(--soft-primary);
+                color: var(--color-primary);
+            }
+            .soft-accent {
+                background: var(--soft-accent);
+                color: color-mix(in oklab, var(--color-accent) 70%, black 8%);
+            }
+            .soft-warning {
+                background: var(--soft-warning);
+                color: color-mix(in oklab, var(--color-warning) 62%, black 4%);
+            }
+
+            .microlabel {
+                font-size: 0.625rem;
+                font-weight: 700;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                color: var(--ink-40);
+            }
+
+            /* ── Top shell: header + design switcher ─────────────────── */
+            .mock-header {
+                position: sticky;
+                top: 0;
+                z-index: 50;
+                background: color-mix(in oklab, var(--color-base-100) 88%, transparent);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid var(--hairline);
+            }
+            .mock-header-inner {
+                max-width: 1080px;
+                margin: 0 auto;
+                padding: 14px 20px 12px;
+            }
+            .mock-title {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 14px;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+            }
+            .mock-title .logo {
+                width: 28px;
+                height: 28px;
+                border-radius: 9px;
+                background: var(--color-primary);
+                color: var(--color-primary-content);
+                display: grid;
+                place-items: center;
+                flex: none;
+            }
+            .mock-title small {
+                font-weight: 500;
+                color: var(--ink-40);
+            }
+            .dtabs {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-top: 10px;
+            }
+            .dtab {
+                border: 1px solid var(--card-line);
+                background: var(--color-base-100);
+                color: var(--ink-60);
+                font-size: 12px;
+                font-weight: 600;
+                padding: 7px 13px;
+                border-radius: 999px;
+                transition: all 0.15s ease;
+            }
+            .dtab:hover {
+                border-color: var(--color-primary);
+                color: var(--color-primary);
+            }
+            .dtab.active {
+                background: var(--color-primary);
+                border-color: var(--color-primary);
+                color: var(--color-primary-content);
+            }
+            .dtab .dot {
+                display: inline-block;
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                margin-right: 6px;
+                vertical-align: 1px;
+            }
+            .dot.new {
+                background: var(--color-accent);
+            }
+            .dot.same {
+                background: var(--color-success);
+            }
+            .dtab.active .dot.new {
+                background: var(--color-accent-content);
+            }
+            .dtab.active .dot.same {
+                background: var(--color-success-content);
+            }
+
+            /* ── Design sections ─────────────────────────────────────── */
+            .design {
+                display: none;
+                padding: 26px 20px 70px;
+            }
+            .design.active {
+                display: block;
+            }
+            .design-head {
+                max-width: 760px;
+                margin: 0 auto 22px;
+            }
+            .design-head .kicker {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                padding: 4px 10px;
+                border-radius: 999px;
+                margin-bottom: 8px;
+            }
+            .design-head h2 {
+                margin: 0 0 6px;
+                font-size: 20px;
+                letter-spacing: -0.02em;
+            }
+            .design-head p {
+                margin: 0;
+                font-size: 13.5px;
+                line-height: 1.65;
+                color: var(--ink-60);
+            }
+
+            .stage {
+                display: grid;
+                place-items: center;
+            }
+
+            /* Phone frame for mobile designs */
+            .phone {
+                width: 100%;
+                max-width: 420px;
+                background: var(--color-base-100);
+                border: 1px solid var(--card-line);
+                border-radius: 28px;
+                padding: 18px 16px 18px;
+                box-shadow: 0 30px 70px -38px oklch(0.18 0.02 268 / 0.5);
+            }
+
+            /* Cards (faithful + shared) */
+            .fcard {
+                background: var(--color-base-100);
+                border: 1px solid var(--card-line);
+                border-radius: 16px;
+                overflow: hidden;
+            }
+            .fdiv {
+                height: 1px;
+                background: var(--hairline);
+                margin: 0 20px;
+            }
+
+            /* Buttons */
+            .btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                border-radius: 12px;
+                border: 1px solid transparent;
+                font-size: 14px;
+                font-weight: 600;
+                padding: 11px 18px;
+                transition:
+                    filter 0.15s ease,
+                    transform 0.05s ease;
+            }
+            .btn:active {
+                transform: scale(0.98);
+            }
+            .btn-primary {
+                background: var(--color-primary);
+                color: var(--color-primary-content);
+            }
+            .btn-primary:hover {
+                filter: brightness(1.12);
+            }
+            .btn-light {
+                background: var(--color-base-200);
+                color: var(--color-base-content);
+                border-color: var(--hairline);
+            }
+            .btn-light:hover {
+                background: var(--color-base-300);
+            }
+            .btn-block {
+                width: 100%;
+            }
+
+            /* Segmented control (A / C / D-E tabs) */
+            .seg {
+                display: flex;
+                gap: 4px;
+                background: color-mix(in oklab, var(--color-base-300) 55%, transparent);
+                border-radius: 13px;
+                padding: 4px;
+            }
+            .seg button {
+                flex: 1;
+                border: 0;
+                background: transparent;
+                padding: 9px 6px;
+                border-radius: 10px;
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--ink-60);
+                transition: all 0.15s ease;
+            }
+            .seg button.on {
+                background: var(--color-base-100);
+                box-shadow: 0 2px 8px -2px oklch(0.18 0.02 268 / 0.25);
+            }
+
+            /* Per-type dynamic color via --tc */
+            [data-type='expense'] {
+                --tc: var(--color-error);
+            }
+            [data-type='income'] {
+                --tc: var(--color-success);
+            }
+            [data-type='transfer'] {
+                --tc: var(--color-info);
+            }
+            .tc-text {
+                color: var(--tc);
+            }
+            .tc-soft {
+                background: color-mix(in oklab, var(--tc) 13%, transparent);
+                color: var(--tc);
+            }
+            .tc-fill {
+                background: var(--tc);
+                color: var(--color-primary-content);
+            }
+            .tc-fill:hover {
+                filter: brightness(1.12);
+            }
+
+            /* Picker row value (custom-select look) */
+            .pick {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                width: 100%;
+                padding: 6px 0;
+                background: transparent;
+                border: 0;
+                text-align: left;
+                font-size: 14px;
+                font-weight: 500;
+            }
+            .pick .chev {
+                color: var(--ink-40);
+                flex: none;
+            }
+            .pick .lead {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                min-width: 0;
+            }
+            .avatar {
+                width: 30px;
+                height: 30px;
+                border-radius: 10px;
+                flex: none;
+                display: grid;
+                place-items: center;
+                font-size: 11px;
+                font-weight: 700;
+            }
+
+            /* ══════════ DESIGN A — Keypad ══════════ */
+            .a-amount-zone {
+                padding: 18px 6px 14px;
+                text-align: center;
+            }
+            .a-amount {
+                font-family: var(--font-mono);
+                font-size: 40px;
+                font-weight: 600;
+                letter-spacing: -0.02em;
+                line-height: 1.1;
+                margin-top: 4px;
+            }
+            .a-context {
+                display: flex;
+                justify-content: center;
+                margin-top: 10px;
+            }
+            .a-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 12px;
+                font-weight: 600;
+                padding: 5px 11px;
+                border-radius: 999px;
+            }
+            .a-fields {
+                margin-top: 14px;
+            }
+            .a-input,
+            .a-input-mid {
+                width: 100%;
+                border: 0;
+                background: transparent;
+                font-size: 14px;
+                font-weight: 500;
+                padding: 4px 0;
+            }
+            .a-input::placeholder,
+            .a-input-mid::placeholder {
+                color: color-mix(in oklab, var(--color-base-content) 30%, transparent);
+            }
+            .keypad {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 9px;
+                margin-top: 16px;
+            }
+            .key {
+                height: 56px;
+                border-radius: 14px;
+                background: var(--color-base-100);
+                border: 1px solid var(--card-line);
+                font-family: var(--font-mono);
+                font-size: 19px;
+                font-weight: 600;
+                color: var(--color-base-content);
+                transition:
+                    transform 0.06s ease,
+                    background 0.12s ease;
+                display: grid;
+                place-items: center;
+            }
+            .key:hover {
+                background: var(--color-base-200);
+            }
+            .key:active {
+                transform: scale(0.94);
+                background: var(--color-base-300);
+            }
+            .key.fn {
+                font-size: 15px;
+                color: var(--ink-60);
+            }
+
+            /* ══════════ DESIGN B — Split panel ══════════ */
+            .workspace {
+                width: 100%;
+                max-width: 980px;
+                background: var(--color-base-100);
+                border: 1px solid var(--card-line);
+                border-radius: 24px;
+                overflow: hidden;
+                box-shadow: 0 30px 70px -38px oklch(0.18 0.02 268 / 0.5);
+            }
+            .ws-top {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 20px 26px;
+                border-bottom: 1px solid var(--hairline);
+            }
+            .ws-top h3 {
+                margin: 0;
+                font-size: 17px;
+                letter-spacing: -0.01em;
+            }
+            .type-cards {
+                display: flex;
+                gap: 8px;
+            }
+            .type-card {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 9px 14px;
+                border-radius: 12px;
+                border: 1px solid var(--card-line);
+                background: var(--color-base-100);
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--ink-60);
+                transition: all 0.15s ease;
+            }
+            .type-card:hover {
+                border-color: var(--tc);
+                color: var(--tc);
+            }
+            .type-card.on {
+                border-color: var(--tc);
+                background: color-mix(in oklab, var(--tc) 10%, transparent);
+                color: var(--tc);
+            }
+            .ws-grid {
+                display: grid;
+                grid-template-columns: 5fr 7fr;
+            }
+            @media (max-width: 860px) {
+                .ws-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+            .ws-left {
+                padding: 24px 26px;
+                border-right: 1px solid var(--hairline);
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+            }
+            @media (max-width: 860px) {
+                .ws-left {
+                    border-right: 0;
+                    border-bottom: 1px solid var(--hairline);
+                }
+            }
+            .ws-right {
+                padding: 24px 26px;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+            .b-amount {
+                width: 100%;
+                border: 0;
+                background: transparent;
+                font-family: var(--font-mono);
+                font-size: 44px;
+                font-weight: 600;
+                letter-spacing: -0.02em;
+                padding: 0;
+            }
+            .b-amount::placeholder {
+                color: color-mix(in oklab, var(--color-base-content) 25%, transparent);
+            }
+            .b-input {
+                width: 100%;
+                border: 1px solid var(--card-line);
+                border-radius: 12px;
+                background: var(--color-base-100);
+                font-size: 14px;
+                font-weight: 500;
+                padding: 11px 13px;
+            }
+            .b-input::placeholder {
+                color: color-mix(in oklab, var(--color-base-content) 30%, transparent);
+            }
+            .b-label {
+                display: block;
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+                color: var(--ink-40);
+                margin-bottom: 7px;
+            }
+            .acc-list {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .acc-card {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                width: 100%;
+                text-align: left;
+                padding: 11px 13px;
+                border-radius: 14px;
+                border: 1px solid var(--card-line);
+                background: var(--color-base-100);
+                transition: all 0.13s ease;
+            }
+            .acc-card:hover {
+                border-color: var(--color-secondary);
+            }
+            .acc-card.on {
+                border-color: var(--color-primary);
+                background: var(--soft-primary);
+                box-shadow: 0 0 0 1px var(--color-primary) inset;
+            }
+            .acc-card .nm {
+                font-size: 13.5px;
+                font-weight: 600;
+            }
+            .acc-card .sub {
+                font-size: 11.5px;
+                color: var(--ink-40);
+            }
+            .acc-card .bal {
+                margin-left: auto;
+                font-family: var(--font-mono);
+                font-size: 12.5px;
+                font-weight: 600;
+                color: var(--ink-60);
+                white-space: nowrap;
+            }
+            .chips {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 7px;
+            }
+            .chip {
+                border: 1px solid var(--card-line);
+                background: var(--color-base-100);
+                font-size: 12.5px;
+                font-weight: 600;
+                color: var(--ink-60);
+                padding: 7px 13px;
+                border-radius: 999px;
+                transition: all 0.13s ease;
+            }
+            .chip:hover {
+                border-color: var(--color-primary);
+                color: var(--color-primary);
+            }
+            .chip.on {
+                background: var(--color-primary);
+                border-color: var(--color-primary);
+                color: var(--color-primary-content);
+            }
+            .ws-foot {
+                position: sticky;
+                bottom: 0;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 14px;
+                padding: 15px 26px;
+                background: color-mix(in oklab, var(--color-base-100) 92%, transparent);
+                backdrop-filter: blur(8px);
+                border-top: 1px solid var(--hairline);
+            }
+            .ws-summary {
+                font-size: 13px;
+                color: var(--ink-60);
+                line-height: 1.5;
+            }
+            .ws-summary strong {
+                font-family: var(--font-mono);
+                color: var(--color-base-content);
+            }
+            .ws-actions {
+                margin-left: auto;
+                display: flex;
+                gap: 9px;
+            }
+            .transfer-cols {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+            }
+            @media (max-width: 520px) {
+                .transfer-cols {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* ══════════ DESIGN C — Account flow ══════════ */
+            .flow-card {
+                padding: 20px 18px;
+            }
+            .flow-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 16px;
+            }
+            .flow-head h4 {
+                margin: 0;
+                font-size: 15px;
+            }
+            .acc-big {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                width: 100%;
+                text-align: left;
+                padding: 14px 15px;
+                border-radius: 16px;
+                border: 1px solid var(--card-line);
+                background: var(--color-base-100);
+                transition: all 0.13s ease;
+            }
+            .acc-big:hover {
+                border-color: var(--color-secondary);
+            }
+            .acc-big.on {
+                border-color: var(--color-primary);
+                background: var(--soft-primary);
+            }
+            .acc-big .avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 13px;
+                font-size: 14px;
+            }
+            .acc-big .nm {
+                font-size: 14.5px;
+                font-weight: 600;
+            }
+            .acc-big .sub {
+                font-size: 12px;
+                color: var(--ink-40);
+            }
+            .acc-big .bal {
+                margin-left: auto;
+                text-align: right;
+                font-family: var(--font-mono);
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .acc-big .bal small {
+                display: block;
+                font-family: var(--font-sans);
+                font-weight: 600;
+                font-size: 10px;
+                letter-spacing: 0.07em;
+                color: var(--ink-40);
+            }
+            .connector {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 2px 0;
+            }
+            .connector .line {
+                width: 2px;
+                height: 16px;
+                background: var(--hairline);
+            }
+            .c-amount-wrap {
+                position: relative;
+                width: 100%;
+                display: grid;
+                place-items: center;
+            }
+            .c-amount {
+                font-family: var(--font-mono);
+                font-size: 30px;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                text-align: center;
+                border: 0;
+                background: transparent;
+                width: 100%;
+            }
+            .fee-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                font-size: 12px;
+                font-weight: 600;
+                padding: 7px 13px;
+                border-radius: 999px;
+                border: 1px dashed color-mix(in oklab, var(--tc) 55%, transparent);
+                color: var(--tc);
+                background: color-mix(in oklab, var(--tc) 7%, transparent);
+            }
+            .fee-input {
+                width: 110px;
+                border: 0;
+                background: transparent;
+                text-align: right;
+                font-family: var(--font-mono);
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--tc);
+                padding: 0;
+            }
+            .timeline {
+                display: flex;
+                gap: 12px;
+            }
+            .timeline .rail {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .timeline .dot2 {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: var(--color-primary);
+                margin-top: 4px;
+                box-shadow: 0 0 0 3px var(--soft-primary);
+            }
+            .timeline .rail-line {
+                width: 2px;
+                flex: 1;
+                background: var(--hairline);
+                margin: 4px 0;
+            }
+            .timeline .tl-body {
+                padding-bottom: 14px;
+            }
+            .timeline .tl-body:last-child {
+                padding-bottom: 0;
+            }
+
+            /* ══════════ Designs D & E — faithful ══════════ */
+            .faithful-page {
+                padding: 6px 2px 2px;
+            }
+            .pagebar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 2px 4px 12px;
+            }
+            .pagebar h4 {
+                margin: 0;
+                font-size: 16px;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+            }
+            .backrow {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 2px 2px 10px;
+            }
+            .backrow .ttl {
+                font-size: 14px;
+                font-weight: 600;
+                letter-spacing: -0.01em;
+            }
+            .btn-ghost-sq {
+                width: 36px;
+                height: 36px;
+                border-radius: 12px;
+                border: 0;
+                background: transparent;
+                color: var(--color-base-content);
+                display: grid;
+                place-items: center;
+            }
+            .btn-ghost-sq:hover {
+                background: var(--color-base-200);
+            }
+            .spacer9 {
+                width: 36px;
+            }
+            .amount-card-bar {
+                height: 4px;
+                width: 100%;
+            }
+            .bar-success {
+                background: var(--color-success);
+            }
+            .bar-error {
+                background: var(--color-error);
+            }
+            .bar-info {
+                background: var(--color-info);
+            }
+            .amount-inner {
+                padding: 16px 20px 18px;
+            }
+            .big-amount {
+                display: flex;
+                align-items: baseline;
+                gap: 6px;
+                margin-top: 4px;
+            }
+            .big-amount .cur {
+                font-family: var(--font-mono);
+                font-size: 14px;
+                font-weight: 500;
+                color: var(--ink-40);
+            }
+            .big-amount .val {
+                font-family: var(--font-mono);
+                font-weight: 500;
+                font-size: clamp(2rem, 9vw, 2.6rem);
+                line-height: 1.05;
+                letter-spacing: -0.02em;
+                border: 0;
+                background: transparent;
+                width: 100%;
+                padding: 0;
+            }
+            .big-amount .val::placeholder {
+                color: color-mix(in oklab, var(--color-base-content) 25%, transparent);
+            }
+            .frow {
+                padding: 12px 20px;
+            }
+            .frow label,
+            .frow .lbl {
+                display: block;
+            }
+            .finput {
+                width: 100%;
+                border: 0;
+                background: transparent;
+                padding: 4px 0 2px;
+                font-size: 14px;
+                font-weight: 500;
+            }
+            .finput::placeholder {
+                color: color-mix(in oklab, var(--color-base-content) 30%, transparent);
+            }
+            .fnote {
+                margin-top: 10px;
+                display: flex;
+                flex-direction: column;
+            }
+            .fnote textarea {
+                width: 100%;
+                border: 0;
+                background: transparent;
+                resize: none;
+                font-size: 14px;
+                line-height: 1.6;
+                padding: 4px 0 2px;
+            }
+            .fnote textarea::placeholder {
+                color: color-mix(in oklab, var(--color-base-content) 30%, transparent);
+            }
+            .actions-row {
+                display: flex;
+                gap: 9px;
+                margin-top: 14px;
+            }
+            .actions-row .btn {
+                flex: 1;
+            }
+
+            /* Toast (demo submit feedback) */
+            .toast {
+                position: fixed;
+                left: 50%;
+                bottom: 26px;
+                transform: translateX(-50%) translateY(20px);
+                background: var(--color-neutral);
+                color: var(--color-neutral-content);
+                font-size: 13px;
+                font-weight: 600;
+                padding: 11px 18px;
+                border-radius: 12px;
+                opacity: 0;
+                pointer-events: none;
+                transition: all 0.25s ease;
+                z-index: 99;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .toast.show {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        </style>
+    </head>
+    <body data-theme="cobalt">
+        <!-- ═══════════════ SHELL ═══════════════ -->
+        <header class="mock-header">
+            <div class="mock-header-inner">
+                <div class="mock-title">
+                    <span class="logo">
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect x="2" y="6" width="20" height="13" rx="2" />
+                            <path d="M2 10h20" />
+                            <path d="M6 15h4" />
+                        </svg>
+                    </span>
+                    FinTrack — Create Transaction &amp; Transfer Mockups
+                    <small>· theme: cobalt</small>
+                </div>
+                <nav class="dtabs" aria-label="Design switcher">
+                    <button class="dtab active" data-d="a" aria-selected="true">
+                        <span class="dot new"></span>A · Keypad
+                    </button>
+                    <button class="dtab" data-d="b">
+                        <span class="dot new"></span>B · Split Panel
+                    </button>
+                    <button class="dtab" data-d="c">
+                        <span class="dot new"></span>C · Account Flow
+                    </button>
+                    <button class="dtab" data-d="d">
+                        <span class="dot same"></span>D · Faithful Form
+                    </button>
+                    <button class="dtab" data-d="e">
+                        <span class="dot same"></span>E · Faithful Transfer
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <!-- ════════════════════════════════════════════════════════════
+     DESIGN A — KEYPAD / CALCULATOR
+     ════════════════════════════════════════════════════════════ -->
+            <section class="design active" id="d-a">
+                <div class="design-head">
+                    <span class="kicker soft-accent">New direction</span>
+                    <h2>A — Calculator Keypad Entry</h2>
+                    <p>
+                        Amount-first paradigm: an in-app numeric keypad replaces the OS keyboard, so
+                        the whole create flow never leaves the screen. A segmented type switcher
+                        re-colors the entire sheet (red = expense, green = income, blue = transfer)
+                        and swaps the minimal field set below the keypad. Transfer mode replaces the
+                        category with source → destination pills and an inline fee field.
+                    </p>
+                </div>
+                <div class="stage">
+                    <div class="phone" id="a-root" data-type="expense">
+                        <div class="seg" id="a-seg" role="tablist">
+                            <button
+                                type="button"
+                                data-t="expense"
+                                class="on"
+                                style="--tc: var(--color-error)">
+                                Pengeluaran
+                            </button>
+                            <button
+                                type="button"
+                                data-t="income"
+                                style="--tc: var(--color-success)">
+                                Pemasukan
+                            </button>
+                            <button type="button" data-t="transfer" style="--tc: var(--color-info)">
+                                Transfer
+                            </button>
+                        </div>
+
+                        <div class="a-amount-zone">
+                            <div class="microlabel" id="a-amount-label">Nominal Pengeluaran</div>
+                            <div class="a-amount tc-text" id="a-amount">Rp 0</div>
+                            <div class="a-context">
+                                <span class="a-chip tc-soft" id="a-context-chip">
+                                    <svg
+                                        width="13"
+                                        height="13"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2.2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <rect x="2" y="6" width="20" height="13" rx="2" />
+                                        <path d="M2 10h20" />
+                                    </svg>
+                                    <span id="a-context-text">dari BCA Savings</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="fcard">
+                            <div class="frow">
+                                <span class="microlabel" id="a-desc-label"
+                                    >Merchant / Penerima</span
+                                >
+                                <input
+                                    class="a-input"
+                                    id="a-desc"
+                                    type="text"
+                                    placeholder="Contoh: Warteg Bu Sri, Tokopedia" />
+                            </div>
+                            <div class="fdiv"></div>
+                            <div class="frow" style="display: flex; gap: 14px">
+                                <div style="flex: 1">
+                                    <span class="microlabel" id="a-acc-label">Akun Sumber</span>
+                                    <button type="button" class="pick">
+                                        <span class="lead">
+                                            <span class="soft-primary avatar">BC</span>
+                                            <span id="a-acc-text">BCA Savings</span>
+                                        </span>
+                                        <svg
+                                            class="chev"
+                                            width="15"
+                                            height="15"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2.2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="m6 9 6 6 6-6" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div
+                                    style="
+                                        width: 1px;
+                                        background: var(--hairline);
+                                        margin: 4px 0;
+                                    "></div>
+                                <div style="flex: 1" id="a-cat-wrap">
+                                    <span class="microlabel">Kategori</span>
+                                    <button type="button" class="pick">
+                                        <span class="lead">
+                                            <span class="soft-error avatar">
+                                                <svg
+                                                    width="14"
+                                                    height="14"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    stroke-width="2.2"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round">
+                                                    <path d="M12 2 2 7l10 5 10-5-10-5Z" />
+                                                    <path d="m2 17 10 5 10-5" />
+                                                    <path d="m2 12 10 5 10-5" />
+                                                </svg>
+                                            </span>
+                                            <span id="a-cat-text">Makanan &amp; Minuman</span>
+                                        </span>
+                                        <svg
+                                            class="chev"
+                                            width="15"
+                                            height="15"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2.2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="m6 9 6 6 6-6" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- transfer-only rows -->
+                            <div id="a-transfer-extra" hidden>
+                                <div class="fdiv"></div>
+                                <div class="frow" style="display: flex; gap: 14px">
+                                    <div style="flex: 1">
+                                        <span class="microlabel">Akun Asal (Dari)</span>
+                                        <button type="button" class="pick">
+                                            <span class="lead"
+                                                ><span class="soft-primary avatar">BC</span
+                                                ><span>BCA Savings</span></span
+                                            >
+                                            <svg
+                                                class="chev"
+                                                width="15"
+                                                height="15"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2.2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="m6 9 6 6 6-6" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div
+                                        style="
+                                            width: 1px;
+                                            background: var(--hairline);
+                                            margin: 4px 0;
+                                        "></div>
+                                    <div style="flex: 1">
+                                        <span class="microlabel">Akun Tujuan</span>
+                                        <button type="button" class="pick">
+                                            <span class="lead"
+                                                ><span class="soft-success avatar">GP</span
+                                                ><span>GoPay</span></span
+                                            >
+                                            <svg
+                                                class="chev"
+                                                width="15"
+                                                height="15"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2.2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="m6 9 6 6 6-6" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="fdiv"></div>
+                                <div
+                                    class="frow"
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: space-between;
+                                        gap: 10px;
+                                    ">
+                                    <span class="microlabel">Biaya Transfer (opsional)</span>
+                                    <span class="t-mono t-ink40" style="font-size: 13px"
+                                        >Rp <span id="a-fee-val">0</span></span
+                                    >
+                                </div>
+                            </div>
+                            <div class="fdiv"></div>
+                            <div
+                                class="frow"
+                                style="
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: space-between;
+                                ">
+                                <span class="microlabel">Tanggal</span>
+                                <button type="button" class="pick" style="width: auto; gap: 6px">
+                                    <span style="font-size: 13.5px">Hari ini · 14 Sep 2026</span>
+                                    <svg
+                                        class="chev"
+                                        width="15"
+                                        height="15"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                                        <path d="M16 2v4M8 2v4M3 10h18" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="keypad" id="a-keypad" aria-label="Keypad angka">
+                            <button type="button" class="key" data-k="1">1</button>
+                            <button type="button" class="key" data-k="2">2</button>
+                            <button type="button" class="key" data-k="3">3</button>
+                            <button type="button" class="key fn" data-k="back" aria-label="Hapus">
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" />
+                                    <path d="m12 9 6 6" />
+                                    <path d="m18 9-6 6" />
+                                </svg>
+                            </button>
+                            <button type="button" class="key" data-k="4">4</button>
+                            <button type="button" class="key" data-k="5">5</button>
+                            <button type="button" class="key" data-k="6">6</button>
+                            <button type="button" class="key fn" data-k="000">000</button>
+                            <button type="button" class="key" data-k="7">7</button>
+                            <button type="button" class="key" data-k="8">8</button>
+                            <button type="button" class="key" data-k="9">9</button>
+                            <button type="button" class="key fn" data-k="c">C</button>
+                            <button
+                                type="button"
+                                class="key"
+                                data-k="0"
+                                style="grid-column: span 2">
+                                0
+                            </button>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="tc-fill btn btn-block"
+                            id="a-submit"
+                            style="margin-top: 14px">
+                            Tambah Pengeluaran
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════════════════════════════════
+     DESIGN B — DESKTOP SPLIT PANEL
+     ════════════════════════════════════════════════════════════ -->
+            <section class="design" id="d-b">
+                <div class="design-head">
+                    <span class="kicker soft-accent">New direction</span>
+                    <h2>B — Desktop Split-Panel Workspace</h2>
+                    <p>
+                        Built for wide screens: the left column carries the emotional core (type,
+                        amount, description, notes); the right column carries structured pickers —
+                        account cards with visible balances and category chips. A sticky summary
+                        footer does the transfer math live (amount + fee = total out), eliminating
+                        the most common transfer mistake. Transfers additionally render twin
+                        source/destination lists.
+                    </p>
+                </div>
+                <div class="stage">
+                    <div class="workspace" id="b-root" data-type="expense">
+                        <div class="ws-top">
+                            <h3>Transaksi Baru</h3>
+                            <div class="type-cards" id="b-types">
+                                <button
+                                    type="button"
+                                    class="type-card on"
+                                    data-t="expense"
+                                    style="--tc: var(--color-error)">
+                                    <svg
+                                        width="15"
+                                        height="15"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2.2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M12 19V5" />
+                                        <path d="m5 12 7 7 7-7" />
+                                    </svg>
+                                    Pengeluaran
+                                </button>
+                                <button
+                                    type="button"
+                                    class="type-card"
+                                    data-t="income"
+                                    style="--tc: var(--color-success)">
+                                    <svg
+                                        width="15"
+                                        height="15"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2.2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M12 5v14" />
+                                        <path d="m19 12-7 7-7-7" />
+                                    </svg>
+                                    Pemasukan
+                                </button>
+                                <button
+                                    type="button"
+                                    class="type-card"
+                                    data-t="transfer"
+                                    style="--tc: var(--color-info)">
+                                    <svg
+                                        width="15"
+                                        height="15"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2.2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M8 3 4 7l4 4" />
+                                        <path d="M4 7h16" />
+                                        <path d="m16 21 4-4-4-4" />
+                                        <path d="M20 17H4" />
+                                    </svg>
+                                    Transfer
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="ws-grid">
+                            <div class="ws-left">
+                                <div>
+                                    <span class="microlabel" id="b-amount-label"
+                                        >Nominal Transaksi</span
+                                    >
+                                    <div style="display: flex; align-items: baseline; gap: 8px">
+                                        <span class="t-mono t-ink40" style="font-size: 15px"
+                                            >Rp</span
+                                        >
+                                        <input
+                                            class="b-amount tc-text"
+                                            id="b-amount"
+                                            type="text"
+                                            inputmode="numeric"
+                                            value="85.000"
+                                            placeholder="0" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="b-label" for="b-desc" id="b-desc-label"
+                                        >Merchant / Penerima</label
+                                    >
+                                    <input
+                                        class="b-input"
+                                        id="b-desc"
+                                        type="text"
+                                        placeholder="Contoh: Warteg Bu Sri, Tokopedia" />
+                                </div>
+                                <div
+                                    style="
+                                        display: grid;
+                                        grid-template-columns: 1fr 1fr;
+                                        gap: 12px;
+                                    ">
+                                    <div>
+                                        <label class="b-label" for="b-date">Tanggal</label>
+                                        <input
+                                            class="b-input"
+                                            id="b-date"
+                                            type="text"
+                                            value="14 Sep 2026" />
+                                    </div>
+                                    <div>
+                                        <label class="b-label" for="b-fee">Biaya Transfer</label>
+                                        <input
+                                            class="b-input"
+                                            id="b-fee"
+                                            type="text"
+                                            inputmode="numeric"
+                                            value="2.500"
+                                            placeholder="0" />
+                                    </div>
+                                </div>
+                                <div id="b-notes-wrap">
+                                    <label class="b-label" for="b-notes">Catatan</label>
+                                    <textarea
+                                        class="b-input"
+                                        id="b-notes"
+                                        rows="3"
+                                        placeholder="Tambahkan catatan detail transaksi di sini..."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="ws-right">
+                                <!-- expense / income : single account list + category chips -->
+                                <div id="b-plain-panel">
+                                    <div>
+                                        <span class="b-label" id="b-acc-label">Akun Sumber</span>
+                                        <div class="acc-list" id="b-acc-list">
+                                            <button
+                                                type="button"
+                                                class="acc-card on"
+                                                data-name="BCA Savings"
+                                                data-bal="12500000">
+                                                <span class="soft-primary avatar">BC</span>
+                                                <span
+                                                    ><span class="nm">BCA Savings</span><br /><span
+                                                        class="sub"
+                                                        >··4821</span
+                                                    ></span
+                                                >
+                                                <span class="bal">Rp 12.500.000</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="acc-card"
+                                                data-name="Mandiri"
+                                                data-bal="4750000">
+                                                <span class="soft-info avatar">MD</span>
+                                                <span
+                                                    ><span class="nm">Mandiri</span><br /><span
+                                                        class="sub"
+                                                        >··1094</span
+                                                    ></span
+                                                >
+                                                <span class="bal">Rp 4.750.000</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="acc-card"
+                                                data-name="GoPay"
+                                                data-bal="850000">
+                                                <span class="soft-success avatar">GP</span>
+                                                <span
+                                                    ><span class="nm">GoPay</span><br /><span
+                                                        class="sub"
+                                                        >0812··</span
+                                                    ></span
+                                                >
+                                                <span class="bal">Rp 850.000</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="acc-card"
+                                                data-name="Cash Wallet"
+                                                data-bal="1200000">
+                                                <span class="soft-warning avatar">
+                                                    <svg
+                                                        width="14"
+                                                        height="14"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        stroke-width="2.2"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round">
+                                                        <path d="M2 7h20v12H2z" />
+                                                        <path d="M16 13h3" />
+                                                    </svg>
+                                                </span>
+                                                <span
+                                                    ><span class="nm">Cash Wallet</span><br /><span
+                                                        class="sub"
+                                                        >Tunai</span
+                                                    ></span
+                                                >
+                                                <span class="bal">Rp 1.200.000</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span class="b-label">Kategori</span>
+                                        <div class="chips" id="b-cats-expense">
+                                            <button type="button" class="chip on">
+                                                Makanan &amp; Minuman
+                                            </button>
+                                            <button type="button" class="chip">Transportasi</button>
+                                            <button type="button" class="chip">Belanja</button>
+                                            <button type="button" class="chip">Hiburan</button>
+                                            <button type="button" class="chip">
+                                                Tagihan &amp; Utilitas
+                                            </button>
+                                            <button type="button" class="chip">Kesehatan</button>
+                                            <button type="button" class="chip">Lainnya</button>
+                                        </div>
+                                        <div class="chips" id="b-cats-income" hidden>
+                                            <button type="button" class="chip on">Gaji</button>
+                                            <button type="button" class="chip">Freelance</button>
+                                            <button type="button" class="chip">Bonus</button>
+                                            <button type="button" class="chip">Investasi</button>
+                                            <button type="button" class="chip">Hadiah</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- transfer : twin lists -->
+                                <div id="b-transfer-panel" hidden>
+                                    <div class="transfer-cols">
+                                        <div>
+                                            <span class="b-label">Akun Asal (Dari)</span>
+                                            <div class="acc-list" id="b-src-list">
+                                                <button
+                                                    type="button"
+                                                    class="acc-card on"
+                                                    data-name="BCA Savings">
+                                                    <span class="soft-primary avatar">BC</span>
+                                                    <span
+                                                        ><span class="nm">BCA Savings</span
+                                                        ><br /><span class="sub">··4821</span></span
+                                                    >
+                                                    <span class="bal">Rp 12.500.000</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="acc-card"
+                                                    data-name="Mandiri">
+                                                    <span class="soft-info avatar">MD</span>
+                                                    <span
+                                                        ><span class="nm">Mandiri</span><br /><span
+                                                            class="sub"
+                                                            >··1094</span
+                                                        ></span
+                                                    >
+                                                    <span class="bal">Rp 4.750.000</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="acc-card"
+                                                    data-name="Cash Wallet">
+                                                    <span class="soft-warning avatar">
+                                                        <svg
+                                                            width="14"
+                                                            height="14"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            stroke-width="2.2"
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round">
+                                                            <path d="M2 7h20v12H2z" />
+                                                            <path d="M16 13h3" />
+                                                        </svg>
+                                                    </span>
+                                                    <span
+                                                        ><span class="nm">Cash Wallet</span
+                                                        ><br /><span class="sub">Tunai</span></span
+                                                    >
+                                                    <span class="bal">Rp 1.200.000</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="b-label">Akun Tujuan</span>
+                                            <div class="acc-list" id="b-dst-list">
+                                                <button
+                                                    type="button"
+                                                    class="acc-card on"
+                                                    data-name="GoPay">
+                                                    <span class="soft-success avatar">GP</span>
+                                                    <span
+                                                        ><span class="nm">GoPay</span><br /><span
+                                                            class="sub"
+                                                            >0812··</span
+                                                        ></span
+                                                    >
+                                                    <span class="bal">Rp 850.000</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="acc-card"
+                                                    data-name="OVO">
+                                                    <span class="soft-accent avatar">OV</span>
+                                                    <span
+                                                        ><span class="nm">OVO</span><br /><span
+                                                            class="sub"
+                                                            >0857··</span
+                                                        ></span
+                                                    >
+                                                    <span class="bal">Rp 420.000</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="acc-card"
+                                                    data-name="Mandiri">
+                                                    <span class="soft-info avatar">MD</span>
+                                                    <span
+                                                        ><span class="nm">Mandiri</span><br /><span
+                                                            class="sub"
+                                                            >··1094</span
+                                                        ></span
+                                                    >
+                                                    <span class="bal">Rp 4.750.000</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="b-label" for="b-transfer-desc"
+                                            >Deskripsi Transfer</label
+                                        >
+                                        <input
+                                            class="b-input"
+                                            id="b-transfer-desc"
+                                            type="text"
+                                            placeholder="Contoh: Kirim uang bulanan, Top-up wallet" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ws-foot">
+                            <div class="ws-summary" id="b-summary"></div>
+                            <div class="ws-actions">
+                                <button type="button" class="btn-light btn">Batal</button>
+                                <button type="button" class="btn btn-primary" id="b-submit">
+                                    Tambah Pengeluaran
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════════════════════════════════
+     DESIGN C — ACCOUNT-TO-ACCOUNT FLOW
+     ════════════════════════════════════════════════════════════ -->
+            <section class="design" id="d-c">
+                <div class="design-head">
+                    <span class="kicker soft-accent">New direction</span>
+                    <h2>C — Money-Movement Visualization</h2>
+                    <p>
+                        Transfer modeled spatially: two account cards connected by a rail with the
+                        editable amount sitting inside the connector — you literally watch the money
+                        move. An optional fee chip plugs into the flow, and a timeline rail carries
+                        date and description. A toggle degrades gracefully to a compact card for
+                        plain expense/income entry.
+                    </p>
+                </div>
+                <div class="stage">
+                    <div class="phone" id="c-root" data-type="transfer">
+                        <div class="flow-card">
+                            <div class="flow-head">
+                                <h4 id="c-title">Transfer Antar Akun</h4>
+                                <div class="seg" id="c-mode" style="width: 190px">
+                                    <button type="button" class="on" data-m="transfer">
+                                        Transfer
+                                    </button>
+                                    <button type="button" data-m="plain">Biasa</button>
+                                </div>
+                            </div>
+
+                            <!-- ══ TRANSFER STATE ══ -->
+                            <div id="c-transfer">
+                                <button type="button" class="acc-big on">
+                                    <span class="soft-primary avatar">BC</span>
+                                    <span
+                                        ><span class="nm">BCA Savings</span><br /><span class="sub"
+                                            >Sumber · ··4821</span
+                                        ></span
+                                    >
+                                    <span class="bal"><small>SALDO</small>Rp 12.500.000</span>
+                                </button>
+
+                                <div class="connector">
+                                    <div class="line"></div>
+                                    <div class="c-amount-wrap">
+                                        <div style="text-align: center">
+                                            <div class="microlabel" style="margin-bottom: 2px">
+                                                Nominal Transfer
+                                            </div>
+                                            <input
+                                                class="c-amount t-info"
+                                                id="c-amount"
+                                                type="text"
+                                                inputmode="numeric"
+                                                value="2.500.000" />
+                                        </div>
+                                    </div>
+                                    <svg
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2.4"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="t-info"
+                                        style="margin: 2px 0">
+                                        <path d="M12 5v14" />
+                                        <path d="m19 12-7 7-7-7" />
+                                    </svg>
+                                    <div class="line"></div>
+                                </div>
+
+                                <button type="button" class="acc-big">
+                                    <span class="soft-success avatar">GP</span>
+                                    <span
+                                        ><span class="nm">GoPay</span><br /><span class="sub"
+                                            >Tujuan · 0812··</span
+                                        ></span
+                                    >
+                                    <span class="bal"><small>SALDO</small>Rp 850.000</span>
+                                </button>
+
+                                <div
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        gap: 10px;
+                                        margin: 14px 0 4px;
+                                    ">
+                                    <span class="fee-chip">
+                                        <svg
+                                            width="13"
+                                            height="13"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2.4"
+                                            stroke-linecap="round">
+                                            <path d="M12 5v14M5 12h14" />
+                                        </svg>
+                                        Biaya
+                                        <input
+                                            class="fee-input"
+                                            id="c-fee"
+                                            type="text"
+                                            inputmode="numeric"
+                                            value="2.500" />
+                                    </span>
+                                    <span class="t-mono t-ink40" style="font-size: 12px"
+                                        >Total keluar
+                                        <strong
+                                            id="c-total"
+                                            style="color: var(--color-base-content)"
+                                            >Rp 2.502.500</strong
+                                        ></span
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- ══ PLAIN (expense/income) STATE ══ -->
+                            <div id="c-plain" hidden>
+                                <div class="seg" id="c-plain-type" style="margin-bottom: 14px">
+                                    <button
+                                        type="button"
+                                        class="on"
+                                        data-t="expense"
+                                        style="--tc: var(--color-error)">
+                                        Pengeluaran
+                                    </button>
+                                    <button
+                                        type="button"
+                                        data-t="income"
+                                        style="--tc: var(--color-success)">
+                                        Pemasukan
+                                    </button>
+                                </div>
+                                <div style="text-align: center; padding: 6px 0 14px">
+                                    <div class="microlabel" id="c-plain-label">
+                                        Nominal Pengeluaran
+                                    </div>
+                                    <input
+                                        class="c-amount tc-text"
+                                        id="c-plain-amount"
+                                        type="text"
+                                        inputmode="numeric"
+                                        value="85.000" />
+                                </div>
+                                <div class="fcard">
+                                    <div class="frow">
+                                        <span class="microlabel" id="c-plain-desc-label"
+                                            >Merchant / Penerima</span
+                                        >
+                                        <input
+                                            class="finput"
+                                            type="text"
+                                            placeholder="Contoh: Warteg Bu Sri, Tokopedia" />
+                                    </div>
+                                    <div class="fdiv"></div>
+                                    <div class="frow">
+                                        <span class="microlabel">Akun</span>
+                                        <button type="button" class="pick">
+                                            <span class="lead"
+                                                ><span class="soft-primary avatar">BC</span
+                                                ><span>BCA Savings</span></span
+                                            >
+                                            <svg
+                                                class="chev"
+                                                width="15"
+                                                height="15"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2.2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="m6 9 6 6 6-6" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="fdiv"></div>
+                                    <div class="frow">
+                                        <span class="microlabel">Kategori</span>
+                                        <button type="button" class="pick">
+                                            <span class="lead"
+                                                ><span class="soft-error avatar">
+                                                    <svg
+                                                        width="14"
+                                                        height="14"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        stroke-width="2.2"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round">
+                                                        <path d="M12 2 2 7l10 5 10-5-10-5Z" />
+                                                        <path d="m2 17 10 5 10-5" />
+                                                        <path d="m2 12 10 5 10-5" />
+                                                    </svg> </span
+                                                ><span>Makanan &amp; Minuman</span></span
+                                            >
+                                            <svg
+                                                class="chev"
+                                                width="15"
+                                                height="15"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2.2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="m6 9 6 6 6-6" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- shared timeline -->
+                            <div class="timeline" style="margin-top: 18px">
+                                <div class="rail">
+                                    <div class="dot2"></div>
+                                    <div class="rail-line"></div>
+                                </div>
+                                <div class="tl-body" style="flex: 1">
+                                    <div class="microlabel">Tanggal</div>
+                                    <button type="button" class="pick" style="padding: 2px 0">
+                                        <span style="font-size: 13.5px"
+                                            >Hari ini · 14 Sep 2026</span
+                                        >
+                                        <svg
+                                            class="chev"
+                                            width="15"
+                                            height="15"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                                            <path d="M16 2v4M8 2v4M3 10h18" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="timeline">
+                                <div class="rail">
+                                    <div
+                                        class="dot2"
+                                        style="
+                                            background: var(--color-secondary);
+                                            box-shadow: 0 0 0 3px
+                                                color-mix(
+                                                    in oklab,
+                                                    var(--color-secondary) 20%,
+                                                    transparent
+                                                );
+                                        "></div>
+                                </div>
+                                <div class="tl-body" style="flex: 1">
+                                    <div class="microlabel" id="c-tl-desc-label">Deskripsi</div>
+                                    <input
+                                        class="finput"
+                                        type="text"
+                                        placeholder="Contoh: Kirim uang bulanan"
+                                        style="padding: 2px 0" />
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="tc-fill btn btn-block"
+                                id="c-submit"
+                                style="margin-top: 16px">
+                                Kirim Sekarang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════════════════════════════════
+     DESIGN D — FAITHFUL: create page + transaction-form (1:1)
+     ════════════════════════════════════════════════════════════ -->
+            <section class="design" id="d-d">
+                <div class="design-head">
+                    <span class="kicker soft-primary">Follows codebase</span>
+                    <h2>D — Faithful Recreation: Create Transaction</h2>
+                    <p>
+                        1:1 recreation of <code>pages/transactions/create.svelte</code> +
+                        <code>transaction-form.svelte</code>: the Income/Expense/Transfer tabs,
+                        back-header row, accent-bar amount card with uppercase micro-labels,
+                        iOS-style inset-divided detail rows, notes card, and Batal/submit row. The
+                        tabs are live — switching them re-renders title, accent color, and labels
+                        exactly like the real <code>{#key activeTab}</code> swap. Category stays
+                        visible in transfer mode, matching current behavior.
+                    </p>
+                </div>
+                <div class="stage">
+                    <div class="phone">
+                        <div class="faithful-page" id="d-root" data-type="expense">
+                            <div class="pagebar">
+                                <h4>New Transaction</h4>
+                                <span
+                                    class="soft-primary avatar"
+                                    style="width: 32px; height: 32px; border-radius: 10px">
+                                    <svg
+                                        width="15"
+                                        height="15"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2.2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M12 2 2 7l10 5 10-5-10-5Z" />
+                                        <path d="m2 17 10 5 10-5" />
+                                        <path d="m2 12 10 5 10-5" />
+                                    </svg>
+                                </span>
+                            </div>
+
+                            <div class="seg" id="d-tabs">
+                                <button
+                                    type="button"
+                                    data-t="income"
+                                    style="--tc: var(--color-success)">
+                                    Income
+                                </button>
+                                <button
+                                    type="button"
+                                    data-t="expense"
+                                    class="on"
+                                    style="--tc: var(--color-error)">
+                                    Expense
+                                </button>
+                                <button
+                                    type="button"
+                                    data-t="transfer"
+                                    style="--tc: var(--color-info)">
+                                    Transfer
+                                </button>
+                            </div>
+
+                            <div style="margin-top: 16px">
+                                <div class="backrow">
+                                    <button type="button" class="btn-ghost-sq" aria-label="Kembali">
+                                        <svg
+                                            width="20"
+                                            height="20"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M19 12H5" />
+                                            <path d="m12 19-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <span class="ttl" id="d-title">Tambah Pengeluaran</span>
+                                    <div class="spacer9"></div>
+                                </div>
+
+                                <!-- Amount card -->
+                                <div class="fcard">
+                                    <div class="amount-card-bar bar-error" id="d-bar"></div>
+                                    <div class="amount-inner">
+                                        <p class="microlabel" style="margin: 0">
+                                            Nominal Transaksi
+                                        </p>
+                                        <div class="big-amount">
+                                            <span class="cur">Rp</span>
+                                            <input
+                                                class="val tc-text"
+                                                id="d-amount"
+                                                type="text"
+                                                inputmode="numeric"
+                                                value="85.000"
+                                                placeholder="0" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Details card -->
+                                <div class="fcard" style="margin-top: 10px">
+                                    <div class="frow">
+                                        <label class="microlabel" for="d-desc" id="d-desc-label"
+                                            >Merchant / Penerima</label
+                                        >
+                                        <input
+                                            class="finput"
+                                            id="d-desc"
+                                            type="text"
+                                            placeholder="Contoh: Warteg Bu Sri, Tokopedia" />
+                                    </div>
+                                    <div class="fdiv"></div>
+                                    <div class="frow">
+                                        <span class="microlabel" id="d-acc-label">Akun Sumber</span>
+                                        <button type="button" class="pick">
+                                            <span class="lead"
+                                                ><span class="soft-primary avatar">BC</span
+                                                ><span>BCA Savings</span></span
+                                            >
+                                            <svg
+                                                class="chev"
+                                                width="15"
+                                                height="15"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2.2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="m6 9 6 6 6-6" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <!-- transfer-only -->
+                                    <div id="d-dest" hidden>
+                                        <div class="fdiv"></div>
+                                        <div class="frow">
+                                            <span class="microlabel">Akun Tujuan</span>
+                                            <button type="button" class="pick">
+                                                <span class="lead"
+                                                    ><span class="soft-success avatar">GP</span
+                                                    ><span>GoPay</span></span
+                                                >
+                                                <svg
+                                                    class="chev"
+                                                    width="15"
+                                                    height="15"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    stroke-width="2.2"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round">
+                                                    <path d="m6 9 6 6 6-6" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="fdiv"></div>
+                                        <div class="frow">
+                                            <span class="microlabel"
+                                                >Biaya Transfer (opsional)</span
+                                            >
+                                            <input
+                                                class="finput t-mono"
+                                                type="text"
+                                                inputmode="numeric"
+                                                placeholder="0" />
+                                        </div>
+                                    </div>
+                                    <div class="fdiv"></div>
+                                    <div class="frow">
+                                        <span class="microlabel">Kategori</span>
+                                        <button type="button" class="pick">
+                                            <span class="lead"
+                                                ><span class="soft-error avatar">
+                                                    <svg
+                                                        width="14"
+                                                        height="14"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        stroke-width="2.2"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round">
+                                                        <path d="M12 2 2 7l10 5 10-5-10-5Z" />
+                                                        <path d="m2 17 10 5 10-5" />
+                                                        <path d="m2 12 10 5 10-5" />
+                                                    </svg> </span
+                                                ><span id="d-cat-text"
+                                                    >Makanan &amp; Minuman</span
+                                                ></span
+                                            >
+                                            <svg
+                                                class="chev"
+                                                width="15"
+                                                height="15"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2.2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="m6 9 6 6 6-6" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="fdiv"></div>
+                                    <div class="frow">
+                                        <label class="microlabel" for="d-date">Tanggal</label>
+                                        <button type="button" class="pick">
+                                            <span class="lead"
+                                                ><span style="font-size: 13.5px"
+                                                    >14 Sep 2026</span
+                                                ></span
+                                            >
+                                            <svg
+                                                class="chev"
+                                                width="15"
+                                                height="15"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" />
+                                                <path d="M16 2v4M8 2v4M3 10h18" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Notes card -->
+                                <div
+                                    class="fcard fnote"
+                                    style="margin-top: 10px; border-radius: 16px">
+                                    <div class="frow" style="padding-bottom: 14px">
+                                        <label class="microlabel" for="d-notes">Catatan</label>
+                                        <textarea
+                                            id="d-notes"
+                                            rows="2"
+                                            placeholder="Tambahkan catatan detail transaksi di sini..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="actions-row">
+                                    <button type="button" class="btn-light btn">Batal</button>
+                                    <button type="button" class="btn btn-primary" id="d-submit">
+                                        Tambah Pengeluaran
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════════════════════════════════
+     DESIGN E — FAITHFUL: transfer-form (1:1, standalone)
+     ════════════════════════════════════════════════════════════ -->
+            <section class="design" id="d-e">
+                <div class="design-head">
+                    <span class="kicker soft-primary">Follows codebase</span>
+                    <h2>E — Faithful Recreation: Transfer Form</h2>
+                    <p>
+                        1:1 recreation of <code>transfer-form.svelte</code> in its create context:
+                        standalone form with no tabs and — matching the real component —
+                        <strong>no category row</strong>. Info-blue accent bar, "NOMINAL TRANSFER"
+                        label, and the exact row order: Deskripsi Transfer → Akun Asal (Dari) → Akun
+                        Tujuan → Biaya Transfer (opsional) → Tanggal.
+                    </p>
+                </div>
+                <div class="stage">
+                    <div class="phone">
+                        <div class="faithful-page" data-type="transfer">
+                            <div class="backrow" style="padding-top: 6px">
+                                <button type="button" class="btn-ghost-sq" aria-label="Kembali">
+                                    <svg
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M19 12H5" />
+                                        <path d="m12 19-7-7 7-7" />
+                                    </svg>
+                                </button>
+                                <span class="ttl">Tambah Transfer</span>
+                                <div class="spacer9"></div>
+                            </div>
+
+                            <!-- Amount card -->
+                            <div class="fcard">
+                                <div class="amount-card-bar bar-info"></div>
+                                <div class="amount-inner">
+                                    <p class="microlabel" style="margin: 0">Nominal Transfer</p>
+                                    <div class="big-amount">
+                                        <span class="cur">Rp</span>
+                                        <input
+                                            class="val t-info"
+                                            type="text"
+                                            inputmode="numeric"
+                                            value="2.500.000"
+                                            placeholder="0" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Details card -->
+                            <div class="fcard" style="margin-top: 10px">
+                                <div class="frow">
+                                    <label class="microlabel" for="e-desc"
+                                        >Deskripsi Transfer</label
+                                    >
+                                    <input
+                                        class="finput"
+                                        id="e-desc"
+                                        type="text"
+                                        placeholder="Contoh: Kirim uang bulanan" />
+                                </div>
+                                <div class="fdiv"></div>
+                                <div class="frow">
+                                    <span class="microlabel">Akun Asal (Dari)</span>
+                                    <button type="button" class="pick">
+                                        <span class="lead"
+                                            ><span class="soft-primary avatar">BC</span
+                                            ><span>BCA Savings</span></span
+                                        >
+                                        <svg
+                                            class="chev"
+                                            width="15"
+                                            height="15"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2.2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="m6 9 6 6 6-6" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="fdiv"></div>
+                                <div class="frow">
+                                    <span class="microlabel">Akun Tujuan</span>
+                                    <button type="button" class="pick">
+                                        <span class="lead"
+                                            ><span class="soft-success avatar">GP</span
+                                            ><span>GoPay</span></span
+                                        >
+                                        <svg
+                                            class="chev"
+                                            width="15"
+                                            height="15"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2.2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="m6 9 6 6 6-6" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="fdiv"></div>
+                                <div class="frow">
+                                    <span class="microlabel">Biaya Transfer (opsional)</span>
+                                    <input
+                                        class="finput t-mono"
+                                        type="text"
+                                        inputmode="numeric"
+                                        value="2.500"
+                                        placeholder="0" />
+                                </div>
+                                <div class="fdiv"></div>
+                                <div class="frow">
+                                    <label class="microlabel" for="e-date">Tanggal</label>
+                                    <button type="button" class="pick">
+                                        <span class="lead"
+                                            ><span style="font-size: 13.5px"
+                                                >14 Sep 2026</span
+                                            ></span
+                                        >
+                                        <svg
+                                            class="chev"
+                                            width="15"
+                                            height="15"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                                            <path d="M16 2v4M8 2v4M3 10h18" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="actions-row">
+                                <button type="button" class="btn-light btn">Batal</button>
+                                <button type="button" class="btn btn-primary">
+                                    Tambah Transfer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="toast" id="toast">
+            <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+            </svg>
+            <span id="toast-msg">Draft disimpan (mockup demo)</span>
+        </div>
+
+        <script>
+            /* ═══════════ Shell: design switcher ═══════════ */
+            const dtabs = document.querySelectorAll('.dtab');
+            const designs = document.querySelectorAll('.design');
+            dtabs.forEach((tab) => {
+                tab.addEventListener('click', () => {
+                    dtabs.forEach((t) => {
+                        t.classList.remove('active');
+                        t.setAttribute('aria-selected', 'false');
+                    });
+                    tab.classList.add('active');
+                    tab.setAttribute('aria-selected', 'true');
+                    designs.forEach((s) => s.classList.remove('active'));
+                    document.getElementById('d-' + tab.dataset.d).classList.add('active');
+                    window.scrollTo({ top: 0 });
+                });
+            });
+
+            /* ═══════════ Helpers ═══════════ */
+            const fmtID = (n) => n.toLocaleString('id-ID');
+            const parseNum = (str) => parseInt(String(str).replace(/\D/g, ''), 10) || 0;
+            const TYPE_LABEL = {
+                expense: 'Pengeluaran',
+                income: 'Pemasukan',
+                transfer: 'Transfer',
+            };
+
+            let toastTimer;
+            function toast(msg) {
+                const el = document.getElementById('toast');
+                document.getElementById('toast-msg').textContent = msg;
+                el.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+            }
+
+            /* ═══════════ Design A — keypad ═══════════ */
+            (function () {
+                const root = document.getElementById('a-root');
+                let aType = 'expense';
+                let aAmt = 0;
+
+                const CFG = {
+                    expense: {
+                        amountLabel: 'Nominal Pengeluaran',
+                        descLabel: 'Merchant / Penerima',
+                        descPh: 'Contoh: Warteg Bu Sri, Tokopedia',
+                        accLabel: 'Akun Sumber',
+                        ctx: 'dari BCA Savings',
+                        submit: 'Tambah Pengeluaran',
+                        showTransfer: false,
+                    },
+                    income: {
+                        amountLabel: 'Nominal Pemasukan',
+                        descLabel: 'Pemberi Kerja / Sumber',
+                        descPh: 'Contoh: Gaji Bulanan PT Teknologi, Freelance',
+                        accLabel: 'Akun Penerima',
+                        ctx: 'ke BCA Savings',
+                        submit: 'Tambah Pemasukan',
+                        showTransfer: false,
+                    },
+                    transfer: {
+                        amountLabel: 'Nominal Transfer',
+                        descLabel: 'Deskripsi Transfer',
+                        descPh: 'Contoh: Kirim uang bulanan, Top-up wallet',
+                        accLabel: 'Akun Asal (Dari)',
+                        ctx: 'BCA → GoPay',
+                        submit: 'Tambah Transfer',
+                        showTransfer: true,
+                    },
+                };
+
+                function render() {
+                    const c = CFG[aType];
+                    root.dataset.type = aType;
+                    document.getElementById('a-amount-label').textContent = c.amountLabel;
+                    document.getElementById('a-amount').textContent = 'Rp ' + fmtID(aAmt);
+                    document.getElementById('a-desc-label').textContent = c.descLabel;
+                    document.getElementById('a-desc').placeholder = c.descPh;
+                    document.getElementById('a-acc-label').textContent = c.accLabel;
+                    document.getElementById('a-context-text').textContent = c.ctx;
+                    document.getElementById('a-submit').textContent = c.submit;
+                    document.getElementById('a-transfer-extra').hidden = !c.showTransfer;
+                    document.getElementById('a-cat-wrap').style.display = c.showTransfer
+                        ? 'none'
+                        : '';
+                    document
+                        .querySelectorAll('#a-seg button')
+                        .forEach((b) => b.classList.toggle('on', b.dataset.t === aType));
+                }
+
+                document.querySelectorAll('#a-seg button').forEach((b) => {
+                    b.addEventListener('click', () => {
+                        aType = b.dataset.t;
+                        render();
+                    });
+                });
+
+                document.getElementById('a-keypad').addEventListener('click', (e) => {
+                    const key = e.target.closest('.key');
+                    if (!key) return;
+                    const k = key.dataset.k;
+                    if (k === 'back') aAmt = Math.floor(aAmt / 10);
+                    else if (k === 'c') aAmt = 0;
+                    else if (String(aAmt).length < 12) aAmt = parseInt(String(aAmt) + k, 10);
+                    document.getElementById('a-amount').textContent = 'Rp ' + fmtID(aAmt);
+                });
+
+                document.getElementById('a-fee-val').textContent = fmtID(2500);
+                document
+                    .getElementById('a-submit')
+                    .addEventListener('click', () =>
+                        toast(
+                            'Tambah ' +
+                                TYPE_LABEL[aType] +
+                                ' — Rp ' +
+                                fmtID(aAmt) +
+                                ' (mockup demo)'
+                        )
+                    );
+                render();
+            })();
+
+            /* ═══════════ Design B — split panel ═══════════ */
+            (function () {
+                const root = document.getElementById('b-root');
+                let bType = 'expense';
+
+                const CFG = {
+                    expense: {
+                        amountLabel: 'Nominal Transaksi',
+                        descLabel: 'Merchant / Penerima',
+                        descPh: 'Contoh: Warteg Bu Sri, Tokopedia',
+                        accLabel: 'Akun Sumber',
+                        submit: 'Tambah Pengeluaran',
+                    },
+                    income: {
+                        amountLabel: 'Nominal Pemasukan',
+                        descLabel: 'Pemberi Kerja / Sumber',
+                        descPh: 'Contoh: Gaji Bulanan PT Teknologi, Freelance',
+                        accLabel: 'Akun Penerima',
+                        submit: 'Tambah Pemasukan',
+                    },
+                    transfer: {
+                        amountLabel: 'Nominal Transfer',
+                        descLabel: 'Deskripsi Transfer',
+                        descPh: 'Contoh: Kirim uang bulanan, Top-up wallet',
+                        accLabel: 'Akun Asal (Dari)',
+                        submit: 'Tambah Transfer',
+                    },
+                };
+
+                function selectedName(listId) {
+                    const el = document.querySelector('#' + listId + ' .acc-card.on');
+                    return el ? el.dataset.name : '—';
+                }
+
+                function updateSummary() {
+                    const amount = parseNum(document.getElementById('b-amount').value);
+                    const summary = document.getElementById('b-summary');
+                    if (bType === 'transfer') {
+                        const fee = parseNum(document.getElementById('b-fee').value);
+                        const src = selectedName('b-src-list');
+                        const dst = selectedName('b-dst-list');
+                        summary.innerHTML =
+                            src +
+                            ' &nbsp;→&nbsp; ' +
+                            dst +
+                            ' &nbsp;·&nbsp; <strong>Rp ' +
+                            fmtID(amount) +
+                            '</strong>' +
+                            (fee
+                                ? ' + biaya <strong>Rp ' +
+                                  fmtID(fee) +
+                                  '</strong> = total keluar <strong>Rp ' +
+                                  fmtID(amount + fee) +
+                                  '</strong>'
+                                : '');
+                    } else {
+                        const acc = selectedName('b-acc-list');
+                        summary.innerHTML =
+                            'Total <strong>Rp ' +
+                            fmtID(amount) +
+                            '</strong> · ' +
+                            (bType === 'income' ? 'masuk ke ' : 'dari ') +
+                            acc;
+                    }
+                }
+
+                function applyType() {
+                    const c = CFG[bType];
+                    root.dataset.type = bType;
+                    document.getElementById('b-amount-label').textContent = c.amountLabel;
+                    document.getElementById('b-desc-label').textContent = c.descLabel;
+                    document.getElementById('b-desc').placeholder = c.descPh;
+                    document.getElementById('b-acc-label').textContent = c.accLabel;
+                    document.getElementById('b-submit').textContent = c.submit;
+                    document.getElementById('b-transfer-panel').hidden = bType !== 'transfer';
+                    document.getElementById('b-plain-panel').hidden = bType === 'transfer';
+                    document.getElementById('b-cats-expense').hidden = bType === 'income';
+                    document.getElementById('b-cats-income').hidden = bType !== 'income';
+                    document
+                        .querySelectorAll('#b-types .type-card')
+                        .forEach((b) => b.classList.toggle('on', b.dataset.t === bType));
+                    updateSummary();
+                }
+
+                document.querySelectorAll('#b-types .type-card').forEach((b) => {
+                    b.addEventListener('click', () => {
+                        bType = b.dataset.t;
+                        applyType();
+                    });
+                });
+
+                ['b-acc-list', 'b-src-list', 'b-dst-list'].forEach((id) => {
+                    document.getElementById(id).addEventListener('click', (e) => {
+                        const card = e.target.closest('.acc-card');
+                        if (!card) return;
+                        document
+                            .querySelectorAll('#' + id + ' .acc-card')
+                            .forEach((c) => c.classList.remove('on'));
+                        card.classList.add('on');
+                        updateSummary();
+                    });
+                });
+
+                [['b-cats-expense'], ['b-cats-income']].forEach(([id]) => {
+                    document.getElementById(id).addEventListener('click', (e) => {
+                        const chip = e.target.closest('.chip');
+                        if (!chip) return;
+                        document
+                            .querySelectorAll('#' + id + ' .chip')
+                            .forEach((c) => c.classList.remove('on'));
+                        chip.classList.add('on');
+                    });
+                });
+
+                ['b-amount', 'b-fee'].forEach((id) => {
+                    const el = document.getElementById(id);
+                    el.addEventListener('input', () => {
+                        const n = parseNum(el.value);
+                        el.value = n ? fmtID(n) : '';
+                        updateSummary();
+                    });
+                });
+
+                document
+                    .getElementById('b-submit')
+                    .addEventListener('click', () => toast(CFG[bType].submit + ' (mockup demo)'));
+                applyType();
+            })();
+
+            /* ═══════════ Design C — account flow ═══════════ */
+            (function () {
+                const root = document.getElementById('c-root');
+                let cMode = 'transfer';
+                let cPlainType = 'expense';
+
+                function cUpdateTotal() {
+                    const amount = parseNum(document.getElementById('c-amount').value);
+                    const fee = parseNum(document.getElementById('c-fee').value);
+                    document.getElementById('c-total').textContent = 'Rp ' + fmtID(amount + fee);
+                }
+
+                function applyPlain() {
+                    root.dataset.type = cPlainType;
+                    const isExpense = cPlainType === 'expense';
+                    document.getElementById('c-plain-label').textContent = isExpense
+                        ? 'Nominal Pengeluaran'
+                        : 'Nominal Pemasukan';
+                    document.getElementById('c-plain-desc-label').textContent = isExpense
+                        ? 'Merchant / Penerima'
+                        : 'Pemberi Kerja / Sumber';
+                    document.getElementById('c-submit').textContent = isExpense
+                        ? 'Simpan Pengeluaran'
+                        : 'Simpan Pemasukan';
+                    document
+                        .querySelectorAll('#c-plain-type button')
+                        .forEach((b) => b.classList.toggle('on', b.dataset.t === cPlainType));
+                }
+
+                document.querySelectorAll('#c-mode button').forEach((b) => {
+                    b.addEventListener('click', () => {
+                        cMode = b.dataset.m;
+                        document
+                            .querySelectorAll('#c-mode button')
+                            .forEach((x) => x.classList.toggle('on', x === b));
+                        document.getElementById('c-transfer').hidden = cMode !== 'transfer';
+                        document.getElementById('c-plain').hidden = cMode !== 'plain';
+                        document.getElementById('c-title').textContent =
+                            cMode === 'transfer' ? 'Transfer Antar Akun' : 'Transaksi Baru';
+                        if (cMode === 'transfer') {
+                            root.dataset.type = 'transfer';
+                            document.getElementById('c-submit').textContent = 'Kirim Sekarang';
+                        } else {
+                            applyPlain();
+                        }
+                    });
+                });
+
+                document.querySelectorAll('#c-plain-type button').forEach((b) => {
+                    b.addEventListener('click', () => {
+                        cPlainType = b.dataset.t;
+                        applyPlain();
+                    });
+                });
+
+                ['c-amount', 'c-fee', 'c-plain-amount'].forEach((id) => {
+                    const el = document.getElementById(id);
+                    el.addEventListener('input', () => {
+                        const n = parseNum(el.value);
+                        el.value = n ? fmtID(n) : '';
+                        cUpdateTotal();
+                    });
+                });
+
+                document
+                    .getElementById('c-submit')
+                    .addEventListener('click', () =>
+                        toast(document.getElementById('c-submit').textContent + ' (mockup demo)')
+                    );
+                cUpdateTotal();
+                applyPlain();
+            })();
+
+            /* ═══════════ Design D — faithful create page (live tabs) ═══════════ */
+            (function () {
+                const CFG = {
+                    expense: {
+                        title: 'Tambah Pengeluaran',
+                        submit: 'Tambah Pengeluaran',
+                        bar: 'bar-error',
+                        descLabel: 'Merchant / Penerima',
+                        descPh: 'Contoh: Warteg Bu Sri, Tokopedia',
+                        accLabel: 'Akun Sumber',
+                        cat: 'Makanan & Minuman',
+                        showDest: false,
+                    },
+                    income: {
+                        title: 'Tambah Pemasukan',
+                        submit: 'Tambah Pemasukan',
+                        bar: 'bar-success',
+                        descLabel: 'Pemberi Kerja / Sumber',
+                        descPh: 'Contoh: Gaji Bulanan PT Teknologi, Freelance',
+                        accLabel: 'Akun Tujuan Penerimaan',
+                        cat: 'Gaji',
+                        showDest: false,
+                    },
+                    transfer: {
+                        title: 'Tambah Transfer',
+                        submit: 'Tambah Transfer',
+                        bar: 'bar-info',
+                        descLabel: 'Deskripsi Transfer',
+                        descPh: 'Contoh: Kirim uang bulanan, Top-up wallet',
+                        accLabel: 'Akun Asal (Dari)',
+                        cat: 'Makanan & Minuman',
+                        showDest: true,
+                    },
+                };
+
+                function applyD(type) {
+                    const c = CFG[type];
+                    document.getElementById('d-root').dataset.type = type;
+                    document.getElementById('d-title').textContent = c.title;
+                    document.getElementById('d-submit').textContent = c.submit;
+                    document.getElementById('d-bar').className = 'amount-card-bar ' + c.bar;
+                    document.getElementById('d-desc-label').textContent = c.descLabel;
+                    document.getElementById('d-desc').placeholder = c.descPh;
+                    document.getElementById('d-acc-label').textContent = c.accLabel;
+                    document.getElementById('d-cat-text').textContent = c.cat;
+                    document.getElementById('d-dest').hidden = !c.showDest;
+                    document
+                        .querySelectorAll('#d-tabs button')
+                        .forEach((b) => b.classList.toggle('on', b.dataset.t === type));
+                }
+
+                document.querySelectorAll('#d-tabs button').forEach((b) => {
+                    b.addEventListener('click', () => applyD(b.dataset.t));
+                });
+
+                const dAmount = document.getElementById('d-amount');
+                dAmount.addEventListener('input', () => {
+                    const n = parseNum(dAmount.value);
+                    dAmount.value = n ? fmtID(n) : '';
+                });
+
+                document
+                    .getElementById('d-submit')
+                    .addEventListener('click', () =>
+                        toast(document.getElementById('d-submit').textContent + ' (mockup demo)')
+                    );
+                applyD('expense');
+            })();
+        </script>
+    </body>
+</html>
