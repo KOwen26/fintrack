@@ -46,7 +46,7 @@
         <Dialog.Content
             class={[
                 'fixed top-[50%] left-[50%] z-50',
-                'w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] overflow-clip rounded-xl bg-white shadow-popover outline-hidden sm:max-w-[480px] md:w-full',
+                'w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] overflow-clip rounded-xl bg-white shadow-popover outline-hidden sm:max-w-120 md:w-full',
                 'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
             ]}
             {...contentProps}>

@@ -36,7 +36,7 @@ export function getRandomDecorationIcon(): DecorationIcon | undefined {
  * @param {string} slug - The unique slug identifying the decoration icon.
  * @returns {DecorationIcon | undefined} The matching DecorationIcon or undefined.
  */
-export function getDecorationIcon(slug: string): DecorationIcon | undefined {
+export function getDecorationIcon(slug?: string | null): DecorationIcon | undefined {
     if (slug == null) {
         return undefined;
     }

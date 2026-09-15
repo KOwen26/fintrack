@@ -40,7 +40,7 @@
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
 
-    import IconBadge from '@components/ui/icon-badge.svelte';
+    import DecorationBadge from '@components/ui/decoration-badge.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
 
@@ -73,7 +73,7 @@
             : undefined
     );
 
-    /* Resolved tile config — passed to <IconBadge>. */
+    /* Resolved tile config — passed to <DecorationBadge>. */
     const tileIcon = $derived(decoIcon ?? typeConfig.icon);
     const tileBackground = $derived(decoColor ? `${decoColor}20` : typeConfig.bg);
     const tileColor = $derived(decoColor ?? typeConfig.color);
@@ -87,7 +87,7 @@
     href={TransactionController.show.url(transaction)}>
     <!-- Icon -->
     {#if !hideIcon}
-        <IconBadge background={tileBackground} color={tileColor} icon={tileIcon} size="sm" />
+        <DecorationBadge background={tileBackground} color={tileColor} icon={tileIcon} size="sm" />
     {/if}
 
     <div class="min-w-0 flex-1">

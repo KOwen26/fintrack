@@ -9,6 +9,7 @@
 
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
+    import StringHelper from '@utilities/string-helper';
 
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
     import PageSection from '@components/layouts/page-section.svelte';
@@ -155,15 +156,6 @@
         { name: 'John Doe', email: 'john@example.com', role: 'Owner' },
         { name: 'Jane Smith', email: 'jane@example.com', role: 'Member' },
     ]);
-
-    function getMemberInitials(name: string): string {
-        return name
-            .split(' ')
-            .map((w) => w[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
-    }
 </script>
 
 <DashboardPageHeader title="Account Detail">
@@ -255,7 +247,7 @@
                             <div
                                 style:background={bgColor}
                                 class="avatar flex size-10 shrink-0 items-center justify-center rounded-md text-sm font-bold text-white">
-                                {getMemberInitials(member.name)}
+                                {StringHelper.getInitials(member.name)}
                             </div>
 
                             <div class="flex-1">

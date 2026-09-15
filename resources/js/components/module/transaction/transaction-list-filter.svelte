@@ -55,8 +55,8 @@
 
     import { cn } from '@utilities/shadcn';
 
+    import DecorationBadge from '@components/ui/decoration-badge.svelte';
     import DrawerModal from '@components/ui/drawer-modal.svelte';
-    import IconBadge from '@components/ui/icon-badge.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
 
@@ -471,7 +471,7 @@
 
 {#snippet optionBadge(badge)}
     {#if badge}
-        <IconBadge
+        <DecorationBadge
             class="size-8 rounded"
             iconClass="size-5"
             background={badge.background}

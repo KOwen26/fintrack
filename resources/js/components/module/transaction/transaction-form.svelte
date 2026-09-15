@@ -157,13 +157,11 @@
         </div>
 
         <!-- ── Form wrapper ─────────────────────────────── -->
-        <Form id="transaction-form" {action} {form} {method}>
+        <Form id="transaction-form" class="space-y-3" {action} {form} {method}>
             <!-- Card: Amount -->
-            <div class="card overflow-hidden rounded-2xl border border-base-content/15 bg-base-100">
-                <div class="h-1 w-full {typeConfig.accentBar}"></div>
+            <div class="card overflow-hidden rounded-lg border border-base-content/15 bg-base-100">
                 <div class="px-5 py-4">
-                    <p
-                        class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
+                    <p class="text-2xs font-bold tracking-wider text-base-content/40 uppercase">
                         Nominal Transaksi
                     </p>
                     <div class="mt-1 flex items-center gap-1.5">
@@ -180,11 +178,11 @@
             </div>
 
             <!-- Card: Details -->
-            <div class="card overflow-hidden rounded-2xl border border-base-content/15 bg-base-100">
+            <div class="card overflow-hidden rounded-lg border border-base-content/15 bg-base-100">
                 <!-- Merchant / Description -->
                 <div class="flex flex-col px-5 py-3">
                     <label
-                        class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase"
+                        class="text-2xs font-bold tracking-wider text-base-content/40 uppercase"
                         for="in-merchant">
                         {typeConfig.merchantLabel}
                     </label>
@@ -202,7 +200,7 @@
                 <div class="flex items-center px-5 py-3">
                     <div class="flex-1">
                         <span
-                            class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
+                            class="text-2xs font-bold tracking-wider text-base-content/40 uppercase">
                             {typeConfig.accountLabel}
                         </span>
                         <div class="mt-0.5">
@@ -220,7 +218,7 @@
                     <div class="flex items-center px-5 py-3">
                         <div class="flex-1">
                             <span
-                                class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
+                                class="text-2xs font-bold tracking-wider text-base-content/40 uppercase">
                                 Akun Tujuan
                             </span>
                             <div class="mt-0.5">
@@ -237,7 +235,7 @@
                     <div class="flex items-center px-5 py-3">
                         <div class="flex-1">
                             <span
-                                class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
+                                class="text-2xs font-bold tracking-wider text-base-content/40 uppercase">
                                 Biaya Transfer (opsional)
                             </span>
                             <input
@@ -256,11 +254,16 @@
                 <div class="flex items-center px-5 py-3">
                     <div class="flex-1">
                         <span
-                            class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
+                            class="text-2xs font-bold tracking-wider text-base-content/40 uppercase">
                             Kategori
                         </span>
                         <div class="mt-0.5">
-                            <CategorySelect {categories} bind:value={form.category_id} />
+                            <CategorySelect
+                                {categories}
+                                groupVariant="text"
+                                optionVariant="icon"
+                                variant="modal"
+                                bind:value={form.category_id} />
                         </div>
                     </div>
                 </div>
@@ -271,7 +274,7 @@
                 <div class="flex items-center px-5 py-3">
                     <div class="flex-1">
                         <label
-                            class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase"
+                            class="text-2xs font-bold tracking-wider text-base-content/40 uppercase"
                             for="in-date">
                             Tanggal
                         </label>
@@ -287,10 +290,10 @@
             </div>
 
             <!-- Card: Notes -->
-            <div class="card overflow-hidden rounded-2xl border border-base-content/15 bg-base-100">
+            <div class="card overflow-hidden rounded-lg border border-base-content/15 bg-base-100">
                 <div class="flex flex-col px-5 py-3">
                     <label
-                        class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase"
+                        class="text-2xs font-bold tracking-wider text-base-content/40 uppercase"
                         for="in-notes">
                         Catatan
                     </label>

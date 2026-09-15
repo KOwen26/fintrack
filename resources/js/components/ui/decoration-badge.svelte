@@ -1,40 +1,50 @@
-<script lang="ts">
+<script lang="ts" module>
     import type { RestProps } from '@type/index';
 
-    import { cn } from '@utilities/shadcn';
+    /**
+     * Square mark rendering an entity's decoration pair (icon + tinted
+     * background), with a lettermark (initials) fallback when no decoration
+     * icon is available. Not a DaisyUI `Badge` (content-hugging text pill).
+     */
+    export type DecorationBadgeSize = 'sm' | 'md' | 'lg';
 
-    type Size = 'sm' | 'md' | 'lg';
-
-    interface Props extends RestProps {
+    export interface DecorationBadgeItem {
         /** Iconify icon classes, e.g. `solar--tag-bold-duotone`. */
         icon?: string;
-        /** Text fallback rendered when `icon` is not provided. */
+        /** Lettermark fallback (initials) rendered when no decoration icon is available. */
         text?: string;
         /** Direct CSS background of the badge square. */
         background?: string;
         /** Direct CSS color of the icon/text. */
         color?: string;
+    }
+
+    interface DecorationBadgeProps extends DecorationBadgeItem, RestProps {
         /** Classes for the badge square (size, radius). */
         class?: string;
         /** Classes for the inner icon element. */
         iconClass?: string;
         /** Size of the badge. */
-        size?: Size;
+        size?: DecorationBadgeSize;
     }
+</script>
+
+<script lang="ts">
+    import { cn } from '@utilities/shadcn';
 
     let {
         icon,
         text,
-        background,
-        color,
+        background = 'color-mix(in oklab, var(--color-base-content) 10%, transparent)',
+        color = 'var(--color-base-content)',
         class: _class,
         size = 'md',
         iconClass = 'size-5',
         ...restProps
-    }: Props = $props();
+    }: DecorationBadgeProps = $props();
 
     const sizeClasses: Record<
-        Size,
+        DecorationBadgeSize,
         {
             class: string;
             iconClass: string;

@@ -16,4 +16,13 @@ export default class StringHelper {
 
         return result;
     }
+
+    public static getInitials(name?: string) {
+        if (!name) return '';
+
+        return (name ?? '')
+            .replace(/[^a-zA-Z]/g, '')
+            .slice(0, 2)
+            .toUpperCase();
+    }
 }
