@@ -1,5 +1,5 @@
 <script lang="ts" module>
-    import type { WithoutChildrenOrChild } from 'bits-ui';
+    import type { ComboboxTriggerProps, WithoutChildrenOrChild } from 'bits-ui';
     import type { Snippet } from 'svelte';
 
     export interface SelectOption {
@@ -8,26 +8,43 @@
         disabled?: boolean;
     }
 
-    export type ComboboxProps = Omit<Combobox.RootProps, 'items' | 'type'> & {
+    /** Context handed to the custom `trigger` snippet. */
+    export interface ComboboxTriggerContext<T extends SelectOption = SelectOption> {
+        /** Props to spread on the element hosting the search input (carries the wrapper's oninput/onkeydown). */
+        inputProps: WithoutChildrenOrChild<Combobox.InputProps>;
+        /** Props to spread on a button that toggles the dropdown. */
+        triggerProps: WithoutChildrenOrChild<ComboboxTriggerProps>;
+        /** The currently selected option, if any. */
+        selected: T | undefined;
+        /** Dropdown open state. */
+        open: boolean;
+    }
+
+    export type ComboboxProps<T extends SelectOption = SelectOption> = Omit<
+        Combobox.RootProps,
+        'items' | 'type'
+    > & {
         value: any;
         sideTrigger?: boolean;
-        options?: SelectOption[] | string;
+        options?: T[] | string;
         multiple?: boolean;
         placeholder?: string;
         inputProps?: WithoutChildrenOrChild<Combobox.InputProps>;
         contentProps?: WithoutChildrenOrChild<Combobox.ContentProps>;
         /** Custom row rendering; receives the option. Defaults to the option label. */
-        option?: Snippet<[SelectOption]>;
+        option?: Snippet<[T]>;
+        /** Replaces the built-in trigger layout entirely. The wrapper still owns filtering, items, and value. */
+        trigger?: Snippet<[ComboboxTriggerContext<T>]>;
         /** Shows a button that resets the value when a selection is present. */
         clearable?: boolean;
         /** Fired when the value is reset via the clear button. */
         onClear?: () => void;
         /** Behaves like `onValueChange`, but receives the matching option(s) instead of the raw value. */
-        onSelected?: (item: SelectOption | SelectOption[] | undefined) => void;
+        onSelected?: (item: T | T[] | undefined) => void;
     };
 </script>
 
-<script lang="ts">
+<script generics="T extends SelectOption" lang="ts">
     import { useHttp } from '@inertiajs/svelte';
     import { Combobox, mergeProps } from 'bits-ui';
     import { onMount } from 'svelte';
@@ -44,23 +61,24 @@
         inputProps,
         contentProps,
         option,
+        trigger,
         disabled,
         clearable = false,
         onClear,
         onSelected,
         ...restProps
-    }: ComboboxProps = $props();
+    }: ComboboxProps<T> = $props();
 
     let inputRef = $state<HTMLInputElement | null>(null);
 
     const type = $derived(multiple ? 'multiple' : 'single');
 
     let searchValue = $state('');
-    let fetchedItems = $state<SelectOption[]>([]);
+    let fetchedItems = $state<T[]>([]);
 
     const resolvedItems = $derived(typeof options === 'string' ? fetchedItems : (options ?? []));
 
-    function findItem(val: string | number | undefined): SelectOption | undefined {
+    function findItem(val: string | number | undefined): T | undefined {
         if (val === undefined) {
             return undefined;
         }
@@ -80,14 +98,12 @@
         );
     });
 
-    const selectedItems = $derived.by<SelectOption[]>(() => {
+    const selectedItems = $derived.by<T[]>(() => {
         if (type !== 'multiple' || !Array.isArray(value)) {
             return [];
         }
 
-        return value
-            .map((v) => findItem(v))
-            .filter((item): item is SelectOption => item !== undefined);
+        return value.map((v) => findItem(v)).filter((item): item is T => item !== undefined);
     });
 
     const hasValue = $derived(Array.isArray(value) ? value.length > 0 : !!value);
@@ -135,9 +151,7 @@
 
         if (Array.isArray(newValue)) {
             onSelected(
-                newValue
-                    .map((v) => findItem(v))
-                    .filter((item): item is SelectOption => item !== undefined)
+                newValue.map((v) => findItem(v)).filter((item): item is T => item !== undefined)
             );
 
             return;
@@ -146,16 +160,17 @@
         onSelected(findItem(newValue));
     }
 
-    const http = useHttp<Record<string, any>, { data: SelectOption[] }>({});
+    const http = useHttp<Record<string, any>, { data: T[] }>({});
 
     function fetchItems() {
         if (typeof options !== 'string') {
             return;
         }
 
+        // Payloads can't survive serialization — endpoint mode degrades to the base shape.
         http.get(options, {
             onSuccess: ({ data }) => {
-                fetchedItems = data;
+                fetchedItems = data as T[];
             },
             onError: () => {
                 fetchedItems = [];
@@ -188,6 +203,29 @@
         mergeProps(inputProps, { oninput: handleInput, onkeydown: handleInputKeydown })
     );
 
+    const mergedContentProps = $derived(
+        mergeProps(
+            {
+                side: 'bottom' as const,
+                sideOffset: 4,
+                style: '--bits-combobox-content-available-height: 40svh;',
+            },
+            contentProps
+        )
+    );
+
+    const selectedOption = $derived(findItem(Array.isArray(value) ? value[0] : value));
+
+    const triggerContext = $derived({
+        inputProps: mergeProps(
+            { placeholder, disabled },
+            mergedInputProps
+        ) as WithoutChildrenOrChild<Combobox.InputProps>,
+        triggerProps: { disabled } as WithoutChildrenOrChild<ComboboxTriggerProps>,
+        selected: selectedOption,
+        open,
+    });
+
     const multiWrapperClass =
         'border-input dark:bg-input/30 focus-within:border-ring focus-within:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive aria-invalid:ring-3 flex min-h-8 w-full flex-wrap items-center gap-1 rounded-lg border bg-transparent px-2.5 py-1 text-sm transition-colors focus-within:ring-3';
 
@@ -196,7 +234,9 @@
 </script>
 
 <Combobox.Root {disabled} items={resolvedItems} {type} bind:value bind:open {...mergedRootProps}>
-    {#if sideTrigger}
+    {#if trigger}
+        {@render trigger(triggerContext)}
+    {:else if sideTrigger}
         {@render InputBesideTrigger()}
     {:else}
         {@render InputInsideTrigger()}
@@ -205,10 +245,7 @@
     <Combobox.Portal>
         <Combobox.Content
             data-slot="combobox-content"
-            side="bottom"
-            sideOffset={4}
-            {...contentProps}
-            style="--bits-combobox-content-available-height: 40svh;"
+            {...mergedContentProps}
             class={cn(
                 'z-50 max-h-(--bits-combobox-content-available-height) w-(--bits-combobox-anchor-width) min-w-(--bits-combobox-anchor-width) overflow-x-hidden overflow-y-auto rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-closed:animate-out data-closed:overflow-hidden data-closed:fade-out-0 data-closed:zoom-out-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
                 contentProps?.class
