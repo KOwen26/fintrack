@@ -1,5 +1,6 @@
 <script lang="ts" module>
     import type { WithoutChildrenOrChild } from 'bits-ui';
+    import type { Snippet } from 'svelte';
 
     export interface SelectOption {
         value: string;
@@ -8,9 +9,6 @@
     }
 
     export type ComboboxProps = Omit<Combobox.RootProps, 'items' | 'type'> & {
-        /**
-         * `any` is deliberate: bits-ui v2 types Root as a discriminated union on `type`(single → string, multiple → string[]); Runtime is fully typed by the option shapes.
-         */
         value: any;
         sideTrigger?: boolean;
         options?: SelectOption[] | string;
@@ -18,6 +16,8 @@
         placeholder?: string;
         inputProps?: WithoutChildrenOrChild<Combobox.InputProps>;
         contentProps?: WithoutChildrenOrChild<Combobox.ContentProps>;
+        /** Custom row rendering; receives the option. Defaults to the option label. */
+        option?: Snippet<[SelectOption]>;
         /** Shows a button that resets the value when a selection is present. */
         clearable?: boolean;
         /** Fired when the value is reset via the clear button. */
@@ -43,6 +43,7 @@
         placeholder = 'Cari...',
         inputProps,
         contentProps,
+        option,
         disabled,
         clearable = false,
         onClear,
@@ -194,14 +195,7 @@
         'dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive aria-invalid:ring-3 disabled:bg-input/50 dark:disabled:bg-input/80 h-8 w-full min-w-0 rounded-lg border bg-transparent px-2.5 py-1 text-base outline-none transition-colors focus-visible:ring-3 md:text-sm placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50';
 </script>
 
-<Combobox.Root
-    data-slot="combobox-root"
-    {disabled}
-    items={resolvedItems}
-    {type}
-    bind:value
-    bind:open
-    {...mergedRootProps}>
+<Combobox.Root {disabled} items={resolvedItems} {type} bind:value bind:open {...mergedRootProps}>
     {#if sideTrigger}
         {@render InputBesideTrigger()}
     {:else}
@@ -227,7 +221,11 @@
                         label={item.label}
                         value={item.value}>
                         {#snippet children({ selected })}
-                            <span class="truncate">{item.label}</span>
+                            {#if option}
+                                {@render option(item)}
+                            {:else}
+                                <span class="truncate">{item.label}</span>
+                            {/if}
                             {#if selected}
                                 <span
                                     class="absolute end-2 flex size-3.5 items-center justify-center">

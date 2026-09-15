@@ -6,7 +6,7 @@
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
     import TransferController from '@wayfinder/App/Http/Controllers/TransferController';
 
-    import AccountSelect from '@components/ui/forms/account-select.svelte';
+    import AccountSelect from '@components/ui/forms/account-select-2.svelte';
     import CategorySelect from '@components/ui/forms/category-select.svelte';
     import DateInput from '@components/ui/forms/date-input.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';
