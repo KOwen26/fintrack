@@ -229,7 +229,7 @@
                             {#if selected}
                                 <span
                                     class="absolute end-2 flex size-3.5 items-center justify-center">
-                                    <i class="iconify size-3.5 tabler--check"></i>
+                                    <i class="iconify size-3.5 solar--unread-outline"></i>
                                 </span>
                             {/if}
                         {/snippet}
@@ -296,7 +296,7 @@
 
             <Combobox.Trigger
                 class="ml-auto shrink-0 text-muted-foreground hover:text-foreground disabled:opacity-50">
-                <i class="iconify size-4 tabler--chevron-down"></i>
+                <i class="iconify size-4 solar--alt-arrow-down-outline"></i>
             </Combobox.Trigger>
         </div>
     {:else}
@@ -312,7 +312,7 @@
 
             <Combobox.Trigger
                 class="absolute end-0 top-0 flex h-8 w-8 items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-50">
-                <i class="iconify size-4 shrink-0 tabler--chevron-down"></i>
+                <i class="iconify size-4 shrink-0 solar--alt-arrow-down-outline"></i>
             </Combobox.Trigger>
         </div>
     {/if}
@@ -331,7 +331,7 @@
                     removeValue(item.value);
                 }}
                 type="button">
-                <i class="iconify size-3 tabler--x"></i>
+                <i class="iconify size-3 solar--close-outline"></i>
             </button>
         </span>
     {/each}
@@ -351,7 +351,7 @@
             onclick={clear}
             onpointerdown={(e) => e.stopPropagation()}
             type="button">
-            <i class="iconify size-4 tabler--x"></i>
+            <i class="iconify size-4 solar--close-outline"></i>
         </button>
     {/if}
 {/snippet}
