@@ -1,5 +1,5 @@
 <laravel-boost-guidelines>
-=== .ai/inertia-svelte-frontend rules ===
+=== .ai/laravel-inertia-svelte/rules/inertia-svelte-frontend rules ===
 
 # Inertia + Svelte Frontend Rules
 
@@ -808,7 +808,7 @@ Icons use the `iconify` CSS class with Solar icons (`solar--` prefix, primary) o
 
 Use DaisyUI size utilities: `size-4`, `size-5`, `size-6`, `size-10`, `size-12`.
 
-=== .ai/laravel-backend rules ===
+=== .ai/laravel-inertia-svelte/rules/laravel-backend rules ===
 
 # Laravel Backend Rules
 
@@ -1354,7 +1354,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 ## Project Rules
 
 - This project contains committed, area-grouped rules in `.ai/rules` when that directory exists (settled decisions, non-obvious traps, standing constraints). Framework and package guidelines that only apply to specific paths (testing, frontend, components) also live there, under `.ai/rules/boost` — this is not just recorded decisions, it is load-bearing guidance you have not seen inline. Before you enter plan mode or create/edit any file, you MUST first: open @.ai/rules/index.md (it maps file globs to rule files), read every rule file whose globs cover the path(s) in scope, and run `grep -rin 'keyword' .ai/rules` to catch what a path match alone misses. Do not write code until you have read and are following every matching rule. If `.ai/rules` does not exist, continue without it.
-- Record durable rules with `record-rule` so the next agent or teammate inherits them instead of working them out again. Pass a `glob` (e.g. `app/Http/Controllers/**`), a short `title`, and a few-line `note`. Always use `record-rule`, never your native memory or notes tool — native memory is personal and session-scoped; only `.ai/rules` is shared with the team and persists in the repo.
+- Record a rule with `record-rule` only when the user explicitly asks for one. Instructions for the work at hand are not rules, no matter how emphatic: "remove this typo", "use X here" are work to do, not rules to record. Never record a rule on your own initiative, as a byproduct of a change, or to summarize what you just did. When the user does ask, pass a `glob` (e.g. `app/Http/Controllers/**`), a short `title`, and a few-line `note`. Use `record-rule` rather than your native memory or notes tool, because native memory is personal and session-scoped, while only `.ai/rules` is shared with the team and persists in the repo.
 
 ## Artisan
 
@@ -1384,6 +1384,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 # Deployment
 
 - Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
+- Activate the `deploying-to-cloud` skill whenever deploying to Laravel Cloud, configuring Cloud environments or resources, using the Cloud CLI, or troubleshooting Cloud deployments.
 
 === herd rules ===
 
@@ -1396,8 +1397,9 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 # Test Enforcement
 
-- Test every code change by adding or updating a test.
-- Run the affected tests and ensure they pass.
+- Add or update tests for behavior and logic changes when a test provides meaningful regression coverage.
+- Pure copy, styling, and layout-only changes do not require new or updated tests.
+- When test coverage applies, run the affected tests and ensure they pass.
 - Test the changed behavior and its important failure modes, but do not add tests beyond them.
 - Read the `testing-best-practices` skill before writing tests.
 
@@ -1465,13 +1467,14 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 # Laravel Wayfinder
 
-Use Wayfinder to generate TypeScript functions for Laravel routes. Import from `@/actions/` (controllers) or `@/routes/` (named routes).
+This application uses Laravel Wayfinder to generate TypeScript from its Laravel code: route and controller-action functions, form request types, model interfaces, enums, Inertia page props, broadcast channels and events, and Vite environment variables.
 
-=== wayfinder/v rules ===
+- Generated files live under `resources/js/wayfinder` and are imported from `@/wayfinder/...`. Never hand-edit them; change the PHP and run `php artisan wayfinder:generate`.
+- Import route functions from the path matching the controller's PHP namespace (`@/wayfinder/App/Http/Controllers/PostController`), named routes from `@/wayfinder/routes/<name>`, and every type from `@/wayfinder/types`.
+- Import types rather than redeclaring them. A hand-written interface for a model, page props or a form request will drift.
+- Keep anything that should not reach the browser out with the `#[WayfinderIgnore]` attribute, or a `@wayfinder-ignore` comment for an array key.
 
-# Laravel Wayfinder
-
-Use Wayfinder to generate TypeScript functions for Laravel routes. Import from `@/actions/` (controllers) or `@/routes/` (named routes).
+When working on Wayfinder itself — generating types, wiring the Vite plugin, choosing what to leave out, or debugging missing output — invoke `wayfinder-development` for detailed rules.
 
 === pest/core rules ===
 

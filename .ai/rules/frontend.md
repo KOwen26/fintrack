@@ -72,3 +72,13 @@ Forms and tables are schema-driven: define a `DataSchema` in `resources/js/schem
 drive `<FormGenerator>` and TanStack Table through `DataComposer`. Charts use layerchart.
 Before building new UI, check `resources/js/pages/dev/*` — it is the living
 design-system sandbox demonstrating the components.
+
+## Svelte component block order
+
+Glob: `resources/js/**/*.svelte`
+
+Top-level blocks in `.svelte` files follow this order: `<script module>` → `<script>` →
+markup → `{#snippet}` declarations → `<style>`. Snippets are declared *after* the markup
+that references them (Svelte hoists snippet declarations, so textual order is free).
+Enforced by the `personal-svelte/sort-tags` ESLint rule (defined inline in
+`eslint.config.js`); it auto-fixes on `pnpm exec eslint --fix`.
