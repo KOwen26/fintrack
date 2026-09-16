@@ -17,10 +17,11 @@ Default weight suffix is `-bold-duotone`; outline variant `-line-duotone`. Never
 
 Glob: `resources/js/app.ts`, `resources/js/pages/**`
 
-The central `layout()` switch in `resources/js/app.ts` maps all app-page prefixes
-(accounts, transactions, categories, household, settings/theme, reports, dev, dashboard)
-to `DashboardLayout` and returns `null` for everything else. Auth pages get `null` and
-self-wrap their content in `AuthLayout`; `home.svelte` self-wraps in `BaseLayout`. Never
+The central `layout()` switch in `resources/js/app.ts` maps all app-page prefixes to
+`DashboardLayout` and returns `null` for everything else — when you add a new page
+module, add its prefix to the switch. Auth pages get `null` and
+self-wrap their content in `AuthLayout`; the landing page self-wraps in `BaseLayout`.
+Never
 declare a layout inside a page component. `AppLayout` is unused — do not reference it.
 
 ## Blade is shell-only

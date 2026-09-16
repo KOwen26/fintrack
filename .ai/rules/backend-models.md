@@ -8,7 +8,8 @@ Glob: `app/Models/**`
 
 Register observers with the `#[ObservedBy([XObserver::class])]` attribute on the model —
 never `Model::observe()` in a provider and never `booted()` closures. Observers own
-model-lifecycle side effects (e.g. balance denormalization); service-dispatched events
+model-lifecycle side effects (e.g. keeping a denormalized derived column in sync);
+service-dispatched events
 own cross-cutting reactions (cache invalidation) — keep the division.
 
 ## Sushi JSON-backed reference models

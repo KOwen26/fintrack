@@ -4,6 +4,14 @@ Committed, area-grouped conventions for this codebase. Before creating or editin
 read every rule file whose globs cover the path(s) in scope, and grep this directory for
 relevant keywords — a path match alone can miss cross-cutting rules.
 
+> **About the examples:** Code samples in these rule files — and in the guidelines
+> referenced at the bottom of this index — use a neutral sample domain
+> (`User`, `Team`, `UserStatus`) purely to illustrate the conventions. These are shapes
+> any Laravel app ships with, **not** this app's business scope or a domain spec: never
+> assume models, columns, enum values, or factory states from these docs. Always derive
+> the real domain shape from the actual code and the Wayfinder-generated types
+> (`@wayfinder/*`).
+
 | Glob                              | Rule file(s)                                            |
 | --------------------------------- | ------------------------------------------------------- |
 | `app/Http/Controllers/**`         | `backend-http.md`                                       |

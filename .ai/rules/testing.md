@@ -24,8 +24,8 @@ stays DB-free (pure logic).
 
 Glob: `tests/**`
 
-Build all test data via model factories with named states (`creditCard()`, `income()`,
-`transferOut($id)`, `unverified()`) instead of repeating attribute arrays. Never invoke
+Build all test data via model factories with named states (`admin()`, `suspended()`,
+`unverified()`) instead of repeating attribute arrays. Never invoke
 seeders or insert rows directly in tests.
 
 ## Real-integration with selective fakes
@@ -51,6 +51,6 @@ form posts). Assert persisted state with `expect()` plus an Eloquent re-query, n
 Glob: `tests/**`
 
 Authenticate inline on the request line: `$this->actingAs(User::factory()->create())`.
-Use file-local plain functions for per-file setup (`setupBalanceAccount()`,
-`createAccountForUser()`); shared scenarios go in `tests/Pest.php` as global helpers.
+Use file-local plain functions for per-file setup (`setupUserTeam()`,
+`createTeamForUser()`); shared scenarios go in `tests/Pest.php` as global helpers.
 Reference all URLs via named `route(...)` calls.

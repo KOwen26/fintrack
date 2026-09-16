@@ -19,18 +19,19 @@ Domain tables get `softDeletes()` plus an explicit `$table->index('deleted_at')`
 User-facing archiving is a separate nullable, indexed `archived_at` timestamp with a
 `notArchived()` scope — never overload soft delete for archiving.
 
-## Decorations columns
+## JSON metadata columns
 
 Glob: `database/migrations/**`
 
-Decoration metadata is attached via `$table->json('decorations')->nullable()` with the
-model casting to `DecorationData::class` (Spatie Data), never a plain `'array'` cast.
+Arbitrary per-record metadata is attached via a `$table->json('...')->nullable()` column
+with the model casting it to the matching Spatie Data DTO class, never a plain
+`'array'` cast.
 
 ## Correlation IDs are UUIDs without FK constraints
 
 Glob: `database/migrations/**`
 
-Link/correlation columns (e.g. `transfer_link_id`) are `uuid()` string columns with an
+Link/correlation columns (e.g. `correlation_id`) are `uuid()` string columns with an
 index and **no** foreign key constraint; services assign `(string) Str::uuid()` to them.
-The existing bigint FK on `transactions.transfer_link_id` is drift to migrate — fix the
+An existing correlation column carrying a bigint FK is drift to migrate — fix the
 column, don't switch the service to integer IDs.

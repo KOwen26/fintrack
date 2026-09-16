@@ -1,12 +1,14 @@
 # Laravel Backend Rules
 
+> **About the examples:** Code samples use a neutral sample domain (`User`, `Team`, `UserStatus`) purely to illustrate the conventions — these are shapes any Laravel app ships with, not this app's business scope. They are **not** a domain spec: never assume models, columns, or enum values from these docs. Always derive the real domain shape from the actual code and the Wayfinder-generated types (`@wayfinder/*`).
+
 ## PHP Conventions
 
 - PHP 8.4 — use constructor property promotion, readonly properties, first-class callables
-- Always declare explicit return types and typed parameters: `function create(User $user, array $data): Account`
+- Always declare explicit return types and typed parameters: `function create(User $actor, array $data): User`
 - Use curly braces on all control structures, even single-line bodies
-- Enums: backed string enums, TitleCase case names — `case DebitAccount = 'debit_account'`
-- PHPDoc blocks for complex return types (e.g. `@return array{executed: int, failed: int}`); inline comments only for non-obvious invariants
+- Enums: backed string enums, TitleCase case names — `case Active = 'active'`
+- PHPDoc blocks for complex return types (e.g. `@return array{pruned: int, failed: int}`); inline comments only for non-obvious invariants
 
 ## Architecture Patterns
 
@@ -15,32 +17,32 @@
 All business logic lives in `app/Services/`. Controllers are thin dispatchers that call one service method and return an Inertia response. Never put queries, calculations, or conditional logic directly in a controller.
 
 ```php
-// ✅ correct — app/Http/Controllers/AccountsController.php
-class AccountsController extends Controller
+// ✅ correct — app/Http/Controllers/UserController.php
+class UserController extends Controller
 {
-    public function __construct(private readonly AccountService $accountService) {}
+    public function __construct(private readonly UserService $userService) {}
 
-    public function store(StoreAccountRequest $request): RedirectResponse
+    public function store(StoreUserRequest $request): RedirectResponse
     {
-        $account = $this->accountService->create($request->user(), $request->validated());
-        return to_route('accounts.show', $account)->flash('Account created.');
+        $user = $this->userService->create($request->user(), $request->validated());
+        return to_route('users.show', $user)->flash('User created.');
     }
 }
 
 // ❌ wrong — logic in controller
 public function store(Request $request): RedirectResponse
 {
-    $account = Account::create([...$request->validated(), 'owner_id' => $request->user()->id]);
+    $user = User::create([...$request->validated(), 'team_id' => $request->user()->team_id]);
 }
 ```
 
 Services can inject other services when needed:
 
 ```php
-// app/Services/RecurringPresetService.php
-class RecurringPresetService
+// app/Services/UserService.php
+class UserService
 {
-    public function __construct(private readonly TransactionService $transactionService) {}
+    public function __construct(private readonly TeamService $teamService) {}
 }
 ```
 
@@ -49,30 +51,30 @@ class RecurringPresetService
 Side-effects (cache invalidation, notifications, post-save hooks) live in Listeners attached to Events — never inline inside a service method. Services fire an event after the primary action; listeners react.
 
 ```php
-// app/Services/TransactionService.php — service fires event, does NOT touch cache
-class TransactionService
+// app/Services/UserService.php — service fires event, does NOT touch cache
+class UserService
 {
-    public function create(Account $account, User $creator, array $data): Transaction
+    public function update(User $actor, User $user, array $data): User
     {
-        $transaction = Transaction::create([...]);
-        TransactionSaved::dispatch($transaction);
-        return $transaction;
+        $user->update($data);
+        UserSaved::dispatch($user);
+        return $user;
     }
 }
 
-// app/Listeners/InvalidateAccountBalanceCache.php — listener owns the side-effect
-class InvalidateAccountBalanceCache
+// app/Listeners/InvalidateUserCache.php — listener owns the side-effect
+class InvalidateUserCache
 {
     // Union type — one handler for two related events
-    public function handle(TransactionSaved | TransactionDeleted $event): void
+    public function handle(UserSaved | UserDeleted $event): void
     {
-        Cache::tags(['account:' . $event->transaction->account_id])->flush();
+        Cache::tags(['user:' . $event->user->id])->flush();
     }
 
     // Named handler for a third, structurally different event on the same listener
-    public function handleRecurringPresetExecuted(RecurringPresetExecuted $event): void
+    public function handleTeamMemberAdded(TeamMemberAdded $event): void
     {
-        Cache::tags(['account:' . $event->preset->account_id])->flush();
+        Cache::tags(['team:' . $event->team->id])->flush();
     }
 }
 ```
@@ -82,49 +84,40 @@ class InvalidateAccountBalanceCache
 Wrap operations that must succeed or fail together in `DB::transaction()`:
 
 ```php
-// app/Services/TransactionService.php
-public function createTransfer(...): Transaction
+// app/Services/UserService.php
+public function createWithInvite(User $actor, array $data): User
 {
-    $linkId = (string) Str::uuid();
+    return DB::transaction(function () use ($actor, $data): User {
+        $user = $this->create($actor, [...]);
 
-    return DB::transaction(function () use (...): Transaction {
-        $outflow = $this->create($sourceAccount, $creator, [...]);
-        $this->create($destinationAccount, $creator, [...]);
-
-        if ($feeAmount !== null && $feeAmount > 0) {
-            $this->create($sourceAccount, $creator, [...]);
+        if ($data['send_invite'] ?? false) {
+            $this->teamService->sendInvite($user);
         }
 
-        return $outflow;
+        return $user;
     });
 }
 ```
 
-Each iteration of a loop that can partially fail should wrap its own `DB::transaction` with a try/catch (see `RecurringPresetService::runDue()`).
+Each iteration of a loop that can partially fail should wrap its own `DB::transaction` with a try/catch.
 
 ### Aggregates via SQL — Never PHP
 
-Balance calculations, budget spend, report totals, and any sum/count over rows must be computed using SQL aggregates. Never fetch a collection and reduce it in PHP.
+Report totals, status counts, and any sum/count over rows must be computed using SQL aggregates. Never fetch a collection and reduce it in PHP.
 
 ```php
-// ✅ correct — app/Services/BalanceService.php
-$balance = DB::table('accounts')
+// ✅ correct — count by status in SQL
+$activeCount = DB::table('users')
     ->selectRaw(
-        'accounts.initial_balance + COALESCE(SUM(CASE
-            WHEN t.type IN (?, ?) THEN t.amount
-            WHEN t.type IN (?, ?, ?) THEN -t.amount
-            ELSE 0
-        END), 0) AS balance',
-        ['income', 'transfer_in', 'expense', 'transfer_out', 'fee']
+        'SUM(CASE WHEN users.status IN (?, ?) THEN 1 ELSE 0 END) AS active_count',
+        [UserStatus::Active->value, UserStatus::Trial->value]
     )
-    ->leftJoin('transactions as t', fn ($join) => $join->on('t.account_id', '=', 'accounts.id')->whereNull('t.deleted_at'))
-    ->where('accounts.id', $account->id)
-    ->groupBy('accounts.id', 'accounts.initial_balance')
-    ->value('balance');
+    ->whereNull('users.deleted_at')
+    ->value('active_count');
 
 // ❌ wrong — PHP reduction
-$balance = $account->initial_balance;
-foreach ($account->transactions as $t) { ... }
+$count = 0;
+foreach (User::all() as $user) { ... }
 ```
 
 ## Controllers
@@ -137,22 +130,22 @@ foreach ($account->transactions as $t) { ... }
 
 ```php
 // to_route() — after create/update/destroy with a known destination
-return to_route('accounts.show', $account)->flash('Account created.');
+return to_route('users.show', $user)->flash('User created.');
 
-// back() — after actions like invite/remove where destination varies
+// back() — after actions like invites where destination varies
 return back()->flash('Invitation sent.');
 
 // abort_unless() — quick guard before policy check
-abort_unless($membership !== null, 403);
-$this->authorize('invite', $household);
+abort_unless($invite !== null, 404);
+$this->authorize('accept', $invite);
 ```
 
-Authorize with extra model context (second arg to `[Transaction::class, $account]`):
+Authorize with extra model context (second arg to `[ChildModel::class, $context]`):
 
 ```php
-// app/Http/Controllers/TransactionsController.php
-$this->authorize('viewAny', [Transaction::class, $account]);
-$this->authorize('create', [Transaction::class, $account]);
+// app/Http/Controllers/ActivityController.php
+$this->authorize('viewAny', [Activity::class, $user]);
+$this->authorize('create', [Activity::class, $user]);
 ```
 
 ## Form Requests
@@ -160,16 +153,16 @@ $this->authorize('create', [Transaction::class, $account]);
 All validation lives in `app/Http/Requests/`. Never use inline `$request->validate()`.
 
 ```php
-class StoreAccountRequest extends FormRequest
+class StoreUserRequest extends FormRequest
 {
     public function authorize(): bool { return true; }
 
     public function rules(): array
     {
         return [
-            'name'            => ['required', 'string', 'max:255'],
-            'type'            => ['required', 'string', Rule::enum(AccountType::class)],
-            'initial_balance' => ['required', 'numeric', 'min:0'],
+            'name'   => ['required', 'string', 'max:255'],
+            'email'  => ['required', 'string', 'email', 'max:255'],
+            'status' => ['required', 'string', Rule::enum(UserStatus::class)],
         ];
     }
 }
@@ -185,44 +178,49 @@ class StoreAccountRequest extends FormRequest
 - Domain behavior that belongs to the model (e.g. date math, derived state) goes as a public method on the model
 
 ```php
-// app/Models/Account.php
-class Account extends Model
+// app/Models/User.php
+class User extends Authenticatable
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = [];
+    protected $fillable = ['name', 'email', 'password', 'status'];
 
     protected function casts(): array
     {
         return [
-            'type'         => AccountType::class,
-            'access_type'  => AccountAccessType::class,
-            'initial_balance' => 'decimal:2',
-            'archived_at'  => 'datetime',
-            'decorations'    => 'array',
+            'status'            => UserStatus::class,
+            'email_verified_at' => 'datetime',
+            'settings'          => 'array',
         ];
     }
 
     #[Scope]
-    protected function visibleTo(Builder $query, User $user): Builder
+    protected function visibleTo(Builder $query, User $actor): Builder
     {
-        // ...returns query filtered to accounts the user can see
+        // ...returns query filtered to users the actor can see
     }
 }
 
-// app/Models/TransactionRecurringPreset.php
-// Domain behavior on the model (date math)
-public function advanceNextRunDate(Carbon $from): Carbon
+// All other models use $guarded = []:
+// app/Models/Team.php
+class Team extends Model
 {
-    return match ($this->frequency) {
-        RecurringFrequency::Daily  => $from->addDay(),
-        RecurringFrequency::Weekly => $from->addWeek(),
+    protected $guarded = [];
+    // ...
+}
+
+// Domain behavior on the model (date math)
+public function gracePeriodEndsOn(Carbon $suspendedAt): Carbon
+{
+    return match ($this->status) {
+        UserStatus::Suspended => $suspendedAt->addDays(30),
+        UserStatus::Trial     => $suspendedAt->addDays(7),
         // ...
     };
 }
 
 // Disable timestamps when not needed
-// app/Models/HouseholdMember.php
+// app/Models/TeamUser.php
 public $timestamps = false;
 ```
 
@@ -239,31 +237,24 @@ class User extends Authenticatable { ... }
 Backed string enums with TitleCase case names. Add static helper methods to return semantic value subsets used in SQL and validation:
 
 ```php
-// app/Enums/TransactionType.php
-enum TransactionType: string
+// app/Enums/UserStatus.php
+enum UserStatus: string
 {
-    case Income      = 'income';
-    case Expense     = 'expense';
-    case TransferOut = 'transfer_out';
-    case TransferIn  = 'transfer_in';
-    case Fee         = 'fee';
+    case Active    = 'active';
+    case Trial     = 'trial';
+    case Suspended = 'suspended';
+    case Banned    = 'banned';
 
-    /** @return array<string> */
-    public static function inflows(): array
+    /** @return array<string> Statuses counted toward the active-user metric */
+    public static function activeStates(): array
     {
-        return [self::Income->value, self::TransferIn->value];
+        return [self::Active->value, self::Trial->value];
     }
 
-    /** @return array<string> */
-    public static function outflows(): array
+    /** @return array<string> Statuses that may still sign in */
+    public static function loginableStates(): array
     {
-        return [self::Expense->value, self::TransferOut->value, self::Fee->value];
-    }
-
-    /** @return array<string> Types that count toward budget spend */
-    public static function spendTypes(): array
-    {
-        return [self::Expense->value, self::Fee->value];
+        return [self::Active->value, self::Trial->value, self::Suspended->value];
     }
 }
 ```
@@ -273,26 +264,26 @@ enum TransactionType: string
 Every resource that requires authorization has a Policy. Register automatically via model discovery.
 
 - Extract shared access logic into a private `canAccess()` method
-- Delegate to a related model's policy via `$user->can('view', $relatedModel)` rather than re-implementing ownership checks
+- Delegate to a related model's policy via `$actor->can('view', $relatedModel)` rather than re-implementing ownership checks
 - Custom methods beyond CRUD are fine: `archive`, `restore`, `invite`, `removeMember`, `toggle`
 
 ```php
-// app/Policies/AccountPolicy.php — custom method + private extractor
-public function archive(User $user, Account $account): bool
+// app/Policies/UserPolicy.php — custom method + private extractor
+public function impersonate(User $actor, User $user): bool
 {
-    return $account->owner_id === $user->id;
+    return $actor->is_admin;
 }
 
-private function canAccess(User $user, Account $account): bool
+private function canAccess(User $actor, User $user): bool
 {
-    if ($account->owner_id === $user->id) { return true; }
-    // joint account + household member check...
+    if ($actor->is_admin) { return true; }
+    // same-team member check...
 }
 
-// app/Policies/TransactionPolicy.php — delegation pattern
-public function view(User $user, Transaction $transaction): bool
+// app/Policies/ActivityPolicy.php — delegation pattern
+public function view(User $actor, Activity $activity): bool
 {
-    return $user->can('view', $transaction->account);  // delegates to AccountPolicy
+    return $actor->can('view', $activity->user);  // delegates to UserPolicy
 }
 ```
 
@@ -304,40 +295,40 @@ Simple model data is passed directly to `Inertia::render()` as an Eloquent model
 
 ```php
 // ✅ correct — simple model, pass directly
-return Inertia::render('accounts/index', [
-    'accounts' => $accounts->load('provider'),
+return Inertia::render('users/index', [
+    'users' => $users->load('team'),
 ]);
 
 // ✅ correct — complex cross-model shape uses a DTO
-// app/Http/Controllers/HouseholdsController.php
-return Inertia::render('household/settings', [
-    'household' => $household ? HouseholdData::from([
-        'id'      => $household->id,
-        'name'    => $household->name,
-        'members' => $household->members->map(fn (HouseholdMember $m) => new HouseholdMemberData(
+// app/Http/Controllers/TeamController.php
+return Inertia::render('teams/settings', [
+    'team' => $team ? TeamData::from([
+        'id'      => $team->id,
+        'name'    => $team->name,
+        'members' => $team->members->map(fn (User $m) => new TeamMemberData(
             id:        $m->id,
-            user_id:   $m->user_id,
-            name:      $m->user->name,   // joined from users table
-            role:      $m->role,
-            joined_at: $m->joined_at?->toISOString(),
+            user_id:   $m->id,
+            name:      $m->name,   // joined from users table
+            role:      $m->pivot->role,
+            joined_at: $m->pivot->joined_at?->toISOString(),
         ))->toArray(),
     ]) : null,
 ]);
 
 // ❌ wrong — wrapping a single model in a DTO for no reason
-return Inertia::render('accounts/index', [
-    'accounts' => AccountData::collect($accounts),
+return Inertia::render('users/index', [
+    'users' => UserData::collect($users),
 ]);
 ```
 
 DTOs are also used as **input normalizers** inside services, not just response shapes:
 
 ```php
-// app/Services/AccountService.php
-private function normalizeDecorations(array $data): array
+// app/Services/UserService.php
+private function normalizeSettings(array $data): array
 {
-    if (! isset($data['decorations'])) { return $data; }
-    $data['decorations'] = DecorationData::from($data['decorations'])->toArray();
+    if (! isset($data['settings'])) { return $data; }
+    $data['settings'] = SettingsData::from($data['settings'])->toArray();
     return $data;
 }
 ```
@@ -351,15 +342,15 @@ When a DTO is created, run `composer generate:ts` to sync types in `resources/js
 Never use `$table->enum()`. Use `$table->string()` and enforce values via PHP-backed enum casts on the model.
 
 ```php
-$table->string('type');   // cast to TransactionType::class on model
+$table->string('status');   // cast to UserStatus::class on model
 ```
 
 ### No Magic Strings for Defaults
 
 ```php
-use App\Enums\ProviderStatus;
+use App\Enums\UserStatus;
 
-$table->string('status')->default(ProviderStatus::Active->value);
+$table->string('status')->default(UserStatus::Active->value);
 ```
 
 ### Column Order
@@ -370,14 +361,14 @@ $table->string('status')->default(ProviderStatus::Active->value);
 4. Status, notes, JSON columns
 5. `archived_at`, `softDeletes()`, then `timestamps()`
 
-> **Note:** The `transaction_recurring_presets` migration has `softDeletes()` before `timestamps()`. For new migrations follow the order above.
+> **Note:** One legacy migration has `softDeletes()` before `timestamps()`. For new migrations follow the order above.
 
 ### Column Types
 
 - `$table->decimal(15, 2)` for monetary amounts
-- `$table->char('currency', 3)->default('IDR')` for currency codes
-- `$table->uuid('transfer_link_id')` for link/correlation IDs
-- `$table->date()` for transaction/event dates (not `datetime`)
+- `$table->char('currency', 3)->default('USD')` for currency codes (ISO 4217)
+- `$table->uuid('correlation_id')` for link/correlation IDs
+- `$table->date()` for event dates (not `datetime`)
 - `$table->smallInteger()` / `$table->tinyInteger()` for year/month columns
 
 ### Indexes
@@ -385,25 +376,25 @@ $table->string('status')->default(ProviderStatus::Active->value);
 Declare explicit indexes for all foreign keys and any column used in `WHERE` or `ORDER BY`:
 
 ```php
-// app/database/migrations/2026_06_16_161919_create_transactions_table.php
-$table->index('account_id');
-$table->index(['account_id', 'transaction_date']);
-$table->index(['account_id', 'type', 'transaction_date']);  // composite for reporting queries
+// database/migrations/2026_01_01_000000_create_logins_table.php
+$table->index('user_id');
+$table->index(['user_id', 'login_date']);
+$table->index(['user_id', 'type', 'login_date']);  // composite for reporting queries
 $table->index('deleted_at');
 ```
 
 ## Caching
 
 - Use Redis — supports cache tags
-- Cache key pattern: `{type}:{scope}:{id}` e.g. `balance:account:42`
-- Tag pattern: `Cache::tags(["account:{$id}"])->rememberForever($key, fn () => ...)`
+- Cache key pattern: `{type}:{scope}:{id}` e.g. `stats:user:42`
+- Tag pattern: `Cache::tags(["user:{$id}"])->rememberForever($key, fn () => ...)`
 - Invalidate via event listeners, not inline in services
 - Treat cache as derived data — always maintain a fallback that recomputes from the database
 
 ```php
-// app/Services/BalanceService.php
-return Cache::tags(["account:{$account->id}"])
-    ->rememberForever("balance:account:{$account->id}", function () use ($account): string {
+// app/Services/UserStatsService.php
+return Cache::tags(["user:{$user->id}"])
+    ->rememberForever("stats:user:{$user->id}", function () use ($user): string {
         // SQL aggregate query...
     });
 ```
@@ -413,21 +404,21 @@ return Cache::tags(["account:{$account->id}"])
 Commands delegate to a service and return `self::SUCCESS` / `self::FAILURE`:
 
 ```php
-// app/Console/Commands/RunRecurringPresets.php
-class RunRecurringPresets extends Command
+// app/Console/Commands/PruneStaleUsers.php
+class PruneStaleUsers extends Command
 {
-    protected $signature = 'presets:run-recurring';
+    protected $signature = 'users:prune-stale';
 
-    public function __construct(private readonly RecurringPresetService $recurringPresetService)
+    public function __construct(private readonly UserService $userService)
     {
         parent::__construct();
     }
 
     public function handle(): int
     {
-        $result = $this->recurringPresetService->runDue();
+        $result = $this->userService->pruneStale();
 
-        $this->info("Executed: {$result['executed']}  Failed: {$result['failed']}");
+        $this->info("Pruned: {$result['pruned']}  Failed: {$result['failed']}");
 
         return $result['failed'] > 0 ? self::FAILURE : self::SUCCESS;
     }
@@ -464,6 +455,6 @@ User model uses `HasRoles` trait. Permissions are derived from roles (not assign
 
 ## Seeding
 
-- `ProviderSeeder` — seeds reference data (banks, e-wallets)
-- `CategorySeeder` — seeds 2-level default category hierarchy per user
-- Run via `php artisan db:seed --class=ProviderSeeder`
+- Reference data (e.g. countries, statuses) ships in a dedicated seeder
+- Per-record defaults (e.g. default settings for each new user) ship in their own seeder
+- Run via `php artisan db:seed --class=...`
