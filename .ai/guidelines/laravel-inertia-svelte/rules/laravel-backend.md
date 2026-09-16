@@ -1,6 +1,6 @@
 # Laravel Backend Rules
 
-> **About the examples:** Code samples use a neutral sample domain (`User`, `Team`, `UserStatus`) purely to illustrate the conventions — these are shapes any Laravel app ships with, not this app's business scope. They are **not** a domain spec: never assume models, columns, or enum values from these docs. Always derive the real domain shape from the actual code and the Wayfinder-generated types (`@wayfinder/*`).
+> **About the examples:** Code samples use a neutral sample domain (`User`, `Team`, `UserStatus`) purely to illustrate the conventions — these are shapes any Laravel app ships with, not this app's business scope. They are **not** a domain spec: never assume models, columns, or enum values from these docs. Always derive the real domain shape from the actual code and the Wayfinder-generated types (`@wayfinder/*`). The application's business domain (entities, business rules, roadmap) is documented in the root `README.md`.
 
 ## PHP Conventions
 

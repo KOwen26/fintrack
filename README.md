@@ -1,197 +1,109 @@
-# Laravel Inertia Svelte
+# FinTrack
 
-## TODO(s)
+Personal finance tracker for the Indonesian market. Track balances across bank accounts, digital banks, e-wallets, cash wallets and investments; record income, expenses and transfers; organize spending in a two-level category tree; and review activity through monthly reports. Joint (shared) accounts are supported.
 
-1. Define MVP Ready (Account, Transaction, Simple Spending Report)
-2. Finalize Account UIs
-3. Fix Transaction Form & Behavior
-4. Implement / Rework Budgeting Feature
-5. Implement / Rework Transaction Preset
+> **Domain source of truth:** this document is the conceptual narrative. Schema truth lives in `database/migrations/**`, domain vocabulary in `app/Enums/**`, business rules in `app/Services/**`, and generated frontend types in `resources/js/wayfinder/`. Setup & tooling live in [`STACK.md`](STACK.md).
 
-## Table of Contents
+## Domain Overview
 
-- [Laravel Inertia Svelte](#laravel-inertia-svelte)
-  - [Table of Contents](#table-of-contents)
-  - [Project Structure](#project-structure)
-  - [Commands](#commands)
-  - [Backend](#backend)
-  - [Frontend](#frontend)
-  - [Format, Lint, \& Static Code Analysis](#format-lint--static-code-analysis)
-  - [Logging](#logging)
-  - [Testing](#testing)
-
-## Project Structure
-
-### Backend (Laravel)
-
-The backend follows the standard Laravel directory structure with some key additions:
-
-- **app/Data**: Contains [Spatie Laravel Data](https://spatie.be/docs/laravel-data) objects, acting as Data Transfer Objects (DTOs) for robust data handling and type safety.
-- **app/Enums**: PHP Enums used throughout the application.
-- **routes**: Routes are organized into separate files for better maintainability:
-  - `web.php`: Standard web routes.
-  - `auth.php`: Authentication-related routes.
-  - `dev.php`: Development-only routes (guarded by `OnlyDevelopment` middleware).
-  - `settings.php`: Application settings routes.
-
-### Frontend (Svelte 5 & Inertia.js)
-
-The frontend is built with Svelte 5 and Inertia.js, located in `resources/js`:
-
-- **components**: Reusable Svelte components, organized by category:
-  - `ui`: Base UI components (often from shadcn-svelte or daisyUI), e.g., buttons, inputs, cards.
-  - `layouts`: Layout components that wrap pages (e.g., `dashboard-layout.svelte`, `guest-layout.svelte`).
-  - `data`: Components specifically designed for data presentation, such as data tables.
-  - `menu`: Components related to menu rendering.
-  - `navigation`: Navigation-related components like sidebars or breadcrumbs.
-- **pages**: Inertia page components. These correspond to the views returned by Laravel controllers.
-- **svelte**: Contains Svelte 5 specific logic:
-  - `actions`: Custom Svelte actions (directives applied to elements).
-  - `states`: Global state management stores using Svelte 5 runes (e.g., `is-mobile.svelte.ts`).
-- **types**: TypeScript type definitions.
-  - `generated.d.ts`: Auto-generated types from Laravel Data objects using [Laravel TypeScript Transformer](https://spatie.be/docs/typescript-transformer), ensuring type consistency between backend and frontend.
-  - `inertia.d.ts`: Type definitions for Inertia.js specific props and helpers.
-  - `index.ts`: Central export file for types.
-- **utilities**: Helper functions and classes.
-  - Files ending in `.svelte.ts` (e.g., `authorization.svelte.ts`, `datatable.svelte.ts`) contain Svelte 5 reactive logic (runes).
-  - General utility files (e.g., `formatter.ts`, `shadcn.ts`) provide non-reactive helper functions.
-- **data**: Static data or configuration files (e.g., menu structure, theme settings).
-
-### Frontend Aliases
-
-The project is configured with several Vite aliases to simplify imports:
-
-- `@`: `resources/js`
-- `@components`: `resources/js/components`
-- `@layouts`: `resources/js/components/layouts`
-- `@states`: `resources/js/svelte/states`
-- `@utilities`: `resources/js/utilities`
-- `@data`: `resources/js/data`
-- `@type`: `resources/js/types`
-- `@schema`: `resources/js/schema`
-- `@route`: `resources/js/route.ts`
-
-## Commands
-
-- Run Development Server (Customized)
-  - Prune telescope data
-  - Run pnpm dev
-
-```shell
-    composer run dev
+```
+User ──owns──> Account ──has──> Transaction ──> Category (2-level tree)
+                │                  │
+                └── Provider       └── Transfer (aggregate: source + destination + optional fee)
 ```
 
-- Lint Laravel Backend (Dirty Changes [Require Version Control]) and Svelte Frontend
+A user owns multiple financial accounts, each optionally linked to a provider (institution). Every money movement is a transaction on exactly one account. Transfers between two accounts are modeled as a first-class aggregate that owns its member rows. Spending is classified through a global two-level category tree. Reports aggregate transaction history per account — or across accounts.
 
-```shell
-    composer run lint
-```
+## Core Concepts & Business Rules
 
-- Format Laravel Backend (Dirty Changes [Require Version Control])
+### Account
 
-```shell
-    composer run format
-```
+- **Types** (`AccountType`): `debit_account`, `credit_card`, `cash_wallet`, `e_wallet`, `investment`.
+- **Access** (`AccountAccessType`): `personal` or `joint`. Viewing is allowed for the owner or anyone when the account is joint; mutating (update, delete, restore, archive) is owner-only.
+- **Lifecycle**: soft deletes plus a separate `archived_at` timestamp — archiving is user-facing and distinct from deletion; lists exclude archived accounts.
+- **Balance is dual-tracked**: `current_balance` is denormalized and observer-maintained: account creation copies `initial_balance`; editing `initial_balance` applies the delta; every transaction create/update/delete/restore applies `±amount` by flow direction. On-demand truth is recomputed by `BalanceService` as `initial_balance + Σ inflows − Σ outflows` (SQL aggregate, cached per account — past data indefinitely, current month briefly).
+- **Portfolio summary**: total balance; "available" balance counts only debit + cash + e-wallet accounts (credit cards excluded); investment balance; oldest-account age.
 
-- Format Svelte Frontend
+### Transaction
 
-```shell
-    pnpm run format
-```
+- Two independent axes: **type** (`income`, `expense`, `transfer`) and **flow** (`inflow`, `outflow`). A transfer books as *(transfer, outflow)* on the source account and *(transfer, inflow)* on the destination — never as dedicated in/out types.
+- **Uncategorized transactions are not allowed.** `category_id` is nullable solely because of the transfer mechanism (fee rows may book uncategorized when the Admin Fees category does not resolve); direct categorization for transfers may be added later.
+- Amounts are stored as decimals but carried as whole numbers (rupiah-scale).
+- `transaction_date` is a **datetime**.
+- `created_by` is always recorded — significant for joint accounts.
 
-- Generate Typescript form Laravel Data
+### Transfer (aggregate)
 
-```shell
-    composer run generate:ts //or php artisan typescript:transform
-```
+- A `transfers` row owns 2–3 member transactions: the source *(transfer, outflow)*, the destination *(transfer, inflow)*, and an optional fee.
+- The fee books as an *(expense, outflow)* row on the **source** account, described "Transfer fee", under the **Admin Fees** child category when it exists.
+- **Editing** updates the aggregate in place, soft-deletes all member rows (observers reverse their balance effects) and re-creates them from the updated payload — atomically in one transaction.
+- **Deleting any member deletes the whole unit** — aggregate and every member row, including the fee. The pairing is app-enforced.
 
-## Backend
+### Category
 
-Powered by laravel ecosystem, and Enhanced by:
+- Two-level tree (parent → children). Type: `input` (income) or `output` (spending). Manual sort order. `is_fixed_cost` marks fixed recurring costs.
+- `is_fixed_cost` is currently only a **marker** consumed by the Fixed-vs-Variable report; broader semantics (budgeting) are future intent.
+- Categories are **global by design** (no per-user scoping — per-user categorization is distant roadmap). Defaults are seeded: Income, Finance, Food & Drinks, Utilities, Service & Housing, and children such as Salary, Dining Out, Electricity — each with icon/color decorations.
 
-- [Laravel Data](<[https://](https://spatie.be/docs/laravel-data/v4/getting-started/quickstart)>) Laravel DTO Mapper by Spatie
-- [Laravel Typescript Transformer](<[https://](https://spatie.be/docs/typescript-transformer/v2/laravel/installation-and-setup)>) PHP class to typescript type by Spatie
+### Provider
 
-```shell
-  composer require spatie/laravel-data spatie/laravel-typescript-transformer --dev
-```
+- Reference metadata for financial institutions — banks, digital banks, e-wallets, credit loans, investments — seeded with Indonesian institutions (BCA, Mandiri, Jenius, GoPay, OVO, Dana, ShopeePay, LinkAja, …).
+- **Metadata-only today**: attaches to accounts for display. Deeper integration is future roadmap. Not soft-deletable; carries `active`/`inactive` status and a unique slug.
 
-## Frontend
+### Decorations
 
-- [Tailwindcss v4](https://tailwindcss.com)
+- Accounts, categories and providers carry a `decorations` JSON payload (icon + color) cast to `DecorationData`, powering colorful UI rendering.
+- Palettes are sourced from `resources/js/data/decoration-icons.json` and `decoration-colors.json` via the Sushi-backed `DecorationIcon` / `DecorationColor` models — writes flow through the models so the JSON stays in sync.
 
-- [Inertia v3](https://inertiajs.com/)
+### Reports
 
-```shell
-    composer require inertiajs/inertia-laravel
+All reports are SQL-aggregated and cached per account (past months indefinitely, current month briefly):
 
+- **Trend** — income vs expense per month, net, surplus rate.
+- **Category Leak** — expenses ranked by category with share of period total.
+- **Contribution Split** — income share per member; **joint accounts only** (personal accounts return an empty split, not an error).
+- **Fixed vs Variable** — spending split by the fixed-cost marker; "safety margin" equals the variable share.
+- **Global category spending** — aggregates across multiple accounts and groups child-category spend under parents (synthesizing a parent when only children have spend).
 
-    pnpm add @inertiajs/svelte
-```
+### Users & Access
 
-- [Svelte v5](https://svelte.dev/)
-  - [svelte-check](https://github.com/sveltejs/language-tools): A tool to check your Svelte code for errors.
-  - [@sveltejs/vite-plugin-svelte](https://github.com/sveltejs/vite-plugin-svelte): Vite plugin for Svelte.
+- Fortify authentication: required email verification, two-factor auth, passkeys.
+- Spatie roles/permissions are wired but no domain-specific roles are in use yet.
+- Per-user `theme_preference` (light/dark).
 
-```shell
-    pnpm add svelte svelte-check @sveltejs/vite-plugin-svelte -D
-```
+## Non-Goals
 
-- Typescript
-  - [Typescript](https://www.typescriptlang.org/): A strongly typed programming language that builds on JavaScript.
+- Multi-currency — single implied currency with whole-rupiah amounts.
+- Credit-card limit / utilization tracking — descoped.
+- Uncategorized transactions — other than the transfer-fee mechanism above.
+- Budget enforcement — budgeting is roadmap, not implemented.
 
-```shell
-    pnpm add typescript -D
-```
+## Roadmap
 
-## Format, Lint, & Static Code Analysis
+### Current focus
 
-- [Pint](https://github.com/laravel/pint)
-- [Rector](https://github.com/rectorphp/rector)
+1. Define MVP-ready scope (Account, Transaction, simple spending report)
+2. Fix Transaction form & behavior
+3. Implement / rework budgeting
+4. Implement / rework transaction presets (including recurring execution)
 
-- Prettier
-  - [Prettier](https://prettier.io/): An opinionated code formatter.
-  - [prettier-plugin-svelte](https://github.com/sveltejs/prettier-plugin-svelte): Prettier plugin for Svelte.
-  - [prettier-plugin-tailwindcss](https://github.com/tailwindlabs/prettier-plugin-tailwindcss): Prettier plugin for Tailwind CSS.
-  - [@ianvs/prettier-plugin-sort-imports](https://github.com/ianvs/prettier-plugin-sort-imports): Prettier plugin to sort imports.
+### Later
 
-```shell
-    pnpm add prettier prettier-plugin-svelte  prettier-plugin-tailwindcss @ianvs/prettier-plugin-sort-imports -D
-```
+- Household / shared-account membership — joint accounts are currently visible to all users as a placeholder until membership exists
+- Deeper Provider integration (provider data is metadata-only today)
 
-- Eslint
-  - [Eslint](https://eslint.org/): A tool for identifying and fixing problems in JavaScript code.
-  - [@eslint/compat](https://github.com/eslint/eslint-compat): Compatibility package for ESLint.
-  - [globals](https://github.com/sindresorhus/globals): Global variables for various environments.
-  - [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint): TypeScript plugin for ESLint.
-  - [eslint-plugin-svelte](https://github.com/sveltejs/eslint-plugin-svelte): ESLint plugin for Svelte.
-  - [svelte-eslint-parser](https://github.com/sveltejs/svelte-eslint-parser): ESLint parser for Svelte.
-  - [eslint-config-prettier](https://github.com/prettier/eslint-config-prettier): Turns off all rules that are unnecessary or might conflict with Prettier.
-  - [eslint-plugin-unused-imports](https://github.com/sweepline/eslint-plugin-unused-imports): ESLint plugin to remove unused imports.
+### Distant
 
-```shell
-    pnpm add eslint @eslint/compat globals  typescript-eslint eslint-plugin-svelte svelte-eslint-parser eslint-config-prettier eslint-plugin-unused-imports -D
-```
+- Per-user category scoping
 
-## Logging
+## Tech Stack
 
-- [Laravel Telescope](https://laravel.com/docs/telescope): Debug assistant for Laravel applications.
-- [Laravel Debugbar](https://github.com/barryvdh/laravel-debugbar): Integrates PHP Debug Bar with Laravel.
+| Layer      | Stack                                                                                     |
+| ---------- | ----------------------------------------------------------------------------------------- |
+| Backend    | Laravel (PHP 8.4), Fortify (2FA, passkeys), Spatie Laravel Data, Spatie Permission        |
+| Frontend   | Svelte 5, Inertia v3, Tailwind CSS v4 (DaisyUI + shadcn-style atoms), TypeScript          |
+| Data/Query | Wayfinder-generated types, TanStack Table, layerchart                                     |
+| Quality    | Pest, Pint, Rector, ESLint, Prettier                                                      |
+| Dev tools  | Telescope, Laravel Debugbar                                                               |
 
-```shell
-    composer require laravel/telescope --dev barryvdh/laravel-debugbar --dev
-
-    php artisan telescope:install
-
-    php artisan migrate
-```
-
-## Testing
-
-- [Pest](https://pestphp.com/): A testing framework with a focus on simplicity.
-
-```shell
-    composer require pestphp/pest --dev
-
-    ./vendor/bin/pest --init
-```
+Full setup commands, install steps, project structure and aliases: [`STACK.md`](STACK.md). Engineering conventions: `.ai/guidelines/` (architecture patterns) and `.ai/rules/` (project-specific rules).

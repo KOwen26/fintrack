@@ -33,3 +33,6 @@ Structural architecture conventions (service pattern, DTOs, events/listeners, en
 policies, caching core, Form Requests, migration column types) are documented separately in
 `.ai/guidelines/laravel-inertia-svelte/rules/` — these files complement them with the
 project-specific conventions the guidelines do not cover.
+
+For the application's business domain — entities, business rules, roadmap — start
+with the root `README.md`.
