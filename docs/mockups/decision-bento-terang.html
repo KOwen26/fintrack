@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Fintrack — Bento Terang</title>
+        <style>
+            /* VARIANT A — quiet light bento: cream ground, white tiles with warm borders,
+       sage green primary, soft blue info, honey gold accent. Elevation = border only. */
+            :root {
+                --ground: #faf6ef;
+                --tile: #ffffff;
+                --tile-edge: #e9e2d4;
+                --ink: #24312a;
+                --ink-soft: #5d6b61;
+                --green: #2f7d5b;
+                --green-soft: #e7f1eb;
+                --blue: #4a7fe8;
+                --blue-soft: #e9effb;
+                --gold: #b8862c;
+                --gold-soft: #f7ecd7;
+                --r: 16px;
+                --face: 'Aptos', 'Segoe UI', system-ui, sans-serif;
+            }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #efe9dd;
+            }
+            body {
+                font-family: var(--face);
+                width: 390px;
+                min-height: 844px;
+                margin: 0 auto;
+                background: var(--ground);
+                color: var(--ink);
+                padding: 20px 14px 30px;
+            }
+            ::selection {
+                background: var(--green);
+                color: #fff;
+            }
+            :focus-visible {
+                outline: 2px solid var(--blue);
+                outline-offset: 2px;
+            }
+
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                padding: 0 4px;
+            }
+            header h1 {
+                font-size: 17px;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+            }
+            header p {
+                font-size: 12px;
+                color: var(--ink-soft);
+            }
+
+            .bento {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+                margin-top: 14px;
+            }
+            .tile {
+                background: var(--tile);
+                border: 1px solid var(--tile-edge);
+                border-radius: var(--r);
+                padding: 14px;
+            }
+            .tile .lbl {
+                font-size: 11px;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--ink-soft);
+                font-weight: 600;
+            }
+            .tile .num {
+                font-size: 22px;
+                font-weight: 750;
+                letter-spacing: -0.02em;
+                margin-top: 6px;
+                font-variant-numeric: tabular-nums;
+            }
+            .tile.span2 {
+                grid-column: span 2;
+            }
+            .tile.span4 {
+                grid-column: span 4;
+            }
+            .t-balance .num {
+                color: var(--green);
+            }
+            .t-income .num {
+                color: var(--gold);
+            }
+            .t-spend .num {
+                color: var(--blue);
+            }
+
+            /* Amount hero — the largest thing on screen */
+            .hero {
+                grid-column: span 4;
+                background: var(--green-soft);
+                border-color: #cfe3d8;
+                padding: 18px 16px 14px;
+            }
+            .hero label {
+                font-size: 11px;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                color: #476355;
+                font-weight: 700;
+                display: block;
+            }
+            .hero .amt {
+                display: flex;
+                align-items: baseline;
+                gap: 8px;
+                margin-top: 4px;
+            }
+            .hero .amt .rp {
+                font-size: 18px;
+                font-weight: 700;
+                color: var(--green);
+            }
+            #amt {
+                flex: 1;
+                border: 0;
+                outline: 0;
+                background: transparent;
+                font-family: var(--face);
+                font-size: 44px;
+                font-weight: 800;
+                letter-spacing: -0.02em;
+                color: var(--ink);
+                font-variant-numeric: tabular-nums;
+                caret-color: var(--green);
+                min-width: 0;
+            }
+            .types {
+                display: flex;
+                gap: 6px;
+                margin-top: 12px;
+            }
+            .types button {
+                flex: 1;
+                font-family: var(--face);
+                font-size: 12.5px;
+                font-weight: 650;
+                padding: 9px 0;
+                border-radius: 999px;
+                border: 1px solid var(--tile-edge);
+                background: var(--tile);
+                color: var(--ink-soft);
+                cursor: pointer;
+            }
+            .types button.on {
+                background: var(--green);
+                border-color: var(--green);
+                color: #fff;
+            }
+
+            .acct-row {
+                grid-column: span 4;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+            .acct {
+                background: var(--tile);
+                border: 1px solid var(--tile-edge);
+                border-radius: var(--r);
+                padding: 10px 6px;
+                text-align: center;
+                cursor: pointer;
+            }
+            .acct .nm {
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .acct .bl {
+                font-size: 10.5px;
+                color: var(--ink-soft);
+                margin-top: 3px;
+                font-variant-numeric: tabular-nums;
+            }
+            .acct.on {
+                background: var(--blue-soft);
+                border-color: #c6d5f3;
+            }
+            .acct.on .nm {
+                color: #2b57b8;
+            }
+
+            .cats {
+                grid-column: span 4;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+            .cat {
+                background: var(--tile);
+                border: 1px solid var(--tile-edge);
+                border-radius: var(--r);
+                padding: 10px 4px;
+                text-align: center;
+                cursor: pointer;
+            }
+            .cat .gl {
+                width: 30px;
+                height: 30px;
+                border-radius: 10px;
+                display: grid;
+                place-items: center;
+                font-size: 13px;
+                font-weight: 800;
+                line-height: 1;
+                margin: 0 auto;
+                background: var(--gold-soft);
+                color: var(--gold);
+            }
+            .cat .nm {
+                font-size: 10.5px;
+                color: var(--ink-soft);
+                margin-top: 5px;
+            }
+            .cat.on {
+                background: var(--gold-soft);
+                border-color: #e4cfa4;
+            }
+            .cat.on .nm {
+                color: var(--gold);
+                font-weight: 650;
+            }
+
+            .pad {
+                grid-column: span 4;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+            .pad button {
+                font-family: var(--face);
+                font-size: 19px;
+                font-weight: 700;
+                color: var(--ink);
+                background: var(--tile);
+                border: 1px solid var(--tile-edge);
+                border-radius: 12px;
+                padding: 12px 0;
+                cursor: pointer;
+            }
+            .pad button:active {
+                background: var(--green-soft);
+                border-color: #cfe3d8;
+                color: var(--green);
+            }
+            .pad .fn {
+                font-size: 12px;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--ink-soft);
+            }
+
+            .save {
+                grid-column: span 4;
+                border: 0;
+                border-radius: var(--r);
+                padding: 15px 0;
+                background: var(--green);
+                color: #fff;
+                font-family: var(--face);
+                font-size: 14.5px;
+                font-weight: 750;
+                cursor: pointer;
+            }
+            .save:active {
+                transform: translateY(1px);
+            }
+
+            .today {
+                margin-top: 20px;
+                padding: 0 4px;
+            }
+            .today h2 {
+                font-size: 13px;
+                font-weight: 750;
+            }
+            .trow {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 11px 0;
+                border-bottom: 1px solid var(--tile-edge);
+            }
+            .trow:last-child {
+                border-bottom: 0;
+            }
+            .dot {
+                width: 34px;
+                height: 34px;
+                border-radius: 12px;
+                display: grid;
+                place-items: center;
+                font-size: 13px;
+                flex: none;
+            }
+            .d-coffee {
+                background: var(--gold-soft);
+                color: var(--gold);
+            }
+            .d-transport {
+                background: var(--blue-soft);
+                color: #2b57b8;
+            }
+            .d-grocery {
+                background: var(--green-soft);
+                color: var(--green);
+            }
+            .trow .who {
+                flex: 1;
+                font-size: 13px;
+                font-weight: 650;
+            }
+            .trow .who small {
+                display: block;
+                font-size: 11px;
+                color: var(--ink-soft);
+                font-weight: 500;
+                margin-top: 2px;
+            }
+            .trow .val {
+                font-size: 13.5px;
+                font-weight: 750;
+                font-variant-numeric: tabular-nums;
+            }
+            .neg {
+                color: #b3502e;
+            }
+            .pos {
+                color: var(--green);
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Quick entry</h1>
+            <p>Dinda & Rio</p>
+        </header>
+
+        <section class="bento" aria-label="Quick entry">
+            <div class="tile span2 t-balance">
+                <p class="lbl">BCA balance</p>
+                <p class="num">12,4jt</p>
+            </div>
+            <div class="tile t-income">
+                <p class="lbl">In</p>
+                <p class="num">8,4jt</p>
+            </div>
+            <div class="tile t-spend">
+                <p class="lbl">Out</p>
+                <p class="num">625rb</p>
+            </div>
+
+            <div class="tile hero">
+                <label for="amt">Amount</label>
+                <div class="amt">
+                    <span class="rp">Rp</span
+                    ><input id="amt" value="35.000" inputmode="numeric" autocomplete="off" />
+                </div>
+                <div class="types">
+                    <button class="on">Expense</button>
+                    <button>Income</button>
+                    <button>Transfer</button>
+                </div>
+            </div>
+
+            <div class="acct-row">
+                <div class="acct on">
+                    <p class="nm">BCA</p>
+                    <p class="bl">12,4jt</p>
+                </div>
+                <div class="acct">
+                    <p class="nm">GoPay</p>
+                    <p class="bl">312rb</p>
+                </div>
+                <div class="acct">
+                    <p class="nm">Cash</p>
+                    <p class="bl">450rb</p>
+                </div>
+                <div class="acct">
+                    <p class="nm">Card</p>
+                    <p class="bl">−1,2jt</p>
+                </div>
+            </div>
+
+            <div class="cats">
+                <div class="cat on">
+                    <p class="gl">K</p>
+                    <p class="nm">Coffee</p>
+                </div>
+                <div class="cat">
+                    <p class="gl">G</p>
+                    <p class="nm">Groceries</p>
+                </div>
+                <div class="cat">
+                    <p class="gl">T</p>
+                    <p class="nm">Transport</p>
+                </div>
+                <div class="cat">
+                    <p class="gl">B</p>
+                    <p class="nm">Bills</p>
+                </div>
+                <div class="cat">
+                    <p class="gl">E</p>
+                    <p class="nm">Eating</p>
+                </div>
+                <div class="cat">
+                    <p class="gl">H</p>
+                    <p class="nm">Home</p>
+                </div>
+                <div class="cat">
+                    <p class="gl">Kd</p>
+                    <p class="nm">Kids</p>
+                </div>
+                <div class="cat">
+                    <p class="gl">+</p>
+                    <p class="nm">More</p>
+                </div>
+            </div>
+
+            <div class="pad">
+                <button>1</button><button>2</button><button>3</button> <button>4</button
+                ><button>5</button><button>6</button> <button>7</button><button>8</button
+                ><button>9</button> <button class="fn">000</button><button>0</button
+                ><button class="fn">Del</button>
+            </div>
+
+            <button class="save">Save entry</button>
+        </section>
+
+        <section class="today" aria-label="Today">
+            <h2>Today</h2>
+            <div class="trow">
+                <div class="dot d-coffee">K</div>
+                <div class="who">Kopi Kenangan<small>Coffee · BCA</small></div>
+                <div class="val neg">−35.000</div>
+            </div>
+            <div class="trow">
+                <div class="dot d-transport">T</div>
+                <div class="who">GoRide<small>Transport · GoPay</small></div>
+                <div class="val neg">−18.000</div>
+            </div>
+            <div class="trow">
+                <div class="dot d-grocery">G</div>
+                <div class="who">Alfamart<small>Groceries · BCA</small></div>
+                <div class="val neg">−126.500</div>
+            </div>
+            <div class="trow">
+                <div class="dot d-grocery">S</div>
+                <div class="who">Salary<small>Income · BCA</small></div>
+                <div class="val pos">+8.400.000</div>
+            </div>
+        </section>
+
+        <script>
+            const amt = document.getElementById('amt');
+            amt.addEventListener('input', () => {
+                const d = amt.value.replace(/\D/g, '').slice(0, 11);
+                amt.value = d.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            });
+            document.querySelectorAll('.cat').forEach(
+                (c) =>
+                    (c.onclick = () => {
+                        document.querySelectorAll('.cat').forEach((x) => x.classList.remove('on'));
+                        c.classList.add('on');
+                    })
+            );
+            document.querySelectorAll('.acct').forEach(
+                (c) =>
+                    (c.onclick = () => {
+                        document.querySelectorAll('.acct').forEach((x) => x.classList.remove('on'));
+                        c.classList.add('on');
+                    })
+            );
+            document.querySelectorAll('.types button').forEach(
+                (c) =>
+                    (c.onclick = () => {
+                        document
+                            .querySelectorAll('.types button')
+                            .forEach((x) => x.classList.remove('on'));
+                        c.classList.add('on');
+                    })
+            );
+        </script>
+    </body>
+</html>

@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Fintrack — Bento Tegas</title>
+        <style>
+            /* VARIANT B — drenched bento: light ground, but color OWNS whole regions.
+       Emerald = balance/positive, cobalt = transfer/info, gold = income. Cream text on saturated tiles. */
+            :root {
+                --ground: #f4f5f1;
+                --tile: #ffffff;
+                --edge: #e3e5de;
+                --ink: #1c211d;
+                --ink-soft: #63695f;
+                --emerald: #0e6b45;
+                --emerald-deep: #0a5236;
+                --cream: #f6f2e4;
+                --cobalt: #1d4ed8;
+                --cobalt-deep: #1a3fa8;
+                --gold: #d9a326;
+                --gold-deep: #a97a14;
+                --r: 16px;
+                --face: 'Aptos', 'Segoe UI', system-ui, sans-serif;
+            }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e7e9e2;
+            }
+            body {
+                font-family: var(--face);
+                width: 390px;
+                min-height: 844px;
+                margin: 0 auto;
+                background: var(--ground);
+                color: var(--ink);
+                padding: 20px 14px 30px;
+            }
+            ::selection {
+                background: var(--gold);
+                color: #1c211d;
+            }
+            :focus-visible {
+                outline: 2px solid var(--cobalt);
+                outline-offset: 2px;
+            }
+
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                padding: 0 4px;
+            }
+            header h1 {
+                font-size: 17px;
+                font-weight: 750;
+                letter-spacing: -0.01em;
+            }
+            header p {
+                font-size: 12px;
+                color: var(--ink-soft);
+            }
+
+            .bento {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+                margin-top: 14px;
+            }
+            .t {
+                border-radius: var(--r);
+            }
+            .lbl {
+                font-size: 11px;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                font-weight: 700;
+                opacity: 0.85;
+            }
+            .num {
+                font-size: 22px;
+                font-weight: 800;
+                letter-spacing: -0.02em;
+                margin-top: 6px;
+                font-variant-numeric: tabular-nums;
+            }
+
+            .t-balance {
+                grid-column: span 2;
+                background: var(--emerald);
+                color: var(--cream);
+                padding: 16px 14px;
+            }
+            .t-income {
+                background: var(--gold);
+                color: #2a1f07;
+                padding: 14px;
+            }
+            .t-spend {
+                background: var(--cobalt);
+                color: var(--cream);
+                padding: 14px;
+            }
+
+            .hero {
+                grid-column: span 4;
+                background: var(--emerald-deep);
+                color: var(--cream);
+                padding: 20px 16px 16px;
+            }
+            .hero label {
+                font-size: 11px;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+                font-weight: 700;
+                opacity: 0.8;
+                display: block;
+            }
+            .hero .amt {
+                display: flex;
+                align-items: baseline;
+                gap: 8px;
+                margin-top: 4px;
+            }
+            .hero .amt .rp {
+                font-size: 18px;
+                font-weight: 750;
+                color: var(--gold);
+            }
+            #amt {
+                flex: 1;
+                border: 0;
+                outline: 0;
+                background: transparent;
+                font-family: var(--face);
+                font-size: 46px;
+                font-weight: 800;
+                letter-spacing: -0.02em;
+                color: #fff;
+                font-variant-numeric: tabular-nums;
+                caret-color: var(--gold);
+                min-width: 0;
+            }
+            .types {
+                display: flex;
+                gap: 6px;
+                margin-top: 14px;
+            }
+            .types button {
+                flex: 1;
+                font-family: var(--face);
+                font-size: 12.5px;
+                font-weight: 700;
+                padding: 9px 0;
+                border-radius: 999px;
+                border: 1px solid rgba(246, 242, 228, 0.3);
+                background: transparent;
+                color: rgba(246, 242, 228, 0.75);
+                cursor: pointer;
+            }
+            .types button.on {
+                background: var(--cream);
+                border-color: var(--cream);
+                color: var(--emerald-deep);
+            }
+
+            .acct-row {
+                grid-column: span 4;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+            .acct {
+                background: var(--tile);
+                border: 1px solid var(--edge);
+                border-radius: var(--r);
+                padding: 10px 6px;
+                text-align: center;
+                cursor: pointer;
+            }
+            .acct .nm {
+                font-size: 12px;
+                font-weight: 750;
+            }
+            .acct .bl {
+                font-size: 10.5px;
+                color: var(--ink-soft);
+                margin-top: 3px;
+                font-variant-numeric: tabular-nums;
+            }
+            .acct.on {
+                border-color: var(--emerald);
+                background: #e9f2ec;
+            }
+            .acct.on .nm {
+                color: var(--emerald-deep);
+            }
+
+            .cats {
+                grid-column: span 4;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+            .cat {
+                background: var(--tile);
+                border: 1px solid var(--edge);
+                border-radius: var(--r);
+                padding: 11px 4px;
+                text-align: center;
+                cursor: pointer;
+            }
+            .cat .nm {
+                font-size: 10.5px;
+                color: var(--ink-soft);
+            }
+            .cat.on {
+                background: var(--gold);
+                border-color: var(--gold);
+            }
+            .cat.on .nm {
+                color: #2a1f07;
+                font-weight: 750;
+            }
+
+            .pad {
+                grid-column: span 4;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+            .pad button {
+                font-family: var(--face);
+                font-size: 19px;
+                font-weight: 750;
+                color: var(--ink);
+                background: var(--tile);
+                border: 1px solid var(--edge);
+                border-radius: 12px;
+                padding: 12px 0;
+                cursor: pointer;
+            }
+            .pad button:active {
+                background: var(--emerald);
+                border-color: var(--emerald);
+                color: var(--cream);
+            }
+            .pad .fn {
+                font-size: 12px;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--ink-soft);
+            }
+
+            .save {
+                grid-column: span 4;
+                border: 0;
+                border-radius: var(--r);
+                padding: 15px 0;
+                background: var(--ink);
+                color: var(--cream);
+                font-family: var(--face);
+                font-size: 14.5px;
+                font-weight: 750;
+                cursor: pointer;
+            }
+            .save:active {
+                transform: translateY(1px);
+            }
+
+            .today {
+                margin-top: 20px;
+                padding: 0 4px;
+            }
+            .today h2 {
+                font-size: 13px;
+                font-weight: 750;
+            }
+            .trow {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 11px 0;
+                border-bottom: 1px solid var(--edge);
+            }
+            .trow:last-child {
+                border-bottom: 0;
+            }
+            .tag {
+                font-size: 11px;
+                font-weight: 750;
+                padding: 7px 10px;
+                border-radius: 10px;
+                flex: none;
+            }
+            .g-coffee {
+                background: var(--gold);
+                color: #2a1f07;
+            }
+            .g-transport {
+                background: var(--cobalt);
+                color: var(--cream);
+            }
+            .g-grocery {
+                background: var(--emerald);
+                color: var(--cream);
+            }
+            .trow .who {
+                flex: 1;
+                font-size: 13px;
+                font-weight: 650;
+            }
+            .trow .who small {
+                display: block;
+                font-size: 11px;
+                color: var(--ink-soft);
+                font-weight: 500;
+                margin-top: 2px;
+            }
+            .trow .val {
+                font-size: 13.5px;
+                font-weight: 800;
+                font-variant-numeric: tabular-nums;
+            }
+            .neg {
+                color: #a83c22;
+            }
+            .pos {
+                color: var(--emerald-deep);
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Quick entry</h1>
+            <p>Dinda & Rio</p>
+        </header>
+
+        <section class="bento" aria-label="Quick entry">
+            <div class="t t-balance">
+                <p class="lbl">BCA balance</p>
+                <p class="num">12,4jt</p>
+            </div>
+            <div class="t t-income">
+                <p class="lbl">In</p>
+                <p class="num">8,4jt</p>
+            </div>
+            <div class="t t-spend">
+                <p class="lbl">Out</p>
+                <p class="num">625rb</p>
+            </div>
+
+            <div class="t hero">
+                <label for="amt">Amount</label>
+                <div class="amt">
+                    <span class="rp">Rp</span
+                    ><input id="amt" value="35.000" inputmode="numeric" autocomplete="off" />
+                </div>
+                <div class="types">
+                    <button class="on">Expense</button>
+                    <button>Income</button>
+                    <button>Transfer</button>
+                </div>
+            </div>
+
+            <div class="acct-row">
+                <div class="acct on">
+                    <p class="nm">BCA</p>
+                    <p class="bl">12,4jt</p>
+                </div>
+                <div class="acct">
+                    <p class="nm">GoPay</p>
+                    <p class="bl">312rb</p>
+                </div>
+                <div class="acct">
+                    <p class="nm">Cash</p>
+                    <p class="bl">450rb</p>
+                </div>
+                <div class="acct">
+                    <p class="nm">Card</p>
+                    <p class="bl">−1,2jt</p>
+                </div>
+            </div>
+
+            <div class="cats">
+                <div class="cat on"><p class="nm">Coffee</p></div>
+                <div class="cat"><p class="nm">Groceries</p></div>
+                <div class="cat"><p class="nm">Transport</p></div>
+                <div class="cat"><p class="nm">Bills</p></div>
+                <div class="cat"><p class="nm">Eating</p></div>
+                <div class="cat"><p class="nm">Home</p></div>
+                <div class="cat"><p class="nm">Kids</p></div>
+                <div class="cat"><p class="nm">More</p></div>
+            </div>
+
+            <div class="pad">
+                <button>1</button><button>2</button><button>3</button> <button>4</button
+                ><button>5</button><button>6</button> <button>7</button><button>8</button
+                ><button>9</button> <button class="fn">000</button><button>0</button
+                ><button class="fn">Del</button>
+            </div>
+
+            <button class="save">Save entry</button>
+        </section>
+
+        <section class="today" aria-label="Today">
+            <h2>Today</h2>
+            <div class="trow">
+                <div class="tag g-coffee">Coffee</div>
+                <div class="who">Kopi Kenangan<small>BCA</small></div>
+                <div class="val neg">−35.000</div>
+            </div>
+            <div class="trow">
+                <div class="tag g-transport">Transport</div>
+                <div class="who">GoRide<small>GoPay</small></div>
+                <div class="val neg">−18.000</div>
+            </div>
+            <div class="trow">
+                <div class="tag g-grocery">Groceries</div>
+                <div class="who">Alfamart<small>BCA</small></div>
+                <div class="val neg">−126.500</div>
+            </div>
+            <div class="trow">
+                <div class="tag g-grocery">Income</div>
+                <div class="who">Salary<small>BCA</small></div>
+                <div class="val pos">+8.400.000</div>
+            </div>
+        </section>
+
+        <script>
+            const amt = document.getElementById('amt');
+            amt.addEventListener('input', () => {
+                const d = amt.value.replace(/\D/g, '').slice(0, 11);
+                amt.value = d.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            });
+            document.querySelectorAll('.cat').forEach(
+                (c) =>
+                    (c.onclick = () => {
+                        document.querySelectorAll('.cat').forEach((x) => x.classList.remove('on'));
+                        c.classList.add('on');
+                    })
+            );
+            document.querySelectorAll('.acct').forEach(
+                (c) =>
+                    (c.onclick = () => {
+                        document.querySelectorAll('.acct').forEach((x) => x.classList.remove('on'));
+                        c.classList.add('on');
+                    })
+            );
+            document.querySelectorAll('.types button').forEach(
+                (c) =>
+                    (c.onclick = () => {
+                        document
+                            .querySelectorAll('.types button')
+                            .forEach((x) => x.classList.remove('on'));
+                        c.classList.add('on');
+                    })
+            );
+        </script>
+    </body>
+</html>
