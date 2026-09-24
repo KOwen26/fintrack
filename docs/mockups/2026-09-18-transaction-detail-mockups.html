@@ -1,0 +1,3323 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>FinTrack — Transaction Detail Mockups (Cobalt)</title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Arvo:ital,wght@0,400;0,700;1,400&display=swap');
+
+            /* ════════════════════════════════════════════════════════════
+               FinTrack Mockups — Theme: Cobalt (exact vars from colors.css)
+               Transaction Detail · 3 variants
+               A · Ledger / Receipt  (freestyle, editorial)
+               B · Bento Modern      (freestyle, composed grid)
+               C · Design System     (faithful to the app's components)
+               ════════════════════════════════════════════════════════════ */
+
+            :root,
+            [data-theme='cobalt'] {
+                --color-base-100: oklch(0.98 0.008 80);
+                --color-base-200: oklch(0.93 0.012 80);
+                --color-base-300: oklch(0.87 0.015 80);
+                --color-base-content: oklch(0.18 0.02 268);
+
+                --color-primary: oklch(0.38 0.12 268);
+                --color-primary-content: oklch(0.95 0.005 268);
+                --color-secondary: oklch(0.62 0.06 255);
+                --color-secondary-content: oklch(0.18 0.02 268);
+                --color-accent: oklch(0.72 0.16 78);
+                --color-accent-content: oklch(0.18 0.02 268);
+
+                --color-neutral: oklch(0.18 0.02 268);
+                --color-neutral-content: oklch(0.95 0.005 268);
+                --color-success: oklch(0.52 0.12 162);
+                --color-success-content: oklch(0.95 0.005 268);
+                --color-info: oklch(0.55 0.12 230);
+                --color-info-content: oklch(0.95 0.005 268);
+                --color-warning: oklch(0.72 0.16 78);
+                --color-warning-content: oklch(0.18 0.02 268);
+                --color-error: oklch(0.55 0.12 28);
+                --color-error-content: oklch(0.95 0.005 268);
+            }
+
+            /* ── Derived tints & helpers ─────────────────────────────── */
+            :root {
+                --hairline: color-mix(in oklab, var(--color-base-content) 10%, transparent);
+                --card-line: color-mix(in oklab, var(--color-base-content) 15%, transparent);
+                --ink-40: color-mix(in oklab, var(--color-base-content) 42%, transparent);
+                --ink-55: color-mix(in oklab, var(--color-base-content) 55%, transparent);
+                --ink-70: color-mix(in oklab, var(--color-base-content) 72%, transparent);
+                --soft-primary: color-mix(in oklab, var(--color-primary) 12%, transparent);
+                --soft-success: color-mix(in oklab, var(--color-success) 14%, transparent);
+                --soft-error: color-mix(in oklab, var(--color-error) 14%, transparent);
+                --soft-info: color-mix(in oklab, var(--color-info) 13%, transparent);
+                --soft-warning: color-mix(in oklab, var(--color-warning) 18%, transparent);
+                --font-sans:
+                    'Figtree', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+                --font-serif: 'Arvo', ui-serif, Georgia, serif;
+                --font-mono:
+                    ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+                --ease: cubic-bezier(0.22, 1, 0.36, 1);
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                font-family: var(--font-sans);
+                background: var(--color-base-200);
+                color: var(--color-base-content);
+                -webkit-font-smoothing: antialiased;
+            }
+            button {
+                font-family: inherit;
+                cursor: pointer;
+            }
+            svg {
+                display: block;
+            }
+            @media (prefers-reduced-motion: reduce) {
+                * {
+                    transition: none !important;
+                    animation: none !important;
+                }
+            }
+
+            /* Per-type dynamic accent (house convention) */
+            [data-type='expense'] {
+                --tc: var(--color-error);
+            }
+            [data-type='income'] {
+                --tc: var(--color-success);
+            }
+            [data-type='transfer'] {
+                --tc: var(--color-info);
+            }
+            .tc-text {
+                color: var(--tc);
+            }
+
+            /* ── Mockup page scaffold ────────────────────────────────── */
+            .masthead {
+                max-width: 1020px;
+                margin: 0 auto;
+                padding: 40px 20px 8px;
+            }
+            .masthead h1 {
+                font-size: 24px;
+                font-weight: 800;
+                letter-spacing: -0.02em;
+                margin: 0 0 6px;
+            }
+            .masthead h1 span {
+                color: var(--color-primary);
+            }
+            .masthead p {
+                margin: 0;
+                font-size: 14px;
+                line-height: 1.6;
+                color: var(--ink-70);
+                max-width: 72ch;
+            }
+            .page {
+                max-width: 1020px;
+                margin: 0 auto;
+                padding: 12px 20px 80px;
+            }
+
+            .variant {
+                margin-top: 36px;
+            }
+            .vhead {
+                display: flex;
+                align-items: flex-start;
+                gap: 14px;
+                margin-bottom: 14px;
+            }
+            .vbadge {
+                flex: none;
+                width: 42px;
+                height: 42px;
+                display: grid;
+                place-items: center;
+                border-radius: 12px;
+                background: var(--color-primary);
+                color: var(--color-primary-content);
+                font-size: 18px;
+                font-weight: 800;
+            }
+            .vbadge.sys {
+                background: var(--soft-primary);
+                color: var(--color-primary);
+            }
+            .vhead h2 {
+                font-size: 17px;
+                font-weight: 700;
+                margin: 2px 0 3px;
+            }
+            .vhead p {
+                margin: 0;
+                font-size: 13.5px;
+                line-height: 1.55;
+                color: var(--ink-70);
+                max-width: 78ch;
+            }
+            .vhead p code {
+                font-family: var(--font-mono);
+                font-size: 12px;
+                background: var(--color-base-100);
+                border: 1px solid var(--card-line);
+                border-radius: 5px;
+                padding: 1px 5px;
+            }
+
+            /* Segmented control — expense / income / transfer */
+            .seg {
+                display: flex;
+                gap: 4px;
+                width: fit-content;
+                background: color-mix(in oklab, var(--color-base-300) 55%, transparent);
+                border-radius: 12px;
+                padding: 4px;
+                margin: 4px 0 18px;
+            }
+            .seg button {
+                border: 0;
+                background: transparent;
+                padding: 8px 16px;
+                border-radius: 9px;
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--ink-70);
+                transition: all 0.18s var(--ease);
+            }
+            .seg button.on {
+                background: var(--color-base-100);
+                color: var(--color-base-content);
+                box-shadow: 0 2px 8px -2px oklch(0.18 0.02 268 / 0.25);
+            }
+
+            /* Frames: phone (mobile-first) above, desktop below — each full row,
+               so the desktop layout always gets a realistic canvas width. */
+            .frames {
+                display: grid;
+                gap: 26px;
+                align-items: flex-start;
+            }
+            .frame-label {
+                font-family: var(--font-mono);
+                font-size: 10px;
+                font-weight: 600;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                color: var(--ink-40);
+                margin: 0 0 8px;
+            }
+            .fcol {
+                min-width: 340px;
+                max-width: 440px;
+            }
+            .fcol.wide {
+                /* desktop frames keep a realistic canvas; the page scrolls
+                   horizontally instead of crushing the layout */
+                min-width: 620px;
+                max-width: none;
+            }
+            .phone {
+                width: 100%;
+                background: var(--color-base-100);
+                border: 1px solid var(--card-line);
+                border-radius: 28px;
+                padding: 12px;
+                box-shadow: 0 30px 70px -38px oklch(0.18 0.02 268 / 0.5);
+            }
+            .phone .screen {
+                border-radius: 18px;
+                overflow: hidden;
+                background: var(--color-base-200);
+                display: flex;
+                flex-direction: column;
+                min-height: 640px;
+            }
+            .desk {
+                width: 100%;
+                background: var(--color-base-200);
+                border: 1px solid var(--card-line);
+                border-radius: 16px;
+                overflow: hidden;
+                display: flex;
+                min-height: 640px;
+            }
+
+            /* ── Conditional visibility per transaction type ───────────
+               Elements get .when-expense / .when-income / .when-transfer.
+               Non-block layouts pass --w:<display> inline.                 */
+            .when-expense,
+            .when-income,
+            .when-transfer {
+                display: none !important;
+            }
+            [data-type='expense'] .when-expense {
+                display: var(--w, block) !important;
+            }
+            [data-type='income'] .when-income {
+                display: var(--w, block) !important;
+            }
+            [data-type='transfer'] .when-transfer {
+                display: var(--w, block) !important;
+            }
+            [data-type='transfer'] .hide-transfer {
+                display: none !important;
+            }
+            [data-type='expense'] .hide-expense {
+                display: none !important;
+            }
+            [data-type='income'] .hide-income {
+                display: none !important;
+            }
+
+            /* ── Shared inline icon system (solar-duotone aesthetic) ─── */
+            .icn {
+                width: 24px;
+                height: 24px;
+                fill: currentColor;
+                flex: none;
+            }
+            .icn .p2 {
+                opacity: 0.32;
+            }
+
+            /* ── Shared mini chip (account / category identifier) ────── */
+            .mchip {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .mchip .box {
+                width: 34px;
+                height: 34px;
+                border-radius: 10px;
+                display: grid;
+                place-items: center;
+                background: color-mix(
+                    in oklab,
+                    var(--dc, var(--color-base-content)) 12%,
+                    transparent
+                );
+                color: var(--dc, var(--color-base-content));
+            }
+            .mchip .box .icn {
+                width: 19px;
+                height: 19px;
+            }
+            .mchip b {
+                font-size: 13px;
+                font-weight: 600;
+                line-height: 1.2;
+            }
+            .mchip small {
+                display: block;
+                font-size: 11px;
+                font-weight: 500;
+                color: var(--ink-55);
+                line-height: 1.3;
+            }
+
+            /* ── Shared bottom navigation (mobile app chrome) ────────── */
+            .bnav {
+                margin-top: auto;
+                background: var(--color-base-100);
+                border-top: 1px solid var(--hairline);
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                align-items: center;
+                padding: 8px 10px 12px;
+            }
+            .bnav a {
+                display: grid;
+                justify-items: center;
+                gap: 3px;
+                font-size: 10px;
+                font-weight: 600;
+                color: var(--ink-55);
+                text-decoration: none;
+            }
+            .bnav a .icn {
+                width: 22px;
+                height: 22px;
+            }
+            .bnav a.active {
+                color: var(--color-primary);
+            }
+            .bnav .fab {
+                width: 46px;
+                height: 46px;
+                margin: -22px auto 0;
+                border-radius: 999px;
+                background: var(--color-primary);
+                color: var(--color-primary-content);
+                display: grid;
+                place-items: center;
+                box-shadow: 0 6px 8px -6px oklch(0.38 0.12 268 / 0.55);
+            }
+            .bnav .fab .icn {
+                width: 24px;
+                height: 24px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- ═══════════════ Icon symbols (duotone via .p1/.p2 opacity) ═══════════════ -->
+        <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+            <defs>
+                <symbol id="i-bank" viewBox="0 0 24 24">
+                    <path
+                        class="p1"
+                        d="M5 6h14a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V9a3 3 0 0 1 3-3z" />
+                    <circle class="p2" cx="12" cy="12" r="3.4" />
+                </symbol>
+                <symbol id="i-wallet" viewBox="0 0 24 24">
+                    <path
+                        class="p1"
+                        d="M3 8a3 3 0 0 1 3-3h11a2 2 0 0 1 2 2v1h-7a4 4 0 0 0 0 8h7v1a2 2 0 0 1-2 2H6a3 3 0 0 1-3-3V8z" />
+                    <path class="p2" d="M12 8h9v8h-9a4 4 0 0 1 0-8z" />
+                </symbol>
+                <symbol id="i-coin" viewBox="0 0 24 24">
+                    <path class="p1" d="M12 3.5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17z" />
+                    <circle class="p2" cx="12" cy="12" r="4.4" />
+                </symbol>
+                <symbol id="i-coffee" viewBox="0 0 24 24">
+                    <path class="p1" d="M4 9h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6V9z" />
+                    <path class="p2" d="M7 2.5h2.1v4.2H7zM12.6 2.5h2.1v4.2h-2.1z" />
+                    <path class="p2" d="M18.6 10h1a2.6 2.6 0 0 1 0 5.2h-1z" />
+                </symbol>
+                <symbol id="i-case" viewBox="0 0 24 24">
+                    <path
+                        class="p1"
+                        d="M8 6V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3z" />
+                    <path class="p2" d="M10 4h4v2h-4z" />
+                </symbol>
+                <symbol id="i-tag" viewBox="0 0 24 24">
+                    <path
+                        class="p1"
+                        d="M20.9 12.7l-8.2-8.2A1.9 1.9 0 0 0 11.3 4H5.9A1.9 1.9 0 0 0 4 5.9v5.4c0 .5.2 1 .6 1.4l8.2 8.2a1.9 1.9 0 0 0 2.7 0l5.4-5.4a1.9 1.9 0 0 0 0-2.8z" />
+                    <circle class="p2" cx="8.1" cy="8.1" r="1.9" />
+                </symbol>
+                <symbol id="i-cal" viewBox="0 0 24 24">
+                    <path
+                        class="p1"
+                        d="M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+                    <path class="p1" d="M8 2h2.1v4H8zM13.9 2H16v4h-2.1z" />
+                    <path class="p2" d="M3 9.2h18v2.3H3z" />
+                </symbol>
+                <symbol id="i-clock" viewBox="0 0 24 24">
+                    <circle class="p2" cx="12" cy="12" r="9" />
+                    <path class="p1" d="M11.2 6.8h1.9v5.5l4 2.3-1 1.7-4.9-2.9V6.8z" />
+                </symbol>
+                <symbol id="i-pen" viewBox="0 0 24 24">
+                    <path class="p1" d="M4.5 16.6L15.9 5.2l2.9 2.9L7.4 19.5 4 20l.5-3.4z" />
+                    <path class="p2" d="M18.2 2.9l2.9 2.9-1.5 1.5-2.9-2.9 1.5-1.5z" />
+                </symbol>
+                <symbol id="i-trash" viewBox="0 0 24 24">
+                    <path
+                        class="p1"
+                        d="M6.5 7.5h11l-.9 11.2a2 2 0 0 1-2 1.8H9.4a2 2 0 0 1-2-1.8L6.5 7.5z" />
+                    <path class="p2" d="M4.5 4.9h15v2.1h-15zM9.5 2.4h5v1.9h-5z" />
+                </symbol>
+                <symbol id="i-user" viewBox="0 0 24 24">
+                    <path class="p1" d="M12 3.6a4.2 4.2 0 1 1 0 8.4 4.2 4.2 0 0 1 0-8.4z" />
+                    <path
+                        class="p2"
+                        d="M4.4 20.6c1.7-3.3 4.4-5 7.6-5s5.9 1.7 7.6 5c0 0-3.3 1.4-7.6 1.4s-7.6-1.4-7.6-1.4z" />
+                </symbol>
+                <symbol id="i-swap" viewBox="0 0 24 24">
+                    <path
+                        class="p1"
+                        d="M4 8.2h13.2l-3-3L15.6 3.8 20.8 9l-5.2 5.2-1.4-1.4 3-3H4V8.2z" />
+                    <path
+                        class="p2"
+                        d="M20 15.8H6.8l3 3-1.4 1.4L3.2 15l5.2-5.2 1.4 1.4-3 3H20v1.6z" />
+                </symbol>
+                <symbol id="i-check" viewBox="0 0 24 24">
+                    <path class="p1" d="M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18z" />
+                    <path
+                        class="p2"
+                        d="M10.8 14.9L7.9 12l1.5-1.5 1.4 1.4 4.1-4.1 1.5 1.5-5.6 5.6z" />
+                </symbol>
+                <symbol id="i-note" viewBox="0 0 24 24">
+                    <path
+                        class="p1"
+                        d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+                    <path class="p2" d="M8 7.5h8V9H8zM8 11h8v1.5H8zM8 14.5h5V16H8z" />
+                </symbol>
+                <symbol id="i-back" viewBox="0 0 24 24">
+                    <path class="p1" d="M20 11H7.8l4.6-4.6L11 5l-7 7 7 7 1.4-1.4L7.8 13H20v-2z" />
+                </symbol>
+                <symbol id="i-arrow" viewBox="0 0 24 24">
+                    <path class="p1" d="M9 5l7 7-7 7-1.6-1.6L12.8 12 7.4 6.6 9 5z" />
+                </symbol>
+                <symbol id="i-home" viewBox="0 0 24 24">
+                    <path
+                        class="p1"
+                        d="M12 3l9 8.1h-2.4v9a1 1 0 0 1-1 1H14v-6.2h-4V21H6.4a1 1 0 0 1-1-1v-9H3L12 3z" />
+                </symbol>
+                <symbol id="i-list" viewBox="0 0 24 24">
+                    <path class="p1" d="M5 5h2.1v2.1H5zM5 10.9h2.1V13H5zM5 16.9h2.1V19H5z" />
+                    <path
+                        class="p2"
+                        d="M9.6 5H20v2.1H9.6zM9.6 10.9H20V13H9.6zM9.6 16.9H20V19H9.6z" />
+                </symbol>
+                <symbol id="i-plus" viewBox="0 0 24 24">
+                    <path class="p1" d="M11 4h2v6h6v2h-6v6h-2v-6H5v-2h6V4z" />
+                </symbol>
+                <symbol id="i-chart" viewBox="0 0 24 24">
+                    <path class="p1" d="M5 12h3.4v8H5zM10.3 4h3.4v16h-3.4zM15.6 9H19v11h-3.4z" />
+                </symbol>
+                <symbol id="i-sliders" viewBox="0 0 24 24">
+                    <path class="p1" d="M4 7h16v2.1H4zM4 14.9h16v2.1H4z" />
+                    <circle class="p2" cx="9" cy="8" r="2.6" />
+                    <circle class="p2" cx="15" cy="16" r="2.6" />
+                </symbol>
+                <symbol id="i-dots" viewBox="0 0 24 24">
+                    <path
+                        class="p1"
+                        d="M12 3a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM12 10a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM12 17a2 2 0 1 1 0 4 2 2 0 0 1 0-4z" />
+                </symbol>
+            </defs>
+        </svg>
+
+        <header class="masthead">
+            <h1>Transaction Detail <span>·</span> Mockup Explorations</h1>
+            <p>
+                Three explorations for the transaction detail page — each handles a regular
+                transaction (expense / income) and a transfer (source → destination). Mobile-first,
+                responsive up to desktop. Theme: <b>Cobalt</b>, tokens verbatim from
+                <code>resources/css/colors.css</code>. Toggle any variant between states.
+            </p>
+        </header>
+
+        <main class="page">
+            <!-- ══════════════════════════════════════════════════════════
+                 VARIANT A — Ledger / Receipt
+                 Editorial typography: serif merchant name, oversized mono
+                 numerals, receipt rows with hairlines, journal column on
+                 desktop. Quiet, precise, print-inspired.
+                 ══════════════════════════════════════════════════════════ -->
+            <section class="variant" id="v-a" data-type="expense">
+                <style>
+                    /* ── A · shared ── */
+                    #v-a .a-btn {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                        border-radius: 8px;
+                        border: 1px solid transparent;
+                        font-size: 14px;
+                        font-weight: 600;
+                        padding: 10px 18px;
+                        transition:
+                            filter 0.15s var(--ease),
+                            background 0.15s var(--ease);
+                    }
+                    #v-a .a-btn:active {
+                        transform: scale(0.98);
+                    }
+                    #v-a .a-btn .icn {
+                        width: 18px;
+                        height: 18px;
+                    }
+                    #v-a .a-btn-solid {
+                        background: var(--color-primary);
+                        color: var(--color-primary-content);
+                    }
+                    #v-a .a-btn-solid:hover {
+                        filter: brightness(1.14);
+                    }
+                    #v-a .a-btn-ghost {
+                        background: transparent;
+                        color: var(--ink-70);
+                        border-color: var(--card-line);
+                    }
+                    #v-a .a-btn-ghost:hover {
+                        background: var(--color-base-100);
+                    }
+                    #v-a .a-badge {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        border-radius: 6px;
+                        padding: 4px 10px;
+                        font-size: 12px;
+                        font-weight: 600;
+                        background: color-mix(in oklab, var(--tc) 13%, transparent);
+                        /* nudged toward ink so small info-colored text clears 4.5:1 */
+                        color: color-mix(in oklab, var(--tc) 82%, var(--color-base-content));
+                    }
+                    #v-a .a-badge .icn {
+                        width: 14px;
+                        height: 14px;
+                    }
+
+                    /* ── A · phone ── */
+                    #v-a .a-topbar {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 14px 14px 6px;
+                    }
+                    #v-a .a-topbar .a-back {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 10px;
+                        border: 1px solid var(--card-line);
+                        background: var(--color-base-100);
+                        color: var(--color-base-content);
+                        display: grid;
+                        place-items: center;
+                    }
+                    #v-a .a-topbar h3 {
+                        flex: 1;
+                        font-size: 15px;
+                        font-weight: 650;
+                        margin: 0;
+                        letter-spacing: -0.01em;
+                    }
+                    #v-a .a-topbar .a-edit {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 10px;
+                        border: 0;
+                        background: transparent;
+                        color: var(--ink-70);
+                        display: grid;
+                        place-items: center;
+                    }
+                    #v-a .a-topbar .a-edit:hover {
+                        background: var(--color-base-100);
+                        color: var(--color-base-content);
+                    }
+
+                    #v-a .a-paper {
+                        margin: 12px 14px 0;
+                        background: var(--color-base-100);
+                        border-radius: 4px;
+                        box-shadow:
+                            0 1px 2px oklch(0.18 0.02 268 / 0.05),
+                            0 8px 8px -8px oklch(0.18 0.02 268 / 0.22);
+                    }
+                    #v-a .a-tear {
+                        border-top: 1.5px dashed var(--card-line);
+                    }
+                    #v-a .a-paper-head {
+                        display: flex;
+                        justify-content: space-between;
+                        gap: 12px;
+                        padding: 12px 18px 0;
+                    }
+                    #v-a .a-micro {
+                        font-family: var(--font-mono);
+                        font-size: 9.5px;
+                        font-weight: 600;
+                        letter-spacing: 0.13em;
+                        text-transform: uppercase;
+                        color: var(--ink-55);
+                    }
+                    #v-a .a-body {
+                        padding: 16px 18px 18px;
+                    }
+                    #v-a .a-merchant {
+                        font-family: var(--font-serif);
+                        font-size: 25px;
+                        font-weight: 700;
+                        line-height: 1.15;
+                        letter-spacing: -0.01em;
+                        margin: 0 0 12px;
+                        text-wrap: balance;
+                    }
+                    #v-a .a-amt {
+                        display: flex;
+                        align-items: baseline;
+                        gap: 7px;
+                        font-family: var(--font-mono);
+                        font-weight: 600;
+                        color: var(--tc);
+                        font-variant-numeric: tabular-nums;
+                    }
+                    #v-a .a-amt .cur {
+                        font-size: 15px;
+                        color: var(--ink-55);
+                    }
+                    #v-a .a-amt .val {
+                        font-size: 40px;
+                        line-height: 1;
+                        letter-spacing: -0.025em;
+                    }
+                    #v-a .a-amt .sgn {
+                        font-size: 26px;
+                        align-self: center;
+                    }
+                    #v-a .a-rule {
+                        width: 54px;
+                        height: 2.5px;
+                        background: var(--tc);
+                        margin: 14px 0 4px;
+                    }
+                    #v-a .a-rows {
+                        margin-top: 8px;
+                    }
+                    #v-a .a-row {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 14px;
+                        padding: 11px 0;
+                        border-top: 1px solid var(--hairline);
+                        font-size: 13px;
+                    }
+                    #v-a .a-row > span {
+                        color: var(--ink-55);
+                        flex: none;
+                    }
+                    #v-a .a-row > div {
+                        text-align: right;
+                        font-weight: 550;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        justify-content: flex-end;
+                        min-width: 0;
+                    }
+                    #v-a .a-row .mchip {
+                        flex-direction: row-reverse;
+                    }
+                    #v-a .a-flow {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        flex-wrap: wrap;
+                        justify-content: flex-end;
+                    }
+                    #v-a .a-flow .icn {
+                        width: 15px;
+                        height: 15px;
+                        color: var(--tc);
+                    }
+                    #v-a .a-notes {
+                        font-size: 13px;
+                        line-height: 1.55;
+                        color: var(--ink-70);
+                        max-width: 30ch;
+                    }
+                    #v-a .a-paper-foot {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 12px;
+                        padding: 10px 18px 12px;
+                    }
+                    #v-a .a-stamp {
+                        flex: none;
+                        border: 1.5px solid var(--color-success);
+                        color: var(--color-success);
+                        border-radius: 7px;
+                        padding: 4px 9px;
+                        font-family: var(--font-mono);
+                        font-size: 9.5px;
+                        font-weight: 700;
+                        letter-spacing: 0.15em;
+                        text-transform: uppercase;
+                        transform: rotate(-5deg);
+                    }
+                    #v-a .a-actions {
+                        display: flex;
+                        gap: 10px;
+                        padding: 14px;
+                    }
+                    #v-a .a-actions .a-btn {
+                        flex: 1;
+                    }
+                    #v-a .a-btn-danger {
+                        background: transparent;
+                        color: var(--color-error);
+                        border-color: color-mix(in oklab, var(--color-error) 45%, transparent);
+                    }
+                    #v-a .a-btn-danger:hover {
+                        background: var(--soft-error);
+                    }
+
+                    /* ── A · desktop ── */
+                    #v-a .a-rail {
+                        flex: none;
+                        width: 62px;
+                        background: var(--color-base-100);
+                        border-right: 1px solid var(--hairline);
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 6px;
+                        padding: 14px 0;
+                    }
+                    #v-a .a-rail .logo {
+                        width: 34px;
+                        height: 34px;
+                        border-radius: 10px;
+                        background: var(--color-primary);
+                        color: var(--color-primary-content);
+                        display: grid;
+                        place-items: center;
+                        font-weight: 800;
+                        font-size: 15px;
+                        margin-bottom: 10px;
+                    }
+                    #v-a .a-rail a {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 12px;
+                        display: grid;
+                        place-items: center;
+                        color: var(--ink-40);
+                    }
+                    #v-a .a-rail a:hover {
+                        color: var(--color-base-content);
+                        background: var(--color-base-200);
+                    }
+                    #v-a .a-rail a.active {
+                        color: var(--color-primary);
+                        background: var(--soft-primary);
+                    }
+                    #v-a .a-main {
+                        flex: 1;
+                        min-width: 0;
+                        container-type: inline-size;
+                        padding: 22px 26px 30px;
+                    }
+                    #v-a .a-deskhead {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        margin-bottom: 20px;
+                    }
+                    #v-a .a-deskhead h2 {
+                        font-size: 19px;
+                        font-weight: 750;
+                        letter-spacing: -0.015em;
+                        margin: 0;
+                    }
+                    #v-a .a-deskhead .spacer {
+                        flex: 1;
+                    }
+                    #v-a .a-cols {
+                        display: flex;
+                        gap: 26px;
+                        align-items: flex-start;
+                    }
+                    #v-a .a-cols .a-paper {
+                        flex: none;
+                        width: 360px;
+                        margin: 0;
+                    }
+                    #v-a .a-journal {
+                        flex: 1;
+                        min-width: 0;
+                        display: grid;
+                        gap: 14px;
+                    }
+                    #v-a .a-jcard {
+                        background: var(--color-base-100);
+                        border: 1px solid var(--card-line);
+                        border-radius: 10px;
+                        padding: 15px 17px;
+                    }
+                    #v-a .a-jcard h4 {
+                        margin: 0 0 9px;
+                    }
+                    #v-a .a-note-txt {
+                        font-size: 14px;
+                        line-height: 1.65;
+                        color: var(--ink-70);
+                        margin: 0;
+                    }
+                    #v-a .tline {
+                        position: relative;
+                        padding-left: 20px;
+                        display: grid;
+                        gap: 13px;
+                    }
+                    #v-a .tline::before {
+                        content: '';
+                        position: absolute;
+                        left: 4.5px;
+                        top: 7px;
+                        bottom: 7px;
+                        width: 1.5px;
+                        background: var(--card-line);
+                    }
+                    #v-a .tstep {
+                        position: relative;
+                    }
+                    #v-a .tstep::before {
+                        content: '';
+                        position: absolute;
+                        left: -20px;
+                        top: 4px;
+                        width: 10px;
+                        height: 10px;
+                        border-radius: 999px;
+                        background: var(--color-base-100);
+                        border: 2.5px solid var(--color-primary);
+                    }
+                    #v-a .tstep.alt::before {
+                        border-color: var(--color-secondary);
+                    }
+                    #v-a .tstep b {
+                        display: block;
+                        font-size: 13px;
+                        font-weight: 600;
+                    }
+                    #v-a .tstep span {
+                        font-family: var(--font-mono);
+                        font-size: 11px;
+                        color: var(--ink-55);
+                    }
+                    #v-a .a-creator {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                    }
+                    #v-a .a-creator .ava {
+                        width: 38px;
+                        height: 38px;
+                        border-radius: 999px;
+                        background: var(--soft-warning);
+                        color: color-mix(
+                            in oklab,
+                            var(--color-warning) 70%,
+                            var(--color-base-content)
+                        );
+                        display: grid;
+                        place-items: center;
+                        font-size: 13px;
+                        font-weight: 700;
+                    }
+                    #v-a .a-creator b {
+                        display: block;
+                        font-size: 13.5px;
+                    }
+                    #v-a .a-creator small {
+                        font-size: 12px;
+                        color: var(--ink-55);
+                    }
+                    #v-a .a-advisory {
+                        display: flex;
+                        gap: 11px;
+                        align-items: flex-start;
+                        background: var(--soft-info);
+                        color: color-mix(
+                            in oklab,
+                            var(--color-info) 55%,
+                            var(--color-base-content)
+                        );
+                        border-radius: 10px;
+                        padding: 13px 15px;
+                        font-size: 12.5px;
+                        line-height: 1.55;
+                    }
+                    #v-a .a-advisory .icn {
+                        width: 18px;
+                        height: 18px;
+                        color: var(--color-info);
+                        margin-top: 1px;
+                    }
+                    @container (max-width: 700px) {
+                        #v-a .a-cols {
+                            flex-direction: column;
+                        }
+                        #v-a .a-cols .a-paper {
+                            width: 100%;
+                        }
+                    }
+                </style>
+
+                <div class="vhead">
+                    <span class="vbadge">A</span>
+                    <div>
+                        <h2>Ledger / Receipt — editorial</h2>
+                        <p>
+                            Freestyle exploration. Treats the transaction as a printed document:
+                            serif merchant name <code>(Arvo)</code>, oversized tabular numerals,
+                            receipt rows with hairline rules and a mono micro-footer with a status
+                            stamp. Desktop adds an icon rail and a "journal" column — note, activity
+                            timeline, creator — beside the paper.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="seg" role="tablist" aria-label="Transaction type">
+                    <button class="on" data-set="expense" type="button">Expense</button>
+                    <button data-set="income" type="button">Income</button>
+                    <button data-set="transfer" type="button">Transfer</button>
+                </div>
+
+                <div class="frames">
+                    <!-- A · mobile -->
+                    <div class="fcol">
+                        <p class="frame-label">Mobile · 380px</p>
+                        <div class="phone">
+                            <div class="screen">
+                                <div class="a-topbar">
+                                    <button class="a-back" type="button" aria-label="Back">
+                                        <svg class="icn"><use href="#i-back" /></svg>
+                                    </button>
+                                    <h3>Transaction</h3>
+                                    <button class="a-edit" type="button" aria-label="Edit">
+                                        <svg class="icn"><use href="#i-pen" /></svg>
+                                    </button>
+                                </div>
+
+                                <article class="a-paper">
+                                    <div class="a-paper-head">
+                                        <span class="a-micro"
+                                            >FinTrack ·
+                                            <span class="when-expense">#TRX-4021</span>
+                                            <span class="when-income">#TRX-3987</span>
+                                            <span class="when-transfer">#TRF-1180</span></span
+                                        >
+                                        <span class="a-micro">18 Sep 2026</span>
+                                    </div>
+                                    <div class="a-tear"></div>
+                                    <div class="a-body">
+                                        <h1 class="a-merchant">
+                                            <span class="when-expense">Kopi Toko Djawa</span>
+                                            <span class="when-income">PT Nusantara Digital</span>
+                                            <span class="when-transfer">Move to GoPay</span>
+                                        </h1>
+
+                                        <p class="a-amt">
+                                            <span class="sgn when-expense">−</span>
+                                            <span class="sgn when-income">+</span>
+                                            <span class="cur">Rp</span>
+                                            <span class="val when-expense">128.500</span>
+                                            <span class="val when-income">8.750.000</span>
+                                            <span class="val when-transfer">2.000.000</span>
+                                        </p>
+                                        <div class="a-rule"></div>
+
+                                        <div class="a-rows">
+                                            <div class="a-row">
+                                                <span>Date</span>
+                                                <div>
+                                                    <span class="when-expense"
+                                                        >18 September 2026 · 08.45</span
+                                                    >
+                                                    <span class="when-income"
+                                                        >15 September 2026 · 09.00</span
+                                                    >
+                                                    <span class="when-transfer"
+                                                        >18 September 2026 · 19.20</span
+                                                    >
+                                                </div>
+                                            </div>
+
+                                            <div class="a-row hide-transfer">
+                                                <span>Category</span>
+                                                <div class="mchip">
+                                                    <span
+                                                        class="box when-expense"
+                                                        style="--dc: #d97706"
+                                                        ><svg class="icn">
+                                                            <use href="#i-coffee" /></svg
+                                                    ></span>
+                                                    <span
+                                                        class="box when-income"
+                                                        style="--dc: #059669"
+                                                        ><svg class="icn">
+                                                            <use href="#i-case" /></svg
+                                                    ></span>
+                                                    <span class="when-expense"
+                                                        >Food &amp; Dining — Coffee</span
+                                                    >
+                                                    <span class="when-income">Income — Salary</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="a-row when-transfer" style="--w: flex">
+                                                <span>Flow</span>
+                                                <div class="a-flow">
+                                                    <span class="mchip">
+                                                        <span class="box" style="--dc: #2563eb"
+                                                            ><svg class="icn">
+                                                                <use href="#i-bank" /></svg
+                                                        ></span>
+                                                        <b>BCA One</b>
+                                                    </span>
+                                                    <svg class="icn"><use href="#i-arrow" /></svg>
+                                                    <span class="mchip">
+                                                        <span class="box" style="--dc: #0ea5e9"
+                                                            ><svg class="icn">
+                                                                <use href="#i-wallet" /></svg
+                                                        ></span>
+                                                        <b>GoPay</b>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="a-row hide-transfer">
+                                                <span>
+                                                    <span class="when-expense">Paid from</span>
+                                                    <span class="when-income">Paid into</span>
+                                                </span>
+                                                <div class="mchip">
+                                                    <span class="box" style="--dc: #2563eb"
+                                                        ><svg class="icn">
+                                                            <use href="#i-bank" /></svg
+                                                    ></span>
+                                                    <span>BCA One <small>Bank account</small></span>
+                                                </div>
+                                            </div>
+
+                                            <div class="a-row" style="--w: flex">
+                                                <span>Note</span>
+                                                <div>
+                                                    <p class="a-notes when-expense">
+                                                        Flat white + almond croissant before the
+                                                        standup.
+                                                    </p>
+                                                    <p class="a-notes when-income">
+                                                        September payroll, incl. transport
+                                                        allowance.
+                                                    </p>
+                                                    <p class="a-notes when-transfer">
+                                                        Weekend top-up for GoFood and Grab rides.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="a-tear"></div>
+                                    <div class="a-paper-foot">
+                                        <span class="a-micro"
+                                            >Recorded
+                                            <span class="when-expense">08.47</span>
+                                            <span class="when-income">09.02</span>
+                                            <span class="when-transfer">19.20</span>
+                                            · by Arya</span
+                                        >
+                                        <span class="a-stamp">Recorded</span>
+                                    </div>
+                                </article>
+
+                                <div class="a-actions">
+                                    <button class="a-btn a-btn-solid" type="button">
+                                        <svg class="icn"><use href="#i-pen" /></svg>
+                                        Edit
+                                    </button>
+                                    <button class="a-btn a-btn-danger" type="button">
+                                        <svg class="icn"><use href="#i-trash" /></svg>
+                                        Delete
+                                    </button>
+                                </div>
+
+                                <nav class="bnav">
+                                    <a class="active" href="#v-a">
+                                        <svg class="icn"><use href="#i-home" /></svg>
+                                        Home
+                                    </a>
+                                    <a href="#v-a">
+                                        <svg class="icn"><use href="#i-list" /></svg>
+                                        Transactions
+                                    </a>
+                                    <span class="fab"
+                                        ><svg class="icn"><use href="#i-plus" /></svg
+                                    ></span>
+                                    <a href="#v-a">
+                                        <svg class="icn"><use href="#i-wallet" /></svg>
+                                        Accounts
+                                    </a>
+                                    <a href="#v-a">
+                                        <svg class="icn"><use href="#i-chart" /></svg>
+                                        Reports
+                                    </a>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- A · desktop -->
+                    <div class="fcol wide">
+                        <p class="frame-label">Desktop · responsive (container-aware)</p>
+                        <div class="desk">
+                            <aside class="a-rail">
+                                <span class="logo">F</span>
+                                <a href="#v-a" aria-label="Dashboard"
+                                    ><svg class="icn"><use href="#i-home" /></svg
+                                ></a>
+                                <a class="active" href="#v-a" aria-label="Transactions"
+                                    ><svg class="icn"><use href="#i-list" /></svg
+                                ></a>
+                                <a href="#v-a" aria-label="Accounts"
+                                    ><svg class="icn"><use href="#i-wallet" /></svg
+                                ></a>
+                                <a href="#v-a" aria-label="Reports"
+                                    ><svg class="icn"><use href="#i-chart" /></svg
+                                ></a>
+                                <a href="#v-a" aria-label="Settings"
+                                    ><svg class="icn"><use href="#i-sliders" /></svg
+                                ></a>
+                            </aside>
+
+                            <div class="a-main">
+                                <div class="a-deskhead">
+                                    <h2>Transaction</h2>
+                                    <span class="a-badge">
+                                        <svg class="icn"><use href="#i-swap" /></svg>
+                                        <span class="when-expense">Expense</span>
+                                        <span class="when-income">Income</span>
+                                        <span class="when-transfer">Transfer</span>
+                                    </span>
+                                    <span class="spacer"></span>
+                                    <button class="a-btn a-btn-ghost" type="button">
+                                        <svg class="icn"><use href="#i-trash" /></svg>
+                                        Delete
+                                    </button>
+                                    <button class="a-btn a-btn-solid" type="button">
+                                        <svg class="icn"><use href="#i-pen" /></svg>
+                                        Edit
+                                    </button>
+                                </div>
+
+                                <div class="a-cols">
+                                    <article class="a-paper">
+                                        <div class="a-paper-head">
+                                            <span class="a-micro"
+                                                >FinTrack ·
+                                                <span class="when-expense">#TRX-4021</span>
+                                                <span class="when-income">#TRX-3987</span>
+                                                <span class="when-transfer">#TRF-1180</span></span
+                                            >
+                                            <span class="a-micro">18 Sep 2026</span>
+                                        </div>
+                                        <div class="a-tear"></div>
+                                        <div class="a-body">
+                                            <h1 class="a-merchant">
+                                                <span class="when-expense">Kopi Toko Djawa</span>
+                                                <span class="when-income"
+                                                    >PT Nusantara Digital</span
+                                                >
+                                                <span class="when-transfer">Move to GoPay</span>
+                                            </h1>
+                                            <p class="a-amt">
+                                                <span class="sgn when-expense">−</span>
+                                                <span class="sgn when-income">+</span>
+                                                <span class="cur">Rp</span>
+                                                <span class="val when-expense">128.500</span>
+                                                <span class="val when-income">8.750.000</span>
+                                                <span class="val when-transfer">2.000.000</span>
+                                            </p>
+                                            <div class="a-rule"></div>
+                                            <div class="a-rows">
+                                                <div class="a-row">
+                                                    <span>Date</span>
+                                                    <div>
+                                                        <span class="when-expense"
+                                                            >18 September 2026 · 08.45</span
+                                                        >
+                                                        <span class="when-income"
+                                                            >15 September 2026 · 09.00</span
+                                                        >
+                                                        <span class="when-transfer"
+                                                            >18 September 2026 · 19.20</span
+                                                        >
+                                                    </div>
+                                                </div>
+                                                <div class="a-row hide-transfer">
+                                                    <span>Category</span>
+                                                    <div class="mchip">
+                                                        <span
+                                                            class="box when-expense"
+                                                            style="--dc: #d97706"
+                                                            ><svg class="icn">
+                                                                <use href="#i-coffee" /></svg
+                                                        ></span>
+                                                        <span
+                                                            class="box when-income"
+                                                            style="--dc: #059669"
+                                                            ><svg class="icn">
+                                                                <use href="#i-case" /></svg
+                                                        ></span>
+                                                        <span class="when-expense"
+                                                            >Food &amp; Dining — Coffee</span
+                                                        >
+                                                        <span class="when-income"
+                                                            >Income — Salary</span
+                                                        >
+                                                    </div>
+                                                </div>
+                                                <div class="a-row when-transfer" style="--w: flex">
+                                                    <span>Flow</span>
+                                                    <div class="a-flow">
+                                                        <span class="mchip">
+                                                            <span class="box" style="--dc: #2563eb"
+                                                                ><svg class="icn">
+                                                                    <use href="#i-bank" /></svg
+                                                            ></span>
+                                                            <b>BCA One</b>
+                                                        </span>
+                                                        <svg class="icn">
+                                                            <use href="#i-arrow" />
+                                                        </svg>
+                                                        <span class="mchip">
+                                                            <span class="box" style="--dc: #0ea5e9"
+                                                                ><svg class="icn">
+                                                                    <use href="#i-wallet" /></svg
+                                                            ></span>
+                                                            <b>GoPay</b>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="a-row hide-transfer">
+                                                    <span>
+                                                        <span class="when-expense">Paid from</span>
+                                                        <span class="when-income">Paid into</span>
+                                                    </span>
+                                                    <div class="mchip">
+                                                        <span class="box" style="--dc: #2563eb"
+                                                            ><svg class="icn">
+                                                                <use href="#i-bank" /></svg
+                                                        ></span>
+                                                        <span
+                                                            >BCA One
+                                                            <small>Bank account</small></span
+                                                        >
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="a-tear"></div>
+                                        <div class="a-paper-foot">
+                                            <span class="a-micro"
+                                                >Recorded
+                                                <span class="when-expense">08.47</span>
+                                                <span class="when-income">09.02</span>
+                                                <span class="when-transfer">19.20</span>
+                                                · by Arya</span
+                                            >
+                                            <span class="a-stamp">Recorded</span>
+                                        </div>
+                                    </article>
+
+                                    <div class="a-journal">
+                                        <div class="a-advisory when-transfer" style="--w: flex">
+                                            <svg class="icn"><use href="#i-swap" /></svg>
+                                            <span>
+                                                Transfers are recorded as two linked entries — one
+                                                out of the source account, one into the destination.
+                                                Editing or deleting affects <b>both sides</b>.
+                                            </span>
+                                        </div>
+
+                                        <div class="a-jcard">
+                                            <h4 class="a-micro">Note</h4>
+                                            <p class="a-note-txt when-expense">
+                                                Flat white + almond croissant before the standup.
+                                                Card, not cash — kept the receipt for the team snack
+                                                budget.
+                                            </p>
+                                            <p class="a-note-txt when-income">
+                                                September payroll, incl. transport allowance. Half
+                                                goes straight to the emergency fund allocation.
+                                            </p>
+                                            <p class="a-note-txt when-transfer">
+                                                Weekend top-up for GoFood and Grab rides. Keeps
+                                                daily spend off the main account.
+                                            </p>
+                                        </div>
+
+                                        <div class="a-jcard">
+                                            <h4 class="a-micro">Activity</h4>
+                                            <div class="tline">
+                                                <div class="tstep">
+                                                    <b>Recorded by Arya Pratama</b>
+                                                    <span class="when-expense"
+                                                        >18 Sep 2026, 08:47</span
+                                                    >
+                                                    <span class="when-income"
+                                                        >15 Sep 2026, 09:02</span
+                                                    >
+                                                    <span class="when-transfer"
+                                                        >18 Sep 2026, 19:20</span
+                                                    >
+                                                </div>
+                                                <div class="tstep alt when-transfer">
+                                                    <b>Mirrored entry created</b>
+                                                    <span>GoPay · +Rp 2.000.000</span>
+                                                </div>
+                                                <div class="tstep alt hide-transfer">
+                                                    <b>Updated — note added</b>
+                                                    <span class="when-expense"
+                                                        >18 Sep 2026, 09:12</span
+                                                    >
+                                                    <span class="when-income"
+                                                        >15 Sep 2026, 09:05</span
+                                                    >
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="a-jcard">
+                                            <div class="a-creator">
+                                                <span class="ava">AP</span>
+                                                <div>
+                                                    <b>Arya Pratama</b>
+                                                    <small>Owner · recorded this entry</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════════════════════
+                 VARIANT B — Bento Modern
+                 Composed tile grid: tonal hero, flow tile, notes & meta.
+                 Collapses to a single quiet column on narrow containers.
+                 ══════════════════════════════════════════════════════════ -->
+            <section class="variant" id="v-b" data-type="expense">
+                <style>
+                    /* ── B · shared bits ── */
+                    #v-b .b-btn {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                        border-radius: 12px;
+                        border: 1px solid transparent;
+                        font-size: 13.5px;
+                        font-weight: 650;
+                        padding: 11px 18px;
+                        transition:
+                            filter 0.15s var(--ease),
+                            background 0.15s var(--ease);
+                    }
+                    #v-b .b-btn .icn {
+                        width: 17px;
+                        height: 17px;
+                    }
+                    #v-b .b-btn:active {
+                        transform: scale(0.98);
+                    }
+                    #v-b .b-solid {
+                        background: var(--color-primary);
+                        color: var(--color-primary-content);
+                    }
+                    #v-b .b-solid:hover {
+                        filter: brightness(1.14);
+                    }
+                    #v-b .b-outline {
+                        background: var(--color-base-100);
+                        border-color: var(--card-line);
+                        color: var(--color-base-content);
+                    }
+                    #v-b .b-outline:hover {
+                        background: var(--color-base-300);
+                    }
+                    #v-b .b-danger {
+                        background: var(--soft-error);
+                        color: var(--color-error);
+                    }
+                    #v-b .b-danger:hover {
+                        background: color-mix(in oklab, var(--color-error) 20%, transparent);
+                    }
+                    #v-b .b-pill {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        width: fit-content;
+                        border-radius: 999px;
+                        padding: 5px 12px;
+                        font-size: 11.5px;
+                        font-weight: 700;
+                        letter-spacing: 0.02em;
+                        background: color-mix(in oklab, var(--tc) 14%, transparent);
+                        /* nudged toward ink so small info-colored text clears 4.5:1 */
+                        color: color-mix(in oklab, var(--tc) 82%, var(--color-base-content));
+                    }
+                    #v-b .b-pill .icn {
+                        width: 13px;
+                        height: 13px;
+                    }
+                    #v-b .b-micro {
+                        font-family: var(--font-mono);
+                        font-size: 9.5px;
+                        font-weight: 600;
+                        letter-spacing: 0.13em;
+                        text-transform: uppercase;
+                        color: var(--ink-55);
+                    }
+                    #v-b .b-tile {
+                        background: var(--color-base-100);
+                        border: 1px solid var(--card-line);
+                        border-radius: 16px;
+                        padding: 16px;
+                    }
+
+                    /* ── B · phone ── */
+                    #v-b .b-topbar {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 14px 14px 4px;
+                    }
+                    #v-b .b-topbar .b-back,
+                    #v-b .b-topbar .b-more {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 999px;
+                        border: 1px solid var(--card-line);
+                        background: var(--color-base-100);
+                        color: var(--color-base-content);
+                        display: grid;
+                        place-items: center;
+                    }
+                    #v-b .b-topbar h3 {
+                        flex: 1;
+                        text-align: center;
+                        font-size: 15px;
+                        font-weight: 650;
+                        margin: 0;
+                    }
+                    #v-b .b-stack {
+                        display: grid;
+                        gap: 10px;
+                        padding: 12px 14px 16px;
+                    }
+                    #v-b .b-hero {
+                        position: relative;
+                        overflow: hidden;
+                        border-radius: 18px;
+                        border: 1px solid var(--card-line);
+                        background:
+                            radial-gradient(
+                                120% 130% at 88% -12%,
+                                color-mix(in oklab, var(--tc) 26%, transparent),
+                                transparent 58%
+                            ),
+                            var(--color-base-100);
+                        padding: 16px;
+                    }
+                    #v-b .b-hero .amt {
+                        margin: 12px 0 4px;
+                        display: flex;
+                        align-items: baseline;
+                        gap: 6px;
+                        font-family: var(--font-mono);
+                        font-weight: 650;
+                        font-variant-numeric: tabular-nums;
+                        color: var(--tc);
+                    }
+                    #v-b .b-hero .amt .cur {
+                        font-size: 14px;
+                        color: var(--ink-55);
+                    }
+                    #v-b .b-hero .amt .sgn {
+                        font-size: 24px;
+                        align-self: center;
+                    }
+                    #v-b .b-hero .amt .val {
+                        font-size: 38px;
+                        line-height: 1;
+                        letter-spacing: -0.025em;
+                    }
+                    #v-b .b-hero .desc {
+                        margin: 0 0 12px;
+                        font-size: 14.5px;
+                        font-weight: 600;
+                        letter-spacing: -0.01em;
+                    }
+                    #v-b .b-hero .chips {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 7px;
+                    }
+                    #v-b .b-hero .chip {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        border-radius: 999px;
+                        background: var(--color-base-200);
+                        border: 1px solid var(--hairline);
+                        padding: 5px 11px;
+                        font-size: 11.5px;
+                        font-weight: 600;
+                        color: var(--ink-70);
+                    }
+                    #v-b .b-hero .chip .icn {
+                        width: 13px;
+                        height: 13px;
+                        color: var(--ink-55);
+                    }
+                    #v-b .b-duo {
+                        display: grid;
+                        grid-template-columns: 1.3fr 1fr;
+                        gap: 10px;
+                    }
+                    #v-b .b-catname {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        margin-top: 10px;
+                    }
+                    #v-b .b-catname .mchip .box {
+                        width: 38px;
+                        height: 38px;
+                    }
+                    #v-b .b-flow {
+                        display: grid;
+                        gap: 4px;
+                    }
+                    #v-b .b-flow .frow {
+                        display: flex;
+                        align-items: center;
+                        gap: 11px;
+                        padding: 9px 0;
+                    }
+                    #v-b .b-flow .frow + .frow {
+                        border-top: 1px dashed var(--card-line);
+                    }
+                    #v-b .b-flow .mid {
+                        align-self: center;
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 999px;
+                        display: grid;
+                        place-items: center;
+                        background: color-mix(in oklab, var(--tc) 14%, transparent);
+                        color: var(--tc);
+                    }
+                    #v-b .b-flow .mid .icn {
+                        width: 16px;
+                        height: 16px;
+                    }
+                    #v-b .b-flow .cap {
+                        margin-top: 8px;
+                        padding-top: 10px;
+                        border-top: 1px solid var(--hairline);
+                        font-size: 11.5px;
+                        color: var(--ink-55);
+                        display: flex;
+                        gap: 7px;
+                        align-items: center;
+                    }
+                    #v-b .b-flow .cap .icn {
+                        width: 14px;
+                        height: 14px;
+                        color: var(--ink-40);
+                    }
+                    #v-b .b-notes .txt {
+                        margin: 10px 0 0;
+                        font-size: 13px;
+                        line-height: 1.6;
+                        color: var(--ink-70);
+                    }
+                    #v-b .b-meta {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 12px 16px;
+                    }
+                    #v-b .b-meta .cell b {
+                        display: block;
+                        font-family: var(--font-mono);
+                        font-size: 13px;
+                        font-weight: 600;
+                        margin-top: 3px;
+                    }
+                    #v-b .b-meta .who {
+                        grid-column: 1 / -1;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        border-top: 1px solid var(--hairline);
+                        padding-top: 12px;
+                    }
+                    #v-b .b-meta .who .ava {
+                        width: 34px;
+                        height: 34px;
+                        border-radius: 999px;
+                        background: var(--soft-warning);
+                        color: color-mix(
+                            in oklab,
+                            var(--color-warning) 70%,
+                            var(--color-base-content)
+                        );
+                        display: grid;
+                        place-items: center;
+                        font-size: 12px;
+                        font-weight: 700;
+                    }
+                    #v-b .b-actions {
+                        display: flex;
+                        gap: 10px;
+                    }
+                    #v-b .b-actions .b-solid {
+                        flex: 1;
+                    }
+
+                    /* ── B · desktop ── */
+                    #v-b .b-side {
+                        flex: none;
+                        width: 204px;
+                        background: var(--color-base-100);
+                        border-right: 1px solid var(--hairline);
+                        display: flex;
+                        flex-direction: column;
+                        padding: 16px 12px;
+                        gap: 3px;
+                    }
+                    #v-b .b-side .logo {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 2px 8px 14px;
+                        font-weight: 800;
+                        font-size: 15px;
+                        letter-spacing: -0.01em;
+                    }
+                    #v-b .b-side .logo .mark {
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 9px;
+                        background: var(--color-primary);
+                        color: var(--color-primary-content);
+                        display: grid;
+                        place-items: center;
+                        font-size: 14px;
+                    }
+                    #v-b .b-side a {
+                        display: flex;
+                        align-items: center;
+                        gap: 11px;
+                        border-radius: 10px;
+                        padding: 9px 10px;
+                        font-size: 13.5px;
+                        font-weight: 600;
+                        color: var(--ink-55);
+                        text-decoration: none;
+                    }
+                    #v-b .b-side a .icn {
+                        width: 19px;
+                        height: 19px;
+                    }
+                    #v-b .b-side a:hover {
+                        color: var(--color-base-content);
+                        background: var(--color-base-200);
+                    }
+                    #v-b .b-side a.active {
+                        color: var(--color-primary);
+                        background: var(--soft-primary);
+                    }
+                    #v-b .b-side .user {
+                        margin-top: auto;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 8px 10px;
+                        border-top: 1px solid var(--hairline);
+                        font-size: 12.5px;
+                    }
+                    #v-b .b-side .user .ava {
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 999px;
+                        background: var(--soft-warning);
+                        color: color-mix(
+                            in oklab,
+                            var(--color-warning) 70%,
+                            var(--color-base-content)
+                        );
+                        display: grid;
+                        place-items: center;
+                        font-size: 11px;
+                        font-weight: 700;
+                    }
+                    #v-b .b-main {
+                        flex: 1;
+                        min-width: 0;
+                        padding: 24px 28px 30px;
+                        container-type: inline-size;
+                    }
+                    #v-b .b-crumb {
+                        font-family: var(--font-mono);
+                        font-size: 10px;
+                        font-weight: 600;
+                        letter-spacing: 0.13em;
+                        text-transform: uppercase;
+                        color: var(--ink-70);
+                        margin-bottom: 6px;
+                    }
+                    #v-b .b-deskhead {
+                        display: flex;
+                        flex-wrap: wrap;
+                        align-items: center;
+                        gap: 12px;
+                        margin-bottom: 18px;
+                    }
+                    #v-b .b-deskhead h2 {
+                        font-size: 20px;
+                        font-weight: 750;
+                        letter-spacing: -0.015em;
+                        margin: 0;
+                    }
+                    #v-b .b-deskhead .spacer {
+                        flex: 1;
+                    }
+                    #v-b .bento {
+                        display: grid;
+                        gap: 14px;
+                        grid-template-columns: 1fr;
+                        grid-template-areas:
+                            'hero'
+                            'flow'
+                            'cat'
+                            'notes'
+                            'meta';
+                    }
+                    #v-b .bento > .hero {
+                        grid-area: hero;
+                        border-radius: 18px;
+                        background:
+                            radial-gradient(
+                                120% 130% at 88% -12%,
+                                color-mix(in oklab, var(--tc) 26%, transparent),
+                                transparent 58%
+                            ),
+                            var(--color-base-100);
+                    }
+                    #v-b .bento > .flowt {
+                        grid-area: flow;
+                    }
+                    #v-b .bento > .catt {
+                        grid-area: cat;
+                    }
+                    #v-b .bento > .notest {
+                        grid-area: notes;
+                    }
+                    #v-b .bento > .metat {
+                        grid-area: meta;
+                    }
+                    #v-b .bento .hero {
+                        padding: 22px 24px;
+                    }
+                    #v-b .bento .hero .amt .val {
+                        font-size: 52px;
+                    }
+                    #v-b .bento .hero .amt .sgn {
+                        font-size: 32px;
+                    }
+                    #v-b .bento .catt {
+                        display: flex;
+                        align-items: center;
+                        gap: 14px;
+                    }
+                    #v-b .bento .catt .grow {
+                        flex: 1;
+                        min-width: 0;
+                    }
+                    #v-b .bento .catt .chev {
+                        color: var(--ink-40);
+                    }
+                    #v-b .bento .notest {
+                        display: flex;
+                        gap: 14px;
+                        align-items: flex-start;
+                    }
+                    #v-b .bento .notest .nicon {
+                        width: 38px;
+                        height: 38px;
+                        border-radius: 12px;
+                        display: grid;
+                        place-items: center;
+                        background: var(--color-base-200);
+                        color: var(--ink-70);
+                    }
+                    #v-b .bento .metat {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 10px 28px;
+                        align-items: center;
+                    }
+                    #v-b .bento .metat .cell b {
+                        display: block;
+                        font-family: var(--font-mono);
+                        font-size: 13px;
+                        font-weight: 600;
+                        margin-top: 2px;
+                    }
+                    #v-b .bento .metat .who {
+                        display: flex;
+                        align-items: center;
+                        gap: 9px;
+                        margin-left: auto;
+                    }
+                    @container (min-width: 680px) {
+                        #v-b .bento {
+                            grid-template-columns: 1fr 1fr 1.1fr;
+                            grid-template-areas:
+                                'hero hero flow'
+                                'cat notes flow'
+                                'meta meta meta';
+                        }
+                        #v-b .bento > .flowt {
+                            display: flex;
+                            flex-direction: column;
+                        }
+                        #v-b .bento > .flowt .grow {
+                            flex: 1;
+                        }
+                        #v-b .bento .hero .amt .val {
+                            font-size: 56px;
+                        }
+                    }
+                </style>
+
+                <div class="vhead">
+                    <span class="vbadge">B</span>
+                    <div>
+                        <h2>Bento Modern — composed grid</h2>
+                        <p>
+                            Freestyle exploration. The page becomes a composed set of tiles: a tonal
+                            hero washed with the flow color, a dedicated flow tile for transfers
+                            (source → destination with a linked-entry note), paired category / notes
+                            / meta tiles. Desktop arranges them in an asymmetric bento grid; narrow
+                            containers collapse to a single quiet column.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="seg" role="tablist" aria-label="Transaction type">
+                    <button class="on" data-set="expense" type="button">Expense</button>
+                    <button data-set="income" type="button">Income</button>
+                    <button data-set="transfer" type="button">Transfer</button>
+                </div>
+
+                <div class="frames">
+                    <!-- B · mobile -->
+                    <div class="fcol">
+                        <p class="frame-label">Mobile · 380px</p>
+                        <div class="phone">
+                            <div class="screen">
+                                <div class="b-topbar">
+                                    <button class="b-back" type="button" aria-label="Back">
+                                        <svg class="icn"><use href="#i-back" /></svg>
+                                    </button>
+                                    <h3>Details</h3>
+                                    <button class="b-more" type="button" aria-label="More">
+                                        <svg class="icn"><use href="#i-dots" /></svg>
+                                    </button>
+                                </div>
+
+                                <div class="b-stack">
+                                    <div class="b-hero">
+                                        <span class="b-pill">
+                                            <svg class="icn"><use href="#i-swap" /></svg>
+                                            <span class="when-expense">Expense</span>
+                                            <span class="when-income">Income</span>
+                                            <span class="when-transfer">Transfer</span>
+                                        </span>
+                                        <p class="amt">
+                                            <span class="sgn when-expense">−</span>
+                                            <span class="sgn when-income">+</span>
+                                            <span class="cur">Rp</span>
+                                            <span class="val when-expense">128.500</span>
+                                            <span class="val when-income">8.750.000</span>
+                                            <span class="val when-transfer">2.000.000</span>
+                                        </p>
+                                        <p class="desc">
+                                            <span class="when-expense">Kopi Toko Djawa</span>
+                                            <span class="when-income"
+                                                >Salary — PT Nusantara Digital</span
+                                            >
+                                            <span class="when-transfer">Top up GoPay</span>
+                                        </p>
+                                        <div class="chips">
+                                            <span class="chip">
+                                                <svg class="icn"><use href="#i-cal" /></svg>
+                                                <span class="when-expense">18 Sep 2026</span>
+                                                <span class="when-income">15 Sep 2026</span>
+                                                <span class="when-transfer">18 Sep 2026</span>
+                                            </span>
+                                            <span class="chip">
+                                                <svg class="icn"><use href="#i-clock" /></svg>
+                                                <span class="when-expense">08.45</span>
+                                                <span class="when-income">09.00</span>
+                                                <span class="when-transfer">19.20</span>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="b-tile b-flow">
+                                        <div class="when-transfer" style="--w: block">
+                                            <div class="frow">
+                                                <span class="mchip">
+                                                    <span class="box" style="--dc: #2563eb"
+                                                        ><svg class="icn">
+                                                            <use href="#i-bank" /></svg
+                                                    ></span>
+                                                    <span
+                                                        >BCA One <small>Bank · source</small></span
+                                                    >
+                                                </span>
+                                            </div>
+                                            <div
+                                                style="
+                                                    display: flex;
+                                                    justify-content: center;
+                                                    margin: 6px 0;
+                                                ">
+                                                <span class="mid"
+                                                    ><svg class="icn"><use href="#i-swap" /></svg
+                                                ></span>
+                                            </div>
+                                            <div class="frow">
+                                                <span class="mchip">
+                                                    <span class="box" style="--dc: #0ea5e9"
+                                                        ><svg class="icn">
+                                                            <use href="#i-wallet" /></svg
+                                                    ></span>
+                                                    <span
+                                                        >GoPay
+                                                        <small>E-wallet · destination</small></span
+                                                    >
+                                                </span>
+                                            </div>
+                                            <p class="cap">
+                                                <svg class="icn"><use href="#i-tag" /></svg>
+                                                No category — internal move between your accounts
+                                            </p>
+                                        </div>
+                                        <div class="hide-transfer">
+                                            <div class="frow">
+                                                <span class="mchip">
+                                                    <span class="box" style="--dc: #2563eb"
+                                                        ><svg class="icn">
+                                                            <use href="#i-bank" /></svg
+                                                    ></span>
+                                                    <span
+                                                        >BCA One
+                                                        <small>
+                                                            <span class="when-expense"
+                                                                >Bank · paid from</span
+                                                            >
+                                                            <span class="when-income"
+                                                                >Bank · received in</span
+                                                            >
+                                                        </small></span
+                                                    >
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="b-tile hide-transfer">
+                                        <span class="b-micro">Category</span>
+                                        <div class="b-catname">
+                                            <span class="mchip">
+                                                <span class="box when-expense" style="--dc: #d97706"
+                                                    ><svg class="icn"><use href="#i-coffee" /></svg
+                                                ></span>
+                                                <span class="box when-income" style="--dc: #059669"
+                                                    ><svg class="icn"><use href="#i-case" /></svg
+                                                ></span>
+                                            </span>
+                                            <span>
+                                                <b class="when-expense">Coffee</b>
+                                                <b class="when-income">Salary</b>
+                                                <small class="when-expense"
+                                                    >Food &amp; Dining</small
+                                                >
+                                                <small class="when-income">Income</small>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="b-tile b-notes">
+                                        <span class="b-micro">Note</span>
+                                        <p class="txt when-expense">
+                                            Flat white + almond croissant before the standup. Card,
+                                            not cash.
+                                        </p>
+                                        <p class="txt when-income">
+                                            September payroll, incl. transport allowance.
+                                        </p>
+                                        <p class="txt when-transfer">
+                                            Weekend top-up for GoFood and Grab rides.
+                                        </p>
+                                    </div>
+
+                                    <div class="b-tile b-meta">
+                                        <div class="cell">
+                                            <span class="b-micro">Recorded</span>
+                                            <b class="when-expense">18 Sep · 08.47</b>
+                                            <b class="when-income">15 Sep · 09.02</b>
+                                            <b class="when-transfer">18 Sep · 19.20</b>
+                                        </div>
+                                        <div class="cell hide-transfer">
+                                            <span class="b-micro">Updated</span>
+                                            <b class="when-expense">18 Sep · 09.12</b>
+                                            <b class="when-income">15 Sep · 09.05</b>
+                                        </div>
+                                        <div class="who">
+                                            <span class="ava">AP</span>
+                                            <span>
+                                                <b style="font-size: 13px">Arya Pratama</b>
+                                                <small
+                                                    style="
+                                                        display: block;
+                                                        font-size: 11px;
+                                                        color: var(--ink-55);
+                                                    "
+                                                    >Owner</small
+                                                >
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="b-actions">
+                                        <button class="b-btn b-solid" type="button">
+                                            <svg class="icn"><use href="#i-pen" /></svg>
+                                            Edit transaction
+                                        </button>
+                                        <button
+                                            class="b-btn b-danger"
+                                            type="button"
+                                            aria-label="Delete">
+                                            <svg class="icn"><use href="#i-trash" /></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <nav class="bnav">
+                                    <a class="active" href="#v-b">
+                                        <svg class="icn"><use href="#i-home" /></svg>
+                                        Home
+                                    </a>
+                                    <a href="#v-b">
+                                        <svg class="icn"><use href="#i-list" /></svg>
+                                        Transactions
+                                    </a>
+                                    <span class="fab"
+                                        ><svg class="icn"><use href="#i-plus" /></svg
+                                    ></span>
+                                    <a href="#v-b">
+                                        <svg class="icn"><use href="#i-wallet" /></svg>
+                                        Accounts
+                                    </a>
+                                    <a href="#v-b">
+                                        <svg class="icn"><use href="#i-chart" /></svg>
+                                        Reports
+                                    </a>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- B · desktop -->
+                    <div class="fcol wide">
+                        <p class="frame-label">Desktop · responsive bento (container-aware)</p>
+                        <div class="desk">
+                            <aside class="b-side">
+                                <div class="logo"><span class="mark">F</span> FinTrack</div>
+                                <a href="#v-b"
+                                    ><svg class="icn"><use href="#i-home" /></svg> Dashboard</a
+                                >
+                                <a class="active" href="#v-b"
+                                    ><svg class="icn"><use href="#i-list" /></svg> Transactions</a
+                                >
+                                <a href="#v-b"
+                                    ><svg class="icn"><use href="#i-wallet" /></svg> Accounts</a
+                                >
+                                <a href="#v-b"
+                                    ><svg class="icn"><use href="#i-chart" /></svg> Reports</a
+                                >
+                                <div class="user">
+                                    <span class="ava">AP</span>
+                                    <span
+                                        ><b>Arya P.</b><br /><small style="color: var(--ink-55)"
+                                            >Owner</small
+                                        ></span
+                                    >
+                                </div>
+                            </aside>
+
+                            <div class="b-main">
+                                <p class="b-crumb">Transactions / Detail</p>
+                                <div class="b-deskhead">
+                                    <h2>Transaction Details</h2>
+                                    <span class="b-pill">
+                                        <svg class="icn"><use href="#i-swap" /></svg>
+                                        <span class="when-expense">Expense</span>
+                                        <span class="when-income">Income</span>
+                                        <span class="when-transfer">Transfer</span>
+                                    </span>
+                                    <span class="spacer"></span>
+                                    <button class="b-btn b-outline" type="button">
+                                        <svg class="icn"><use href="#i-trash" /></svg>
+                                        Delete
+                                    </button>
+                                    <button class="b-btn b-solid" type="button">
+                                        <svg class="icn"><use href="#i-pen" /></svg>
+                                        Edit
+                                    </button>
+                                </div>
+
+                                <div class="bento">
+                                    <div class="b-tile hero">
+                                        <span class="b-pill">
+                                            <svg class="icn"><use href="#i-swap" /></svg>
+                                            <span class="when-expense">Expense</span>
+                                            <span class="when-income">Income</span>
+                                            <span class="when-transfer">Transfer</span>
+                                        </span>
+                                        <p class="amt">
+                                            <span class="sgn when-expense">−</span>
+                                            <span class="sgn when-income">+</span>
+                                            <span class="cur">Rp</span>
+                                            <span class="val when-expense">128.500</span>
+                                            <span class="val when-income">8.750.000</span>
+                                            <span class="val when-transfer">2.000.000</span>
+                                        </p>
+                                        <p class="desc">
+                                            <span class="when-expense">Kopi Toko Djawa</span>
+                                            <span class="when-income"
+                                                >Salary — PT Nusantara Digital</span
+                                            >
+                                            <span class="when-transfer">Top up GoPay</span>
+                                        </p>
+                                        <div class="chips">
+                                            <span class="chip">
+                                                <svg class="icn"><use href="#i-cal" /></svg>
+                                                <span class="when-expense">18 September 2026</span>
+                                                <span class="when-income">15 September 2026</span>
+                                                <span class="when-transfer">18 September 2026</span>
+                                            </span>
+                                            <span class="chip">
+                                                <svg class="icn"><use href="#i-clock" /></svg>
+                                                <span class="when-expense">08.45</span>
+                                                <span class="when-income">09.00</span>
+                                                <span class="when-transfer">19.20</span>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="b-tile flowt">
+                                        <span class="b-micro when-transfer">Flow</span>
+                                        <span class="b-micro hide-transfer">Account</span>
+                                        <div class="grow" style="margin-top: 10px">
+                                            <div class="when-transfer" style="--w: block">
+                                                <div class="frow">
+                                                    <span class="mchip">
+                                                        <span class="box" style="--dc: #2563eb"
+                                                            ><svg class="icn">
+                                                                <use href="#i-bank" /></svg
+                                                        ></span>
+                                                        <span
+                                                            >BCA One
+                                                            <small>Bank · source</small></span
+                                                        >
+                                                    </span>
+                                                </div>
+                                                <div
+                                                    style="
+                                                        display: flex;
+                                                        justify-content: center;
+                                                        margin: 8px 0;
+                                                    ">
+                                                    <span class="mid"
+                                                        ><svg class="icn">
+                                                            <use href="#i-swap" /></svg
+                                                    ></span>
+                                                </div>
+                                                <div class="frow">
+                                                    <span class="mchip">
+                                                        <span class="box" style="--dc: #0ea5e9"
+                                                            ><svg class="icn">
+                                                                <use href="#i-wallet" /></svg
+                                                        ></span>
+                                                        <span
+                                                            >GoPay
+                                                            <small
+                                                                >E-wallet · destination</small
+                                                            ></span
+                                                        >
+                                                    </span>
+                                                </div>
+                                                <p class="cap">
+                                                    <svg class="icn"><use href="#i-tag" /></svg>
+                                                    No category — internal move between your
+                                                    accounts
+                                                </p>
+                                            </div>
+                                            <div class="hide-transfer">
+                                                <div class="frow">
+                                                    <span class="mchip">
+                                                        <span class="box" style="--dc: #2563eb"
+                                                            ><svg class="icn">
+                                                                <use href="#i-bank" /></svg
+                                                        ></span>
+                                                        <span
+                                                            >BCA One
+                                                            <small>
+                                                                <span class="when-expense"
+                                                                    >Bank · paid from</span
+                                                                >
+                                                                <span class="when-income"
+                                                                    >Bank · received in</span
+                                                                >
+                                                            </small></span
+                                                        >
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="b-tile catt hide-transfer">
+                                        <span class="mchip">
+                                            <span class="box when-expense" style="--dc: #d97706"
+                                                ><svg class="icn"><use href="#i-coffee" /></svg
+                                            ></span>
+                                            <span class="box when-income" style="--dc: #059669"
+                                                ><svg class="icn"><use href="#i-case" /></svg
+                                            ></span>
+                                        </span>
+                                        <div class="grow">
+                                            <span class="b-micro">Category</span>
+                                            <b
+                                                style="
+                                                    display: block;
+                                                    font-size: 14.5px;
+                                                    margin-top: 2px;
+                                                ">
+                                                <span class="when-expense">Coffee</span>
+                                                <span class="when-income">Salary</span>
+                                            </b>
+                                            <small style="font-size: 12px; color: var(--ink-55)">
+                                                <span class="when-expense">Food &amp; Dining</span>
+                                                <span class="when-income">Income</span>
+                                            </small>
+                                        </div>
+                                        <svg class="icn chev"><use href="#i-arrow" /></svg>
+                                    </div>
+
+                                    <div class="b-tile notest">
+                                        <span class="nicon"
+                                            ><svg class="icn"><use href="#i-note" /></svg
+                                        ></span>
+                                        <div>
+                                            <span class="b-micro">Note</span>
+                                            <p class="txt" style="margin-top: 4px">
+                                                <span class="when-expense">
+                                                    Flat white + almond croissant before the
+                                                    standup. Card, not cash — kept the receipt for
+                                                    the team snack budget.
+                                                </span>
+                                                <span class="when-income">
+                                                    September payroll, incl. transport allowance.
+                                                    Half goes straight to the emergency fund
+                                                    allocation.
+                                                </span>
+                                                <span class="when-transfer">
+                                                    Weekend top-up for GoFood and Grab rides. Keeps
+                                                    daily spend off the main account.
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="b-tile metat">
+                                        <div class="cell">
+                                            <span class="b-micro">Recorded</span>
+                                            <b class="when-expense">18 Sep 2026 · 08.47</b>
+                                            <b class="when-income">15 Sep 2026 · 09.02</b>
+                                            <b class="when-transfer">18 Sep 2026 · 19.20</b>
+                                        </div>
+                                        <div class="cell hide-transfer">
+                                            <span class="b-micro">Updated</span>
+                                            <b class="when-expense">18 Sep 2026 · 09.12</b>
+                                            <b class="when-income">15 Sep 2026 · 09.05</b>
+                                        </div>
+                                        <div class="who">
+                                            <span class="ava">AP</span>
+                                            <span>
+                                                <b style="font-size: 13px">Arya Pratama</b>
+                                                <small
+                                                    style="
+                                                        display: block;
+                                                        font-size: 11px;
+                                                        color: var(--ink-55);
+                                                    "
+                                                    >Owner · recorded this entry</small
+                                                >
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════════════════════
+                 VARIANT C — Design System (faithful)
+                 A direct port of the app's real components: ResponsiveCard
+                 stack (edge-to-edge mobile → bordered desktop), DaisyUI
+                 radii (4px fields/badges, 8px boxes), soft type badge,
+                 mono 48px amount, AccountInfo / CategoryInfo chips.
+                 Adds the approved transfer improvement: From → To.
+                 ══════════════════════════════════════════════════════════ -->
+            <section class="variant" id="v-c" data-type="expense">
+                <style>
+                    /* ── C · tokens as rendered by the app (daisyUI cobalt) ── */
+                    #v-c .c-btn {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                        height: 46px;
+                        padding: 0 18px;
+                        border-radius: 4px;
+                        border: 1px solid transparent;
+                        font-size: 14px;
+                        font-weight: 600;
+                        transition: background 0.15s var(--ease);
+                    }
+                    #v-c .c-btn .icn {
+                        width: 20px;
+                        height: 20px;
+                    }
+                    #v-c .c-outline-light {
+                        background: var(--color-base-100);
+                        border-color: color-mix(
+                            in oklab,
+                            var(--color-base-content) 25%,
+                            transparent
+                        );
+                        color: var(--color-base-content);
+                    }
+                    #v-c .c-outline-light:hover {
+                        background: var(--color-base-200);
+                    }
+                    #v-c .c-outline-error {
+                        background: transparent;
+                        border-color: var(--color-error);
+                        color: var(--color-error);
+                    }
+                    #v-c .c-outline-error:hover {
+                        background: var(--soft-error);
+                    }
+                    #v-c .c-badge {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        width: fit-content;
+                        border-radius: 4px;
+                        padding: 3px 10px;
+                        font-size: 12px;
+                        font-weight: 600;
+                        background: color-mix(in oklab, var(--tc) 13%, transparent);
+                        color: var(--tc);
+                    }
+                    #v-c .c-label {
+                        font-size: 13px;
+                        font-weight: 600;
+                        letter-spacing: 0.1em;
+                        text-transform: uppercase;
+                        color: var(--ink-55);
+                        margin: 0 0 6px;
+                    }
+
+                    /* app chrome — mobile */
+                    #v-c .c-topbar {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        padding: 12px 12px 4px;
+                    }
+                    #v-c .c-topbar .back {
+                        width: 38px;
+                        height: 38px;
+                        border-radius: 999px;
+                        border: 1px solid var(--card-line);
+                        background: var(--color-base-100);
+                        display: grid;
+                        place-items: center;
+                        color: var(--color-base-content);
+                    }
+                    #v-c .c-topbar h3 {
+                        font-size: 16px;
+                        font-weight: 650;
+                        margin: 0;
+                    }
+
+                    /* ResponsiveCard — mobile base: edge-to-edge, border-y only */
+                    #v-c .c-page {
+                        display: grid;
+                        gap: 20px;
+                        padding: 12px;
+                    }
+                    #v-c .c-card {
+                        background: var(--color-base-100);
+                        border-top: 1px solid var(--card-line);
+                        border-bottom: 1px solid var(--card-line);
+                        padding: 20px;
+                    }
+                    #v-c .c-card .accent {
+                        height: 4px;
+                        background: var(--accent-bar, var(--tc));
+                        margin: -20px -20px 18px;
+                    }
+                    #v-c .c-amount {
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 6px;
+                        margin: 12px 0 10px;
+                        font-family: var(--font-mono);
+                        font-weight: 600;
+                        font-variant-numeric: tabular-nums;
+                    }
+                    #v-c .c-amount .cur {
+                        font-size: 20px;
+                        line-height: 1.1;
+                        color: var(--ink-55);
+                    }
+                    #v-c .c-amount .val {
+                        font-size: 48px;
+                        line-height: 0.95;
+                        letter-spacing: -0.025em;
+                        color: var(--tc);
+                    }
+                    #v-c .c-desc {
+                        font-size: 16px;
+                        font-weight: 600;
+                        margin: 0 0 10px;
+                    }
+                    #v-c .c-daterow {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        font-size: 13.5px;
+                        color: var(--ink-70);
+                    }
+                    #v-c .c-daterow .icn {
+                        width: 20px;
+                        height: 20px;
+                        color: var(--ink-40);
+                    }
+                    #v-c .c-daterow .dot {
+                        width: 4px;
+                        height: 4px;
+                        border-radius: 999px;
+                        background: color-mix(in oklab, var(--color-base-content) 30%, transparent);
+                    }
+                    #v-c .c-accounts {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 20px;
+                    }
+                    #v-c .c-accounts .single {
+                        grid-column: 1 / -1;
+                    }
+                    #v-c .c-accounts .dest {
+                        text-align: right;
+                    }
+                    #v-c .c-accounts .dest .mchip {
+                        flex-direction: row-reverse;
+                    }
+                    #v-c .c-atype {
+                        display: inline-block;
+                        margin-top: 6px;
+                        font-size: 10.5px;
+                        font-weight: 600;
+                        border-radius: 4px;
+                        padding: 2px 8px;
+                        background: color-mix(in oklab, var(--color-base-content) 8%, transparent);
+                        color: var(--ink-70);
+                    }
+                    #v-c .c-advisory {
+                        margin-top: 18px;
+                        padding-top: 14px;
+                        border-top: 1px solid var(--hairline);
+                        display: flex;
+                        gap: 10px;
+                        align-items: flex-start;
+                        font-size: 12.5px;
+                        line-height: 1.55;
+                        color: color-mix(
+                            in oklab,
+                            var(--color-info) 50%,
+                            var(--color-base-content)
+                        );
+                    }
+                    #v-c .c-advisory .icn {
+                        width: 18px;
+                        height: 18px;
+                        color: var(--color-info);
+                        flex: none;
+                        margin-top: 1px;
+                    }
+                    #v-c .c-catrow {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                    }
+                    #v-c .c-catrow .grow {
+                        flex: 1;
+                        min-width: 0;
+                    }
+                    #v-c .c-catrow .parent {
+                        font-size: 12px;
+                        color: var(--ink-55);
+                    }
+                    #v-c .c-catrow b {
+                        font-size: 14px;
+                        font-weight: 600;
+                    }
+                    #v-c .c-catrow > .icn {
+                        width: 20px;
+                        height: 20px;
+                        color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+                    }
+                    #v-c .c-details .row {
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 12px;
+                    }
+                    #v-c .c-details .row .icn {
+                        width: 20px;
+                        height: 20px;
+                        color: var(--ink-40);
+                        margin-top: 2px;
+                        flex: none;
+                    }
+                    #v-c .c-details .notes-txt {
+                        margin: 2px 0 0;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 1.6;
+                        text-wrap: pretty;
+                    }
+                    #v-c .c-details .sub {
+                        font-size: 13px;
+                        color: var(--ink-55);
+                        margin: 0 0 2px;
+                    }
+                    #v-c .c-details .stamprow {
+                        display: flex;
+                        justify-content: space-between;
+                        gap: 16px;
+                        margin-top: 14px;
+                        padding-top: 14px;
+                        border-top: 1px solid
+                            color-mix(in oklab, var(--color-base-content) 25%, transparent);
+                    }
+                    #v-c .c-details .stamprow .right {
+                        text-align: right;
+                    }
+                    #v-c .c-details .val {
+                        font-size: 14px;
+                        font-weight: 500;
+                    }
+                    #v-c .c-creator {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                    }
+                    #v-c .c-creator .chip {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 12px;
+                        display: grid;
+                        place-items: center;
+                        background: color-mix(in oklab, var(--color-accent) 10%, transparent);
+                        color: var(--color-accent);
+                    }
+                    #v-c .c-creator b {
+                        font-size: 14px;
+                        font-weight: 600;
+                    }
+                    #v-c .c-actions {
+                        display: flex;
+                        gap: 12px;
+                    }
+                    #v-c .c-actions .c-btn {
+                        flex: 1;
+                    }
+
+                    /* app chrome — desktop */
+                    #v-c .c-sidebar {
+                        flex: none;
+                        width: 216px;
+                        background: var(--color-base-100);
+                        border-right: 1px solid var(--hairline);
+                        display: flex;
+                        flex-direction: column;
+                        padding: 16px 12px;
+                        gap: 3px;
+                    }
+                    #v-c .c-sidebar .logo {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 2px 8px 14px;
+                        font-weight: 800;
+                        font-size: 15px;
+                    }
+                    #v-c .c-sidebar .logo .mark {
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 8px;
+                        background: var(--color-primary);
+                        color: var(--color-primary-content);
+                        display: grid;
+                        place-items: center;
+                        font-size: 14px;
+                    }
+                    #v-c .c-sidebar a {
+                        display: flex;
+                        align-items: center;
+                        gap: 11px;
+                        border-radius: 8px;
+                        padding: 9px 10px;
+                        font-size: 13.5px;
+                        font-weight: 600;
+                        color: var(--ink-55);
+                        text-decoration: none;
+                    }
+                    #v-c .c-sidebar a .icn {
+                        width: 19px;
+                        height: 19px;
+                    }
+                    #v-c .c-sidebar a:hover {
+                        color: var(--color-base-content);
+                        background: var(--color-base-200);
+                    }
+                    #v-c .c-sidebar a.active {
+                        color: var(--color-primary);
+                        background: var(--soft-primary);
+                    }
+                    #v-c .c-sidebar .user {
+                        margin-top: auto;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 8px 10px 0;
+                        border-top: 1px solid var(--hairline);
+                        font-size: 12.5px;
+                    }
+                    #v-c .c-sidebar .user .ava {
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 999px;
+                        background: var(--soft-warning);
+                        color: color-mix(
+                            in oklab,
+                            var(--color-warning) 70%,
+                            var(--color-base-content)
+                        );
+                        display: grid;
+                        place-items: center;
+                        font-size: 11px;
+                        font-weight: 700;
+                    }
+                    #v-c .c-main {
+                        flex: 1;
+                        min-width: 0;
+                        padding: 20px;
+                    }
+                    #v-c .c-crumb {
+                        font-family: var(--font-mono);
+                        font-size: 10px;
+                        font-weight: 600;
+                        letter-spacing: 0.13em;
+                        text-transform: uppercase;
+                        color: var(--ink-70);
+                        margin-bottom: 8px;
+                    }
+                    #v-c .c-deskhead {
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 12px;
+                        margin-bottom: 20px;
+                    }
+                    #v-c .c-deskhead h2 {
+                        font-size: 20px;
+                        font-weight: 700;
+                        margin: 0 0 6px;
+                    }
+                    #v-c .c-deskhead .sub {
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                    }
+                    #v-c .c-deskhead .sub .txt {
+                        font-size: 12px;
+                        color: var(--ink-55);
+                    }
+                    #v-c .c-deskhead .spacer {
+                        flex: 1;
+                    }
+                    /* Desktop cards: full border + radius, like ResponsiveCard at md+ */
+                    #v-c .c-deskcards {
+                        max-width: 672px;
+                        display: grid;
+                        gap: 20px;
+                    }
+                    #v-c .c-deskcards .c-card {
+                        border: 1px solid var(--card-line);
+                        border-radius: 6px;
+                        padding: 24px;
+                    }
+                    #v-c .c-deskcards .c-card .accent {
+                        margin: -24px -24px 20px;
+                    }
+                    #v-c[data-type='transfer'] .c-card .accent {
+                        /* faithful quirk: the real component renders the transfer
+                           accent bar in warning while the amount is info */
+                        --accent-bar: var(--color-warning);
+                    }
+                </style>
+
+                <div class="vhead">
+                    <span class="vbadge sys">C</span>
+                    <div>
+                        <h2>Design System — faithful</h2>
+                        <p>
+                            Ported 1:1 from the app's real components:
+                            <code>ResponsiveCard</code> (edge-to-edge with hairlines on mobile,
+                            bordered + rounded on desktop), soft <code>Badge</code>, mono 48px
+                            amount, accent bar, <code>AccountInfo</code> /
+                            <code>CategoryInfo</code> chips, DaisyUI cobalt radii (4px fields, 8px
+                            boxes). Includes the approved transfer upgrade — distinct
+                            <b>From → To</b> accounts with a linked-entry advisory — plus the real
+                            accent-bar quirk (warning bar, info amount) preserved on purpose.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="seg" role="tablist" aria-label="Transaction type">
+                    <button class="on" data-set="expense" type="button">Expense</button>
+                    <button data-set="income" type="button">Income</button>
+                    <button data-set="transfer" type="button">Transfer</button>
+                </div>
+
+                <div class="frames">
+                    <!-- C · mobile -->
+                    <div class="fcol">
+                        <p class="frame-label">Mobile · 380px</p>
+                        <div class="phone">
+                            <div class="screen">
+                                <div class="c-topbar">
+                                    <span class="back" role="button" tabindex="0" aria-label="Back">
+                                        <svg class="icn"><use href="#i-back" /></svg>
+                                    </span>
+                                    <h3>Transaction Details</h3>
+                                </div>
+
+                                <div class="c-page">
+                                    <div class="c-card">
+                                        <div class="accent"></div>
+                                        <span class="c-badge">
+                                            <svg class="icn" style="width: 13px; height: 13px">
+                                                <use href="#i-swap" />
+                                            </svg>
+                                            <span class="when-expense">Expense</span>
+                                            <span class="when-income">Income</span>
+                                            <span class="when-transfer">Transfer</span>
+                                        </span>
+                                        <div class="c-amount">
+                                            <span class="cur">Rp</span>
+                                            <span class="val when-expense">128.500</span>
+                                            <span class="val when-income">8.750.000</span>
+                                            <span class="val when-transfer">2.000.000</span>
+                                        </div>
+                                        <p class="c-desc">
+                                            <span class="when-expense">Kopi Toko Djawa</span>
+                                            <span class="when-income"
+                                                >Salary — PT Nusantara Digital</span
+                                            >
+                                            <span class="when-transfer">Top up GoPay</span>
+                                        </p>
+                                        <div class="c-daterow">
+                                            <svg class="icn"><use href="#i-cal" /></svg>
+                                            <span class="when-expense">18 September 2026</span>
+                                            <span class="when-income">15 September 2026</span>
+                                            <span class="when-transfer">18 September 2026</span>
+                                            <span class="dot"></span>
+                                            <svg class="icn"><use href="#i-clock" /></svg>
+                                            <span class="when-expense">08.45</span>
+                                            <span class="when-income">09.00</span>
+                                            <span class="when-transfer">19.20</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="c-card">
+                                        <div class="c-accounts">
+                                            <div class="single hide-transfer">
+                                                <p class="c-label">
+                                                    <span class="when-expense">Source Account</span>
+                                                    <span class="when-income"
+                                                        >Destination Account</span
+                                                    >
+                                                </p>
+                                                <div class="mchip">
+                                                    <span class="box" style="--dc: #2563eb"
+                                                        ><svg class="icn">
+                                                            <use href="#i-bank" /></svg
+                                                    ></span>
+                                                    <span>
+                                                        <b>BCA One</b>
+                                                        <span class="c-atype">Bank</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="when-transfer" style="--w: block">
+                                                <p class="c-label">Source Account</p>
+                                                <div class="mchip">
+                                                    <span class="box" style="--dc: #2563eb"
+                                                        ><svg class="icn">
+                                                            <use href="#i-bank" /></svg
+                                                    ></span>
+                                                    <span>
+                                                        <b>BCA One</b>
+                                                        <span class="c-atype">Bank</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="dest when-transfer" style="--w: block">
+                                                <p class="c-label">Destination Account</p>
+                                                <div class="mchip">
+                                                    <span class="box" style="--dc: #0ea5e9"
+                                                        ><svg class="icn">
+                                                            <use href="#i-wallet" /></svg
+                                                    ></span>
+                                                    <span>
+                                                        <b>GoPay</b>
+                                                        <span class="c-atype">E-Wallet</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="c-advisory when-transfer" style="--w: flex">
+                                            <svg class="icn"><use href="#i-swap" /></svg>
+                                            <span>
+                                                Part of a transfer — a mirrored entry was recorded
+                                                in
+                                                <b>GoPay</b>. Editing or deleting affects both
+                                                linked rows.
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="c-card">
+                                        <p class="c-label">Category</p>
+                                        <div class="c-catrow">
+                                            <span class="mchip">
+                                                <span class="box when-expense" style="--dc: #d97706"
+                                                    ><svg class="icn"><use href="#i-coffee" /></svg
+                                                ></span>
+                                                <span class="box when-income" style="--dc: #059669"
+                                                    ><svg class="icn"><use href="#i-case" /></svg
+                                                ></span>
+                                                <span
+                                                    class="box when-transfer"
+                                                    style="--dc: #2563eb"
+                                                    ><svg class="icn"><use href="#i-swap" /></svg
+                                                ></span>
+                                            </span>
+                                            <span class="grow">
+                                                <span class="parent when-expense"
+                                                    >Food &amp; Dining</span
+                                                >
+                                                <span class="parent when-income">Income</span>
+                                                <span class="parent when-transfer"
+                                                    >Between accounts</span
+                                                >
+                                                <b class="when-expense">Coffee</b>
+                                                <b class="when-income">Salary</b>
+                                                <b class="when-transfer">Transfer</b>
+                                            </span>
+                                            <svg class="icn"><use href="#i-arrow" /></svg>
+                                        </div>
+                                    </div>
+
+                                    <div class="c-card c-details">
+                                        <p class="c-label">Details</p>
+                                        <div class="row">
+                                            <svg class="icn"><use href="#i-note" /></svg>
+                                            <div>
+                                                <p class="sub">Notes</p>
+                                                <p class="notes-txt when-expense">
+                                                    Flat white + almond croissant before the
+                                                    standup. Card, not cash.
+                                                </p>
+                                                <p class="notes-txt when-income">
+                                                    September payroll, incl. transport allowance.
+                                                </p>
+                                                <p class="notes-txt when-transfer">
+                                                    Weekend top-up for GoFood and Grab rides.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="stamprow">
+                                            <div class="row" style="gap: 12px">
+                                                <svg class="icn"><use href="#i-clock" /></svg>
+                                                <div>
+                                                    <p class="sub">Created</p>
+                                                    <p class="val when-expense">
+                                                        18 Sep 2026 08:47
+                                                    </p>
+                                                    <p class="val when-income">15 Sep 2026 09:02</p>
+                                                    <p class="val when-transfer">
+                                                        18 Sep 2026 19:20
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="right">
+                                                <p class="sub">Updated</p>
+                                                <p class="val when-expense">18 Sep 2026 09:12</p>
+                                                <p class="val when-income">15 Sep 2026 09:05</p>
+                                                <p class="val when-transfer">18 Sep 2026 19:20</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="c-card">
+                                        <p class="c-label">Created by</p>
+                                        <div class="c-creator">
+                                            <span class="chip">
+                                                <svg class="icn"><use href="#i-user" /></svg>
+                                            </span>
+                                            <b>Arya Pratama</b>
+                                        </div>
+                                    </div>
+
+                                    <div class="c-actions">
+                                        <button class="c-btn c-outline-light" type="button">
+                                            <svg class="icn"><use href="#i-pen" /></svg>
+                                            Edit
+                                        </button>
+                                        <button class="c-btn c-outline-error" type="button">
+                                            <svg class="icn"><use href="#i-trash" /></svg>
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <nav class="bnav">
+                                    <a class="active" href="#v-c">
+                                        <svg class="icn"><use href="#i-home" /></svg>
+                                        Home
+                                    </a>
+                                    <a href="#v-c">
+                                        <svg class="icn"><use href="#i-list" /></svg>
+                                        Transactions
+                                    </a>
+                                    <span class="fab"
+                                        ><svg class="icn"><use href="#i-plus" /></svg
+                                    ></span>
+                                    <a href="#v-c">
+                                        <svg class="icn"><use href="#i-wallet" /></svg>
+                                        Accounts
+                                    </a>
+                                    <a href="#v-c">
+                                        <svg class="icn"><use href="#i-chart" /></svg>
+                                        Reports
+                                    </a>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- C · desktop -->
+                    <div class="fcol wide">
+                        <p class="frame-label">Desktop · app layout (sidebar + single column)</p>
+                        <div class="desk">
+                            <aside class="c-sidebar">
+                                <div class="logo"><span class="mark">F</span> FinTrack</div>
+                                <a href="#v-c"
+                                    ><svg class="icn"><use href="#i-home" /></svg> Dashboard</a
+                                >
+                                <a class="active" href="#v-c"
+                                    ><svg class="icn"><use href="#i-list" /></svg> Transactions</a
+                                >
+                                <a href="#v-c"
+                                    ><svg class="icn"><use href="#i-wallet" /></svg> Accounts</a
+                                >
+                                <a href="#v-c"
+                                    ><svg class="icn"><use href="#i-coin" /></svg> Budgets</a
+                                >
+                                <a href="#v-c"
+                                    ><svg class="icn"><use href="#i-chart" /></svg> Reports</a
+                                >
+                                <a href="#v-c"
+                                    ><svg class="icn"><use href="#i-sliders" /></svg> Settings</a
+                                >
+                                <div class="user">
+                                    <span class="ava">AP</span>
+                                    <span
+                                        ><b>Arya P.</b><br />
+                                        <small style="color: var(--ink-55)">Owner</small></span
+                                    >
+                                </div>
+                            </aside>
+
+                            <div class="c-main">
+                                <p class="c-crumb">Transactions / Detail</p>
+                                <div class="c-deskhead">
+                                    <div>
+                                        <h2>Transaction Details</h2>
+                                        <div class="sub">
+                                            <span class="c-badge">
+                                                <svg class="icn" style="width: 13px; height: 13px">
+                                                    <use href="#i-swap" />
+                                                </svg>
+                                                <span class="when-expense">Expense</span>
+                                                <span class="when-income">Income</span>
+                                                <span class="when-transfer">Transfer</span>
+                                            </span>
+                                            <span class="txt when-transfer">Transfer</span>
+                                        </div>
+                                    </div>
+                                    <span class="spacer"></span>
+                                    <button class="c-btn c-outline-light" type="button">
+                                        <svg class="icn"><use href="#i-pen" /></svg>
+                                        Edit
+                                    </button>
+                                </div>
+
+                                <div class="c-deskcards">
+                                    <div class="c-card">
+                                        <div class="accent"></div>
+                                        <span class="c-badge">
+                                            <svg class="icn" style="width: 13px; height: 13px">
+                                                <use href="#i-swap" />
+                                            </svg>
+                                            <span class="when-expense">Expense</span>
+                                            <span class="when-income">Income</span>
+                                            <span class="when-transfer">Transfer</span>
+                                        </span>
+                                        <div class="c-amount">
+                                            <span class="cur">Rp</span>
+                                            <span class="val when-expense">128.500</span>
+                                            <span class="val when-income">8.750.000</span>
+                                            <span class="val when-transfer">2.000.000</span>
+                                        </div>
+                                        <p class="c-desc">
+                                            <span class="when-expense">Kopi Toko Djawa</span>
+                                            <span class="when-income"
+                                                >Salary — PT Nusantara Digital</span
+                                            >
+                                            <span class="when-transfer">Top up GoPay</span>
+                                        </p>
+                                        <div class="c-daterow">
+                                            <svg class="icn"><use href="#i-cal" /></svg>
+                                            <span class="when-expense">18 September 2026</span>
+                                            <span class="when-income">15 September 2026</span>
+                                            <span class="when-transfer">18 September 2026</span>
+                                            <span class="dot"></span>
+                                            <svg class="icn"><use href="#i-clock" /></svg>
+                                            <span class="when-expense">08.45</span>
+                                            <span class="when-income">09.00</span>
+                                            <span class="when-transfer">19.20</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="c-card">
+                                        <div class="c-accounts">
+                                            <div class="single hide-transfer">
+                                                <p class="c-label">
+                                                    <span class="when-expense">Source Account</span>
+                                                    <span class="when-income"
+                                                        >Destination Account</span
+                                                    >
+                                                </p>
+                                                <div class="mchip">
+                                                    <span class="box" style="--dc: #2563eb"
+                                                        ><svg class="icn">
+                                                            <use href="#i-bank" /></svg
+                                                    ></span>
+                                                    <span>
+                                                        <b>BCA One</b>
+                                                        <span class="c-atype">Bank</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="when-transfer" style="--w: block">
+                                                <p class="c-label">Source Account</p>
+                                                <div class="mchip">
+                                                    <span class="box" style="--dc: #2563eb"
+                                                        ><svg class="icn">
+                                                            <use href="#i-bank" /></svg
+                                                    ></span>
+                                                    <span>
+                                                        <b>BCA One</b>
+                                                        <span class="c-atype">Bank</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="dest when-transfer" style="--w: block">
+                                                <p class="c-label">Destination Account</p>
+                                                <div class="mchip">
+                                                    <span class="box" style="--dc: #0ea5e9"
+                                                        ><svg class="icn">
+                                                            <use href="#i-wallet" /></svg
+                                                    ></span>
+                                                    <span>
+                                                        <b>GoPay</b>
+                                                        <span class="c-atype">E-Wallet</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="c-advisory when-transfer" style="--w: flex">
+                                            <svg class="icn"><use href="#i-swap" /></svg>
+                                            <span>
+                                                Part of a transfer — a mirrored entry was recorded
+                                                in
+                                                <b>GoPay</b>. Editing or deleting affects both
+                                                linked rows.
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="c-card">
+                                        <p class="c-label">Category</p>
+                                        <div class="c-catrow">
+                                            <span class="mchip">
+                                                <span class="box when-expense" style="--dc: #d97706"
+                                                    ><svg class="icn"><use href="#i-coffee" /></svg
+                                                ></span>
+                                                <span class="box when-income" style="--dc: #059669"
+                                                    ><svg class="icn"><use href="#i-case" /></svg
+                                                ></span>
+                                                <span
+                                                    class="box when-transfer"
+                                                    style="--dc: #2563eb"
+                                                    ><svg class="icn"><use href="#i-swap" /></svg
+                                                ></span>
+                                            </span>
+                                            <span class="grow">
+                                                <span class="parent when-expense"
+                                                    >Food &amp; Dining</span
+                                                >
+                                                <span class="parent when-income">Income</span>
+                                                <span class="parent when-transfer"
+                                                    >Between accounts</span
+                                                >
+                                                <b class="when-expense">Coffee</b>
+                                                <b class="when-income">Salary</b>
+                                                <b class="when-transfer">Transfer</b>
+                                            </span>
+                                            <svg class="icn"><use href="#i-arrow" /></svg>
+                                        </div>
+                                    </div>
+
+                                    <div class="c-card c-details">
+                                        <p class="c-label">Details</p>
+                                        <div class="row">
+                                            <svg class="icn"><use href="#i-note" /></svg>
+                                            <div>
+                                                <p class="sub">Notes</p>
+                                                <p class="notes-txt when-expense">
+                                                    Flat white + almond croissant before the
+                                                    standup. Card, not cash.
+                                                </p>
+                                                <p class="notes-txt when-income">
+                                                    September payroll, incl. transport allowance.
+                                                </p>
+                                                <p class="notes-txt when-transfer">
+                                                    Weekend top-up for GoFood and Grab rides.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="stamprow">
+                                            <div class="row" style="gap: 12px">
+                                                <svg class="icn"><use href="#i-clock" /></svg>
+                                                <div>
+                                                    <p class="sub">Created</p>
+                                                    <p class="val when-expense">
+                                                        18 Sep 2026 08:47
+                                                    </p>
+                                                    <p class="val when-income">15 Sep 2026 09:02</p>
+                                                    <p class="val when-transfer">
+                                                        18 Sep 2026 19:20
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="right">
+                                                <p class="sub">Updated</p>
+                                                <p class="val when-expense">18 Sep 2026 09:12</p>
+                                                <p class="val when-income">15 Sep 2026 09:05</p>
+                                                <p class="val when-transfer">18 Sep 2026 19:20</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="c-card">
+                                        <p class="c-label">Created by</p>
+                                        <div class="c-creator">
+                                            <span class="chip">
+                                                <svg class="icn"><use href="#i-user" /></svg>
+                                            </span>
+                                            <b>Arya Pratama</b>
+                                        </div>
+                                    </div>
+
+                                    <div class="c-actions">
+                                        <button class="c-btn c-outline-light" type="button">
+                                            <svg class="icn"><use href="#i-pen" /></svg>
+                                            Edit
+                                        </button>
+                                        <button class="c-btn c-outline-error" type="button">
+                                            <svg class="icn"><use href="#i-trash" /></svg>
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <script>
+                // ── Type toggle per variant ──────────────────────────────
+                document.querySelectorAll('.variant').forEach((root) => {
+                    const seg = root.querySelector('.seg');
+                    if (!seg) {
+                        return;
+                    }
+
+                    seg.addEventListener('click', (event) => {
+                        const btn = event.target.closest('button[data-set]');
+                        if (!btn) {
+                            return;
+                        }
+
+                        root.dataset.type = btn.dataset.set;
+                        seg.querySelectorAll('button').forEach((b) =>
+                            b.classList.toggle('on', b === btn)
+                        );
+                    });
+                });
+            </script>
+        </main>
+    </body>
+</html>

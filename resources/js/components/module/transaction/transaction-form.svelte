@@ -1,10 +1,11 @@
 <script lang="ts">
-    import type { InertiaForm } from '@inertiajs/svelte';
     import type { App } from '@wayfinder/types';
 
     import { useForm } from '@inertiajs/svelte';
+    import TransactionType from '@wayfinder/App/Enums/TransactionType';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
-    import TransferController from '@wayfinder/App/Http/Controllers/TransferController';
+
+    import Formatter from '@utilities/formatter';
 
     import AccountSelect from '@components/ui/forms/account-select.svelte';
     import CategorySelect from '@components/ui/forms/category-select.svelte';
@@ -13,7 +14,7 @@
     import Form from '@components/ui/forms/form.svelte';
 
     interface Props {
-        type?: 'income' | 'expense' | 'transfer';
+        type?: 'income' | 'expense';
         account?: App.Models.Account;
         categories: App.Models.Category[];
         accounts?: App.Models.Account[];
@@ -32,113 +33,68 @@
 
     const isEdit = $derived(!!transaction);
 
-    const today = new Date().toISOString().split('T')[0];
-
     const resolvedType = $derived<string>(isEdit && transaction ? transaction.type : type);
 
     const typeConfig = $derived.by(() => {
         switch (resolvedType) {
-            case 'income':
+            case TransactionType.Income:
                 return {
-                    accentBar: 'bg-success',
                     textColor: 'text-success',
                     title: 'Tambah Pemasukan',
                     merchantLabel: 'Pemberi Kerja / Sumber',
                     merchantPlaceholder: 'Contoh: Gaji Bulanan PT Teknologi, Freelance',
                     accountLabel: 'Akun Tujuan Penerimaan',
-                    showDestination: false,
-                };
-            case 'transfer':
-                return {
-                    accentBar: 'bg-info',
-                    textColor: 'text-info',
-                    title: 'Tambah Transfer',
-                    merchantLabel: 'Deskripsi Transfer',
-                    merchantPlaceholder: 'Contoh: Kirim uang bulanan, Top-up wallet',
-                    accountLabel: 'Akun Asal (Dari)',
-                    showDestination: true,
                 };
             default:
                 return {
-                    accentBar: 'bg-error',
                     textColor: 'text-error',
                     title: 'Tambah Pengeluaran',
                     merchantLabel: 'Merchant / Penerima',
                     merchantPlaceholder: 'Contoh: Warteg Bu Sri, Tokopedia',
                     accountLabel: 'Akun Sumber',
-                    showDestination: false,
                 };
         }
     });
 
-    function buildInitialData(): Record<string, any> {
+    function buildInitialData() {
         if (isEdit && transaction) {
             return {
+                type: transaction.type,
                 amount: Number(transaction.amount),
                 transaction_date: transaction.transaction_date,
                 category_id: transaction.category_id ?? '',
                 description: transaction.description ?? '',
-                notes: '',
                 account_id: account?.id ?? transaction.account_id ?? '',
-                destination_account_id: null,
-                fee_amount: null,
             };
         }
 
         return {
+            type,
             amount: 0,
-            transaction_date: today,
+            transaction_date: new Date(),
             category_id: '',
             description: '',
-            notes: '',
             account_id: account?.id ?? '',
-            destination_account_id: null,
-            fee_amount: null,
         };
     }
 
-    let form: InertiaForm<any> = $state(useForm(buildInitialData()));
-
-    const action = $derived(
-        isEdit && transaction
-            ? TransactionController.update.url({ transaction: transaction.id })
-            : resolvedType === 'transfer'
-              ? TransferController.store.url()
-              : TransactionController.store.url()
-    );
-
-    const method = $derived<'put' | undefined>(isEdit ? 'put' : undefined);
+    const form = useForm(buildInitialData());
 
     const submitLabel = $derived(
         isEdit
             ? 'Simpan Perubahan'
-            : resolvedType === 'income'
+            : resolvedType === TransactionType.Income
               ? 'Tambah Pemasukan'
-              : resolvedType === 'transfer'
-                ? 'Tambah Transfer'
-                : 'Tambah Pengeluaran'
+              : 'Tambah Pengeluaran'
     );
 
     const defaultBack = () => window.history.back();
 
-    // ── Amount display with currency formatting ──────────
-    let displayAmount = $state('');
-
     function handleAmountInput(e: Event): void {
         const input = e.target as HTMLInputElement;
         const raw = input.value.replace(/\D/g, '');
-        const num = parseInt(raw, 10) || 0;
-        form.amount = num;
-        displayAmount = num ? num.toLocaleString('id-ID') : '';
+        form.amount = parseInt(raw, 10) || 0;
     }
-
-    $effect(() => {
-        const num = Number(form.amount) || 0;
-        const expected = num ? num.toLocaleString('id-ID') : '';
-        if (expected !== displayAmount) {
-            displayAmount = expected;
-        }
-    });
 </script>
 
 {#key isEdit ? 'edit' : resolvedType}
@@ -157,7 +113,13 @@
         </div>
 
         <!-- ── Form wrapper ─────────────────────────────── -->
-        <Form id="transaction-form" class="space-y-3" {action} {form} {method}>
+        <Form
+            id="transaction-form"
+            class="space-y-3"
+            {...transaction
+                ? TransactionController.update.form({ transaction: transaction.id })
+                : TransactionController.store.form()}
+            {form}>
             <!-- Card: Amount -->
             <div class="card overflow-hidden rounded-lg border border-base-content/15 bg-base-100">
                 <div class="px-5 py-4">
@@ -172,7 +134,7 @@
                             oninput={handleAmountInput}
                             placeholder="0"
                             type="text"
-                            value={displayAmount} />
+                            value={form.amount ? Formatter.currency(form.amount, true) : ''} />
                     </div>
                 </div>
             </div>
@@ -211,42 +173,6 @@
                         </div>
                     </div>
                 </div>
-
-                {#if typeConfig.showDestination}
-                    <div class="mx-5 border-t border-base-content/10"></div>
-
-                    <div class="flex items-center px-5 py-3">
-                        <div class="flex-1">
-                            <span
-                                class="text-2xs font-bold tracking-wider text-base-content/40 uppercase">
-                                Akun Tujuan
-                            </span>
-                            <div class="mt-0.5">
-                                <AccountSelect
-                                    {accounts}
-                                    placeholder="Pilih tujuan"
-                                    bind:value={form.destination_account_id} />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mx-5 border-t border-base-content/10"></div>
-
-                    <div class="flex items-center px-5 py-3">
-                        <div class="flex-1">
-                            <span
-                                class="text-2xs font-bold tracking-wider text-base-content/40 uppercase">
-                                Biaya Transfer (opsional)
-                            </span>
-                            <input
-                                class="input mt-0.5 w-full border-none bg-transparent px-0 font-mono text-sm font-medium placeholder:text-base-content/30"
-                                inputmode="numeric"
-                                placeholder="0"
-                                type="text"
-                                bind:value={form.fee_amount} />
-                        </div>
-                    </div>
-                {/if}
 
                 <div class="mx-5 border-t border-base-content/10"></div>
 
@@ -288,28 +214,11 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Card: Notes -->
-            <div class="card overflow-hidden rounded-lg border border-base-content/15 bg-base-100">
-                <div class="flex flex-col px-5 py-3">
-                    <label
-                        class="text-2xs font-bold tracking-wider text-base-content/40 uppercase"
-                        for="in-notes">
-                        Catatan
-                    </label>
-                    <textarea
-                        id="in-notes"
-                        class="textarea mt-0.5 w-full resize-none border-none bg-transparent px-0 text-sm leading-relaxed font-normal placeholder:text-base-content/30"
-                        placeholder="Tambahkan catatan detail transaksi di sini..."
-                        rows="2"
-                        bind:value={form.notes}></textarea>
-                </div>
-            </div>
         </Form>
 
         <!-- ── Actions ──────────────────────────────────── -->
         <FormAction
-            form={form as any}
+            {form}
             formId="transaction-form"
             labelCancel="Batal"
             labelSubmit={submitLabel}

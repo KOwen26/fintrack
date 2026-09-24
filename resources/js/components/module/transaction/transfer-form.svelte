@@ -1,9 +1,10 @@
 <script lang="ts">
-    import type { InertiaForm } from '@inertiajs/svelte';
     import type { App } from '@wayfinder/types';
 
     import { useForm } from '@inertiajs/svelte';
     import TransferController from '@wayfinder/App/Http/Controllers/TransferController';
+
+    import Formatter from '@utilities/formatter';
 
     import AccountSelect from '@components/ui/forms/account-select.svelte';
     import DateInput from '@components/ui/forms/date-input.svelte';
@@ -11,42 +12,43 @@
     import Form from '@components/ui/forms/form.svelte';
 
     interface Props {
-        transfer: App.Models.Transfer & { transactions: App.Models.Transaction[] };
+        /** Omit to create a new transfer; pass to edit an existing unit. */
+        transfer?: App.Models.Transfer & { transactions: App.Models.Transaction[] };
         accounts: App.Models.Account[];
         onCancel?: () => void;
     }
 
     let { transfer, accounts, onCancel }: Props = $props();
 
+    const isEdit = $derived(!!transfer);
+
     const sourceTransaction = $derived(
-        transfer.transactions.find((row) => row.type === 'transfer' && row.flow === 'outflow')
+        transfer?.transactions.find((row) => row.type === 'transfer' && row.flow === 'outflow')
     );
     const destinationTransaction = $derived(
-        transfer.transactions.find((row) => row.type === 'transfer' && row.flow === 'inflow')
+        transfer?.transactions.find((row) => row.type === 'transfer' && row.flow === 'inflow')
     );
 
-    let form: InertiaForm<any> = $state(
-        useForm({
+    function buildInitialData() {
+        return {
             account_id: sourceTransaction?.account_id ?? '',
             destination_account_id: destinationTransaction?.account_id ?? '',
-            amount: Number(transfer.amount),
-            fee_amount: transfer.fee_amount === null ? '' : Number(transfer.fee_amount),
-            transaction_date: transfer.transaction_date,
-            description: transfer.description ?? '',
-        })
-    );
+            amount: transfer ? Number(transfer.amount) : 0,
+            fee_amount: transfer && transfer.fee_amount !== null ? Number(transfer.fee_amount) : '',
+            transaction_date: transfer?.transaction_date ?? new Date(),
+            description: transfer?.description ?? '',
+        };
+    }
 
-    const action = $derived(TransferController.update.url({ transfer: transfer.id }));
-    const defaultBack = () => window.history.back();
+    const form = useForm(buildInitialData());
 
-    let displayAmount = $state(Number(transfer.amount).toLocaleString('id-ID'));
+    const title = $derived(isEdit ? 'Edit Transfer' : 'Tambah Transfer');
+    const submitLabel = $derived(isEdit ? 'Simpan Perubahan' : 'Tambah Transfer');
 
     function handleAmountInput(e: Event): void {
         const input = e.target as HTMLInputElement;
         const raw = input.value.replace(/\D/g, '');
-        const num = parseInt(raw, 10) || 0;
-        form.amount = num;
-        displayAmount = num ? num.toLocaleString('id-ID') : '';
+        form.amount = parseInt(raw, 10) || 0;
     }
 </script>
 
@@ -55,20 +57,24 @@
         <button
             class="btn btn-square btn-ghost btn-sm"
             aria-label="Kembali"
-            onclick={onCancel ?? defaultBack}
+            onclick={onCancel}
             type="button">
             <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
         </button>
-        <span class="text-sm font-semibold tracking-tight">Edit Transfer</span>
+        <span class="text-sm font-semibold tracking-tight">{title}</span>
         <div class="w-9"></div>
     </div>
 
-    <Form id="transfer-form" {action} {form} method="put">
+    <Form
+        id="transfer-form"
+        {...transfer
+            ? TransferController.update.form({ transfer: transfer.id })
+            : TransferController.store.form()}
+        {form}>
         <div class="card overflow-hidden rounded-2xl border border-base-content/15 bg-base-100">
             <div class="h-1 w-full bg-info"></div>
             <div class="px-5 py-4">
-                <p
-                    class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
+                <p class="text-2xs font-bold tracking-widest text-base-content/40 uppercase">
                     Nominal Transfer
                 </p>
                 <div class="mt-1 flex items-center gap-1.5">
@@ -79,7 +85,7 @@
                         oninput={handleAmountInput}
                         placeholder="0"
                         type="text"
-                        value={displayAmount} />
+                        value={form.amount ? Formatter.currency(form.amount, true) : ''} />
                 </div>
             </div>
         </div>
@@ -87,7 +93,7 @@
         <div class="card overflow-hidden rounded-2xl border border-base-content/15 bg-base-100">
             <div class="flex flex-col px-5 py-3">
                 <label
-                    class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase"
+                    class="text-2xs font-bold tracking-widest text-base-content/40 uppercase"
                     for="tf-description">
                     Deskripsi Transfer
                 </label>
@@ -103,8 +109,7 @@
 
             <div class="flex items-center px-5 py-3">
                 <div class="flex-1">
-                    <span
-                        class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
+                    <span class="text-2xs font-bold tracking-widest text-base-content/40 uppercase">
                         Akun Asal (Dari)
                     </span>
                     <div class="mt-0.5">
@@ -120,8 +125,7 @@
 
             <div class="flex items-center px-5 py-3">
                 <div class="flex-1">
-                    <span
-                        class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
+                    <span class="text-2xs font-bold tracking-widest text-base-content/40 uppercase">
                         Akun Tujuan
                     </span>
                     <div class="mt-0.5">
@@ -137,8 +141,7 @@
 
             <div class="flex items-center px-5 py-3">
                 <div class="flex-1">
-                    <span
-                        class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase">
+                    <span class="text-2xs font-bold tracking-widest text-base-content/40 uppercase">
                         Biaya Transfer (opsional)
                     </span>
                     <input
@@ -155,7 +158,7 @@
             <div class="flex items-center px-5 py-3">
                 <div class="flex-1">
                     <label
-                        class="text-[0.625rem] font-bold tracking-[0.09em] text-base-content/40 uppercase"
+                        class="text-2xs font-bold tracking-widest text-base-content/40 uppercase"
                         for="tf-date">
                         Tanggal
                     </label>
@@ -172,9 +175,9 @@
     </Form>
 
     <FormAction
-        form={form as any}
+        {form}
         formId="transfer-form"
         labelCancel="Batal"
-        labelSubmit="Simpan Perubahan"
-        onCancel={onCancel ?? defaultBack} />
+        labelSubmit={submitLabel}
+        {onCancel} />
 </div>
