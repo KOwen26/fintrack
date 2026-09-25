@@ -6,9 +6,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Services\ReportService;
 use App\Services\TransferService;
-use Illuminate\Cache\TaggableStore;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
 
 uses(RefreshDatabase::class);
 
@@ -43,12 +41,6 @@ it('excludes transfer rows from dashboard monthly summaries', function (): void 
 });
 
 it('excludes transfer rows from trend income and expense', function (): void {
-    if (! Cache::getStore() instanceof TaggableStore) {
-        $this->markTestSkipped('Cache store does not support tags — trend caching unavailable in this env.');
-    }
-
-    Cache::flush();
-
     $user = User::factory()->create();
     $account = Account::factory()->create(['owner_id' => $user->id]);
     $other = Account::factory()->create(['owner_id' => $user->id]);
