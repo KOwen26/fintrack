@@ -157,20 +157,31 @@
 
 /* ── Finance v3 — azure & jade (Rate A) ── */
 [data-theme='finance-v3'] {
+    --color-base-100: #f8fafb;
+    --color-base-200: #eff3f6;
+    --color-base-300: #e5eaf0;
+    --color-base-content: #070b14;
+
+    --color-primary: #2bd47d;
+    --color-primary-content: #111827;
+    --color-secondary: #111827;
+    --color-secondary-content: #f3f7f8;
+    --color-accent: #abf1ce;
+    --color-accent-content: #111827;
+
+    --color-neutral: #f3f7f8;
+    --color-neutral-content: #354153;
+
+    /* Palette v3 — dark-first backup:
     --color-base-100: #111827;
     --color-base-200: #354153;
     --color-base-300: #abf1ce;
     --color-base-content: #111827;
-
-    --color-primary: #2bd47d;
-    --color-primary-content: #111827;
     --color-secondary: #f3f7f8;
     --color-secondary-content: #111827;
-    --color-accent: #abf1ce;
-    --color-accent-content: #111827;
-
     --color-neutral: #111827;
     --color-neutral-content: #f3f7f8;
+    */
     --color-info: oklch(0.55 0.12 230);
     --color-info-content: oklch(0.95 0.005 268);
     --color-success: oklch(0.52 0.12 162);

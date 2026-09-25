@@ -49,13 +49,13 @@
     ] as const;
 
     const solidCombos: Record<string, string> = {
-        primary: 'bg-primary-500 text-primary-content',
-        secondary: 'bg-secondary-500 text-secondary-content',
-        accent: 'bg-accent-500 text-accent-content',
-        success: 'bg-success-500 text-success-content',
-        info: 'bg-info-500 text-info-content',
-        warning: 'bg-warning-500 text-warning-content',
-        error: 'bg-error-500 text-error-content',
+        primary: 'bg-primary text-primary-content',
+        secondary: 'bg-secondary text-secondary-content',
+        accent: 'bg-accent text-accent-content',
+        success: 'bg-success text-success-content',
+        info: 'bg-info text-info-content',
+        warning: 'bg-warning text-warning-content',
+        error: 'bg-error text-error-content',
     };
 
     const softCombos: Record<string, string> = {
@@ -237,11 +237,7 @@
                         <div
                             class="-mx-5 grid grid-cols-2 gap-3 overflow-x-auto p-5 lg:grid-cols-4 {background.class}">
                             {#each [...brandColors, ...statusColors] as color (color)}
-                                {@render combo(
-                                    color + '-solid',
-                                    color + ' · 500',
-                                    solidCombos[color]
-                                )}
+                                {@render combo(color + '-solid', color, solidCombos[color])}
                                 <!-- {@render combo(
                                     color + '-soft',
                                     color + ' · 100/700',
