@@ -11,6 +11,7 @@
     import { getTitleFromMenu } from '@utilities/helper.svelte';
 
     import BottomNav from '@components/navigation/bottom-nav.svelte';
+    import DashboardHeaderMobile from '@components/navigation/dashboard-header-mobile.svelte';
     import DashboardHeader from '@components/navigation/dashboard-header.svelte';
     import DashboardSidebar from '@components/navigation/dashboard-sidebar.svelte';
     import * as Sidebar from '@components/ui/atoms/sidebar';
@@ -21,6 +22,7 @@
         backUrl = undefined,
         breadcrumbs = [],
         title: layoutTitle = undefined,
+        headerContext = undefined,
         children,
         ...props
     }: RestProps = $props();
@@ -57,7 +59,8 @@
 <Sidebar.Provider>
     <DashboardSidebar />
     <Sidebar.Inset>
-        <DashboardHeader {backUrl} breadcrumbs={breadcrumbItems} {title} />
+        <DashboardHeaderMobile {backUrl} {headerContext} {title} />
+        <DashboardHeader {backUrl} breadcrumbs={breadcrumbItems} {headerContext} />
 
         <ErrorWrapper>
             <div class="flex h-full flex-col gap-6 p-3 md:p-5">

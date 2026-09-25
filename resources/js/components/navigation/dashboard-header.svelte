@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { BreadcrumbItem } from '@components/ui/breadcrumbs.svelte';
+    import type { HeaderContext } from '@type/header-context';
 
     import * as Sidebar from '@components/ui/atoms/sidebar';
     import Breadcrumbs from '@components/ui/breadcrumbs.svelte';
@@ -8,33 +9,41 @@
     interface Props {
         backUrl?: string;
         breadcrumbs?: BreadcrumbItem[];
-        title?: string;
+        headerContext?: HeaderContext;
     }
 
-    let { backUrl = undefined, breadcrumbs = [], title = undefined }: Props = $props();
+    let { backUrl = undefined, breadcrumbs = [], headerContext = undefined }: Props = $props();
 </script>
 
 <header
-    class="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-base-300 bg-white px-4 text-base-content transition-[width,height] ease-linear">
+    class="hidden h-14 shrink-0 items-center justify-between gap-2 border-b border-base-300 bg-white px-4 text-base-content transition-[width,height] ease-linear md:flex">
     <div class="flex min-w-0 items-center gap-2">
-        <div class="hidden items-center gap-2 md:flex">
+        <div class="flex items-center gap-2">
             <Sidebar.Trigger class="-ml-1" />
             <div class="divider mx-0 divider-horizontal divide-base-300"></div>
         </div>
+
         {#if backUrl}
-            <Button class="size-10 p-1 btn-sm" color="secondary" href={backUrl} variant="ghost">
+            <Button
+                class="size-10 shrink-0 p-1 btn-sm"
+                color="secondary"
+                href={backUrl}
+                variant="ghost">
                 <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
             </Button>
         {/if}
-        {#if title}
-            <span class="truncate text-xl font-bold md:hidden">{title}</span>
-        {/if}
+
         {#if breadcrumbs?.length}
-            <Breadcrumbs class="hidden md:flex" items={breadcrumbs} />
+            <Breadcrumbs items={breadcrumbs} />
         {/if}
     </div>
+
     <div class="flex items-center gap-2">
-        <Sidebar.Trigger class="md:hidden" />
+        {#if headerContext}
+            <div class="flex items-center gap-2">
+                {@render headerContext.render()}
+            </div>
+        {/if}
         {@render profileInfo()}
     </div>
 </header>
