@@ -6,7 +6,6 @@
         verdant,
         ember,
         amethyst,
-        finance-v1,
         finance-v2,
         finance-v3,
         finance-v4,
@@ -166,63 +165,38 @@
     --noise: 0;
 }
 
-/* ── Finance v1 — dark & lime (Rate B) ── */
-@plugin 'daisyui/theme' {
-    name: finance-v1;
-    default: false;
-
-    --color-base-100: #0b0b0d;
-    --color-base-200: #1b1b1e;
-    --color-base-300: #ececee;
-    --color-base-content: #101012;
-
-    --color-primary: #a8f246;
-    --color-primary-content: #101012;
-    --color-secondary: #b7b8ff;
-    --color-secondary-content: #101012;
-    --color-accent: #ef6c69;
-    --color-accent-content: #101012;
-
-    --color-neutral: #101012;
-    --color-neutral-content: #ececee;
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
-
-    --radius-selector: 0.25rem;
-    --radius-field: 0.25rem;
-    --radius-box: 0.5rem;
-    --size-selector: 0.25rem;
-    --size-field: 0.25rem;
-    --border: 1px;
-    --depth: 0;
-    --noise: 0;
-}
-
 /* ── Finance v2 — navy & gold (Rate A) ── */
 @plugin 'daisyui/theme' {
     name: finance-v2;
     default: false;
 
+    --color-base-100: #faf7f4;
+    --color-base-200: #f2ede6;
+    --color-base-300: #e9e0d5;
+    --color-base-content: #081020;
+
+    --color-primary: #e0c58f;
+    --color-primary-content: #081020;
+    --color-secondary: #112250;
+    --color-secondary-content: #f5f0e9;
+    --color-accent: #d9cbc2;
+    --color-accent-content: #081020;
+
+    --color-neutral: #f5f0e9;
+    --color-neutral-content: #3c507d;
+
+    /* Palette v2 — dark-first backup:
     --color-base-100: #112250;
     --color-base-200: #3c507d;
     --color-base-300: #d9cbc2;
     --color-base-content: #112250;
-
-    --color-primary: #e0c58f;
     --color-primary-content: #112250;
     --color-secondary: #f5f0e9;
     --color-secondary-content: #112250;
-    --color-accent: #d9cbc2;
     --color-accent-content: #112250;
-
     --color-neutral: #112250;
     --color-neutral-content: #f5f0e9;
+    */
     --color-info: oklch(0.55 0.12 230);
     --color-info-content: oklch(0.95 0.005 268);
     --color-success: oklch(0.52 0.12 162);

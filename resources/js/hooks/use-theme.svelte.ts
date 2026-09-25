@@ -13,7 +13,6 @@ export const THEME_OPTIONS: ThemeOption[] = [
     { value: 'finance-v3', label: 'Finance v3 — azure & jade (A)' },
     { value: 'finance-v2', label: 'Finance v2 — navy & gold (A)' },
     { value: 'finance-v5', label: 'Finance v5 — earth & gold (B)' },
-    { value: 'finance-v1', label: 'Finance v1 — dark & lime (B)' },
     { value: 'cobalt', label: 'Cobalt (default)' },
     { value: 'verdant', label: 'Verdant' },
     { value: 'ember', label: 'Ember' },
