@@ -252,3 +252,81 @@
     --color-error: oklch(0.55 0.12 28);
     --color-error-content: oklch(0.95 0.005 268);
 }
+
+/* ── Finance v4-dark — deep azure & cyan — dark (Rate A) ── */
+[data-theme='finance-v4-dark'] {
+    --color-base-100: #001233;
+    --color-base-200: #0d2c52;
+    --color-base-300: #1a4169;
+    --color-base-content: #e6f4f8;
+
+    --color-primary: #0aa2d1;
+    --color-primary-content: #001233;
+    --color-secondary: #004787;
+    --color-secondary-content: #e0f5fa;
+    --color-accent: #aae4f4;
+    --color-accent-content: #001233;
+
+    --color-neutral: #0d2c52;
+    --color-neutral-content: #e0f5fa;
+    --color-info: oklch(0.55 0.12 230);
+    --color-info-content: oklch(0.95 0.005 268);
+    --color-success: oklch(0.52 0.12 162);
+    --color-success-content: oklch(0.95 0.005 268);
+    --color-warning: oklch(0.72 0.16 78);
+    --color-warning-content: oklch(0.18 0.02 268);
+    --color-error: oklch(0.55 0.12 28);
+    --color-error-content: oklch(0.95 0.005 268);
+}
+
+/* ── Finance v6-dark — navy, lime & teal — dark (Rate A) ── */
+[data-theme='finance-v6-dark'] {
+    --color-base-100: #1f2a44;
+    --color-base-200: #2a3a5c;
+    --color-base-300: #354a74;
+    --color-base-content: #edeff4;
+
+    --color-primary: #e1ff7c;
+    --color-primary-content: #1f2a44;
+    --color-secondary: #4ad1b0;
+    --color-secondary-content: #1f2a44;
+    --color-accent: #dbdbdb;
+    --color-accent-content: #1f2a44;
+
+    --color-neutral: #2e2e2e;
+    --color-neutral-content: #dbdbdb;
+    --color-info: oklch(0.55 0.12 230);
+    --color-info-content: oklch(0.95 0.005 268);
+    --color-success: oklch(0.52 0.12 162);
+    --color-success-content: oklch(0.95 0.005 268);
+    --color-warning: oklch(0.72 0.16 78);
+    --color-warning-content: oklch(0.18 0.02 268);
+    --color-error: oklch(0.55 0.12 28);
+    --color-error-content: oklch(0.95 0.005 268);
+}
+
+/* ── Finance v2-dark — navy & gold — dark (Rate A) ── */
+[data-theme='finance-v2-dark'] {
+    --color-base-100: #112250;
+    --color-base-200: #223769;
+    --color-base-300: #334c82;
+    --color-base-content: #f5f0e9;
+
+    --color-primary: #e0c58f;
+    --color-primary-content: #112250;
+    --color-secondary: #3c507d;
+    --color-secondary-content: #f5f0e9;
+    --color-accent: #d9cbc2;
+    --color-accent-content: #112250;
+
+    --color-neutral: #223769;
+    --color-neutral-content: #f5f0e9;
+    --color-info: oklch(0.55 0.12 230);
+    --color-info-content: oklch(0.95 0.005 268);
+    --color-success: oklch(0.52 0.12 162);
+    --color-success-content: oklch(0.95 0.005 268);
+    --color-warning: oklch(0.72 0.16 78);
+    --color-warning-content: oklch(0.18 0.02 268);
+    --color-error: oklch(0.55 0.12 28);
+    --color-error-content: oklch(0.95 0.005 268);
+}

@@ -125,7 +125,7 @@
     </div>
 
     <!-- Specimen — inherits the app-wide theme -->
-    <div class="space-y-8 bg-white text-base-content">
+    <div class="space-y-8">
         <section class="px-5">
             <h2>Depth</h2>
             <hr class="mt-2 mb-4" />

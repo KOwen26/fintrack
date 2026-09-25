@@ -27,7 +27,8 @@
     {@render dockItem(dashboardMenu.menus.transactions)}
 
     <div class="relative">
-        <div class="min-size-12 absolute -top-1 -translate-y-1/2 rounded-lg bg-primary p-2">
+        <div
+            class="min-size-12 absolute -top-1 -translate-y-1/2 rounded-lg bg-primary p-2 text-primary-content">
             <Link
                 class="flex size-8 items-center justify-center"
                 aria-label="Add"
