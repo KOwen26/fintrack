@@ -270,20 +270,34 @@
     name: finance-v4;
     default: false;
 
+    --color-base-100: #f8fdfe;
+    --color-base-200: #f0fafc;
+    --color-base-300: #e6f4f8;
+    /* --color-base-300: #dceef4; */ /* backup */
+    --color-base-content: #020a14;
+
+    --color-primary: #0aa2d1;
+    --color-primary-content: #020a14;
+    --color-secondary: #001233;
+    --color-secondary-content: #e0f5fa;
+    --color-accent: #aae4f4;
+    --color-accent-content: #020a14;
+
+    --color-neutral: #e0f5fa;
+    --color-neutral-content: #004787;
+
+    /* Palette v4 — dark-first backup:
     --color-base-100: #001233;
     --color-base-200: #004787;
     --color-base-300: #aae4f4;
     --color-base-content: #001233;
-
-    --color-primary: #0aa2d1;
     --color-primary-content: #001233;
     --color-secondary: #e0f5fa;
     --color-secondary-content: #001233;
-    --color-accent: #aae4f4;
     --color-accent-content: #001233;
-
     --color-neutral: #001233;
     --color-neutral-content: #e0f5fa;
+    */
     --color-info: oklch(0.55 0.12 230);
     --color-info-content: oklch(0.95 0.005 268);
     --color-success: oklch(0.52 0.12 162);
