@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Finance app — Analytics mockup</title>
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" />
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <style type="text/tailwindcss">
+            @theme {
+                --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+                --color-canvas: #858d7d;
+                --color-screen: #0b0b0d;
+                --color-surface: #1b1b1e;
+                --color-lime: #a8f246;
+                --color-lavender: #acacff;
+            }
+
+            @layer base {
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+                    font-family:
+                        'Manrope',
+                        ui-sans-serif,
+                        system-ui,
+                        -apple-system,
+                        BlinkMacSystemFont,
+                        'Segoe UI',
+                        sans-serif;
+                }
+
+                button {
+                    font: inherit;
+                }
+            }
+
+            .screen-shadow {
+                box-shadow: 0 36px 90px rgb(9 12 8 / 35%);
+            }
+
+            .chart-grid {
+                background-image: linear-gradient(
+                    to right,
+                    rgb(255 255 255 / 5%) 1px,
+                    transparent 1px
+                );
+                background-size: 25% 100%;
+            }
+
+            .chart-fade {
+                background: linear-gradient(180deg, rgb(168 242 70 / 21%), transparent 78%);
+            }
+
+            .chart-stem {
+                background: linear-gradient(180deg, rgb(168 242 70 / 40%), transparent);
+            }
+        </style>
+    </head>
+    <body class="bg-canvas min-h-dvh text-white antialiased">
+        <main class="flex min-h-dvh items-center justify-center px-4 py-10 sm:px-8 sm:py-16">
+            <article
+                class="screen-shadow bg-screen relative h-[830px] w-full max-w-[430px] overflow-hidden rounded-[39px] ring-1 ring-white/10 sm:h-[875px]"
+                aria-label="Finance app analytics screen mockup">
+                <div
+                    class="flex items-center justify-between px-8 pt-6 pb-3 text-[15px] font-semibold tracking-tight">
+                    <time datetime="09:41">9:41</time>
+                    <div class="flex items-center gap-1.5" aria-label="Phone connection status">
+                        <svg
+                            class="size-4"
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            aria-hidden="true">
+                            <path d="M1 12h2V9H1v3Zm4 0h2V7H5v5Zm4 0h2V4H9v8Zm4 0h2V1h-2v11Z" />
+                        </svg>
+                        <svg
+                            class="size-[17px]"
+                            viewBox="0 0 20 16"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            aria-hidden="true">
+                            <path
+                                d="M2 5.5a11.3 11.3 0 0 1 16 0M5 8.5a7 7 0 0 1 10 0M8 11.5a2.8 2.8 0 0 1 4 0"
+                                stroke-linecap="round" />
+                        </svg>
+                        <span
+                            class="h-3.5 w-6 rounded-[3px] border border-white/80 p-px"
+                            aria-hidden="true"
+                            ><span class="block h-full w-full rounded-[1px] bg-white"></span
+                        ></span>
+                    </div>
+                </div>
+
+                <header class="flex items-center justify-between px-8 pt-4">
+                    <button
+                        type="button"
+                        aria-label="Go back"
+                        class="focus-visible:outline-lime grid size-11 place-items-center rounded-full bg-white/[0.07] transition hover:bg-white/[0.14] focus-visible:outline-2 focus-visible:outline-offset-2">
+                        <svg
+                            class="size-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            aria-hidden="true">
+                            <path
+                                d="m15 18-6-6 6-6"
+                                stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <h1 class="text-[22px] font-bold tracking-[-0.04em]">Analytics</h1>
+                    <button
+                        type="button"
+                        aria-label="More analytics options"
+                        class="focus-visible:outline-lime grid size-11 place-items-center rounded-full bg-white/[0.07] transition hover:bg-white/[0.14] focus-visible:outline-2 focus-visible:outline-offset-2">
+                        <span class="flex gap-1" aria-hidden="true"
+                            ><span class="size-1 rounded-full bg-white"></span
+                            ><span class="size-1 rounded-full bg-white"></span
+                            ><span class="size-1 rounded-full bg-white"></span
+                        ></span>
+                    </button>
+                </header>
+
+                <nav class="mt-4 flex gap-2 overflow-hidden px-8" aria-label="Analytics category">
+                    <button
+                        type="button"
+                        aria-pressed="true"
+                        class="bg-lime focus-visible:outline-lime h-11 shrink-0 rounded-full px-5 text-[15px] font-semibold text-black transition hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-2">
+                        All
+                    </button>
+                    <button
+                        type="button"
+                        aria-pressed="false"
+                        class="bg-surface focus-visible:outline-lime h-11 shrink-0 rounded-full px-5 text-[15px] font-semibold transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2">
+                        Income
+                    </button>
+                    <button
+                        type="button"
+                        aria-pressed="false"
+                        class="bg-surface focus-visible:outline-lime h-11 shrink-0 rounded-full px-5 text-[15px] font-semibold transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2">
+                        Outcome
+                    </button>
+                    <button
+                        type="button"
+                        aria-pressed="false"
+                        class="bg-surface focus-visible:outline-lime h-11 shrink-0 rounded-full px-5 text-[15px] font-semibold transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2">
+                        Savings
+                    </button>
+                </nav>
+
+                <section class="px-8 pt-6" aria-labelledby="balance-heading">
+                    <p id="balance-heading" class="text-[16px] font-medium text-white/55">
+                        Total balance
+                    </p>
+                    <p
+                        class="mt-1 text-[42px] leading-none font-semibold tracking-[-0.07em] tabular-nums sm:text-[45px]">
+                        $367,289<span class="font-sans text-[28px] font-medium text-white/55"
+                            >.00</span
+                        >
+                    </p>
+                </section>
+
+                <section
+                    class="relative mt-5 h-[196px] overflow-visible"
+                    aria-labelledby="trend-heading">
+                    <h2 id="trend-heading" class="sr-only">
+                        Balance trend from February to August
+                    </h2>
+                    <div class="chart-grid chart-fade absolute inset-x-0 top-2 bottom-8"></div>
+                    <div
+                        class="chart-stem absolute bottom-8 left-[61%] h-[111px] w-9 -translate-x-1/2"></div>
+                    <svg
+                        class="absolute inset-x-0 top-0 h-[156px] w-full"
+                        viewBox="0 0 430 156"
+                        preserveAspectRatio="none"
+                        fill="none"
+                        aria-hidden="true">
+                        <defs>
+                            <linearGradient id="lime-fill" x1="0" x2="0" y1="0" y2="1">
+                                <stop offset="0" stop-color="#a8f246" stop-opacity=".22" />
+                                <stop offset="1" stop-color="#a8f246" stop-opacity="0" />
+                            </linearGradient>
+                        </defs>
+                        <path
+                            d="M0 92C31 76 53 58 82 58c35 0 49 27 76 45 24 17 47 9 68-9 25-22 45-34 70-23 35 16 46 8 79-10 20-11 39-6 55 3V138H0V92Z"
+                            fill="url(#lime-fill)" />
+                        <path
+                            d="M0 92C31 76 53 58 82 58c35 0 49 27 76 45 24 17 47 9 68-9 25-22 45-34 70-23 35 16 46 8 79-10 20-11 39-6 55 3"
+                            stroke="#a8f246"
+                            stroke-width="2.2" />
+                        <path
+                            d="M0 117c27 22 53 30 81 17 37-17 56-69 99-68 31 0 49 25 74 31 42 11 49-15 75-7 35 10 58 27 101 17"
+                            stroke="#b8b9ff"
+                            stroke-width="2" />
+                        <circle
+                            cx="263"
+                            cy="81"
+                            r="7"
+                            fill="#d5fac2"
+                            stroke="#8ddc3e"
+                            stroke-width="3" />
+                    </svg>
+                    <div
+                        class="bg-lime absolute top-[-2px] left-[61%] -translate-x-1/2 rounded-full px-3 py-2 text-[16px] font-bold tracking-[-0.05em] text-black shadow-lg">
+                        $1,250
+                        <span
+                            class="bg-lime absolute -bottom-1 left-1/2 size-2 -translate-x-1/2 rotate-45"></span>
+                    </div>
+                    <div
+                        class="absolute inset-x-0 bottom-0 flex justify-between px-8 text-[14px] font-medium text-white/55"
+                        aria-hidden="true">
+                        <span>Feb</span><span>Mar</span><span>Apr</span><span>May</span
+                        ><span class="text-lime font-bold">Jun</span><span>Jul</span
+                        ><span>Aug</span>
+                    </div>
+                </section>
+
+                <section
+                    class="grid grid-cols-2 gap-3 px-8 pt-4"
+                    aria-label="Income and outcome totals">
+                    <article class="bg-surface rounded-[23px] px-4 py-4">
+                        <span
+                            class="bg-lime grid size-11 place-items-center rounded-full text-black"
+                            ><svg
+                                class="size-6"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                aria-hidden="true">
+                                <rect x="3" y="5" width="18" height="14" rx="3" />
+                                <path
+                                    d="M7 10h5M7 14h3M16 9l2 2-2 2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" /></svg
+                        ></span>
+                        <p class="mt-4 text-[23px] font-bold tracking-[-0.07em]">
+                            $524,000<span class="font-sans text-[15px] font-medium text-white/50"
+                                >.00</span
+                            >
+                        </p>
+                        <p class="mt-1 text-[13px] font-medium text-white/55">Total Income</p>
+                    </article>
+                    <article class="bg-surface rounded-[23px] px-4 py-4">
+                        <span
+                            class="bg-lavender grid size-11 place-items-center rounded-full text-black"
+                            ><svg
+                                class="size-6"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                aria-hidden="true">
+                                <rect x="3" y="5" width="18" height="14" rx="3" />
+                                <path
+                                    d="M7 10h5M7 14h3M16 13l2-2-2-2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" /></svg
+                        ></span>
+                        <p class="mt-4 text-[23px] font-bold tracking-[-0.07em]">
+                            $409,380<span class="font-sans text-[15px] font-medium text-white/50"
+                                >.00</span
+                            >
+                        </p>
+                        <p class="mt-1 text-[13px] font-medium text-white/55">Total Outcome</p>
+                    </article>
+                </section>
+
+                <button
+                    type="button"
+                    class="bg-lavender focus-visible:outline-lime relative mx-8 mt-3 flex h-[76px] items-center justify-between overflow-hidden rounded-[17px] px-4 text-left text-black transition hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-2">
+                    <span class="relative z-10"
+                        ><span class="block text-[21px] font-bold tracking-[-0.04em]">+12.5% ↑</span
+                        ><span class="mt-0.5 block text-[13px] font-medium text-black/65"
+                            >Expense was up than last month</span
+                        ></span
+                    >
+                    <svg
+                        class="relative z-10 size-6"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true">
+                        <path d="m9 18 6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span
+                        class="absolute -top-10 -right-7 size-35 rounded-full border-[18px] border-white/10"></span>
+                </button>
+
+                <section class="px-8 pt-6" aria-labelledby="history-heading">
+                    <div class="flex items-center justify-between">
+                        <h2 id="history-heading" class="text-[18px] font-bold tracking-[-0.03em]">
+                            Transactions History
+                        </h2>
+                        <button
+                            type="button"
+                            class="focus-visible:outline-lime flex items-center gap-1 text-[14px] font-medium text-white/55 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2">
+                            Today
+                            <svg
+                                class="size-4"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                aria-hidden="true">
+                                <path
+                                    d="m6 9 6 6 6-6"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="mt-3 flex items-center gap-3 opacity-35">
+                        <span
+                            class="grid size-11 place-items-center rounded-full bg-[#26141a] text-[21px] font-black text-[#e40914]"
+                            >N</span
+                        >
+                        <span class="flex-1"
+                            ><span class="block font-semibold">Netflix</span
+                            ><span class="text-[13px] text-white/55">Entertainment</span></span
+                        >
+                        <span class="text-[14px] font-semibold">− $42.00</span>
+                    </div>
+                </section>
+            </article>
+        </main>
+    </body>
+</html>
