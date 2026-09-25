@@ -14,7 +14,9 @@
     /* ── Layout shell ───────────────────────────────────── */
 
     // Extend the mobile shell (header zone included) with the screen's color so
-    // the context bar reads as blank space belonging to this page.
+    // the context bar reads as blank space belonging to this page. The hex stays
+    // literal: the wrapper is a parent of this component, so scoped tokens can't
+    // reach it.
     setLayoutProps({ mobileShellClass: 'bg-[#0b0b0d] pt-9' });
 
     // Preserved-state visits keep layout props — clear ours on unmount.
@@ -64,15 +66,15 @@
             amount: '− $42.00',
             amountClass: '',
             avatar: 'N',
-            avatarClass: 'text-[#e40914] text-[24px]',
+            avatarClass: 'text-error text-2xl',
         },
         {
             name: 'PayPal Transfer',
             detail: 'Income • Jun 22',
             amount: '+ $2,500.00',
-            amountClass: 'text-[#40a77b]',
+            amountClass: 'text-success',
             avatar: 'P',
-            avatarClass: 'text-[#1665ad] text-[23px] italic',
+            avatarClass: 'text-info text-2xl italic',
         },
     ];
 
@@ -98,18 +100,17 @@
 </svelte:head>
 
 <HeaderContext>
-    <div class="flex min-w-0 flex-1 items-center justify-between gap-3 pl-3 md:pl-0">
+    <div class="finance-tokens flex min-w-0 flex-1 items-center justify-between gap-3 pl-3 md:pl-0">
         <div class="min-w-0">
-            <p class="truncate text-[12px] font-medium text-white/55 md:text-base-content/60">
+            <p class="truncate text-xs font-medium text-white/55 md:text-base-content/60">
                 {greeting},
             </p>
-            <p
-                class="truncate text-[16px] font-bold tracking-[-0.02em] text-white md:text-base-content">
+            <p class="truncate text-base font-bold tracking-tight text-white md:text-base-content">
                 {user.name}
             </p>
         </div>
         <button
-            class="relative grid size-10 shrink-0 place-items-center rounded-full bg-white/[0.07] text-white transition hover:bg-white/[0.14] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a8f246] md:bg-base-200 md:text-base-content"
+            class="relative grid size-10 shrink-0 place-items-center rounded-full bg-white/7 text-white transition hover:bg-white/14 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary md:bg-base-200 md:text-base-content"
             aria-label="Notifications"
             type="button">
             <svg
@@ -125,26 +126,25 @@
                     stroke-linejoin="round" />
             </svg>
             <span
-                class="absolute top-0.5 right-0.5 grid size-4 place-items-center rounded-full bg-[#ef6c69] text-[9px] font-bold"
+                class="absolute top-0.5 right-0.5 grid size-4 place-items-center rounded-full bg-accent text-xs font-bold"
                 >9+</span>
         </button>
     </div>
 </HeaderContext>
 
 <article
-    class="finance-screen relative flex min-h-screen w-full flex-col overflow-hidden bg-[#0b0b0d] text-white antialiased"
+    class="finance-screen relative flex min-h-screen w-full flex-col overflow-hidden bg-base-100 text-white antialiased"
     aria-label="Finance home screen">
     <section class="px-6 pt-6" aria-labelledby="total-balance">
-        <p id="total-balance" class="text-[16px] font-medium text-white/55">Total balance</p>
-        <p
-            class="mt-1 text-[42px] leading-none font-semibold tracking-[-0.07em] tabular-nums sm:text-[45px]">
-            $367,289<span class="text-[28px] font-medium text-white/55">.00</span>
+        <p id="total-balance" class="text-base font-medium text-white/55">Total balance</p>
+        <p class="mt-1 text-5xl leading-none font-semibold tracking-tighter tabular-nums">
+            $367,289<span class="text-3xl font-medium text-white/55">.00</span>
         </p>
     </section>
 
     <section class="flex gap-3 px-6 pt-6" aria-label="Quick actions">
         <button
-            class="flex h-12 flex-1 items-center justify-center gap-3 rounded-full bg-[#1b1b1e] text-[15px] font-semibold transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a8f246]"
+            class="flex h-12 flex-1 items-center justify-center gap-3 rounded-full bg-base-200 text-base font-semibold transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             type="button">
             <span class="grid size-7 place-items-center rounded-full border border-white/20">
                 <svg
@@ -160,7 +160,7 @@
             Transfer
         </button>
         <button
-            class="flex h-12 flex-1 items-center justify-center gap-3 rounded-full bg-[#1b1b1e] text-[15px] font-semibold transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a8f246]"
+            class="flex h-12 flex-1 items-center justify-center gap-3 rounded-full bg-base-200 text-base font-semibold transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             type="button">
             <span class="grid size-7 place-items-center rounded-full border border-white/20">
                 <svg
@@ -176,7 +176,7 @@
             Request
         </button>
         <button
-            class="grid size-12 place-items-center rounded-full bg-[#1b1b1e] transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a8f246]"
+            class="grid size-12 place-items-center rounded-full bg-base-200 transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             aria-label="More actions"
             type="button">
             <span class="grid grid-cols-2 gap-1">
@@ -190,12 +190,12 @@
 
     <section class="px-6 pt-6" aria-labelledby="cards-heading">
         <div class="flex items-center justify-between">
-            <h2 id="cards-heading" class="text-[17px] font-semibold">My Cards</h2>
+            <h2 id="cards-heading" class="text-lg font-semibold">My Cards</h2>
             <Link
-                class="flex items-center gap-1 text-[15px] text-white/55 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a8f246]"
+                class="flex items-center gap-1 text-base text-white/55 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 href={accounts.create().url}>
                 <span
-                    class="grid size-4 place-items-center rounded-full border border-white/45 text-[12px] leading-none"
+                    class="grid size-4 place-items-center rounded-full border border-white/45 text-xs leading-none"
                     >+</span>
                 Add
             </Link>
@@ -205,37 +205,37 @@
             {#each cards as card (card.number)}
                 {#if card.variant === 'primary'}
                     <section
-                        class="card-pattern w-[315px] shrink-0 snap-start rounded-[27px] bg-[#a8f246] px-5 py-5 text-[#101012] shadow-lg"
+                        class="card-pattern w-78.75 shrink-0 snap-start rounded-3xl bg-primary px-5 py-5 text-neutral shadow-lg"
                         aria-label="Primary card ending in 3281">
-                        <div class="h-5 w-15 bg-[#101012]"></div>
-                        <p class="mt-6 text-[22px] font-bold tracking-[0.12em]">
+                        <div class="h-5 w-15 bg-neutral"></div>
+                        <p class="mt-6 text-2xl font-bold tracking-widest">
                             {card.number}
                         </p>
                         <div class="mt-5 flex items-end justify-between">
                             <div>
-                                <p class="text-[13px] font-medium">Balance</p>
-                                <p class="text-[27px] font-bold tracking-[-0.08em]">
-                                    {card.balance}<span class="text-[17px] font-medium"
+                                <p class="text-sm font-medium">Balance</p>
+                                <p class="text-3xl font-bold tracking-tighter">
+                                    {card.balance}<span class="text-lg font-medium"
                                         >{card.cents}</span>
                                 </p>
                             </div>
                             <div class="text-right">
-                                <p class="text-[13px] font-medium">{card.meta?.label}</p>
-                                <p class="text-[17px] font-bold">{card.meta?.value}</p>
+                                <p class="text-sm font-medium">{card.meta?.label}</p>
+                                <p class="text-lg font-bold">{card.meta?.value}</p>
                             </div>
                         </div>
                     </section>
                 {:else}
                     <section
-                        class="w-[210px] shrink-0 snap-start rounded-[27px] bg-[#b7b8ff] px-5 py-5 text-[#101012]"
+                        class="w-52.5 shrink-0 snap-start rounded-3xl bg-secondary px-5 py-5 text-neutral"
                         aria-label="Secondary card">
-                        <div class="h-5 w-15 bg-[#101012]"></div>
-                        <p class="mt-7 text-[20px] font-bold tracking-[0.12em]">
+                        <div class="h-5 w-15 bg-neutral"></div>
+                        <p class="mt-7 text-xl font-bold tracking-widest">
                             {card.number}
                         </p>
-                        <p class="mt-6 text-[13px] font-medium">Balance</p>
-                        <p class="text-[25px] font-bold tracking-[-0.08em]">
-                            {card.balance}<span class="text-[16px] font-medium">{card.cents}</span>
+                        <p class="mt-6 text-sm font-medium">Balance</p>
+                        <p class="text-2xl font-bold tracking-tighter">
+                            {card.balance}<span class="text-base font-medium">{card.cents}</span>
                         </p>
                     </section>
                 {/if}
@@ -244,15 +244,15 @@
     </section>
 
     <section
-        class="relative mt-6 min-h-screen flex-1 rounded-t-[28px] bg-white px-6 pt-3 pb-8 text-[#101012]"
+        class="relative mt-6 min-h-screen flex-1 rounded-t-3xl bg-white px-6 pt-3 pb-8 text-neutral"
         aria-labelledby="transactions-heading">
         <!-- <div class="mx-auto h-1.5 w-13 rounded-full bg-black/40"></div> -->
         <div class="mt-4 flex items-center justify-between">
-            <h2 id="transactions-heading" class="text-[18px] font-bold tracking-[-0.03em]">
+            <h2 id="transactions-heading" class="text-lg font-bold tracking-tight">
                 Latest Transactions
             </h2>
             <Link
-                class="text-[14px] font-medium text-black/50 transition hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a8f246]"
+                class="text-sm font-medium text-black/50 transition hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 href={transactions.index().url}>
                 See all
             </Link>
@@ -261,16 +261,14 @@
             {#each recentTransactions as transaction (transaction.name)}
                 <li class="flex items-center gap-3 py-3">
                     <span
-                        class="grid size-12 place-items-center rounded-full bg-[#ececee] font-black {transaction.avatarClass}">
+                        class="grid size-12 place-items-center rounded-full bg-base-300 font-black {transaction.avatarClass}">
                         {transaction.avatar}
                     </span>
                     <span class="min-w-0 flex-1">
-                        <span class="block text-[16px] font-bold">{transaction.name}</span>
-                        <span class="mt-0.5 block text-[13px] text-black/50"
-                            >{transaction.detail}</span>
+                        <span class="block text-base font-bold">{transaction.name}</span>
+                        <span class="mt-0.5 block text-sm text-black/50">{transaction.detail}</span>
                     </span>
-                    <span
-                        class="text-[15px] font-bold tracking-[-0.04em] {transaction.amountClass}">
+                    <span class="tracking-snug text-base font-bold {transaction.amountClass}">
                         {transaction.amount}
                     </span>
                 </li>
@@ -280,6 +278,31 @@
 </article>
 
 <style>
+    /* Daisy-style palette, scoped to this screen only — Tailwind utilities inside
+       (bg-primary, text-success, bg-base-200, …) resolve to these overrides. */
+    .finance-screen {
+        --color-base-100: #0b0b0d; /* screen ground */
+        --color-base-200: #1b1b1e; /* raised surface on the ground */
+        --color-base-300: #ececee; /* tile on the light sheet */
+
+        --color-neutral: #101012; /* ink for light/colored surfaces */
+
+        --color-primary: #a8f246; /* lime accent */
+        --color-secondary: #b7b8ff; /* periwinkle card */
+        --color-accent: #ef6c69; /* notification badge */
+        --color-success: #40a77b; /* income */
+        --color-info: #1665ad; /* institution blue */
+        --color-error: #e40914; /* expense red */
+    }
+
+    /* The context snippet renders inside the layout header, outside the screen
+       element — it only inherits the two tokens it uses, so Daisy's global
+       base-* stays intact there (e.g. the desktop md:bg-base-200 bell). */
+    .finance-tokens {
+        --color-primary: #a8f246;
+        --color-accent: #ef6c69;
+    }
+
     .finance-screen {
         font-family:
             'Manrope',
