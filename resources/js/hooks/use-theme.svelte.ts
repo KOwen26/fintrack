@@ -16,7 +16,6 @@ export const THEME_OPTIONS: ThemeOption[] = [
     { value: 'cobalt', label: 'Cobalt (default)' },
     { value: 'verdant', label: 'Verdant' },
     { value: 'ember', label: 'Ember' },
-    { value: 'amethyst', label: 'Amethyst' },
 ];
 
 export const THEMES = THEME_OPTIONS.map(({ value }) => value);

@@ -5,7 +5,6 @@
         cobalt --default,
         verdant,
         ember,
-        amethyst,
         finance-v2,
         finance-v3,
         finance-v4,
@@ -116,44 +115,6 @@
     --color-warning-content: oklch(20% 0.02 40);
     --color-error: oklch(45% 0.1 35);
     --color-error-content: oklch(95% 0.01 40);
-
-    --radius-selector: 0.25rem;
-    --radius-field: 0.25rem;
-    --radius-box: 0.5rem;
-    --size-selector: 0.25rem;
-    --size-field: 0.25rem;
-    --border: 1px;
-    --depth: 0;
-    --noise: 0;
-}
-
-/* ── Amethyst ── */
-@plugin 'daisyui/theme' {
-    name: amethyst;
-    default: false;
-
-    --color-base-100: oklch(99% 0.004 280);
-    --color-base-200: oklch(95% 0.008 280);
-    --color-base-300: oklch(89% 0.012 280);
-    --color-base-content: oklch(18% 0.02 280);
-
-    --color-primary: oklch(38% 0.13 280);
-    --color-primary-content: oklch(95% 0.01 280);
-    --color-secondary: oklch(64% 0.07 285);
-    --color-secondary-content: oklch(18% 0.02 280);
-    --color-accent: oklch(72% 0.16 350);
-    --color-accent-content: oklch(95% 0.01 280);
-
-    --color-neutral: oklch(18% 0.02 280);
-    --color-neutral-content: oklch(95% 0.01 280);
-    --color-info: oklch(58% 0.12 240);
-    --color-info-content: oklch(95% 0.01 280);
-    --color-success: oklch(55% 0.1 165);
-    --color-success-content: oklch(95% 0.01 280);
-    --color-warning: oklch(72% 0.16 350);
-    --color-warning-content: oklch(95% 0.01 280);
-    --color-error: oklch(58% 0.12 18);
-    --color-error-content: oklch(95% 0.01 280);
 
     --radius-selector: 0.25rem;
     --radius-field: 0.25rem;
@@ -323,9 +284,15 @@
     default: false;
 
     --color-base-100: #473c33;
+    --color-base-200: #55483d;
+    --color-base-300: #635447;
+    --color-base-content: #f6f1e9;
+
+    /* Palette v5 — saturated-surface backup:
     --color-base-200: #fda769;
     --color-base-300: #fec868;
     --color-base-content: #473c33;
+    */
 
     --color-primary: #abc270;
     --color-primary-content: #473c33;
