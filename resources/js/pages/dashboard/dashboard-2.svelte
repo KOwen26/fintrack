@@ -13,11 +13,9 @@
 
     /* ── Layout shell ───────────────────────────────────── */
 
-    // Extend the mobile shell (header zone included) with the screen's color so
-    // the context bar reads as blank space belonging to this page. The hex stays
-    // literal: the wrapper is a parent of this component, so scoped tokens can't
-    // reach it.
-    setLayoutProps({ mobileShellClass: 'bg-[#0b0b0d] pt-9' });
+    // The shell consumes the palette token directly — the wrapper carries the
+    // finance-theme class so the var() resolves on it too.
+    setLayoutProps({ mobileShellClass: 'finance-theme bg-(--finance-base-100) pt-9' });
 
     // Preserved-state visits keep layout props — clear ours on unmount.
     onMount(() => () => setLayoutProps({ mobileShellClass: undefined }));
@@ -100,7 +98,8 @@
 </svelte:head>
 
 <HeaderContext>
-    <div class="finance-tokens flex min-w-0 flex-1 items-center justify-between gap-3 pl-3 md:pl-0">
+    <div
+        class="finance-theme finance-tokens flex min-w-0 flex-1 items-center justify-between gap-3 pl-3 md:pl-0">
         <div class="min-w-0">
             <p class="truncate text-xs font-medium text-white/55 md:text-base-content/60">
                 {greeting},
@@ -133,7 +132,7 @@
 </HeaderContext>
 
 <article
-    class="finance-screen relative flex min-h-screen w-full flex-col overflow-hidden bg-base-100 text-white antialiased"
+    class="finance-theme finance-screen relative flex min-h-screen w-full flex-col overflow-hidden bg-base-100 text-white antialiased"
     aria-label="Finance home screen">
     <section class="px-6 pt-6" aria-labelledby="total-balance">
         <p id="total-balance" class="text-base font-medium text-white/55">Total balance</p>
@@ -278,32 +277,69 @@
 </article>
 
 <style>
-    /* Daisy-style palette, scoped to this screen only — Tailwind utilities inside
-       (bg-primary, text-success, bg-base-200, …) resolve to these overrides. */
-    .finance-screen {
-        --color-base-100: #0b0b0d; /* screen ground */
-        --color-base-200: #1b1b1e; /* raised surface on the ground */
-        --color-base-300: #ececee; /* tile on the light sheet */
+    :global(.finance-theme) {
+        /* Palette v6 — navy, lime & teal — Rate A. */
+        --finance-base-100: #1f2a44; /* dark navy — screen ground */
+        --finance-base-200: #2e2e2e; /* dark gray — raised surface on the ground */
+        --finance-base-300: #dbdbdb; /* light gray — tile on the light sheet */
+        --finance-neutral: #1f2a44; /* dark navy — ink for light/colored surfaces */
+        --finance-primary: #e1ff7c; /* lime — accent */
+        --finance-secondary: #4ad1b0; /* teal — light card */
 
-        --color-neutral: #101012; /* ink for light/colored surfaces */
+        /* Palette v4 — deep azure & cyan — Rate A */
+        /* --finance-base-100: #001233; — DEEP AZURE (screen ground) */
+        /* --finance-base-200: #004787; — RICH AZURE (raised surface on the ground) */
+        /* --finance-base-300: #aae4f4; — PALE CYAN (tile on the light sheet) */
+        /* --finance-neutral: #001233; — DEEP AZURE (ink for light/colored surfaces) */
+        /* --finance-primary: #0aa2d1; — SOFT CYAN (accent) */
+        /* --finance-secondary: #e0f5fa; — ICY CYAN (light card) */
 
-        --color-primary: #a8f246; /* lime accent */
-        --color-secondary: #b7b8ff; /* periwinkle card */
-        --color-accent: #ef6c69; /* notification badge */
-        --color-success: #40a77b; /* income */
-        --color-info: #1665ad; /* institution blue */
-        --color-error: #e40914; /* expense red */
+        /* Palette v3 — azure & jade — Rate A */
+        /* --finance-base-100: #111827; — DEEP CLEAN AZURE (screen ground) */
+        /* --finance-base-200: #354153; — DEEP SOFT AZURE (raised surface on the ground) */
+        /* --finance-base-300: #abf1ce; — PALE JADE (tile on the light sheet) */
+        /* --finance-neutral: #111827; — DEEP CLEAN AZURE (ink for light/colored surfaces) */
+        /* --finance-primary: #2bd47d; — SOFT JADE (accent) */
+        /* --finance-secondary: #f3f7f8; — ICY AZURE (light card) */
+
+        /* Palette v2 — navy & gold — Rate A */
+        /* --finance-base-100: #112250; — ROYAL BLUE (screen ground) */
+        /* --finance-base-200: #3c507d; — SAPPHIRE (raised surface on the ground) */
+        /* --finance-base-300: #d9cbc2; — SHELL STONE (tile on the light sheet) */
+        /* --finance-neutral: #112250; — ROYAL BLUE (ink for light/colored surfaces) */
+        /* --finance-primary: #e0c58f; — QUICKSAND (gold accent) */
+        /* --finance-secondary: #f5f0e9; — SWAN WING (light card) */
+
+        /* Palette v5 — earth & gold — Rate B */
+        /* --finance-base-100: #473c33; — dark brown (screen ground) */
+        /* --finance-base-200: #fda769; — peach (raised surface on the ground) */
+        /* --finance-base-300: #fec868; — gold (tile on the light sheet) */
+        /* --finance-neutral: #473c33; — dark brown (ink for light/colored surfaces) */
+        /* --finance-primary: #abc270; — olive (accent) */
+        /* --finance-secondary: #fec868; — gold (light card) */
+
+        /* Palette v1 — dark & lime — Rate B */
+        /* --finance-base-100: #0b0b0d; — screen ground */
+        /* --finance-base-200: #1b1b1e; — raised surface on the ground */
+        /* --finance-base-300: #ececee; — tile on the light sheet */
+        /* --finance-neutral: #101012; — ink for light/colored surfaces */
+        /* --finance-primary: #a8f246; — lime accent */
+        /* --finance-secondary: #b7b8ff; — periwinkle card */
+        /* --finance-accent: #ef6c69; — notification badge */
+        /* --finance-success: #40a77b; — income */
+        /* --finance-info: #1665ad; — institution blue */
+        /* --finance-error: #e40914; — expense red */
     }
 
-    /* The context snippet renders inside the layout header, outside the screen
-       element — it only inherits the two tokens it uses, so Daisy's global
-       base-* stays intact there (e.g. the desktop md:bg-base-200 bell). */
-    .finance-tokens {
-        --color-primary: #a8f246;
-        --color-accent: #ef6c69;
-    }
-
+    /* ── Consumers — Daisy-name aliases only; no hex values below this line. ── */
     .finance-screen {
+        --color-base-100: var(--finance-base-100);
+        --color-base-200: var(--finance-base-200);
+        --color-base-300: var(--finance-base-300);
+        --color-neutral: var(--finance-neutral);
+        --color-primary: var(--finance-primary);
+        --color-secondary: var(--finance-secondary);
+
         font-family:
             'Manrope',
             ui-sans-serif,
@@ -311,6 +347,13 @@
             -apple-system,
             'Segoe UI',
             sans-serif;
+    }
+
+    /* The context snippet renders inside the layout header, outside the screen
+       element — primary only, so Daisy's global base-* stays intact there
+       (e.g. the desktop md:bg-base-200 bell). */
+    .finance-tokens {
+        --color-primary: var(--finance-primary);
     }
 
     .screen-shadow {
