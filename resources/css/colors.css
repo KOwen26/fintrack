@@ -78,21 +78,21 @@
 }
 
 /* ── Finance v2 — navy & gold (Rate A) ── */
-[data-theme='finance-v2'] {
-    --color-base-100: #faf7f4;
-    --color-base-200: #f2ede6;
-    --color-base-300: #e9e0d5;
-    --color-base-content: #081020;
+[data-theme='royal'] {
+    --color-base-100: oklch(0.978 0.005 67.4);
+    --color-base-200: oklch(0.948 0.011 76.4);
+    --color-base-300: oklch(0.911 0.018 73);
+    --color-base-content: oklch(0.175 0.036 262.8);
 
-    --color-primary: #e0c58f;
-    --color-primary-content: #081020;
-    --color-secondary: #112250;
-    --color-secondary-content: #f5f0e9;
-    --color-accent: #d9cbc2;
-    --color-accent-content: #081020;
+    --color-primary: oklch(0.834 0.077 84.2);
+    --color-primary-content: oklch(0.175 0.036 262.8);
+    --color-secondary: oklch(0.268 0.088 265.5);
+    --color-secondary-content: oklch(0.957 0.011 76.4);
+    --color-accent: oklch(0.851 0.02 55);
+    --color-accent-content: oklch(0.175 0.036 262.8);
 
-    --color-neutral: #f5f0e9;
-    --color-neutral-content: #3c507d;
+    --color-neutral: oklch(0.957 0.011 76.4);
+    --color-neutral-content: oklch(0.436 0.079 265.1);
 
     /* Palette v2 — dark-first backup:
     --color-base-100: #112250;
@@ -106,32 +106,32 @@
     --color-neutral: #112250;
     --color-neutral-content: #f5f0e9;
     */
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-info: oklch(0.52 0.1 255);
+    --color-info-content: oklch(0.97 0.01 76);
+    --color-success: oklch(0.6 0.09 140);
+    --color-success-content: oklch(0.97 0.01 76);
+    --color-warning: oklch(0.8 0.11 84);
+    --color-warning-content: oklch(0.175 0.036 262.8);
+    --color-error: oklch(0.55 0.12 30);
+    --color-error-content: oklch(0.97 0.01 76);
 }
 
 /* ── Finance v3 — azure & jade (Rate A) ── */
-[data-theme='finance-v3'] {
-    --color-base-100: #f8fafb;
-    --color-base-200: #eff3f6;
-    --color-base-300: #e5eaf0;
-    --color-base-content: #070b14;
+[data-theme='mint'] {
+    --color-base-100: oklch(0.984 0.002 229.3);
+    --color-base-200: oklch(0.962 0.006 240.1);
+    --color-base-300: oklch(0.935 0.01 253);
+    --color-base-content: oklch(0.15 0.021 264.4);
 
-    --color-primary: #2bd47d;
-    --color-primary-content: #111827;
-    --color-secondary: #111827;
-    --color-secondary-content: #f3f7f8;
-    --color-accent: #abf1ce;
-    --color-accent-content: #111827;
+    --color-primary: oklch(0.768 0.1812 154.4);
+    --color-primary-content: oklch(0.21 0.032 264.7);
+    --color-secondary: oklch(0.21 0.032 264.7);
+    --color-secondary-content: oklch(0.973 0.004 214.4);
+    --color-accent: oklch(0.902 0.085 162.3);
+    --color-accent-content: oklch(0.21 0.032 264.7);
 
-    --color-neutral: #f3f7f8;
-    --color-neutral-content: #354153;
+    --color-neutral: oklch(0.973 0.004 214.4);
+    --color-neutral-content: oklch(0.372 0.035 258.4);
 
     /* Palette v3 — dark-first backup:
     --color-base-100: #111827;
@@ -143,33 +143,33 @@
     --color-neutral: #111827;
     --color-neutral-content: #f3f7f8;
     */
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-info: oklch(0.55 0.11 245);
+    --color-info-content: oklch(0.97 0.005 220);
+    --color-success: oklch(0.65 0.14 145);
+    --color-success-content: oklch(0.97 0.005 220);
+    --color-warning: oklch(0.78 0.13 75);
+    --color-warning-content: oklch(0.15 0.021 264.4);
+    --color-error: oklch(0.55 0.15 30);
+    --color-error-content: oklch(0.97 0.005 220);
 }
 
 /* ── Finance v4 — deep azure & cyan (Rate A) ── */
-[data-theme='finance-v4'] {
-    --color-base-100: #f8fdfe;
-    --color-base-200: #f0fafc;
-    --color-base-300: #e6f4f8;
+[data-theme='azure'] {
+    --color-base-100: oklch(0.991 0.005 211.1);
+    --color-base-200: oklch(0.978 0.011 211.1);
+    --color-base-300: oklch(0.958 0.016 216.7);
     /* --color-base-300: #dceef4; */ /* backup */
-    --color-base-content: #020a14;
+    --color-base-content: oklch(0.141 0.028 247.1);
 
-    --color-primary: #0aa2d1;
-    --color-primary-content: #020a14;
-    --color-secondary: #001233;
-    --color-secondary-content: #e0f5fa;
-    --color-accent: #aae4f4;
-    --color-accent-content: #020a14;
+    --color-primary: oklch(0.665 0.128 227.9);
+    --color-primary-content: oklch(0.141 0.028 247.1);
+    --color-secondary: oklch(0.191 0.071 258.1);
+    --color-secondary-content: oklch(0.956 0.023 213.6);
+    --color-accent: oklch(0.885 0.063 216.6);
+    --color-accent-content: oklch(0.141 0.028 247.1);
 
-    --color-neutral: #e0f5fa;
-    --color-neutral-content: #004787;
+    --color-neutral: oklch(0.956 0.023 213.6);
+    --color-neutral-content: oklch(0.399 0.1234 253.1);
 
     /* Palette v4 — dark-first backup:
     --color-base-100: #001233;
@@ -183,22 +183,22 @@
     --color-neutral: #001233;
     --color-neutral-content: #e0f5fa;
     */
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-info: oklch(0.55 0.11 240);
+    --color-info-content: oklch(0.96 0.01 211);
+    --color-success: oklch(0.62 0.12 160);
+    --color-success-content: oklch(0.96 0.01 211);
+    --color-warning: oklch(0.78 0.13 80);
+    --color-warning-content: oklch(0.141 0.028 247.1);
+    --color-error: oklch(0.55 0.15 28);
+    --color-error-content: oklch(0.96 0.01 211);
 }
 
 /* ── Finance v5 — earth & gold (Rate B) ── */
-[data-theme='finance-v5'] {
-    --color-base-100: #473c33;
-    --color-base-200: #55483d;
-    --color-base-300: #635447;
-    --color-base-content: #f6f1e9;
+[data-theme='desert'] {
+    --color-base-100: oklch(0.365 0.022 61.3);
+    --color-base-200: oklch(0.412 0.025 62.3);
+    --color-base-300: oklch(0.457 0.029 62.9);
+    --color-base-content: oklch(0.96 0.012 79.6);
 
     /* Palette v5 — saturated-surface backup:
     --color-base-200: #fda769;
@@ -206,127 +206,127 @@
     --color-base-content: #473c33;
     */
 
-    --color-primary: #abc270;
-    --color-primary-content: #473c33;
-    --color-secondary: #fec868;
-    --color-secondary-content: #473c33;
-    --color-accent: #fda769;
-    --color-accent-content: #473c33;
+    --color-primary: oklch(0.778 0.11 121.8);
+    --color-primary-content: oklch(0.365 0.022 61.3);
+    --color-secondary: oklch(0.862 0.129 80);
+    --color-secondary-content: oklch(0.365 0.022 61.3);
+    --color-accent: oklch(0.801 0.128 55.5);
+    --color-accent-content: oklch(0.365 0.022 61.3);
 
-    --color-neutral: #473c33;
-    --color-neutral-content: #fec868;
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-neutral: oklch(0.365 0.022 61.3);
+    --color-neutral-content: oklch(0.862 0.129 80);
+    --color-info: oklch(0.68 0.08 230);
+    --color-info-content: oklch(0.365 0.022 61.3);
+    --color-success: oklch(0.72 0.1 140);
+    --color-success-content: oklch(0.365 0.022 61.3);
+    --color-warning: oklch(0.82 0.12 80);
+    --color-warning-content: oklch(0.365 0.022 61.3);
+    --color-error: oklch(0.62 0.12 35);
+    --color-error-content: oklch(0.365 0.022 61.3);
 }
 
 /* ── Finance v6 — navy, lime & teal (Rate A) ── */
-[data-theme='finance-v6'] {
-    --color-base-100: #fafafb;
-    --color-base-200: #f4f5f7;
-    --color-base-300: #edeef2;
+[data-theme='electric'] {
+    --color-base-100: oklch(0.985 0.001 288.5);
+    --color-base-200: oklch(0.97 0.003 265.4);
+    --color-base-300: oklch(0.949 0.005 275.4);
     /* --color-base-300: #e6e8ec; */ /* backup */
     /* --color-base-300: #dee0e4; */ /* backup */
-    --color-base-content: #2e2e2e;
+    --color-base-content: oklch(0.301 0 23.7);
 
-    --color-primary: #4ad1b0;
-    --color-primary-content: #1f2a44;
-    --color-secondary: #1f2a44;
-    --color-secondary-content: #dbdbdb;
-    --color-accent: #e1ff7c;
-    --color-accent-content: #1f2a44;
+    --color-primary: oklch(0.779 0.126 173.5);
+    --color-primary-content: oklch(0.288 0.05 265.9);
+    --color-secondary: oklch(0.288 0.05 265.9);
+    --color-secondary-content: oklch(0.891 0 23.7);
+    --color-accent: oklch(0.952 0.16 120.2);
+    --color-accent-content: oklch(0.288 0.05 265.9);
 
-    --color-neutral: #dbdbdb;
-    --color-neutral-content: #1f2a44;
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-neutral: oklch(0.891 0 23.7);
+    --color-neutral-content: oklch(0.288 0.05 265.9);
+    --color-info: oklch(0.62 0.11 205);
+    --color-info-content: oklch(0.97 0.01 288);
+    --color-success: oklch(0.72 0.17 140);
+    --color-success-content: oklch(0.97 0.01 288);
+    --color-warning: oklch(0.78 0.14 85);
+    --color-warning-content: oklch(0.301 0 23.7);
+    --color-error: oklch(0.58 0.16 25);
+    --color-error-content: oklch(0.97 0.01 288);
 }
 
 /* ── Finance v4-dark — deep azure & cyan — dark (Rate A) ── */
-[data-theme='finance-v4-dark'] {
-    --color-base-100: #001233;
-    --color-base-200: #0d2c52;
-    --color-base-300: #1a4169;
-    --color-base-content: #e6f4f8;
+[data-theme='azure-dark'] {
+    --color-base-100: oklch(0.191 0.071 258.1);
+    --color-base-200: oklch(0.293 0.078 255.5);
+    --color-base-300: oklch(0.369 0.082 251.5);
+    --color-base-content: oklch(0.958 0.016 216.7);
 
-    --color-primary: #0aa2d1;
-    --color-primary-content: #001233;
-    --color-secondary: #004787;
-    --color-secondary-content: #e0f5fa;
-    --color-accent: #aae4f4;
-    --color-accent-content: #001233;
+    --color-primary: oklch(0.665 0.128 227.9);
+    --color-primary-content: oklch(0.191 0.071 258.1);
+    --color-secondary: oklch(0.399 0.1234 253.1);
+    --color-secondary-content: oklch(0.956 0.023 213.6);
+    --color-accent: oklch(0.885 0.063 216.6);
+    --color-accent-content: oklch(0.191 0.071 258.1);
 
-    --color-neutral: #0d2c52;
-    --color-neutral-content: #e0f5fa;
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-neutral: oklch(0.293 0.078 255.5);
+    --color-neutral-content: oklch(0.956 0.023 213.6);
+    --color-info: oklch(0.75 0.12 230);
+    --color-info-content: oklch(0.191 0.071 258.1);
+    --color-success: oklch(0.78 0.16 150);
+    --color-success-content: oklch(0.191 0.071 258.1);
+    --color-warning: oklch(0.84 0.13 85);
+    --color-warning-content: oklch(0.191 0.071 258.1);
+    --color-error: oklch(0.65 0.15 28);
+    --color-error-content: oklch(0.191 0.071 258.1);
 }
 
 /* ── Finance v6-dark — navy, lime & teal — dark (Rate A) ── */
-[data-theme='finance-v6-dark'] {
-    --color-base-100: #1f2a44;
-    --color-base-200: #2a3a5c;
-    --color-base-300: #354a74;
-    --color-base-content: #edeff4;
+[data-theme='electric-dark'] {
+    --color-base-100: oklch(0.288 0.05 265.9);
+    --color-base-200: oklch(0.352 0.063 264.3);
+    --color-base-300: oklch(0.412 0.076 263.3);
+    --color-base-content: oklch(0.952 0.007 268.9);
 
-    --color-primary: #e1ff7c;
-    --color-primary-content: #1f2a44;
-    --color-secondary: #4ad1b0;
-    --color-secondary-content: #1f2a44;
-    --color-accent: #dbdbdb;
-    --color-accent-content: #1f2a44;
+    --color-primary: oklch(0.952 0.16 120.2);
+    --color-primary-content: oklch(0.288 0.05 265.9);
+    --color-secondary: oklch(0.779 0.126 173.5);
+    --color-secondary-content: oklch(0.288 0.05 265.9);
+    --color-accent: oklch(0.891 0 23.7);
+    --color-accent-content: oklch(0.288 0.05 265.9);
 
-    --color-neutral: #2e2e2e;
-    --color-neutral-content: #dbdbdb;
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-neutral: oklch(0.301 0 23.7);
+    --color-neutral-content: oklch(0.891 0 23.7);
+    --color-info: oklch(0.75 0.1 215);
+    --color-info-content: oklch(0.288 0.05 265.9);
+    --color-success: oklch(0.8 0.17 135);
+    --color-success-content: oklch(0.288 0.05 265.9);
+    --color-warning: oklch(0.84 0.13 85);
+    --color-warning-content: oklch(0.288 0.05 265.9);
+    --color-error: oklch(0.62 0.16 25);
+    --color-error-content: oklch(0.288 0.05 265.9);
 }
 
 /* ── Finance v2-dark — navy & gold — dark (Rate A) ── */
-[data-theme='finance-v2-dark'] {
-    --color-base-100: #112250;
-    --color-base-200: #223769;
-    --color-base-300: #334c82;
-    --color-base-content: #f5f0e9;
+[data-theme='royal-dark'] {
+    --color-base-100: oklch(0.268 0.088 265.5);
+    --color-base-200: oklch(0.348 0.091 264.9);
+    --color-base-300: oklch(0.424 0.095 264);
+    --color-base-content: oklch(0.957 0.011 76.4);
 
-    --color-primary: #e0c58f;
-    --color-primary-content: #112250;
-    --color-secondary: #3c507d;
-    --color-secondary-content: #f5f0e9;
-    --color-accent: #d9cbc2;
-    --color-accent-content: #112250;
+    --color-primary: oklch(0.834 0.077 84.2);
+    --color-primary-content: oklch(0.268 0.088 265.5);
+    --color-secondary: oklch(0.436 0.079 265.1);
+    --color-secondary-content: oklch(0.957 0.011 76.4);
+    --color-accent: oklch(0.851 0.02 55);
+    --color-accent-content: oklch(0.268 0.088 265.5);
 
-    --color-neutral: #223769;
-    --color-neutral-content: #f5f0e9;
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-neutral: oklch(0.348 0.091 264.9);
+    --color-neutral-content: oklch(0.957 0.011 76.4);
+    --color-info: oklch(0.72 0.1 250);
+    --color-info-content: oklch(0.268 0.088 265.5);
+    --color-success: oklch(0.75 0.12 145);
+    --color-success-content: oklch(0.268 0.088 265.5);
+    --color-warning: oklch(0.83 0.1 84);
+    --color-warning-content: oklch(0.268 0.088 265.5);
+    --color-error: oklch(0.62 0.13 30);
+    --color-error-content: oklch(0.268 0.088 265.5);
 }

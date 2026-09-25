@@ -8,14 +8,14 @@ export interface ThemeOption {
 
 /** Selectable themes — finance palettes first (rated), then the base app themes. */
 export const THEME_OPTIONS: ThemeOption[] = [
-    { value: 'finance-v6', label: 'Finance v6 — navy, lime & teal (A)' },
-    { value: 'finance-v6-dark', label: 'Finance v6 — navy, lime & teal, dark (A)' },
-    { value: 'finance-v4', label: 'Finance v4 — deep azure & cyan (A)' },
-    { value: 'finance-v4-dark', label: 'Finance v4 — deep azure & cyan, dark (A)' },
-    { value: 'finance-v3', label: 'Finance v3 — azure & jade (A)' },
-    { value: 'finance-v2', label: 'Finance v2 — navy & gold (A)' },
-    { value: 'finance-v2-dark', label: 'Finance v2 — navy & gold, dark (A)' },
-    { value: 'finance-v5', label: 'Finance v5 — earth & gold (B)' },
+    { value: 'electric', label: 'Electric — navy, lime & teal' },
+    { value: 'electric-dark', label: 'Electric Dark — navy, lime & teal' },
+    { value: 'azure', label: 'Azure — deep azure & cyan' },
+    { value: 'azure-dark', label: 'Azure Dark — deep azure & cyan' },
+    { value: 'mint', label: 'Mint — azure & jade' },
+    { value: 'royal', label: 'Royal — navy & gold' },
+    { value: 'royal-dark', label: 'Royal Dark — navy & gold' },
+    { value: 'desert', label: 'Desert — earth & gold' },
     { value: 'cobalt', label: 'Cobalt (default)' },
     { value: 'verdant', label: 'Verdant' },
     { value: 'ember', label: 'Ember' },

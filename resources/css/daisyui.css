@@ -5,14 +5,14 @@
         cobalt --default,
         verdant,
         ember,
-        finance-v2,
-        finance-v3,
-        finance-v4,
-        finance-v5,
-        finance-v6,
-        finance-v2-dark,
-        finance-v4-dark,
-        finance-v6-dark;
+        royal,
+        mint,
+        azure,
+        desert,
+        electric,
+        royal-dark,
+        azure-dark,
+        electric-dark;
 }
 
 /* ── Verdant (Default) ── */
@@ -131,23 +131,23 @@
 
 /* ── Finance v2 — navy & gold (Rate A) ── */
 @plugin 'daisyui/theme' {
-    name: finance-v2;
+    name: royal;
     default: false;
 
-    --color-base-100: #faf7f4;
-    --color-base-200: #f2ede6;
-    --color-base-300: #e9e0d5;
-    --color-base-content: #081020;
+    --color-base-100: oklch(97.8% 0.005 67.4);
+    --color-base-200: oklch(94.8% 0.011 76.4);
+    --color-base-300: oklch(91.1% 0.018 73);
+    --color-base-content: oklch(17.5% 0.036 262.8);
 
-    --color-primary: #e0c58f;
-    --color-primary-content: #081020;
-    --color-secondary: #112250;
-    --color-secondary-content: #f5f0e9;
-    --color-accent: #d9cbc2;
-    --color-accent-content: #081020;
+    --color-primary: oklch(83.4% 0.077 84.2);
+    --color-primary-content: oklch(17.5% 0.036 262.8);
+    --color-secondary: oklch(26.8% 0.088 265.5);
+    --color-secondary-content: oklch(95.7% 0.011 76.4);
+    --color-accent: oklch(85.1% 0.02 55);
+    --color-accent-content: oklch(17.5% 0.036 262.8);
 
-    --color-neutral: #f5f0e9;
-    --color-neutral-content: #3c507d;
+    --color-neutral: oklch(95.7% 0.011 76.4);
+    --color-neutral-content: oklch(43.6% 0.079 265.1);
 
     /* Palette v2 — dark-first backup:
     --color-base-100: #112250;
@@ -161,14 +161,14 @@
     --color-neutral: #112250;
     --color-neutral-content: #f5f0e9;
     */
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-info: oklch(52% 0.1 255);
+    --color-info-content: oklch(97% 0.01 76);
+    --color-success: oklch(60% 0.09 140);
+    --color-success-content: oklch(97% 0.01 76);
+    --color-warning: oklch(80% 0.11 84);
+    --color-warning-content: oklch(17.5% 0.036 262.8);
+    --color-error: oklch(55% 0.12 30);
+    --color-error-content: oklch(97% 0.01 76);
 
     --radius-selector: 0.25rem;
     --radius-field: 0.25rem;
@@ -182,23 +182,23 @@
 
 /* ── Finance v3 — azure & jade (Rate A) ── */
 @plugin 'daisyui/theme' {
-    name: finance-v3;
+    name: mint;
     default: false;
 
-    --color-base-100: #f8fafb;
-    --color-base-200: #eff3f6;
-    --color-base-300: #e5eaf0;
-    --color-base-content: #070b14;
+    --color-base-100: oklch(98.4% 0.002 229.3);
+    --color-base-200: oklch(96.2% 0.006 240.1);
+    --color-base-300: oklch(93.5% 0.01 253);
+    --color-base-content: oklch(15% 0.021 264.4);
 
-    --color-primary: #2bd47d;
-    --color-primary-content: #111827;
-    --color-secondary: #111827;
-    --color-secondary-content: #f3f7f8;
-    --color-accent: #abf1ce;
-    --color-accent-content: #111827;
+    --color-primary: oklch(76.8% 0.1812 154.4);
+    --color-primary-content: oklch(21% 0.032 264.7);
+    --color-secondary: oklch(21% 0.032 264.7);
+    --color-secondary-content: oklch(97.3% 0.004 214.4);
+    --color-accent: oklch(90.2% 0.085 162.3);
+    --color-accent-content: oklch(21% 0.032 264.7);
 
-    --color-neutral: #f3f7f8;
-    --color-neutral-content: #354153;
+    --color-neutral: oklch(97.3% 0.004 214.4);
+    --color-neutral-content: oklch(37.2% 0.035 258.4);
 
     /* Palette v3 — dark-first backup:
     --color-base-100: #111827;
@@ -210,14 +210,14 @@
     --color-neutral: #111827;
     --color-neutral-content: #f3f7f8;
     */
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-info: oklch(55% 0.11 245);
+    --color-info-content: oklch(97% 0.005 220);
+    --color-success: oklch(65% 0.14 145);
+    --color-success-content: oklch(97% 0.005 220);
+    --color-warning: oklch(78% 0.13 75);
+    --color-warning-content: oklch(15% 0.021 264.4);
+    --color-error: oklch(55% 0.15 30);
+    --color-error-content: oklch(97% 0.005 220);
 
     --radius-selector: 0.25rem;
     --radius-field: 0.25rem;
@@ -231,24 +231,24 @@
 
 /* ── Finance v4 — deep azure & cyan (Rate A) ── */
 @plugin 'daisyui/theme' {
-    name: finance-v4;
+    name: azure;
     default: false;
 
-    --color-base-100: #f8fdfe;
-    --color-base-200: #f0fafc;
-    --color-base-300: #e6f4f8;
+    --color-base-100: oklch(99.1% 0.005 211.1);
+    --color-base-200: oklch(97.8% 0.011 211.1);
+    --color-base-300: oklch(95.8% 0.016 216.7);
     /* --color-base-300: #dceef4; */ /* backup */
-    --color-base-content: #020a14;
+    --color-base-content: oklch(14.1% 0.028 247.1);
 
-    --color-primary: #0aa2d1;
-    --color-primary-content: #020a14;
-    --color-secondary: #001233;
-    --color-secondary-content: #e0f5fa;
-    --color-accent: #aae4f4;
-    --color-accent-content: #020a14;
+    --color-primary: oklch(66.5% 0.128 227.9);
+    --color-primary-content: oklch(14.1% 0.028 247.1);
+    --color-secondary: oklch(19.1% 0.071 258.1);
+    --color-secondary-content: oklch(95.6% 0.023 213.6);
+    --color-accent: oklch(88.5% 0.063 216.6);
+    --color-accent-content: oklch(14.1% 0.028 247.1);
 
-    --color-neutral: #e0f5fa;
-    --color-neutral-content: #004787;
+    --color-neutral: oklch(95.6% 0.023 213.6);
+    --color-neutral-content: oklch(39.9% 0.1234 253.1);
 
     /* Palette v4 — dark-first backup:
     --color-base-100: #001233;
@@ -262,14 +262,14 @@
     --color-neutral: #001233;
     --color-neutral-content: #e0f5fa;
     */
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-info: oklch(55% 0.11 240);
+    --color-info-content: oklch(96% 0.01 211);
+    --color-success: oklch(62% 0.12 160);
+    --color-success-content: oklch(96% 0.01 211);
+    --color-warning: oklch(78% 0.13 80);
+    --color-warning-content: oklch(14.1% 0.028 247.1);
+    --color-error: oklch(55% 0.15 28);
+    --color-error-content: oklch(96% 0.01 211);
 
     --radius-selector: 0.25rem;
     --radius-field: 0.25rem;
@@ -283,13 +283,13 @@
 
 /* ── Finance v5 — earth & gold (Rate B) ── */
 @plugin 'daisyui/theme' {
-    name: finance-v5;
+    name: desert;
     default: false;
 
-    --color-base-100: #473c33;
-    --color-base-200: #55483d;
-    --color-base-300: #635447;
-    --color-base-content: #f6f1e9;
+    --color-base-100: oklch(36.5% 0.022 61.3);
+    --color-base-200: oklch(41.2% 0.025 62.3);
+    --color-base-300: oklch(45.7% 0.029 62.9);
+    --color-base-content: oklch(96% 0.012 79.6);
 
     /* Palette v5 — saturated-surface backup:
     --color-base-200: #fda769;
@@ -297,23 +297,23 @@
     --color-base-content: #473c33;
     */
 
-    --color-primary: #abc270;
-    --color-primary-content: #473c33;
-    --color-secondary: #fec868;
-    --color-secondary-content: #473c33;
-    --color-accent: #fda769;
-    --color-accent-content: #473c33;
+    --color-primary: oklch(77.8% 0.11 121.8);
+    --color-primary-content: oklch(36.5% 0.022 61.3);
+    --color-secondary: oklch(86.2% 0.129 80);
+    --color-secondary-content: oklch(36.5% 0.022 61.3);
+    --color-accent: oklch(80.1% 0.128 55.5);
+    --color-accent-content: oklch(36.5% 0.022 61.3);
 
-    --color-neutral: #473c33;
-    --color-neutral-content: #fec868;
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-neutral: oklch(36.5% 0.022 61.3);
+    --color-neutral-content: oklch(86.2% 0.129 80);
+    --color-info: oklch(68% 0.08 230);
+    --color-info-content: oklch(36.5% 0.022 61.3);
+    --color-success: oklch(72% 0.1 140);
+    --color-success-content: oklch(36.5% 0.022 61.3);
+    --color-warning: oklch(82% 0.12 80);
+    --color-warning-content: oklch(36.5% 0.022 61.3);
+    --color-error: oklch(62% 0.12 35);
+    --color-error-content: oklch(36.5% 0.022 61.3);
 
     --radius-selector: 0.25rem;
     --radius-field: 0.25rem;
@@ -327,33 +327,33 @@
 
 /* ── Finance v6 — navy, lime & teal (Rate A) ── */
 @plugin 'daisyui/theme' {
-    name: finance-v6;
+    name: electric;
     default: false;
 
-    --color-base-100: #fafafb;
-    --color-base-200: #f4f5f7;
-    --color-base-300: #edeef2;
+    --color-base-100: oklch(98.5% 0.001 288.5);
+    --color-base-200: oklch(97% 0.003 265.4);
+    --color-base-300: oklch(94.9% 0.005 275.4);
     /* --color-base-300: #e6e8ec; */ /* backup */
     /* --color-base-300: #dee0e4; */ /* backup */
-    --color-base-content: #2e2e2e;
+    --color-base-content: oklch(30.1% 0 23.7);
 
-    --color-primary: #4ad1b0;
-    --color-primary-content: #1f2a44;
-    --color-secondary: #1f2a44;
-    --color-secondary-content: #dbdbdb;
-    --color-accent: #e1ff7c;
-    --color-accent-content: #1f2a44;
+    --color-primary: oklch(77.9% 0.126 173.5);
+    --color-primary-content: oklch(28.8% 0.05 265.9);
+    --color-secondary: oklch(28.8% 0.05 265.9);
+    --color-secondary-content: oklch(89.1% 0 23.7);
+    --color-accent: oklch(95.2% 0.16 120.2);
+    --color-accent-content: oklch(28.8% 0.05 265.9);
 
-    --color-neutral: #dbdbdb;
-    --color-neutral-content: #1f2a44;
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-neutral: oklch(89.1% 0 23.7);
+    --color-neutral-content: oklch(28.8% 0.05 265.9);
+    --color-info: oklch(62% 0.11 205);
+    --color-info-content: oklch(97% 0.01 288);
+    --color-success: oklch(72% 0.17 140);
+    --color-success-content: oklch(97% 0.01 288);
+    --color-warning: oklch(78% 0.14 85);
+    --color-warning-content: oklch(30.1% 0 23.7);
+    --color-error: oklch(58% 0.16 25);
+    --color-error-content: oklch(97% 0.01 288);
 
     --radius-selector: 0.25rem;
     --radius-field: 0.25rem;
@@ -367,31 +367,31 @@
 
 /* ── Finance v4-dark — deep azure & cyan — dark (Rate A) ── */
 @plugin 'daisyui/theme' {
-    name: finance-v4-dark;
+    name: azure-dark;
     default: false;
 
-    --color-base-100: #001233;
-    --color-base-200: #0d2c52;
-    --color-base-300: #1a4169;
-    --color-base-content: #e6f4f8;
+    --color-base-100: oklch(19.1% 0.071 258.1);
+    --color-base-200: oklch(29.3% 0.078 255.5);
+    --color-base-300: oklch(36.9% 0.082 251.5);
+    --color-base-content: oklch(95.8% 0.016 216.7);
 
-    --color-primary: #0aa2d1;
-    --color-primary-content: #001233;
-    --color-secondary: #004787;
-    --color-secondary-content: #e0f5fa;
-    --color-accent: #aae4f4;
-    --color-accent-content: #001233;
+    --color-primary: oklch(66.5% 0.128 227.9);
+    --color-primary-content: oklch(19.1% 0.071 258.1);
+    --color-secondary: oklch(39.9% 0.1234 253.1);
+    --color-secondary-content: oklch(95.6% 0.023 213.6);
+    --color-accent: oklch(88.5% 0.063 216.6);
+    --color-accent-content: oklch(19.1% 0.071 258.1);
 
-    --color-neutral: #0d2c52;
-    --color-neutral-content: #e0f5fa;
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-neutral: oklch(29.3% 0.078 255.5);
+    --color-neutral-content: oklch(95.6% 0.023 213.6);
+    --color-info: oklch(75% 0.12 230);
+    --color-info-content: oklch(19.1% 0.071 258.1);
+    --color-success: oklch(78% 0.16 150);
+    --color-success-content: oklch(19.1% 0.071 258.1);
+    --color-warning: oklch(84% 0.13 85);
+    --color-warning-content: oklch(19.1% 0.071 258.1);
+    --color-error: oklch(65% 0.15 28);
+    --color-error-content: oklch(19.1% 0.071 258.1);
 
     --radius-selector: 0.25rem;
     --radius-field: 0.25rem;
@@ -405,31 +405,31 @@
 
 /* ── Finance v6-dark — navy, lime & teal — dark (Rate A) ── */
 @plugin 'daisyui/theme' {
-    name: finance-v6-dark;
+    name: electric-dark;
     default: false;
 
-    --color-base-100: #1f2a44;
-    --color-base-200: #2a3a5c;
-    --color-base-300: #354a74;
-    --color-base-content: #edeff4;
+    --color-base-100: oklch(28.8% 0.05 265.9);
+    --color-base-200: oklch(35.2% 0.063 264.3);
+    --color-base-300: oklch(41.2% 0.076 263.3);
+    --color-base-content: oklch(95.2% 0.007 268.9);
 
-    --color-primary: #e1ff7c;
-    --color-primary-content: #1f2a44;
-    --color-secondary: #4ad1b0;
-    --color-secondary-content: #1f2a44;
-    --color-accent: #dbdbdb;
-    --color-accent-content: #1f2a44;
+    --color-primary: oklch(95.2% 0.16 120.2);
+    --color-primary-content: oklch(28.8% 0.05 265.9);
+    --color-secondary: oklch(77.9% 0.126 173.5);
+    --color-secondary-content: oklch(28.8% 0.05 265.9);
+    --color-accent: oklch(89.1% 0 23.7);
+    --color-accent-content: oklch(28.8% 0.05 265.9);
 
-    --color-neutral: #2e2e2e;
-    --color-neutral-content: #dbdbdb;
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-neutral: oklch(30.1% 0 23.7);
+    --color-neutral-content: oklch(89.1% 0 23.7);
+    --color-info: oklch(75% 0.1 215);
+    --color-info-content: oklch(28.8% 0.05 265.9);
+    --color-success: oklch(80% 0.17 135);
+    --color-success-content: oklch(28.8% 0.05 265.9);
+    --color-warning: oklch(84% 0.13 85);
+    --color-warning-content: oklch(28.8% 0.05 265.9);
+    --color-error: oklch(62% 0.16 25);
+    --color-error-content: oklch(28.8% 0.05 265.9);
 
     --radius-selector: 0.25rem;
     --radius-field: 0.25rem;
@@ -443,31 +443,31 @@
 
 /* ── Finance v2-dark — navy & gold — dark (Rate A) ── */
 @plugin 'daisyui/theme' {
-    name: finance-v2-dark;
+    name: royal-dark;
     default: false;
 
-    --color-base-100: #112250;
-    --color-base-200: #223769;
-    --color-base-300: #334c82;
-    --color-base-content: #f5f0e9;
+    --color-base-100: oklch(26.8% 0.088 265.5);
+    --color-base-200: oklch(34.8% 0.091 264.9);
+    --color-base-300: oklch(42.4% 0.095 264);
+    --color-base-content: oklch(95.7% 0.011 76.4);
 
-    --color-primary: #e0c58f;
-    --color-primary-content: #112250;
-    --color-secondary: #3c507d;
-    --color-secondary-content: #f5f0e9;
-    --color-accent: #d9cbc2;
-    --color-accent-content: #112250;
+    --color-primary: oklch(83.4% 0.077 84.2);
+    --color-primary-content: oklch(26.8% 0.088 265.5);
+    --color-secondary: oklch(43.6% 0.079 265.1);
+    --color-secondary-content: oklch(95.7% 0.011 76.4);
+    --color-accent: oklch(85.1% 0.02 55);
+    --color-accent-content: oklch(26.8% 0.088 265.5);
 
-    --color-neutral: #223769;
-    --color-neutral-content: #f5f0e9;
-    --color-info: oklch(0.55 0.12 230);
-    --color-info-content: oklch(0.95 0.005 268);
-    --color-success: oklch(0.52 0.12 162);
-    --color-success-content: oklch(0.95 0.005 268);
-    --color-warning: oklch(0.72 0.16 78);
-    --color-warning-content: oklch(0.18 0.02 268);
-    --color-error: oklch(0.55 0.12 28);
-    --color-error-content: oklch(0.95 0.005 268);
+    --color-neutral: oklch(34.8% 0.091 264.9);
+    --color-neutral-content: oklch(95.7% 0.011 76.4);
+    --color-info: oklch(72% 0.1 250);
+    --color-info-content: oklch(26.8% 0.088 265.5);
+    --color-success: oklch(75% 0.12 145);
+    --color-success-content: oklch(26.8% 0.088 265.5);
+    --color-warning: oklch(83% 0.1 84);
+    --color-warning-content: oklch(26.8% 0.088 265.5);
+    --color-error: oklch(62% 0.13 30);
+    --color-error-content: oklch(26.8% 0.088 265.5);
 
     --radius-selector: 0.25rem;
     --radius-field: 0.25rem;
