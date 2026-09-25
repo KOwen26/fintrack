@@ -235,20 +235,22 @@
 
 /* ── Finance v6 — navy, lime & teal (Rate A) ── */
 [data-theme='finance-v6'] {
-    --color-base-100: #1f2a44;
-    --color-base-200: #2e2e2e;
-    --color-base-300: #dbdbdb;
-    --color-base-content: #1f2a44;
+    --color-base-100: #fafafb;
+    --color-base-200: #f4f5f7;
+    --color-base-300: #edeef2;
+    /* --color-base-300: #e6e8ec; */ /* backup */
+    /* --color-base-300: #dee0e4; */ /* backup */
+    --color-base-content: #2e2e2e;
 
-    --color-primary: #e1ff7c;
+    --color-primary: #4ad1b0;
     --color-primary-content: #1f2a44;
-    --color-secondary: #4ad1b0;
-    --color-secondary-content: #1f2a44;
-    --color-accent: #dbdbdb;
+    --color-secondary: #1f2a44;
+    --color-secondary-content: #dbdbdb;
+    --color-accent: #e1ff7c;
     --color-accent-content: #1f2a44;
 
-    --color-neutral: #1f2a44;
-    --color-neutral-content: #dbdbdb;
+    --color-neutral: #dbdbdb;
+    --color-neutral-content: #1f2a44;
     --color-info: oklch(0.55 0.12 230);
     --color-info-content: oklch(0.95 0.005 268);
     --color-success: oklch(0.52 0.12 162);

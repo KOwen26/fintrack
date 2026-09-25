@@ -37,33 +37,35 @@
     };
 
     /* Comparison grounds and the ramp combinations shown on each of them —
-       solid (500 fill + 50 text) and soft (100 fill + 700 text) pairs. */
+       solid (500 fill) and soft (100 fill), labeled with each color's
+       content pair like the swatch tiles. */
     const backgrounds = [
         { key: 'base-100', class: 'bg-base-100' },
-        { key: 'base-300', class: 'bg-base-300' },
+        { key: 'base-200', class: 'bg-base-200' },
+        { key: 'base-content', class: 'bg-base-content' },
         { key: 'secondary', class: 'bg-secondary' },
-        { key: 'white', class: 'bg-white' },
-        { key: 'black', class: 'bg-black' },
+        // { key: 'white', class: 'bg-white' },
+        // { key: 'black', class: 'bg-black' },
     ] as const;
 
     const solidCombos: Record<string, string> = {
-        primary: 'bg-primary-500 text-primary-50',
-        secondary: 'bg-secondary-500 text-secondary-50',
-        accent: 'bg-accent-500 text-accent-50',
-        success: 'bg-success-500 text-success-50',
-        info: 'bg-info-500 text-info-50',
-        warning: 'bg-warning-500 text-warning-50',
-        error: 'bg-error-500 text-error-50',
+        primary: 'bg-primary-500 text-primary-content',
+        secondary: 'bg-secondary-500 text-secondary-content',
+        accent: 'bg-accent-500 text-accent-content',
+        success: 'bg-success-500 text-success-content',
+        info: 'bg-info-500 text-info-content',
+        warning: 'bg-warning-500 text-warning-content',
+        error: 'bg-error-500 text-error-content',
     };
 
     const softCombos: Record<string, string> = {
-        primary: 'bg-primary-100 text-primary-700',
-        secondary: 'bg-secondary-100 text-secondary-700',
-        accent: 'bg-accent-100 text-accent-700',
-        success: 'bg-success-100 text-success-700',
-        info: 'bg-info-100 text-info-700',
-        warning: 'bg-warning-100 text-warning-700',
-        error: 'bg-error-100 text-error-700',
+        primary: 'bg-primary-100 text-primary-content',
+        secondary: 'bg-secondary-100 text-secondary-content',
+        accent: 'bg-accent-100 text-accent-content',
+        success: 'bg-success-100 text-success-content',
+        info: 'bg-info-100 text-info-content',
+        warning: 'bg-warning-100 text-warning-content',
+        error: 'bg-error-100 text-error-content',
     };
     const buttonVariants = ['solid', 'outline', 'ghost', 'soft'] as const;
     const badgeVariants = ['solid', 'outline', 'soft'] as const;
@@ -87,10 +89,18 @@
 
         tick().then(() => {
             document.querySelectorAll<HTMLElement>('[data-swatch]').forEach((swatch) => {
+                const styles = getComputedStyle(swatch);
+
                 document
                     .querySelectorAll<HTMLElement>(`[data-hex="${swatch.dataset.swatch}"]`)
                     .forEach((readout) => {
-                        readout.textContent = getComputedStyle(swatch).backgroundColor;
+                        readout.textContent = styles.backgroundColor;
+                    });
+
+                document
+                    .querySelectorAll<HTMLElement>(`[data-color-hex="${swatch.dataset.swatch}"]`)
+                    .forEach((readout) => {
+                        readout.textContent = styles.color;
                     });
             });
         });
@@ -115,7 +125,7 @@
     </div>
 
     <!-- Specimen — inherits the app-wide theme -->
-    <div class="space-y-8 bg-base-100 text-base-content">
+    <div class="space-y-8 bg-white text-base-content">
         <section class="px-5">
             <h2>Depth</h2>
             <hr class="mt-2 mb-4" />
@@ -177,6 +187,9 @@
             </div>
 
             <div class="mt-3 grid grid-cols-3 gap-2">
+                {@render swatch('base-100', 'base-100', 'bg-base-100 text-base-content')}
+                {@render swatch('base-200', 'base-200', 'bg-base-200 text-base-content')}
+                {@render swatch('base-300', 'base-300', 'bg-base-300 text-base-content')}
                 {@render swatch('base-content', 'base-content', 'bg-base-content text-base-100')}
                 {@render swatch('neutral', 'neutral', 'bg-neutral text-neutral-content')}
                 {@render swatch(
@@ -201,7 +214,7 @@
         <section class="px-5">
             <h2>Status</h2>
             <hr class="mt-2 mb-4" />
-            <div class="grid grid-cols-4 gap-2">
+            <div class="grid grid-cols-2 gap-2">
                 {#each statusColors as color (color)}
                     {@render swatch(color, color, statusTiles[color])}
                 {/each}
@@ -212,16 +225,17 @@
             <h2>Combinations × Backgrounds</h2>
             <hr class="mt-2 mb-4" />
             <p class="mb-4 text-sm text-base-content/60">
-                Ramp combinations — solid (500 fill, 50 text) and soft (100 fill, 700 text) —
-                compared on base-100, base-300, white, black, and secondary grounds.
+                Ramp combinations — solid (500 fill) and soft (100 fill), labeled with each color's
+                content pair — compared on base-100, base-300, white, black, and secondary grounds.
             </p>
             <div class="space-y-3">
                 {#each backgrounds as background (background.key)}
-                    <div class="-mx-5">
+                    <div class="">
                         <p class="mb-1 text-xs font-semibold tracking-wide uppercase">
                             on {background.key}
                         </p>
-                        <div class="flex flex-col gap-3 overflow-x-auto p-5 {background.class}">
+                        <div
+                            class="-mx-5 grid grid-cols-2 gap-3 overflow-x-auto p-5 lg:grid-cols-4 {background.class}">
                             {#each [...brandColors, ...statusColors] as color (color)}
                                 {@render combo(
                                     color + '-solid',
@@ -321,9 +335,17 @@
 
 {#snippet combo(key: string, label: string, tileClass: string)}
     <div
-        class="flex aspect-video h-40 shrink-0 flex-col justify-end rounded-md p-3 {tileClass}"
+        class="flex h-40 w-full shrink-0 flex-col justify-end rounded-md p-3 {tileClass}"
         data-swatch={key}>
-        <p class="text-xs font-semibold">{label}</p>
-        <p class="text-xs opacity-70" data-hex={key}>—</p>
+        <div class="flex w-full items-end justify-between gap-2">
+            <div class="min-w-0">
+                <p class="text-xs font-semibold">{label}</p>
+                <p class="text-xs leading-tight opacity-70" data-hex={key}>—</p>
+            </div>
+            <div class="min-w-0 text-right">
+                <p class="text-xs font-semibold">content</p>
+                <p class="text-xs leading-tight opacity-70" data-color-hex={key}>—</p>
+            </div>
+        </div>
     </div>
 {/snippet}
