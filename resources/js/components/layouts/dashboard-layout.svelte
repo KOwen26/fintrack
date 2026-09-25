@@ -3,6 +3,7 @@
 
     import ErrorWrapper from './error-wrapper.svelte';
 
+    import { IsMobile } from '@/svelte/is-mobile.svelte.js';
     import { flatMenu, transformMenuToBreadcrumbs } from '@data/menu';
     import { useFlashToast } from '@hooks/flash-handler.svelte';
     import { page } from '@inertiajs/svelte';
@@ -23,6 +24,7 @@
         breadcrumbs = [],
         title: layoutTitle = undefined,
         headerContext = undefined,
+        mobileShellClass = undefined,
         children,
         ...props
     }: RestProps = $props();
@@ -32,6 +34,9 @@
     const appName = import.meta.env.VITE_APP_NAME || page?.props?.meta?.app_name;
 
     useFlashToast();
+
+    // The sidebar shell is desktop-only; mobile renders a plain stacked layout.
+    const isMobile = new IsMobile();
 
     const menuBreadcrumbs = $derived(transformMenuToBreadcrumbs());
     const currentMenuBreadcrumbs = $derived(
@@ -56,25 +61,35 @@
 
 <Toaster />
 
-<Sidebar.Provider>
-    <DashboardSidebar />
-    <Sidebar.Inset>
+{#if isMobile.current}
+    <div class="relative flex min-h-svh w-full flex-1 flex-col {mobileShellClass}">
         <DashboardHeaderMobile {backUrl} {headerContext} {title} />
-        <DashboardHeader {backUrl} breadcrumbs={breadcrumbItems} {headerContext} />
 
-        <ErrorWrapper>
-            <div class="flex h-full flex-col gap-6 p-3 md:p-5">
-                {@render children?.()}
-            </div>
-
-            <div class="my-10"></div>
-
-            {@render footer()}
-        </ErrorWrapper>
+        {@render pageContent()}
 
         <BottomNav />
-    </Sidebar.Inset>
-</Sidebar.Provider>
+    </div>
+{:else}
+    <Sidebar.Provider>
+        <DashboardSidebar />
+        <Sidebar.Inset>
+            <DashboardHeader {backUrl} breadcrumbs={breadcrumbItems} {headerContext} />
+
+            {@render pageContent()}
+
+            {@render footer()}
+        </Sidebar.Inset>
+    </Sidebar.Provider>
+{/if}
+
+{#snippet pageContent()}
+    <ErrorWrapper>
+        <!-- Mobile padding is page-controlled; desktop keeps the shared padding. -->
+        <div class="flex h-full flex-col gap-6 md:p-5">
+            {@render children?.()}
+        </div>
+    </ErrorWrapper>
+{/snippet}
 
 {#snippet footer()}
     <footer></footer>

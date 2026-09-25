@@ -10,6 +10,8 @@ declare module '@inertiajs/core' {
             backUrl?: string;
             breadcrumbs?: BreadcrumbItem[];
             headerContext?: HeaderContext;
+            /** Page-declared classes for the mobile shell, e.g. background color or top offset. */
+            mobileShellClass?: string;
         };
     }
 }

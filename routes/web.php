@@ -8,6 +8,8 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UserThemeController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use Inertia\Response;
 
 require __DIR__ . '/auth.php';
 
@@ -16,6 +18,7 @@ Route::get('/', fn () => to_route('auth.login'));
 
 Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function (): void {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard-2', fn (): Response => Inertia::render('dashboard/dashboard-2'))->name('dashboard-2');
 
     // Accounts
     Route::get('accounts', [AccountController::class, 'index'])->name('accounts.index');
