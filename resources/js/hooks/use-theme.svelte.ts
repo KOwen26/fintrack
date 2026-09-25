@@ -1,9 +1,28 @@
 import { router } from '@inertiajs/svelte';
 import UserThemeController from '@wayfinder/App/Http/Controllers/UserThemeController';
 
-export const THEMES = ['verdant', 'cobalt', 'ember', 'amethyst'] as const;
+export interface ThemeOption {
+    value: string;
+    label: string;
+}
 
-export type ThemeName = (typeof THEMES)[number] | (string & {});
+/** Selectable themes — finance palettes first (rated), then the base app themes. */
+export const THEME_OPTIONS: ThemeOption[] = [
+    { value: 'finance-v6', label: 'Finance v6 — navy, lime & teal (A)' },
+    { value: 'finance-v4', label: 'Finance v4 — deep azure & cyan (A)' },
+    { value: 'finance-v3', label: 'Finance v3 — azure & jade (A)' },
+    { value: 'finance-v2', label: 'Finance v2 — navy & gold (A)' },
+    { value: 'finance-v5', label: 'Finance v5 — earth & gold (B)' },
+    { value: 'finance-v1', label: 'Finance v1 — dark & lime (B)' },
+    { value: 'cobalt', label: 'Cobalt (default)' },
+    { value: 'verdant', label: 'Verdant' },
+    { value: 'ember', label: 'Ember' },
+    { value: 'amethyst', label: 'Amethyst' },
+];
+
+export const THEMES = THEME_OPTIONS.map(({ value }) => value);
+
+export type ThemeName = string;
 
 export const DEFAULT_THEME = 'cobalt';
 
@@ -85,23 +104,26 @@ export function themePreferenceFromProps(props: unknown): unknown {
 }
 
 export function initializeTheme(serverPreference?: unknown): () => void {
-    theme.value = asValidTheme(serverPreference) ?? getStoredTheme() ?? DEFAULT_THEME;
+    // Backend theme resolution disabled temporarily — localStorage resolves first,
+    // the server preference only acts as a fallback on initial boot.
+    theme.value = getStoredTheme() ?? asValidTheme(serverPreference) ?? DEFAULT_THEME;
     applyToDom(theme.value);
     setStoredTheme(theme.value);
 
-    const off = router.on('navigate', (event) => {
-        const server = asValidTheme(themePreferenceFromProps(event.detail.page.props));
+    // const off = router.on('navigate', (event) => {
+    //     const server = asValidTheme(themePreferenceFromProps(event.detail.page.props));
 
-        if (server === undefined) {
-            return;
-        }
+    //     if (server === undefined) {
+    //         return;
+    //     }
 
-        theme.value = server;
-        applyToDom(server);
-        setStoredTheme(server);
-    }) as unknown as (() => void) | void;
+    //     theme.value = server;
+    //     applyToDom(server);
+    //     setStoredTheme(server);
+    // }) as unknown as (() => void) | void;
 
-    return typeof off === 'function' ? off : () => {};
+    // return typeof off === 'function' ? off : () => {};
+    return () => {};
 }
 
 export function updateTheme(value: string): void {

@@ -5,7 +5,13 @@
         cobalt --default,
         verdant,
         ember,
-        amethyst;
+        amethyst,
+        finance-v1,
+        finance-v2,
+        finance-v3,
+        finance-v4,
+        finance-v5,
+        finance-v6;
 }
 
 /* ── Verdant (Default) ── */
@@ -149,6 +155,234 @@
     --color-warning-content: oklch(95% 0.01 280);
     --color-error: oklch(58% 0.12 18);
     --color-error-content: oklch(95% 0.01 280);
+
+    --radius-selector: 0.25rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}
+
+/* ── Finance v1 — dark & lime (Rate B) ── */
+@plugin 'daisyui/theme' {
+    name: finance-v1;
+    default: false;
+
+    --color-base-100: #0b0b0d;
+    --color-base-200: #1b1b1e;
+    --color-base-300: #ececee;
+    --color-base-content: #101012;
+
+    --color-primary: #a8f246;
+    --color-primary-content: #101012;
+    --color-secondary: #b7b8ff;
+    --color-secondary-content: #101012;
+    --color-accent: #ef6c69;
+    --color-accent-content: #101012;
+
+    --color-neutral: #101012;
+    --color-neutral-content: #ececee;
+    --color-info: oklch(0.55 0.12 230);
+    --color-info-content: oklch(0.95 0.005 268);
+    --color-success: oklch(0.52 0.12 162);
+    --color-success-content: oklch(0.95 0.005 268);
+    --color-warning: oklch(0.72 0.16 78);
+    --color-warning-content: oklch(0.18 0.02 268);
+    --color-error: oklch(0.55 0.12 28);
+    --color-error-content: oklch(0.95 0.005 268);
+
+    --radius-selector: 0.25rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}
+
+/* ── Finance v2 — navy & gold (Rate A) ── */
+@plugin 'daisyui/theme' {
+    name: finance-v2;
+    default: false;
+
+    --color-base-100: #112250;
+    --color-base-200: #3c507d;
+    --color-base-300: #d9cbc2;
+    --color-base-content: #112250;
+
+    --color-primary: #e0c58f;
+    --color-primary-content: #112250;
+    --color-secondary: #f5f0e9;
+    --color-secondary-content: #112250;
+    --color-accent: #d9cbc2;
+    --color-accent-content: #112250;
+
+    --color-neutral: #112250;
+    --color-neutral-content: #f5f0e9;
+    --color-info: oklch(0.55 0.12 230);
+    --color-info-content: oklch(0.95 0.005 268);
+    --color-success: oklch(0.52 0.12 162);
+    --color-success-content: oklch(0.95 0.005 268);
+    --color-warning: oklch(0.72 0.16 78);
+    --color-warning-content: oklch(0.18 0.02 268);
+    --color-error: oklch(0.55 0.12 28);
+    --color-error-content: oklch(0.95 0.005 268);
+
+    --radius-selector: 0.25rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}
+
+/* ── Finance v3 — azure & jade (Rate A) ── */
+@plugin 'daisyui/theme' {
+    name: finance-v3;
+    default: false;
+
+    --color-base-100: #111827;
+    --color-base-200: #354153;
+    --color-base-300: #abf1ce;
+    --color-base-content: #111827;
+
+    --color-primary: #2bd47d;
+    --color-primary-content: #111827;
+    --color-secondary: #f3f7f8;
+    --color-secondary-content: #111827;
+    --color-accent: #abf1ce;
+    --color-accent-content: #111827;
+
+    --color-neutral: #111827;
+    --color-neutral-content: #f3f7f8;
+    --color-info: oklch(0.55 0.12 230);
+    --color-info-content: oklch(0.95 0.005 268);
+    --color-success: oklch(0.52 0.12 162);
+    --color-success-content: oklch(0.95 0.005 268);
+    --color-warning: oklch(0.72 0.16 78);
+    --color-warning-content: oklch(0.18 0.02 268);
+    --color-error: oklch(0.55 0.12 28);
+    --color-error-content: oklch(0.95 0.005 268);
+
+    --radius-selector: 0.25rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}
+
+/* ── Finance v4 — deep azure & cyan (Rate A) ── */
+@plugin 'daisyui/theme' {
+    name: finance-v4;
+    default: false;
+
+    --color-base-100: #001233;
+    --color-base-200: #004787;
+    --color-base-300: #aae4f4;
+    --color-base-content: #001233;
+
+    --color-primary: #0aa2d1;
+    --color-primary-content: #001233;
+    --color-secondary: #e0f5fa;
+    --color-secondary-content: #001233;
+    --color-accent: #aae4f4;
+    --color-accent-content: #001233;
+
+    --color-neutral: #001233;
+    --color-neutral-content: #e0f5fa;
+    --color-info: oklch(0.55 0.12 230);
+    --color-info-content: oklch(0.95 0.005 268);
+    --color-success: oklch(0.52 0.12 162);
+    --color-success-content: oklch(0.95 0.005 268);
+    --color-warning: oklch(0.72 0.16 78);
+    --color-warning-content: oklch(0.18 0.02 268);
+    --color-error: oklch(0.55 0.12 28);
+    --color-error-content: oklch(0.95 0.005 268);
+
+    --radius-selector: 0.25rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}
+
+/* ── Finance v5 — earth & gold (Rate B) ── */
+@plugin 'daisyui/theme' {
+    name: finance-v5;
+    default: false;
+
+    --color-base-100: #473c33;
+    --color-base-200: #fda769;
+    --color-base-300: #fec868;
+    --color-base-content: #473c33;
+
+    --color-primary: #abc270;
+    --color-primary-content: #473c33;
+    --color-secondary: #fec868;
+    --color-secondary-content: #473c33;
+    --color-accent: #fda769;
+    --color-accent-content: #473c33;
+
+    --color-neutral: #473c33;
+    --color-neutral-content: #fec868;
+    --color-info: oklch(0.55 0.12 230);
+    --color-info-content: oklch(0.95 0.005 268);
+    --color-success: oklch(0.52 0.12 162);
+    --color-success-content: oklch(0.95 0.005 268);
+    --color-warning: oklch(0.72 0.16 78);
+    --color-warning-content: oklch(0.18 0.02 268);
+    --color-error: oklch(0.55 0.12 28);
+    --color-error-content: oklch(0.95 0.005 268);
+
+    --radius-selector: 0.25rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}
+
+/* ── Finance v6 — navy, lime & teal (Rate A) ── */
+@plugin 'daisyui/theme' {
+    name: finance-v6;
+    default: false;
+
+    --color-base-100: #1f2a44;
+    --color-base-200: #2e2e2e;
+    --color-base-300: #dbdbdb;
+    --color-base-content: #1f2a44;
+
+    --color-primary: #e1ff7c;
+    --color-primary-content: #1f2a44;
+    --color-secondary: #4ad1b0;
+    --color-secondary-content: #1f2a44;
+    --color-accent: #dbdbdb;
+    --color-accent-content: #1f2a44;
+
+    --color-neutral: #1f2a44;
+    --color-neutral-content: #dbdbdb;
+    --color-info: oklch(0.55 0.12 230);
+    --color-info-content: oklch(0.95 0.005 268);
+    --color-success: oklch(0.52 0.12 162);
+    --color-success-content: oklch(0.95 0.005 268);
+    --color-warning: oklch(0.72 0.16 78);
+    --color-warning-content: oklch(0.18 0.02 268);
+    --color-error: oklch(0.55 0.12 28);
+    --color-error-content: oklch(0.95 0.005 268);
 
     --radius-selector: 0.25rem;
     --radius-field: 0.25rem;
