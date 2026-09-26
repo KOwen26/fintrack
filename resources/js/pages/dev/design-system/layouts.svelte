@@ -8,7 +8,7 @@
     const variants = [
         { name: 'full', description: 'No hero — the sheet fills the entire screen.' },
         { name: '1/5', description: 'Sheet 20% / hero 80%.' },
-        { name: '2/5', description: 'Sheet 40% / hero 60% — dashboard-2 proportions.' },
+        { name: '2/5', description: 'Sheet 40% / hero 60% — the example dashboard proportions.' },
         { name: '1/2', description: 'Even split.' },
         { name: '3/5', description: 'Sheet 60% / hero 40%.' },
         { name: '4/5', description: 'Sheet 80% / hero 20% — list-dominant screens.' },

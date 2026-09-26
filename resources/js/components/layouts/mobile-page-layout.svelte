@@ -59,7 +59,7 @@
 
 <div
     class={cn(
-        'relative flex h-screen w-full flex-col gap-6 overflow-hidden bg-secondary text-secondary-content antialiased',
+        'relative flex min-h-dvh w-full flex-col gap-6 overflow-hidden bg-secondary text-secondary-content antialiased',
         _class
     )}>
     {#if hero}

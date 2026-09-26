@@ -1,16 +1,19 @@
 <script lang="ts">
     /**
-     * Visual-first implementation of docs/mockups/2026-09-25-finance-home.html.
-     * Still rendering mockup demo data — real props get wired after visual sign-off.
+     * Composed page example for `mobile-page-layout`.
+     * Demonstrates the hero/sheet variants in a full page composition and
+     * lives here as a living example.
      */
 
-    import { Link } from '@inertiajs/svelte';
+    import { Link, setLayoutProps } from '@inertiajs/svelte';
     import accounts from '@wayfinder/routes/accounts';
     import transactions from '@wayfinder/routes/transactions';
 
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import HeaderContext from '@components/navigation/header-context.svelte';
     import ThemeSelector from '@components/ui/theme-selector.svelte';
+
+    setLayoutProps({ title: 'Layout Example — Dashboard' });
 
     /* ── Demo data (from the mockup) ─────────────────────── */
 
