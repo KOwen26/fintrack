@@ -26,6 +26,7 @@ Route::group([
     Route::get('design', fn () => Inertia::render('dev/design'))->name('design');
     Route::get('design-system/accounts', fn () => Inertia::render('dev/design-system/accounts'))->name('design-system.accounts');
     Route::get('design-system/color', fn () => Inertia::render('dev/design-system/color'))->name('design-system.color');
+    Route::get('design-system/layouts', fn () => Inertia::render('dev/design-system/layouts'))->name('design-system.layouts');
     Route::get('form', fn () => Inertia::render('dev/form'))->name('form');
     Route::get('table', [DevController::class, 'table'])->name('table');
 

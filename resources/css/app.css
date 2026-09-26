@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=Figtree:ital,wght@0,300..900;1,300..900&family=Inclusive+Sans:ital,wght@0,300..700;1,300..700&family=Solway:wght@300;400;500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=Figtree:ital,wght@0,300..900;1,300..900&family=Inclusive+Sans:ital,wght@0,300..700;1,300..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Solway:wght@300;400;500;700;800&display=swap');
 
 @import 'tailwindcss';
 @import 'tw-animate-css';
@@ -23,7 +23,10 @@
 
 @theme inline {
     --font-sans:
-        'Figtree', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Nunito', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-heading:
+        'Instrument Sans', 'Nunito', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
         'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     --font-serif: 'Arvo', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
     --font-figtree: 'Figtree';
@@ -127,5 +130,19 @@
 
     button {
         @apply cursor-pointer;
+    }
+
+    /* Headings and form labels use the heading family; everything else
+       inherits the content family through --font-sans. */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    label,
+    legend,
+    th {
+        font-family: var(--font-heading);
     }
 }
