@@ -25,6 +25,9 @@
         title: layoutTitle = undefined,
         headerContext = undefined,
         mobileShellClass = undefined,
+        mobileHeaderClass = undefined,
+        mobileHeaderScrolledClass = undefined,
+        mobileHeaderScrollThreshold = undefined,
         children,
         ...props
     }: RestProps = $props();
@@ -63,7 +66,13 @@
 
 {#if isMobile.current}
     <div class="relative flex min-h-svh w-full flex-1 flex-col {mobileShellClass}">
-        <DashboardHeaderMobile {backUrl} {headerContext} {title} />
+        <DashboardHeaderMobile
+            {backUrl}
+            {headerContext}
+            {title}
+            class={mobileHeaderClass}
+            scrolledClass={mobileHeaderScrolledClass}
+            scrollThreshold={mobileHeaderScrollThreshold} />
 
         {@render pageContent()}
 

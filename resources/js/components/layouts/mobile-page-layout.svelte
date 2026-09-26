@@ -18,14 +18,18 @@
         /** Core content — rendered inside the sheet. */
         children: Snippet;
         class?: string;
+        heroClass?: string;
+        contentClass?: string;
     }
 
     let {
-        shellClass = 'bg-secondary pt-9',
+        shellClass = 'bg-secondary',
         variant = 'full',
         hero,
         children,
         class: _class,
+        heroClass,
+        contentClass,
     }: Props = $props();
 
     /* Literal classes so Tailwind generates every variant — the split only
@@ -51,7 +55,7 @@
     // Register the shell class (tracked), and clear it on unmount — preserved-
     // state visits keep layout props, so no page should inherit ours.
     $effect(() => {
-        setLayoutProps({ mobileShellClass: shellClass });
+        setLayoutProps({ mobileShellClass: variant === 'full' ? undefined : shellClass });
 
         return () => setLayoutProps({ mobileShellClass: undefined });
     });
@@ -59,16 +63,22 @@
 
 <div
     class={cn(
-        'relative flex min-h-dvh w-full flex-col gap-6 overflow-hidden bg-secondary text-secondary-content antialiased',
+        'relative flex min-h-dvh w-full flex-col gap-6 bg-secondary text-secondary-content antialiased',
         _class
     )}>
     {#if hero}
-        <div class={heroClasses[variant]}>
+        <div data-slot="mobile-page-layout-hero" class={cn(heroClasses[variant], heroClass)}>
             {@render hero()}
         </div>
     {/if}
 
-    <section class="relative bg-base-100 px-6 pt-3 pb-8 text-base-content {sheetClasses[variant]}">
+    <section
+        data-slot="mobile-page-layout-content"
+        class={cn(
+            'relative bg-base-100 px-5 pt-5 pb-10 text-base-content',
+            sheetClasses[variant],
+            contentClass
+        )}>
         {@render children()}
     </section>
 </div>

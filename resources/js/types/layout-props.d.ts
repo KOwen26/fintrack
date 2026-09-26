@@ -12,6 +12,12 @@ declare module '@inertiajs/core' {
             headerContext?: HeaderContext;
             /** Page-declared classes for the mobile shell, e.g. background color or top offset. */
             mobileShellClass?: string;
+            /** Page-declared classes for the mobile header, e.g. sticky positioning. */
+            mobileHeaderClass?: string;
+            /** Classes applied to the mobile header once scroll passes the threshold. */
+            mobileHeaderScrolledClass?: string;
+            /** Scroll position (px) that flips on mobileHeaderScrolledClass. Default 12. */
+            mobileHeaderScrollThreshold?: number;
         };
     }
 }

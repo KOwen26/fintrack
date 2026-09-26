@@ -1,11 +1,14 @@
 <script lang="ts" module>
-    import type { SvelteTable } from '@tanstack/svelte-table';
+    import type { ColumnDef, SvelteTable } from '@tanstack/svelte-table';
     import type { Data } from '@type/type';
+
+    import { FILTER_COLUMNS } from './transaction-list-filter.svelte';
 
     import {
         columnFilteringFeature,
         createFilteredRowModel,
         createSortedRowModel,
+        createTable,
         filterFn_arrHas,
         globalFilteringFeature,
         rowSortingFeature,
@@ -31,40 +34,8 @@
         TransactionListFeatures,
         Data.TransactionListData
     >;
-</script>
 
-<script lang="ts">
-    import type { ColumnDef } from '@tanstack/svelte-table';
-    import type { RestProps } from '@type/index';
-
-    import { createTable } from '@tanstack/svelte-table';
-    import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
-    import { Collapsible } from 'bits-ui';
-    import { SvelteMap } from 'svelte/reactivity';
-
-    import DateTimeHelper from '@utilities/date-time-helper';
-    import Formatter from '@utilities/formatter';
-    import { cn } from '@utilities/shadcn';
-
-    import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
-    import TransactionListFilter, {
-        FILTER_COLUMNS,
-        SORT_STATE,
-        toSortKey,
-    } from '@components/module/transaction/transaction-list-filter.svelte';
-    import TransactionListItem from '@components/module/transaction/transaction-list-item.svelte';
-    import TransactionSummaryCard from '@components/module/transaction/transaction-summary-card.svelte';
-
-    /* ── Props ───────────────────────────────────────────── */
-
-    interface Props extends RestProps {
-        transactions: Data.TransactionListData[];
-        class?: string;
-    }
-
-    let { transactions, class: _class }: Props = $props();
-
-    const columns: ColumnDef<typeof transactionListFeatures, Data.TransactionListData>[] = [
+    const transactionListColumns: ColumnDef<TransactionListFeatures, Data.TransactionListData>[] = [
         { accessorKey: 'id', enableGlobalFilter: false },
         { accessorKey: 'transaction_date', enableGlobalFilter: false },
         { accessorKey: 'amount', enableGlobalFilter: true },
@@ -103,20 +74,45 @@
         },
     ];
 
-    const table = createTable({
-        features: transactionListFeatures,
-        columns,
-        get data() {
-            return transactions;
-        },
-        getRowId: (row) => String(row.id),
-    });
+    /**
+     * Creates the filterable/sortable table that drives the transaction list.
+     * The page owns the instance; the list component only renders rows.
+     */
+    export function createTransactionListTable(
+        transactions: () => Data.TransactionListData[]
+    ): TransactionListTable {
+        return createTable({
+            features: transactionListFeatures,
+            columns: transactionListColumns,
+            get data() {
+                return transactions();
+            },
+            getRowId: (row) => String(row.id),
+        });
+    }
+</script>
 
-    /* ── Derived views ───────────────────────────────────── */
+<script lang="ts">
+    import type { RestProps } from '@type/index';
 
-    const filteredTransactions = $derived(
-        table.getFilteredRowModel().rows.map((row) => row.original)
-    );
+    import TransactionListItem from './transaction-list-item.svelte';
+
+    import { Collapsible } from 'bits-ui';
+    import { SvelteMap } from 'svelte/reactivity';
+
+    import DateTimeHelper from '@utilities/date-time-helper';
+    import Formatter from '@utilities/formatter';
+    import { cn } from '@utilities/shadcn';
+
+    /* ── Props ───────────────────────────────────────────── */
+
+    interface Props extends RestProps {
+        /** Pre-filtered, flat transaction rows — the page owns filtering. */
+        transactions: Data.TransactionListData[];
+        class?: string;
+    }
+
+    let { transactions, class: _class }: Props = $props();
 
     /* ── Group by date ───────────────────────────────────── */
 
@@ -141,8 +137,7 @@
     const groupedTransactions = $derived.by<DayGroup[]>(() => {
         const groups = new SvelteMap<string, Data.TransactionListData[]>();
 
-        for (const row of table.getRowModel().rows) {
-            const transaction = row.original;
+        for (const transaction of transactions) {
             const group = groups.get(transaction.transaction_date);
 
             if (group) group.push(transaction);
@@ -162,35 +157,9 @@
     // default: the first group (today) open, all others collapsed.
     const dayOpenOverrides = new SvelteMap<string, boolean>();
 
-    /* ── Summary ─────────────────────────────────────────── */
+    /* ── Count ───────────────────────────────────────────── */
 
-    const summary = $derived.by(() => {
-        let income = 0;
-        let expense = 0;
-
-        for (const transaction of filteredTransactions) {
-            if (transaction.type === 'income') income += transaction.amount;
-            else if (transaction.type === 'expense') expense += transaction.amount;
-        }
-
-        return { income, expense, net: income - expense };
-    });
-
-    /* ── Active filter state ─────────────────────────────── */
-
-    const hasActiveFilters = $derived(
-        table.atoms.columnFilters.get().length > 0 ||
-            Boolean(table.atoms.globalFilter.get()) ||
-            toSortKey(table.atoms.sorting.get()) !== 'newest'
-    );
-
-    /* ── Reset ───────────────────────────────────────────── */
-
-    function resetAllFilters() {
-        table.resetGlobalFilter();
-        table.resetColumnFilters();
-        table.setSorting(SORT_STATE.newest);
-    }
+    const filteredCount = $derived(transactions.length);
 
     /* ── Load more ───────────────────────────────────────── */
 
@@ -202,92 +171,66 @@
 </script>
 
 <div class={cn('flex flex-col gap-3', _class)}>
-    <!-- ── SUMMARY CARD ────────────────────────────────────── -->
-    {#if transactions.length > 0}
-        <TransactionSummaryCard {summary} />
-    {/if}
+    <!-- Count header -->
+    <p class="mx-0.5 mt-1 mb-0 text-sm text-base-content/60">
+        {filteredCount}
+        transactions
+    </p>
 
-    <!-- ── SEARCH + FILTERS ────────────────────────────────── -->
-    <TransactionListFilter {table} {transactions} />
+    <div class="flex flex-col gap-2">
+        {#each groupedTransactions as group, i (group.date)}
+            <Collapsible.Root
+                class="overflow-hidden rounded-lg bg-base-200 shadow-xs"
+                onOpenChange={(open) => dayOpenOverrides.set(group.date, open)}
+                open={dayOpenOverrides.get(group.date) ?? i === 0}>
+                <!-- Day header (trigger) -->
+                <Collapsible.Trigger
+                    class="flex w-full cursor-pointer items-center gap-2 p-3 text-left select-none">
+                    <span class="text-xs font-semibold text-base-content uppercase">
+                        {DateTimeHelper.format(group.date, 'date')}
+                    </span>
 
-    <!-- ── TRANSACTION LIST ────────────────────────────────── -->
-    {#if filteredTransactions.length === 0}
-        <!-- Empty state -->
-        {#if hasActiveFilters}
-            <EmptyItemPlaceholder
-                ctaLabel="Reset all filters"
-                ctaOnclick={resetAllFilters}
-                icon="solar--magnifer-bold-duotone"
-                label="No transactions match the selected filters." />
-        {:else}
-            <EmptyItemPlaceholder
-                ctaLabel="Add transaction"
-                ctaUrl={TransactionController.create.url()}
-                icon="solar--magnifer-bold-duotone"
-                label="No transactions" />
-        {/if}
+                    <span
+                        class={cn(
+                            'ml-auto flex items-center font-mono text-sm font-semibold whitespace-nowrap',
+                            group.net > 0
+                                ? 'text-success'
+                                : group.net < 0
+                                  ? 'text-error'
+                                  : 'text-base-content'
+                        )}>
+                        {Formatter.currency(group.net)}
+                    </span>
+                    <i
+                        class={cn(
+                            'iconify size-4 shrink-0 text-base-content/40 transition-transform duration-150',
+                            (dayOpenOverrides.get(group.date) ?? i === 0)
+                                ? 'solar--alt-arrow-up-line-duotone'
+                                : 'solar--alt-arrow-down-line-duotone'
+                        )}></i>
+                </Collapsible.Trigger>
+
+                <!-- Group card -->
+                <Collapsible.Content>
+                    <div class="border-t border-base-content/10">
+                        {#each group.transactions as txn (txn.id)}
+                            <TransactionListItem transaction={txn} />
+                        {/each}
+                    </div>
+                </Collapsible.Content>
+            </Collapsible.Root>
+        {/each}
+    </div>
+
+    <!-- Load more -->
+    {#if !allLoaded}
+        <button
+            class="mx-0 mt-2 mb-0 flex w-full items-center justify-center gap-2 rounded-lg bg-base-200 p-3.5 font-sans text-sm font-semibold text-primary shadow-xs transition-colors duration-150 hover:bg-primary/10"
+            onclick={loadMore}>
+            <i class="iconify size-3.5 solar--alt-arrow-down-line-duotone"></i>
+            Load more
+        </button>
     {:else}
-        <!-- Count header -->
-        <p class="mx-0.5 mt-1 mb-0 text-sm text-base-content/60">
-            {filteredTransactions.length}
-            transactions
-        </p>
-
-        <div class="flex flex-col gap-2">
-            {#each groupedTransactions as group, i (group.date)}
-                <Collapsible.Root
-                    class="overflow-hidden rounded-lg bg-base-100 shadow-xs"
-                    onOpenChange={(open) => dayOpenOverrides.set(group.date, open)}
-                    open={dayOpenOverrides.get(group.date) ?? i === 0}>
-                    <!-- Day header (trigger) -->
-                    <Collapsible.Trigger
-                        class="flex w-full cursor-pointer items-center gap-2 p-3 text-left select-none">
-                        <span class="text-xs font-semibold text-base-content uppercase">
-                            {DateTimeHelper.format(group.date, 'date')}
-                        </span>
-
-                        <span
-                            class={cn(
-                                'ml-auto flex items-center font-mono text-sm font-semibold whitespace-nowrap',
-                                group.net > 0
-                                    ? 'text-success'
-                                    : group.net < 0
-                                      ? 'text-error'
-                                      : 'text-base-content'
-                            )}>
-                            {Formatter.currency(group.net)}
-                        </span>
-                        <i
-                            class={cn(
-                                'iconify size-4 shrink-0 text-base-content/40 transition-transform duration-150',
-                                (dayOpenOverrides.get(group.date) ?? i === 0)
-                                    ? 'solar--alt-arrow-up-line-duotone'
-                                    : 'solar--alt-arrow-down-line-duotone'
-                            )}></i>
-                    </Collapsible.Trigger>
-
-                    <!-- Group card -->
-                    <Collapsible.Content>
-                        <div class="border-t border-base-content/10">
-                            {#each group.transactions as txn (txn.id)}
-                                <TransactionListItem transaction={txn} />
-                            {/each}
-                        </div>
-                    </Collapsible.Content>
-                </Collapsible.Root>
-            {/each}
-        </div>
-
-        <!-- Load more -->
-        {#if !allLoaded}
-            <button
-                class="mx-0 mt-2 mb-0 flex w-full items-center justify-center gap-2 rounded-lg bg-base-100 p-3.5 font-sans text-sm font-semibold text-primary shadow-xs transition-colors duration-150 hover:bg-primary/10"
-                onclick={loadMore}>
-                <i class="iconify size-3.5 solar--alt-arrow-down-line-duotone"></i>
-                Load more
-            </button>
-        {:else}
-            <p class="py-3 text-center text-xs text-base-content/40">All transactions are shown</p>
-        {/if}
+        <p class="py-3 text-center text-xs text-base-content/40">All transactions are shown</p>
     {/if}
 </div>
