@@ -53,18 +53,6 @@
 </script>
 
 <div class="space-y-3">
-    <div class="flex items-center justify-between px-1">
-        <button
-            class="btn btn-square btn-ghost btn-sm"
-            aria-label="Kembali"
-            onclick={onCancel}
-            type="button">
-            <i class="iconify size-5 solar--arrow-left-line-duotone"></i>
-        </button>
-        <span class="text-sm font-semibold tracking-tight">{title}</span>
-        <div class="w-9"></div>
-    </div>
-
     <Form
         id="transfer-form"
         {...transfer

@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Fintech UI Mockup — Home, Transactions & Analytics</title>
+        <style>
+            :root {
+                --navy: #17235e;
+                --navy2: #101943;
+                --blue: #158ee9;
+                --blue2: #2d55ee;
+                --bg: #f4f5f8;
+                --card: #fff;
+                --text: #171b29;
+                --muted: #7e8491;
+                --line: #e7e9ee;
+                --green: #22b875;
+                --red: #e95d62;
+                --softblue: #eef5ff;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--text);
+                font-family:
+                    Inter,
+                    ui-sans-serif,
+                    system-ui,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    'Segoe UI',
+                    sans-serif;
+            }
+            button {
+                font: inherit;
+                cursor: pointer;
+            }
+            .app {
+                min-height: 100vh;
+            }
+            .topbar {
+                height: 72px;
+                background: #fff;
+                border-bottom: 1px solid var(--line);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 34px;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+            .brand {
+                font-weight: 900;
+                font-size: 19px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .brand-mark {
+                width: 32px;
+                height: 32px;
+                border-radius: 10px;
+                background: var(--blue);
+                color: white;
+                display: grid;
+                place-items: center;
+            }
+            .switcher {
+                display: flex;
+                background: #f1f3f7;
+                padding: 5px;
+                border-radius: 999px;
+                gap: 4px;
+            }
+            .switcher button {
+                border: 0;
+                background: transparent;
+                padding: 9px 15px;
+                border-radius: 999px;
+                color: #697080;
+                font-weight: 700;
+                font-size: 12px;
+            }
+            .switcher button.active {
+                background: #fff;
+                color: #17235e;
+                box-shadow: 0 2px 7px #00000012;
+            }
+            .user {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 12px;
+                font-weight: 750;
+            }
+            .avatar {
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+                background: #dce7f5;
+                display: grid;
+                place-items: center;
+            }
+            .page {
+                display: none;
+            }
+            .page.active {
+                display: block;
+            }
+            .container {
+                max-width: 1280px;
+                margin: auto;
+                padding: 32px;
+            }
+            .layout {
+                display: grid;
+                grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.75fr);
+                gap: 22px;
+            }
+            .panel {
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 23px;
+                padding: 22px;
+            }
+            h1,
+            h2,
+            h3,
+            p {
+                margin: 0;
+            }
+            .eyebrow {
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .title {
+                font-size: 24px;
+                font-weight: 850;
+                margin-top: 3px;
+            }
+            .section-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 16px;
+            }
+            .section-head h2 {
+                font-size: 16px;
+            }
+            .section-head span {
+                font-size: 12px;
+                color: var(--muted);
+            }
+            /* shared */
+            .dark-hero {
+                background: linear-gradient(145deg, #17245f, #121c50);
+                color: #fff;
+                border-radius: 24px;
+                padding: 25px;
+                position: relative;
+                overflow: hidden;
+            }
+            .dark-hero:after {
+                content: '';
+                position: absolute;
+                width: 310px;
+                height: 310px;
+                border-radius: 50%;
+                right: -160px;
+                top: -160px;
+                background: #4057c533;
+            }
+            .hero-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .profile {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+            .profile-pic {
+                width: 43px;
+                height: 43px;
+                border-radius: 13px;
+                background: #7895bd;
+                display: grid;
+                place-items: center;
+            }
+            .profile small {
+                color: #c7cee7;
+                font-size: 11px;
+            }
+            .profile b {
+                display: block;
+                font-size: 14px;
+            }
+            .hero-icons {
+                display: flex;
+                gap: 8px;
+            }
+            .round {
+                width: 37px;
+                height: 37px;
+                border-radius: 12px;
+                background: #ffffff12;
+                border: 1px solid #ffffff12;
+                color: #fff;
+                display: grid;
+                place-items: center;
+            }
+            .balance-label {
+                margin-top: 27px;
+                color: #cbd1e7;
+                font-size: 11px;
+            }
+            .balance {
+                font-size: 36px;
+                font-weight: 800;
+                letter-spacing: -1.5px;
+                margin-top: 4px;
+            }
+            .delta {
+                font-size: 12px;
+                color: #d8ddef;
+                margin-top: 4px;
+            }
+            .delta span {
+                color: #39cf8c;
+                background: #ffffff12;
+                padding: 3px 6px;
+                border-radius: 5px;
+                margin-left: 4px;
+            }
+            .hero-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr 46px;
+                gap: 9px;
+                margin-top: 22px;
+            }
+            .hero-actions button {
+                height: 42px;
+                border: 1px solid #ffffff17;
+                border-radius: 12px;
+                background: #ffffff0d;
+                color: #fff;
+                font-weight: 700;
+            }
+            .hero-actions button.primary {
+                background: #2b62ed;
+            }
+            .cards {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .bank-card {
+                height: 150px;
+                border-radius: 18px;
+                padding: 17px;
+                color: #fff;
+                background: linear-gradient(135deg, #2468e8, #4b5ce7);
+                position: relative;
+                overflow: hidden;
+            }
+            .bank-card:nth-child(2) {
+                background: linear-gradient(135deg, #28377b, #111b4c);
+            }
+            .visa {
+                font-size: 13px;
+                font-weight: 900;
+            }
+            .card-balance {
+                font-size: 10px;
+                color: #dce5ff;
+                margin-top: 22px;
+            }
+            .card-value {
+                font-size: 15px;
+                font-weight: 800;
+            }
+            .card-no {
+                font-size: 10px;
+                margin-top: 12px;
+                color: #d9e2ff;
+            }
+            .card-valid {
+                position: absolute;
+                right: 15px;
+                bottom: 17px;
+                font-size: 10px;
+            }
+            .payment {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                background: #fff;
+                border-radius: 15px;
+                padding: 13px;
+                margin-top: 12px;
+                box-shadow: 0 4px 15px #15204d0b;
+            }
+            .payment-icon {
+                width: 33px;
+                height: 33px;
+                border-radius: 10px;
+                background: #f2f4f8;
+                display: grid;
+                place-items: center;
+            }
+            .payment-info {
+                flex: 1;
+            }
+            .payment-info b {
+                font-size: 12px;
+            }
+            .payment-info small {
+                display: block;
+                color: var(--muted);
+                font-size: 10px;
+                margin-top: 2px;
+            }
+            .paynow {
+                border: 0;
+                background: #238ee6;
+                color: white;
+                border-radius: 9px;
+                padding: 8px 12px;
+                font-size: 11px;
+                font-weight: 800;
+            }
+            .tx {
+                display: grid;
+                grid-template-columns: 36px 1fr auto;
+                gap: 12px;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid var(--line);
+            }
+            .tx:last-child {
+                border-bottom: 0;
+            }
+            .tx-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                background: #f1f3f6;
+                display: grid;
+                place-items: center;
+                font-weight: 900;
+            }
+            .tx b {
+                font-size: 12px;
+            }
+            .tx small {
+                display: block;
+                color: var(--muted);
+                font-size: 10px;
+                margin-top: 3px;
+            }
+            .amt {
+                font-size: 12px;
+                font-weight: 800;
+                text-align: right;
+            }
+            .green {
+                color: var(--green);
+            }
+            .red {
+                color: var(--red);
+            }
+            .time {
+                display: block;
+                color: var(--muted);
+                font-size: 9px;
+                margin-top: 3px;
+                font-weight: 500;
+            }
+            .nav-demo {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 17px;
+                padding: 12px;
+                margin-top: 14px;
+                color: #777;
+                font-size: 10px;
+            }
+            .nav-demo .active {
+                color: #168fe9;
+                font-weight: 800;
+            }
+            .scan {
+                width: 43px;
+                height: 43px;
+                border-radius: 50%;
+                background: #168fe9;
+                color: #fff;
+                display: grid;
+                place-items: center;
+                margin-top: -24px;
+                border: 5px solid #fff;
+                box-shadow: 0 4px 10px #168fe944;
+            }
+
+            /* Page 1 */
+            .home-grid {
+                display: grid;
+                grid-template-columns: minmax(0, 1.3fr) minmax(310px, 0.7fr);
+                gap: 22px;
+            }
+            .home-main {
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+            }
+            .side-card {
+                padding: 20px;
+            }
+            .side-stat {
+                font-size: 28px;
+                font-weight: 800;
+                margin: 6px 0 18px;
+            }
+            .mini-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .mini {
+                background: #f6f7fa;
+                padding: 14px;
+                border-radius: 15px;
+            }
+            .mini b {
+                font-size: 17px;
+            }
+            .mini small {
+                display: block;
+                color: var(--muted);
+                font-size: 10px;
+                margin-top: 3px;
+            }
+            .progress {
+                height: 8px;
+                background: #edf0f4;
+                border-radius: 9px;
+                margin: 10px 0 15px;
+                overflow: hidden;
+            }
+            .progress span {
+                display: block;
+                width: 72%;
+                height: 100%;
+                background: #258fe6;
+                border-radius: 9px;
+            }
+            .category {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                margin: 12px 0;
+            }
+            .cat {
+                width: 33px;
+                height: 33px;
+                background: #eef4ff;
+                border-radius: 10px;
+                display: grid;
+                place-items: center;
+                color: #247fd6;
+            }
+            .category div:nth-child(2) {
+                flex: 1;
+            }
+            .category b {
+                font-size: 11px;
+            }
+            .category small {
+                display: block;
+                color: var(--muted);
+                font-size: 9px;
+            }
+            .category strong {
+                font-size: 11px;
+            }
+
+            /* Page 2 */
+            .tx-page {
+                max-width: 980px;
+                margin: auto;
+            }
+            .tx-toolbar {
+                display: flex;
+                gap: 8px;
+                margin: 18px 0;
+            }
+            .filter {
+                border: 0;
+                background: #f1f3f7;
+                color: #666d7b;
+                border-radius: 20px;
+                padding: 9px 17px;
+                font-size: 11px;
+            }
+            .filter.active {
+                background: #1c91e8;
+                color: #fff;
+            }
+            .search {
+                border: 1px solid var(--line);
+                background: #fff;
+                border-radius: 13px;
+                padding: 10px 13px;
+                color: #7d8390;
+                margin-left: auto;
+            }
+            .day {
+                color: #858b98;
+                font-size: 11px;
+                margin: 19px 0 7px;
+            }
+            .full-tx {
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 17px;
+                padding: 3px 18px;
+            }
+            .full-tx .tx {
+                padding: 15px 0;
+            }
+            .upwork {
+                color: #45a86a;
+            }
+            .netflix {
+                color: #d71920;
+            }
+            .youtube {
+                color: #ef2929;
+            }
+            .spotify {
+                color: #21ad6b;
+            }
+            .paypal {
+                color: #1675c5;
+            }
+            .wayflow {
+                color: #7865d7;
+            }
+            .amazon {
+                color: #222;
+            }
+            .google {
+                color: #42a5f5;
+            }
+            .wise {
+                color: #49a66a;
+            }
+
+            /* Page 3 */
+            .analytics-layout {
+                display: grid;
+                grid-template-columns: minmax(0, 1.5fr) minmax(310px, 0.75fr);
+                gap: 22px;
+            }
+            .chart-card {
+                padding-bottom: 18px;
+            }
+            .periods {
+                display: flex;
+                gap: 6px;
+                margin: 17px 0;
+            }
+            .period {
+                border: 0;
+                background: #f0f2f7;
+                color: #707786;
+                border-radius: 8px;
+                padding: 7px 14px;
+                font-size: 11px;
+            }
+            .period.active {
+                background: #5267ef;
+                color: #fff;
+            }
+            .earning {
+                font-size: 34px;
+                font-weight: 850;
+                margin-top: 4px;
+            }
+            .bar-chart {
+                height: 315px;
+                display: flex;
+                align-items: end;
+                gap: 13px;
+                padding: 28px 10px 28px;
+                border-bottom: 1px solid var(--line);
+                margin-top: 8px;
+            }
+            .bar-col {
+                height: 100%;
+                flex: 1;
+                display: flex;
+                align-items: end;
+                position: relative;
+            }
+            .bar {
+                width: 100%;
+                max-width: 48px;
+                margin: auto;
+                background: #0f5985;
+                border-radius: 7px 7px 3px 3px;
+                min-height: 35px;
+                position: relative;
+            }
+            .bar:after {
+                content: '';
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                top: 0;
+                background: #168edc33;
+            }
+            .bar.selected {
+                background: #158fe4;
+                box-shadow: 0 0 0 1px #2d8be655;
+            }
+            .bar.selected:before {
+                content: '';
+                position: absolute;
+                left: 50%;
+                top: -15px;
+                transform: translateX(-50%);
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: #fff;
+                border: 3px solid #158fe4;
+            }
+            .bar-label {
+                position: absolute;
+                bottom: -23px;
+                width: 100%;
+                text-align: center;
+                font-size: 10px;
+                color: #7e8491;
+            }
+            .legend-row {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 14px;
+                color: #8a8f9a;
+                font-size: 10px;
+            }
+            .spending {
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 22px;
+                padding: 20px;
+            }
+            .spending-total {
+                font-size: 27px;
+                font-weight: 850;
+                margin-top: 5px;
+            }
+            .select {
+                float: right;
+                border: 1px solid var(--line);
+                border-radius: 9px;
+                padding: 6px 10px;
+                background: #fff;
+                font-size: 10px;
+            }
+            .color-line {
+                height: 10px;
+                border-radius: 5px;
+                background: linear-gradient(
+                    90deg,
+                    #7865d7 0 29%,
+                    #ee8c42 29% 51%,
+                    #f1c84c 51% 68%,
+                    #42b4d5 68% 100%
+                );
+                margin: 15px 0 5px;
+            }
+            .key {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                font-size: 9px;
+                color: #777;
+            }
+            .key i {
+                width: 7px;
+                height: 7px;
+                display: inline-block;
+                margin-right: 3px;
+            }
+            .insight {
+                background: #eef4ff;
+                border-radius: 16px;
+                padding: 15px;
+                margin-top: 18px;
+                font-size: 11px;
+            }
+            .insight b {
+                font-size: 14px;
+            }
+            @media (max-width: 950px) {
+                .home-grid,
+                .analytics-layout,
+                .layout {
+                    grid-template-columns: 1fr;
+                }
+                .container {
+                    padding: 22px;
+                }
+                .topbar {
+                    padding: 0 18px;
+                }
+            }
+            @media (max-width: 650px) {
+                .switcher button {
+                    padding: 8px 8px;
+                    font-size: 10px;
+                }
+                .user {
+                    display: none;
+                }
+                .cards {
+                    grid-template-columns: 1fr;
+                }
+                .bar-chart {
+                    gap: 5px;
+                }
+                .hero-actions {
+                    grid-template-columns: 1fr 1fr;
+                }
+                .hero-actions button:last-child {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="app">
+            <header class="topbar">
+                <div class="brand">
+                    <div class="brand-mark">F</div>
+                    Fintrack
+                </div>
+                <div class="switcher">
+                    <button id="b1" class="active" onclick="show(1)">1 · Home</button>
+                    <button id="b2" onclick="show(2)">2 · Transactions</button>
+                    <button id="b3" onclick="show(3)">3 · Analytics</button>
+                </div>
+                <div class="user">
+                    <div class="avatar">SR</div>
+                    Sajibur Rahman
+                </div>
+            </header>
+
+            <!-- PAGE 1 HOME -->
+            <section id="p1" class="page active">
+                <div class="container">
+                    <div class="home-grid">
+                        <div class="home-main">
+                            <div class="dark-hero">
+                                <div class="hero-top">
+                                    <div class="profile">
+                                        <div class="profile-pic">👨</div>
+                                        <div><small>Good morning!</small><b>Sajibur Rahman</b></div>
+                                    </div>
+                                    <div class="hero-icons">
+                                        <div class="round">⌕</div>
+                                        <div class="round">♧</div>
+                                    </div>
+                                </div>
+                                <div class="balance-label">Total Balance</div>
+                                <div class="balance">$56,893.30</div>
+                                <div class="delta">+$3,456.00 <span>8.98%</span></div>
+                                <div class="hero-actions">
+                                    <button>＋ Deposit</button
+                                    ><button class="primary">⇵ Transfer</button><button>•••</button>
+                                </div>
+                            </div>
+
+                            <div class="panel">
+                                <div class="section-head">
+                                    <h2>My Cards</h2>
+                                    <span>＋ Add</span>
+                                </div>
+                                <div class="cards">
+                                    <div class="bank-card">
+                                        <div class="visa">VISA</div>
+                                        <div class="card-balance">Balance</div>
+                                        <div class="card-value">$33,847.00</div>
+                                        <div class="card-no">•• 3432</div>
+                                        <div class="card-valid">08/29</div>
+                                    </div>
+                                    <div class="bank-card">
+                                        <div class="visa">VISA</div>
+                                        <div class="card-balance">Balance</div>
+                                        <div class="card-value">$17,340.00</div>
+                                        <div class="card-no">•• 9738</div>
+                                        <div class="card-valid">08/29</div>
+                                    </div>
+                                </div>
+                                <div class="payment">
+                                    <div class="payment-icon">⚑</div>
+                                    <div class="payment-info">
+                                        <b>Upcoming Payment</b><small>6 Dec, 2025 · $450</small>
+                                    </div>
+                                    <button class="paynow">Pay Now</button>
+                                </div>
+                            </div>
+
+                            <div class="panel">
+                                <div class="section-head">
+                                    <h2>Transactions</h2>
+                                    <span>See More →</span>
+                                </div>
+                                <div class="tx">
+                                    <div class="tx-icon upwork">up</div>
+                                    <div><b>Upwork</b><small>Client Payment Received</small></div>
+                                    <div class="amt green">
+                                        +$480.00<span class="time">Nov 4, 10:42 AM</span>
+                                    </div>
+                                </div>
+                                <div class="tx">
+                                    <div class="tx-icon netflix">N</div>
+                                    <div><b>Netflix</b><small>Subscription Renewal</small></div>
+                                    <div class="amt red">
+                                        −$12.99<span class="time">Nov 4, 09:20 AM</span>
+                                    </div>
+                                </div>
+                                <div class="tx">
+                                    <div class="tx-icon youtube">▶</div>
+                                    <div><b>Starbucks</b><small>Morning Coffee</small></div>
+                                    <div class="amt red">
+                                        −$5.75<span class="time">Nov 4, 08:13 AM</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <aside>
+                            <div class="panel side-card">
+                                <div class="section-head">
+                                    <h2>Balance Overview</h2>
+                                    <span>November</span>
+                                </div>
+                                <div class="eyebrow">Available balance</div>
+                                <div class="side-stat">$56,893.30</div>
+                                <div class="mini-grid">
+                                    <div class="mini">
+                                        <b class="green">+$44.2K</b><small>Total income</small>
+                                    </div>
+                                    <div class="mini">
+                                        <b class="red">−$8.3K</b><small>Total spending</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel side-card" style="margin-top: 18px">
+                                <div class="section-head">
+                                    <h2>Monthly Budget</h2>
+                                    <span>72%</span>
+                                </div>
+                                <div class="eyebrow">$8,343.65 of $11,500</div>
+                                <div class="progress"><span></span></div>
+                                <div class="category">
+                                    <div class="cat">⌂</div>
+                                    <div><b>House Rent</b><small>Monthly fixed cost</small></div>
+                                    <strong>$2,400</strong>
+                                </div>
+                                <div class="category">
+                                    <div class="cat">▣</div>
+                                    <div><b>Grocery</b><small>Food & essentials</small></div>
+                                    <strong>$1,820</strong>
+                                </div>
+                                <div class="category">
+                                    <div class="cat">✦</div>
+                                    <div><b>Savings</b><small>Monthly goal</small></div>
+                                    <strong>$1,250</strong>
+                                </div>
+                            </div>
+                            <div class="nav-demo">
+                                <span class="active">⌂<br />Home</span><span>▥<br />Statistic</span
+                                ><span class="scan">▣</span><span>▱<br />Wallet</span
+                                ><span>⚙<br />Settings</span>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 2 TRANSACTIONS -->
+            <section id="p2" class="page">
+                <div class="container">
+                    <div class="tx-page">
+                        <div class="panel">
+                            <div class="section-head">
+                                <div>
+                                    <div class="eyebrow">Finance activity</div>
+                                    <h1 class="title">Transaction History</h1>
+                                </div>
+                                <button class="search">⌕</button>
+                            </div>
+                            <div class="tx-toolbar">
+                                <button class="active filter">All</button
+                                ><button class="filter">Income</button
+                                ><button class="filter">Sent</button
+                                ><button class="filter">Request</button
+                                ><button class="filter">Transfer</button>
+                            </div>
+
+                            <div class="day">Today</div>
+                            <div class="full-tx">
+                                <div class="tx">
+                                    <div class="tx-icon upwork">up</div>
+                                    <div><b>Upwork</b><small>Client Payment Received</small></div>
+                                    <div class="amt green">
+                                        +$480.00<span class="time">Nov 4, 10:42 AM</span>
+                                    </div>
+                                </div>
+                                <div class="tx">
+                                    <div class="tx-icon netflix">N</div>
+                                    <div><b>Netflix</b><small>Subscription Renewal</small></div>
+                                    <div class="amt red">
+                                        −$12.99<span class="time">Nov 4, 09:20 AM</span>
+                                    </div>
+                                </div>
+                                <div class="tx">
+                                    <div class="tx-icon youtube">▶</div>
+                                    <div><b>Starbucks</b><small>Morning Coffee</small></div>
+                                    <div class="amt red">
+                                        −$5.75<span class="time">Nov 4, 08:13 AM</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="day">Yesterday</div>
+                            <div class="full-tx">
+                                <div class="tx">
+                                    <div class="tx-icon spotify">●</div>
+                                    <div><b>Spotify</b><small>Premium Family Plan</small></div>
+                                    <div class="amt red">
+                                        −$15.99<span class="time">Nov 3, 07:30 PM</span>
+                                    </div>
+                                </div>
+                                <div class="tx">
+                                    <div class="tx-icon paypal">P</div>
+                                    <div>
+                                        <b>PayPal Transfer</b><small>Receive from Sarah</small>
+                                    </div>
+                                    <div class="amt green">
+                                        +$120.00<span class="time">Nov 3, 05:10 PM</span>
+                                    </div>
+                                </div>
+                                <div class="tx">
+                                    <div class="tx-icon wayflow">W</div>
+                                    <div>
+                                        <b>Wayflow Income</b
+                                        ><small>Freelance Project Payment</small>
+                                    </div>
+                                    <div class="amt green">
+                                        +$950.00<span class="time">Nov 3, 11:45 AM</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="day">Nov 2, 2026</div>
+                            <div class="full-tx">
+                                <div class="tx">
+                                    <div class="tx-icon amazon">a</div>
+                                    <div><b>Amazon</b><small>Order #A23897</small></div>
+                                    <div class="amt red">
+                                        −$89.50<span class="time">Nov 2, 09:28 PM</span>
+                                    </div>
+                                </div>
+                                <div class="tx">
+                                    <div class="tx-icon google">▶</div>
+                                    <div><b>Google Play</b><small>App Purchase</small></div>
+                                    <div class="amt red">
+                                        −$3.49<span class="time">Nov 2, 06:15 PM</span>
+                                    </div>
+                                </div>
+                                <div class="tx">
+                                    <div class="tx-icon wise">Σ</div>
+                                    <div><b>Wise Transfer</b><small>Received Payment</small></div>
+                                    <div class="amt green">
+                                        +$250.00<span class="time">Nov 2, 09:25 AM</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 3 ANALYTICS -->
+            <section id="p3" class="page">
+                <div class="container">
+                    <div class="analytics-layout">
+                        <main>
+                            <div class="panel chart-card">
+                                <div class="section-head">
+                                    <div>
+                                        <div class="eyebrow">Financial performance</div>
+                                        <h1 class="title">Analytics</h1>
+                                    </div>
+                                    <button class="search">•••</button>
+                                </div>
+                                <div class="periods">
+                                    <button class="period">All</button
+                                    ><button class="period">W</button
+                                    ><button class="period">M</button
+                                    ><button class="period">3M</button
+                                    ><button class="period active">6M</button
+                                    ><button class="period">Y</button>
+                                </div>
+                                <div class="eyebrow">Total Earning</div>
+                                <div class="earning">$44,234.30</div>
+                                <div class="bar-chart">
+                                    <div class="bar-col">
+                                        <div class="bar" style="height: 40%"></div>
+                                        <div class="bar-label">JAN</div>
+                                    </div>
+                                    <div class="bar-col">
+                                        <div class="bar" style="height: 65%"></div>
+                                        <div class="bar-label">FEB</div>
+                                    </div>
+                                    <div class="bar-col">
+                                        <div class="bar selected" style="height: 84%"></div>
+                                        <div class="bar-label">MAR</div>
+                                    </div>
+                                    <div class="bar-col">
+                                        <div class="bar" style="height: 76%"></div>
+                                        <div class="bar-label">APR</div>
+                                    </div>
+                                    <div class="bar-col">
+                                        <div class="bar" style="height: 89%"></div>
+                                        <div class="bar-label">MAY</div>
+                                    </div>
+                                    <div class="bar-col">
+                                        <div class="bar" style="height: 55%"></div>
+                                        <div class="bar-label">JUN</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel" style="margin-top: 18px">
+                                <div class="section-head">
+                                    <h2>Monthly Performance</h2>
+                                    <span>2026</span>
+                                </div>
+                                <div class="mini-grid">
+                                    <div class="mini">
+                                        <b>$44,234</b><small>March earnings</small>
+                                    </div>
+                                    <div class="mini">
+                                        <b class="green">+$8,340</b><small>vs. February</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+                        <aside>
+                            <div class="spending">
+                                <button class="select">monthly⌄</button>
+                                <div class="eyebrow">Spendings</div>
+                                <div class="spending-total">$8,343.65</div>
+                                <div class="color-line"></div>
+                                <div class="key">
+                                    <span><i style="background: #7865d7"></i>House Rent</span
+                                    ><span><i style="background: #ee8c42"></i>Grocery</span
+                                    ><span><i style="background: #f1c84c"></i>Savings</span
+                                    ><span><i style="background: #42b4d5"></i>Others</span>
+                                </div>
+                                <div class="day">Nov 3, 2026</div>
+                                <div class="tx">
+                                    <div class="tx-icon spotify">●</div>
+                                    <div><b>Spotify</b><small>Premium Family Plan</small></div>
+                                    <div class="amt red">
+                                        −$15.99<span class="time">Nov 3, 07:30 PM</span>
+                                    </div>
+                                </div>
+                                <div class="tx">
+                                    <div class="tx-icon paypal">P</div>
+                                    <div>
+                                        <b>PayPal Transfer</b><small>Receive from Sarah</small>
+                                    </div>
+                                    <div class="amt green">
+                                        +$120.00<span class="time">Nov 3, 05:10 PM</span>
+                                    </div>
+                                </div>
+                                <div class="insight">
+                                    <b>Spending insight</b><br />Your spending is concentrated in
+                                    housing and groceries this month.
+                                </div>
+                            </div>
+                            <div class="nav-demo">
+                                <span>⌂<br />Home</span><span class="active">▥<br />Statistic</span
+                                ><span class="scan">▣</span><span>▱<br />Wallet</span
+                                ><span>⚙<br />Settings</span>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <script>
+            function show(n) {
+                document.querySelectorAll('.page').forEach((x) => x.classList.remove('active'));
+                document.getElementById('p' + n).classList.add('active');
+                document
+                    .querySelectorAll('.switcher button')
+                    .forEach((x) => x.classList.remove('active'));
+                document.getElementById('b' + n).classList.add('active');
+                scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        </script>
+    </body>
+</html>
