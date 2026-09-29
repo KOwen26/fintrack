@@ -70,7 +70,7 @@
 {#snippet headerCloseButton()}
     <Dialog.Close>
         <Button class="btn-square" color="light" variant="outline">
-            <i class="iconify solar--close-bold-duotone"></i>
+            <i class="iconify solar--close-line-duotone"></i>
         </Button>
     </Dialog.Close>
 {/snippet}

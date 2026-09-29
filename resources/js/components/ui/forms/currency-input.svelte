@@ -11,6 +11,9 @@
         name?: string;
         disabled?: boolean;
         required?: boolean;
+        /** Classes forwarded to the inner masked input — pass overrides to
+            neutralize its default boxed `.input` styling. */
+        inputClass?: string;
         class?: string;
     };
 </script>
@@ -27,24 +30,25 @@
         name,
         disabled = false,
         required = false,
-        class: className,
+        inputClass,
+        class: _class,
         ...props
     }: CurrencyInputProps & RestProps = $props();
 </script>
 
 <div
     class={cn(
-        'input w-full overflow-clip tabular-nums',
+        'input min-h-12 w-full overflow-clip px-4 tabular-nums transition-colors focus-within:bg-base-content/5 focus-within:outline-none hover:bg-base-content/5',
         disabled && 'cursor-not-allowed opacity-50',
-        className
+        _class
     )}>
     <span
-        class="me-1 flex items-center border-r border-(--input-color) pe-2 text-sm
-               font-medium whitespace-nowrap text-base-content/70 select-none">
+        class="me-1 flex items-center self-stretch border-r border-(--input-color) pe-3 text-sm font-medium whitespace-nowrap select-none">
         {currency}
     </span>
     <MaskedInput
         {name}
+        class={inputClass}
         defaultClass=""
         {disabled}
         maskPreset="currency"

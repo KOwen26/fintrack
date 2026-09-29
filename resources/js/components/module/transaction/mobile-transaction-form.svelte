@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { CalculatorOperator } from '@components/ui/forms/calculator-input.svelte';
     import type { App } from '@wayfinder/types';
 
     import { useForm } from '@inertiajs/svelte';
@@ -19,10 +18,13 @@
     import AccountSelect from '@components/ui/forms/account-select.svelte';
     import CalculatorInput from '@components/ui/forms/calculator-input.svelte';
     import CategorySelect from '@components/ui/forms/category-select.svelte';
+    import CurrencyInput from '@components/ui/forms/currency-input.svelte';
     import DateInput from '@components/ui/forms/date-input.svelte';
+    import Field from '@components/ui/forms/field.svelte';
     import Form from '@components/ui/forms/form.svelte';
     import MaskedInput from '@components/ui/forms/masked-input.svelte';
     import SubmitButton from '@components/ui/forms/submit-button.svelte';
+    import Textarea from '@components/ui/forms/textarea.svelte';
 
     /** Common quick-entry amounts (IDR) when the parent supplies none. */
     const DEFAULT_AMOUNT_PRESETS: number[] = [10_000, 25_000, 50_000, 100_000];
@@ -39,11 +41,8 @@
     let activeType = $state<App.Enums.TransactionType>(TransactionType.Expense);
     let calculatorOpen = $state(false);
     let calculatorValue = $state(0);
-    let calculatorOperator = $state<CalculatorOperator | ''>('');
 
-    /* Guard instead of debounce: after the drawer closes, ignore open taps
-       for a beat so the dismissal click (overlay / swipe) cannot immediately
-       re-open it. Opening itself stays instant. */
+    /* Guard instead of debounce: after the drawer closes, ignore open taps for a beat so the dismissal click (overlay / swipe) cannot immediately re-open it. Opening itself stays instant. */
     const CALCULATOR_REOPEN_GUARD_MS = 300;
     let calculatorWasOpen = false;
     let calculatorGuardUntil = 0;
@@ -71,17 +70,14 @@
         switch (activeType) {
             case TransactionType.Income:
                 return {
-                    accountLabel: 'To account',
                     submitLabel: 'Add Income',
                 };
             case TransactionType.Transfer:
                 return {
-                    accountLabel: 'From account',
                     submitLabel: 'Add Transfer',
                 };
             default:
                 return {
-                    accountLabel: 'From account',
                     submitLabel: 'Add Expense',
                 };
         }
@@ -98,16 +94,36 @@
         transaction_date: new Date(),
     });
 
-    /* Write-through: while the drawer is open the pad owns the amount, and
-       every keypad press syncs into the Inertia form store so the hero stays
-       live behind the drawer. Seeding happens in openCalculator(). */
+    /* The destination depends on a valid source: clearing the source, or moving it onto the current destination, resets the destination before a stale value can silently trip the backend's `different:account_id` rule. */
     $effect(() => {
-        if (calculatorOpen) form.amount = calculatorValue;
+        if (
+            !form.account_id ||
+            (form.destination_account_id && form.destination_account_id === form.account_id)
+        ) {
+            form.destination_account_id = '';
+        }
     });
 
-    /* One UI, two request contracts: strip the fields each endpoint
-       prohibits, then pin the type for plain rows (the transfer endpoint
-       rejects a type field outright). */
+    function swapTransferAccounts(): void {
+        if (!form.account_id || !form.destination_account_id) return;
+
+        const source = form.account_id;
+
+        form.account_id = form.destination_account_id;
+        form.destination_account_id = source;
+    }
+
+    /* A transfer's destination never offers the source account. */
+    const destinationAccounts = $derived(
+        form.account_id
+            ? accounts.filter((account) => String(account.id) !== String(form.account_id))
+            : accounts
+    );
+
+    $effect(() => {
+        if (calculatorOpen) form.amount = calculatorValue.toString();
+    });
+
     form.transform((data) => {
         const payload: Record<string, unknown> = { ...data };
 
@@ -124,23 +140,14 @@
     });
 
     const formAction = $derived(
-        isTransfer ? TransferController.store.url() : TransactionController.store.url()
+        isTransfer ? TransferController.store : TransactionController.store
     );
-
-    function handleFeeInput(e: Event): void {
-        const input = e.target as HTMLInputElement;
-        const raw = input.value.replace(/\D/g, '');
-        form.fee_amount = raw ? parseInt(raw, 10) || 0 : '';
-    }
 </script>
 
 <MobilePageLayout heroClass="flex flex-col justify-center" variant="4/5">
     {#snippet hero()}
         <div class="w-full px-5">
             <div class="text-center">
-                <!-- <p class="text-2xs font-bold tracking-widest text-secondary-content/50 uppercase">
-                    Amount
-                </p> -->
                 <div class="mt-1 flex items-center justify-center gap-1.5">
                     <span class="text-lg font-medium text-secondary-content/50">Rp</span>
                     <MaskedInput
@@ -157,18 +164,22 @@
                         readonly
                         bind:value={form.amount} />
                 </div>
+                {#if form.errors.amount?.length}
+                    <span class="text-xs text-error">{form.errors.amount}</span>
+                {/if}
             </div>
 
             {#if amountPresets.length}
-                <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+                <div class="mt-3 flex flex-wrap items-center justify-center gap-1.5">
                     {#each amountPresets as preset (preset)}
+                        {const selected = $derived(parseInt(form.amount) === preset)}
+
                         <button
-                            class="rounded-full border px-3 py-1 font-mono text-xs font-medium transition-colors {form.amount ===
-                            preset
+                            class="rounded-full border px-3 py-1.5 text-sm font-medium transition-colors {selected
                                 ? 'border-secondary-content/60 bg-secondary-content/15 text-secondary-content'
                                 : 'border-secondary-content/25 text-secondary-content/60 hover:border-secondary-content/45 hover:text-secondary-content'}"
-                            aria-pressed={form.amount === preset}
-                            onclick={() => (form.amount = preset)}
+                            aria-pressed={selected}
+                            onclick={() => (form.amount = preset.toString())}
                             type="button">
                             {Formatter.currency(preset, true)}
                         </button>
@@ -178,8 +189,8 @@
         </div>
     {/snippet}
 
-    <Form id="mobile-transaction-form" action={formAction} {form}>
-        <Tabs bind:value={activeType}>
+    <Form id="transaction-form" {...formAction.form()} {form}>
+        <Tabs onchange={() => form.resetAndClearErrors()} bind:value={activeType}>
             <TabsList class="w-full bg-secondary">
                 <TabsTrigger
                     class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-content"
@@ -193,92 +204,102 @@
             </TabsList>
         </Tabs>
 
-        <div class="mt-4 divide-y divide-base-content/10">
-            <div class="py-3">
-                <span class="text-2xs font-bold tracking-widest text-base-content/40 uppercase">
-                    {typeConfig.accountLabel}
-                </span>
-                <div class="mt-0.5">
-                    <AccountSelect
-                        {accounts}
-                        placeholder="Select account"
-                        bind:value={form.account_id} />
-                </div>
-            </div>
+        <div class="mt-5 space-y-4">
+            <Field
+                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                error={form.errors.account_id}
+                required
+                title="Account">
+                <AccountSelect
+                    {accounts}
+                    placeholder="Select Account"
+                    required
+                    bind:value={form.account_id} />
+            </Field>
 
+            <!-- 2 · Destination — transfer only -->
             {#if isTransfer}
-                <div class="py-3">
-                    <span class="text-2xs font-bold tracking-widest text-base-content/40 uppercase">
-                        To account
-                    </span>
-                    <div class="mt-0.5">
-                        <AccountSelect
-                            {accounts}
-                            placeholder="Select destination"
-                            bind:value={form.destination_account_id} />
-                    </div>
+                <div class="flex justify-center">
+                    <button
+                        class="flex items-center gap-1.5 rounded-full border border-base-content/15 px-3 py-1 text-xs font-medium text-base-content/50 transition-colors hover:border-base-content/30 hover:text-base-content disabled:cursor-not-allowed disabled:opacity-40"
+                        disabled={!form.account_id || !form.destination_account_id}
+                        onclick={swapTransferAccounts}
+                        type="button">
+                        <i class="iconify size-4 solar--transfer-vertical-line-duotone"></i>
+                        Switch
+                    </button>
                 </div>
 
-                <div class="flex flex-col py-3">
-                    <label
-                        class="text-2xs font-bold tracking-widest text-base-content/40 uppercase"
-                        for="mtf-fee">
-                        Transfer fee (optional)
-                    </label>
-                    <input
-                        id="mtf-fee"
-                        class="input mt-0.5 w-full border-none bg-transparent px-0 font-mono text-sm font-medium placeholder:text-base-content/30"
-                        inputmode="numeric"
-                        oninput={handleFeeInput}
-                        placeholder="0"
-                        type="text"
-                        value={form.fee_amount ? Formatter.currency(form.fee_amount, true) : ''} />
-                </div>
+                <Field
+                    titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                    error={form.errors.destination_account_id}
+                    required
+                    title="Destination Account">
+                    <AccountSelect
+                        accounts={destinationAccounts}
+                        disabled={!form.account_id}
+                        placeholder="Select Destination Account"
+                        required
+                        bind:value={form.destination_account_id} />
+                </Field>
             {:else}
-                <div class="py-3">
-                    <span class="text-2xs font-bold tracking-widest text-base-content/40 uppercase">
-                        Category
-                    </span>
-                    <div class="mt-0.5">
-                        <CategorySelect
-                            {categories}
-                            groupVariant="text"
-                            optionVariant="icon"
-                            placeholder="Select category"
-                            variant="modal"
-                            bind:value={form.category_id} />
-                    </div>
-                </div>
+                <!-- 3 · Category — income / expense -->
+                <Field
+                    titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                    error={form.errors.category_id}
+                    required
+                    title="Category">
+                    <CategorySelect
+                        {categories}
+                        groupVariant="text"
+                        optionVariant="icon"
+                        placeholder="Select category"
+                        required
+                        variant="modal"
+                        bind:value={form.category_id} />
+                </Field>
             {/if}
 
-            <div class="mt-8">
-                <label
-                    class="text-2xs font-bold tracking-widest text-secondary-content/50 uppercase"
-                    for="mtf-date">
-                    Date
-                </label>
-                <div class="mt-0.5">
-                    <DateInput
-                        id="mtf-date"
-                        class="w-full border-none bg-transparent px-0  text-center font-medium text-secondary-content/80"
-                        placeholder="Pick a date"
-                        bind:value={form.transaction_date} />
-                </div>
-            </div>
+            <!-- 4 · Date -->
+            <Field
+                id="transaction-date"
+                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                error={form.errors.transaction_date}
+                required
+                title="Date">
+                <DateInput
+                    id="transaction-date"
+                    placeholder="Pick a date"
+                    bind:value={form.transaction_date} />
+            </Field>
 
-            <div class="flex flex-col py-3">
-                <label
-                    class="text-2xs font-bold tracking-widest text-base-content/40 uppercase"
-                    for="mtf-description">
-                    Description
-                </label>
-                <input
-                    id="mtf-description"
-                    class="input mt-0.5 w-full border-none bg-transparent px-0 text-sm font-medium placeholder:text-base-content/30"
+            <!-- 5 · Fee — transfer only -->
+            {#if isTransfer}
+                <Field
+                    id="transfer-fee"
+                    titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                    error={form.errors.fee_amount}
+                    title="Transfer fee">
+                    <CurrencyInput
+                        id="transfer-fee"
+                        inputmode="numeric"
+                        placeholder="0"
+                        bind:value={form.fee_amount} />
+                </Field>
+            {/if}
+
+            <!-- 6 · Notes -->
+            <Field
+                id="transaction-notes"
+                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                error={form.errors.description}
+                title="Notes">
+                <Textarea
+                    id="transaction-notes"
+                    class="min-h-24"
                     placeholder={isTransfer ? 'e.g. Monthly allowance' : 'e.g. Warteg Bu Sri'}
-                    type="text"
                     bind:value={form.description} />
-            </div>
+            </Field>
         </div>
     </Form>
 
@@ -287,21 +308,21 @@
             <Button class="btn-square" color="secondary" onclick={openCalculator} variant="outline">
                 <i class="iconify solar--calculator-minimalistic-bold-duotone"></i>
             </Button>
-            <SubmitButton class="grow" form="mobile-transaction-form" submitting={form.processing}>
+
+            <SubmitButton class="grow" form="transaction-form" submitting={form.processing}>
                 {typeConfig.submitLabel}
             </SubmitButton>
         </div>
-
-        <Drawer overlay={false} bind:open={calculatorOpen}>
-            <div class="space-y-4 px-4 py-6">
-                {#key calculatorOpen}
-                    <CalculatorInput
-                        mode="chain"
-                        onConfirm={() => (calculatorOpen = false)}
-                        bind:value={calculatorValue}
-                        bind:currentOperator={calculatorOperator} />
-                {/key}
-            </div>
-        </Drawer>
     </BottomActionBar>
 </MobilePageLayout>
+
+<Drawer overlay={false} bind:open={calculatorOpen}>
+    <div class="p-5">
+        {#key calculatorOpen}
+            <CalculatorInput
+                mode="chain"
+                onConfirm={() => (calculatorOpen = false)}
+                bind:value={calculatorValue} />
+        {/key}
+    </div>
+</Drawer>

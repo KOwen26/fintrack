@@ -2,8 +2,11 @@
     import type { RestProps } from '@type/index';
     import type { Snippet } from 'svelte';
 
+    import { cn } from '@utilities/shadcn';
+
     export type FieldProps = {
         title?: string;
+        titleClass?: string;
         required?: boolean;
         formMode?: 'form' | 'data';
 
@@ -22,6 +25,7 @@
 <script lang="ts">
     let {
         title,
+        titleClass,
         error: _errorMessage,
         children,
         formMode = 'form',
@@ -50,10 +54,13 @@
 
 <fieldset data-slot="field" class={['space-y-1.5', _class]}>
     {#if title}
-        <label data-slot="field-label" class="inline-block text-sm font-medium text-black" for={id}>
+        <label
+            data-slot="field-label"
+            class={cn('inline-block text-sm font-medium text-base-content', titleClass)}
+            for={id}>
             {title}
             {#if required}
-                <span class="text-error align-text-top">*</span>
+                <span class="align-text-top text-error">*</span>
             {/if}
         </label>
     {/if}
@@ -83,5 +90,5 @@
 </fieldset>
 
 {#snippet defaultError(errorMessage: string)}
-    <p class="text-error text-xs whitespace-pre-wrap">{errorMessage}</p>
+    <p class="text-xs whitespace-pre-wrap text-error">{errorMessage}</p>
 {/snippet}

@@ -41,6 +41,10 @@
         optionVariant?: ListLayout;
         class?: string;
         disabled?: boolean;
+        /** Required-ness flag for API symmetry. The button trigger cannot carry
+            `aria-required` (unsupported on role=button) — the visible marker
+            and semantics belong to the wrapping Field. */
+        required?: boolean;
     }
 
     let {
@@ -52,6 +56,7 @@
         optionVariant = 'list',
         class: _class,
         disabled = false,
+        required = false,
     }: Props = $props();
 
     interface CategoryNode {
@@ -62,7 +67,7 @@
     }
 
     const triggerClass =
-        'flex w-full min-w-0 items-center gap-2.5 rounded-lg py-0.5 text-left disabled:opacity-50';
+        'input flex min-h-12 w-full min-w-0 items-center gap-2.5 rounded-lg px-4 py-1 text-left transition-colors hover:bg-base-content/5 focus-visible:bg-base-content/5 focus-within:outline-none disabled:opacity-50';
 
     const gridCols: Record<Exclude<ListLayout, 'list'>, string> = {
         'grid-2': 'grid grid-cols-2 gap-1',
@@ -275,7 +280,7 @@
         <span class="truncate text-sm text-base-content/35">{placeholder}</span>
     {/if}
     <i
-        class="ml-auto iconify size-4 shrink-0 text-base-content/40 transition-transform duration-200 tabler--chevron-down"
+        class="ml-auto iconify size-4 shrink-0 text-base-content transition-transform duration-200 solar--alt-arrow-down-linear"
         class:rotate-180={open}></i>
 {/snippet}
 
@@ -296,7 +301,7 @@
                             {@render chip(group.visual, false)}
                             <span class="truncate text-sm font-semibold">{group.name}</span>
                             <i
-                                class="ml-auto iconify size-4 shrink-0 text-base-content/40 transition-transform duration-200 tabler--chevron-down"
+                                class="ml-auto iconify size-4 shrink-0 text-base-content transition-transform duration-200 solar--alt-arrow-down-linear"
                                 class:rotate-180={expanded[group.id]}></i>
                         </div>
                     {/snippet}

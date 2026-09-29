@@ -26,6 +26,10 @@
         accounts?: App.Models.Account[];
         placeholder?: string;
         clearable?: boolean;
+        /** Announce required-ness to assistive tech; the visible marker belongs to the wrapping Field. */
+        required?: boolean;
+        /** Disable the trigger until prerequisites are met (e.g. a source account). */
+        disabled?: boolean;
         class?: string;
     }
 
@@ -34,6 +38,8 @@
         accounts = [],
         placeholder = 'Select account',
         clearable = true,
+        required = false,
+        disabled = false,
         class: _class,
     }: Props = $props();
 
@@ -103,7 +109,11 @@
 <Combobox
     {clearable}
     contentProps={{ sideOffset: 10 }}
-    inputProps={{ class: 'placeholder:text-base-content/35' }}
+    {disabled}
+    inputProps={{
+        class: 'placeholder:text-base-content/35',
+        'aria-required': required || undefined,
+    }}
     {option}
     options={comboboxOptions}
     {placeholder}
@@ -111,7 +121,7 @@
     bind:value={getValue, setValue} />
 
 {#snippet chip(account: App.Models.Account)}
-    {const badge = badgeVisual(account)}
+    {const badge = $derived(badgeVisual(account))}
 
     <DecorationBadge
         background={badge.background}
@@ -134,12 +144,13 @@
     selected,
     open,
 }: ComboboxTriggerContext<AccountOption>)}
-    {const account = selected?.account}
+    {const account = $derived(selected?.account)}
 
     <ComboboxPrimitive.Trigger
         {...triggerProps}
         class={cn(
-            'relative flex min-h-10 w-full items-center rounded-lg py-1 text-left transition-colors focus-within:bg-base-content/5 hover:bg-base-content/5',
+            'input flex min-h-12 w-full px-4 transition-colors focus-within:bg-base-content/5 focus-within:outline-none hover:bg-base-content/5 disabled:cursor-not-allowed',
+            'disabled:border-(--input-color) disabled:bg-base-content/10',
             _class
         )}>
         {#if account}
@@ -152,8 +163,8 @@
         <ComboboxPrimitive.Input
             {...inputProps}
             class={cn(
-                'w-full bg-transparent text-sm font-medium outline-none placeholder:text-base-content/35',
-                account ? 'pr-16 pl-14' : 'px-2.5'
+                'w-full bg-transparent text-sm font-medium outline-none placeholder:text-base-content/80',
+                account ? 'pr-16 pl-10' : ''
             )}
             aria-label={placeholder}
             autocomplete="off"
@@ -161,7 +172,7 @@
 
         {#if clearable && account}
             <button
-                class="absolute top-1/2 right-9 z-10 flex size-6 -translate-y-1/2 items-center justify-center rounded-full text-base-content/40 hover:bg-base-content/10 hover:text-base-content"
+                class="absolute top-1/2 right-9 z-10 flex size-6 -translate-y-1/2 items-center justify-center rounded-full text-base-content/60 hover:bg-base-content/10 hover:text-base-content"
                 aria-label="Hapus akun"
                 onclick={() => setValue('')}
                 onpointerdown={(e) => e.stopPropagation()}
