@@ -24,6 +24,7 @@
         breadcrumbs = [],
         title: layoutTitle = undefined,
         headerContext = undefined,
+        bottomActionBar = undefined,
         mobileShellClass = undefined,
         mobileHeaderClass = undefined,
         mobileHeaderScrolledClass = undefined,
@@ -67,16 +68,24 @@
 {#if isMobile.current}
     <div class="relative flex min-h-svh w-full flex-1 flex-col {mobileShellClass}">
         <DashboardHeaderMobile
-            {backUrl}
-            {headerContext}
-            {title}
             class={mobileHeaderClass}
             scrolledClass={mobileHeaderScrolledClass}
-            scrollThreshold={mobileHeaderScrollThreshold} />
+            {backUrl}
+            {headerContext}
+            scrollThreshold={mobileHeaderScrollThreshold}
+            {title} />
 
         {@render pageContent()}
 
-        <BottomNav />
+        {#if bottomActionBar}
+            <div
+                data-slot="bottom-action-bar"
+                class="sticky bottom-0 z-30 border-t border-base-content/10 bg-base-100 px-5 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] text-base-content">
+                {@render bottomActionBar.render()}
+            </div>
+        {:else}
+            <BottomNav />
+        {/if}
     </div>
 {:else}
     <Sidebar.Provider>

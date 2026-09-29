@@ -45,11 +45,11 @@
 
     const sheetClasses: Record<SheetVariant, string> = {
         full: 'flex-1',
-        '1/2': 'flex-1 min-h-0 rounded-t-2xl',
-        '1/5': 'flex-1 min-h-0 rounded-t-2xl',
-        '2/5': 'flex-2 min-h-0 rounded-t-2xl',
-        '3/5': 'flex-3 min-h-0 rounded-t-2xl',
-        '4/5': 'flex-4 min-h-0 rounded-t-2xl',
+        '1/2': 'flex-1 min-h-0 rounded-t-2xl drop-shadow-2xl/50',
+        '1/5': 'flex-1 min-h-0 rounded-t-2xl drop-shadow-2xl/50',
+        '2/5': 'flex-2 min-h-0 rounded-t-2xl drop-shadow-2xl/50',
+        '3/5': 'flex-3 min-h-0 rounded-t-2xl drop-shadow-2xl/50',
+        '4/5': 'flex-4 min-h-0 rounded-t-2xl drop-shadow-2xl/50',
     };
 
     // Register the shell class (tracked), and clear it on unmount — preserved-

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { CalculatorOperator } from '@components/ui/forms/calculator-input.svelte';
     import type { App } from '@wayfinder/types';
 
     import { useForm } from '@inertiajs/svelte';
@@ -9,25 +10,60 @@
     import Formatter from '@utilities/formatter';
 
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
+    import BottomActionBar from '@components/navigation/bottom-action-bar.svelte';
     import TabsList from '@components/ui/atoms/tabs/tabs-list.svelte';
     import TabsTrigger from '@components/ui/atoms/tabs/tabs-trigger.svelte';
     import Tabs from '@components/ui/atoms/tabs/tabs.svelte';
+    import Button from '@components/ui/button.svelte';
+    import Drawer from '@components/ui/drawer.svelte';
     import AccountSelect from '@components/ui/forms/account-select.svelte';
+    import CalculatorInput from '@components/ui/forms/calculator-input.svelte';
     import CategorySelect from '@components/ui/forms/category-select.svelte';
     import DateInput from '@components/ui/forms/date-input.svelte';
-    import FormAction from '@components/ui/forms/form-action.svelte';
     import Form from '@components/ui/forms/form.svelte';
     import MaskedInput from '@components/ui/forms/masked-input.svelte';
+    import SubmitButton from '@components/ui/forms/submit-button.svelte';
+
+    /** Common quick-entry amounts (IDR) when the parent supplies none. */
+    const DEFAULT_AMOUNT_PRESETS: number[] = [10_000, 25_000, 50_000, 100_000];
 
     interface Props {
         accounts: App.Models.Account[];
         categories: App.Models.Category[];
-        onCancel?: () => void;
+        /** Quick amounts rendered as chips under the hero input. */
+        amountPresets?: number[];
     }
 
-    let { accounts, categories, onCancel }: Props = $props();
+    let { accounts, categories, amountPresets = DEFAULT_AMOUNT_PRESETS }: Props = $props();
 
     let activeType = $state<App.Enums.TransactionType>(TransactionType.Expense);
+    let calculatorOpen = $state(false);
+    let calculatorValue = $state(0);
+    let calculatorOperator = $state<CalculatorOperator | ''>('');
+
+    /* Guard instead of debounce: after the drawer closes, ignore open taps
+       for a beat so the dismissal click (overlay / swipe) cannot immediately
+       re-open it. Opening itself stays instant. */
+    const CALCULATOR_REOPEN_GUARD_MS = 300;
+    let calculatorWasOpen = false;
+    let calculatorGuardUntil = 0;
+
+    $effect(() => {
+        const isOpen = calculatorOpen;
+
+        if (calculatorWasOpen && !isOpen) {
+            calculatorGuardUntil = Date.now() + CALCULATOR_REOPEN_GUARD_MS;
+        }
+
+        calculatorWasOpen = isOpen;
+    });
+
+    function openCalculator(): void {
+        if (Date.now() < calculatorGuardUntil) return;
+
+        calculatorValue = Number(form.amount) || 0;
+        calculatorOpen = true;
+    }
 
     const isTransfer = $derived(activeType === TransactionType.Transfer);
 
@@ -53,13 +89,20 @@
 
     const form = useForm({
         type: TransactionType.Expense,
-        amount: '' as number | '',
+        amount: '',
         description: '',
         account_id: '',
         destination_account_id: '',
-        fee_amount: '' as number | '',
+        fee_amount: '',
         category_id: '',
         transaction_date: new Date(),
+    });
+
+    /* Write-through: while the drawer is open the pad owns the amount, and
+       every keypad press syncs into the Inertia form store so the hero stays
+       live behind the drawer. Seeding happens in openCalculator(). */
+    $effect(() => {
+        if (calculatorOpen) form.amount = calculatorValue;
     });
 
     /* One UI, two request contracts: strip the fields each endpoint
@@ -89,8 +132,6 @@
         const raw = input.value.replace(/\D/g, '');
         form.fee_amount = raw ? parseInt(raw, 10) || 0 : '';
     }
-
-    const defaultCancel = () => window.history.back();
 </script>
 
 <MobilePageLayout heroClass="flex flex-col justify-center" variant="4/5">
@@ -111,25 +152,29 @@
                         ]}
                         inputmode="numeric"
                         maskPreset="currency"
+                        onclick={openCalculator}
                         placeholder="10.000"
+                        readonly
                         bind:value={form.amount} />
                 </div>
             </div>
 
-            <div class="mt-8">
-                <label
-                    class="text-2xs font-bold tracking-widest text-secondary-content/50 uppercase"
-                    for="mtf-date">
-                    Date
-                </label>
-                <div class="mt-0.5">
-                    <DateInput
-                        id="mtf-date"
-                        class="w-full border-none bg-transparent px-0  text-center text-xl font-medium text-secondary-content/80"
-                        placeholder="Pick a date"
-                        bind:value={form.transaction_date} />
+            {#if amountPresets.length}
+                <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+                    {#each amountPresets as preset (preset)}
+                        <button
+                            class="rounded-full border px-3 py-1 font-mono text-xs font-medium transition-colors {form.amount ===
+                            preset
+                                ? 'border-secondary-content/60 bg-secondary-content/15 text-secondary-content'
+                                : 'border-secondary-content/25 text-secondary-content/60 hover:border-secondary-content/45 hover:text-secondary-content'}"
+                            aria-pressed={form.amount === preset}
+                            onclick={() => (form.amount = preset)}
+                            type="button">
+                            {Formatter.currency(preset, true)}
+                        </button>
+                    {/each}
                 </div>
-            </div>
+            {/if}
         </div>
     {/snippet}
 
@@ -206,6 +251,21 @@
                 </div>
             {/if}
 
+            <div class="mt-8">
+                <label
+                    class="text-2xs font-bold tracking-widest text-secondary-content/50 uppercase"
+                    for="mtf-date">
+                    Date
+                </label>
+                <div class="mt-0.5">
+                    <DateInput
+                        id="mtf-date"
+                        class="w-full border-none bg-transparent px-0  text-center font-medium text-secondary-content/80"
+                        placeholder="Pick a date"
+                        bind:value={form.transaction_date} />
+                </div>
+            </div>
+
             <div class="flex flex-col py-3">
                 <label
                     class="text-2xs font-bold tracking-widest text-base-content/40 uppercase"
@@ -220,14 +280,28 @@
                     bind:value={form.description} />
             </div>
         </div>
-
-        <FormAction
-            class="mt-6 w-full [&_button]:min-w-0"
-            submitClass="flex-3/5"
-            {form}
-            formId="mobile-transaction-form"
-            labelCancel="Cancel"
-            labelSubmit={typeConfig.submitLabel}
-            onCancel={onCancel ?? defaultCancel} />
     </Form>
+
+    <BottomActionBar>
+        <div class="flex gap-3">
+            <Button class="btn-square" color="secondary" onclick={openCalculator} variant="outline">
+                <i class="iconify solar--calculator-minimalistic-bold-duotone"></i>
+            </Button>
+            <SubmitButton class="grow" form="mobile-transaction-form" submitting={form.processing}>
+                {typeConfig.submitLabel}
+            </SubmitButton>
+        </div>
+
+        <Drawer overlay={false} bind:open={calculatorOpen}>
+            <div class="space-y-4 px-4 py-6">
+                {#key calculatorOpen}
+                    <CalculatorInput
+                        mode="chain"
+                        onConfirm={() => (calculatorOpen = false)}
+                        bind:value={calculatorValue}
+                        bind:currentOperator={calculatorOperator} />
+                {/key}
+            </div>
+        </Drawer>
+    </BottomActionBar>
 </MobilePageLayout>

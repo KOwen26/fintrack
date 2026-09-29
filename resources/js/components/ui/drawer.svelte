@@ -15,7 +15,10 @@
         title?: string;
         direction?: 'top' | 'bottom' | 'left' | 'right';
         triggerClass?: string;
-        trigger: Snippet;
+        /** Set false to omit the dimming overlay behind the sheet. */
+        overlay?: boolean;
+        /** Omit to control the drawer only through `bind:open`. */
+        trigger?: Snippet;
         children?: Snippet;
     }
 
@@ -24,19 +27,19 @@
         title = '',
         direction = 'bottom',
         triggerClass = '',
+        overlay = true,
         trigger,
         children,
     }: Props = $props();
 </script>
 
-<Drawer bind:open {direction}>
-    <DrawerTrigger aria-label="See more" class={triggerClass}>
-        {@render trigger?.()}
-    </DrawerTrigger>
-    <DrawerContent>
-        {#if direction === 'bottom'}
-            <div class="mx-auto mt-2 h-1.5 w-12 rounded-full bg-base-content/20"></div>
-        {/if}
+<Drawer {direction} bind:open>
+    {#if trigger}
+        <DrawerTrigger class={triggerClass} aria-label="See more">
+            {@render trigger?.()}
+        </DrawerTrigger>
+    {/if}
+    <DrawerContent class="border-muted drop-shadow-2xl/50" {overlay}>
         {#if title}
             <DrawerHeader class="flex-row items-center justify-between">
                 <DrawerTitle>{title}</DrawerTitle>
