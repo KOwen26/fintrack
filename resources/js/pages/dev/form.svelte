@@ -226,19 +226,12 @@
             <Field title="Date Time Picker">
                 <DateInput
                     name="date_time_input"
-                    options={{
-                        enableTime: true,
-                        altFormat: 'd F Y H:i',
-                        dateFormat: 'Y-m-d H:i:S',
-                    }}
+                    type="date-time"
                     bind:value={form.date_time_input} />
                 {form.date_time_input}
             </Field>
             <Field title="Month Picker">
-                <DateInput
-                    name="month_input"
-                    options={{ isMonthPicker: true, altFormat: 'F Y', dateFormat: 'Y-m' }}
-                    bind:value={form.month_input} />
+                <DateInput name="month_input" type="month-year" bind:value={form.month_input} />
                 {form.month_input}
             </Field>
         </Card>

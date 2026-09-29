@@ -3,10 +3,16 @@ import type { BreadcrumbItem } from '@components/ui/breadcrumbs.svelte';
 // ── Sidebar ──
 
 export const sidebar = $state({
-    is_collapsed: localStorage.getItem('sidebar-collapse') === 'true' || false,
+    is_collapsed:
+        (typeof localStorage !== 'undefined' &&
+            localStorage?.getItem('sidebar-collapse') === 'true') ||
+        false,
     collapse() {
         this.is_collapsed = !this.is_collapsed;
-        localStorage.setItem('sidebar-collapse', this.is_collapsed.toString());
+
+        if (typeof localStorage !== 'undefined') {
+            localStorage?.setItem('sidebar-collapse', this.is_collapsed.toString());
+        }
     },
 });
 

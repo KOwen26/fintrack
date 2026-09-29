@@ -3,7 +3,7 @@ import './bootstrap';
 import type { ResolvedComponent } from '@inertiajs/svelte';
 
 import { createInertiaApp } from '@inertiajs/svelte';
-import { initializeAppearance, initializeNamedTheme } from '@lib/theme-handler.svelte';
+import { initializeNamedTheme } from '@lib/theme-handler.svelte';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
 import DashboardLayout from '@components/layouts/dashboard-layout.svelte';
@@ -39,4 +39,4 @@ createInertiaApp({
 });
 
 initializeNamedTheme();
-initializeAppearance();
+// initializeAppearance();

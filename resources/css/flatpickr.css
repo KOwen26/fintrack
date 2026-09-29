@@ -1,0 +1,627 @@
+/*
+ * Flatpickr theme — maps the calendar onto the app's shadcn design tokens
+ * (aliased onto DaisyUI's design tokens below), so light and dark both work.
+ *
+ * Selectors are prefixed with `body .flatpickr-calendar` to stay one step
+ * ahead of flatpickr's base stylesheet (imported by the action wrapper from
+ * flatpickr_plus/dist/flatpickr.css), which may load after this file
+ * depending on chunk order. The nesting below
+ * uses explicit `&` compounds so every rule flattens back to the exact
+ * selector the specificity battles were tuned for — keep the `&`-prefixed
+ * form; do not rely on bare descendant nesting for anything that fights the
+ * base stylesheet.
+ */
+
+/* ──────────────────────────────────────────────
+ * Token bridge — this file was authored against shadcn variable names.
+ * Map them onto DaisyUI's design tokens so both themes resolve correctly.
+ * ────────────────────────────────────────────── */
+:root {
+    /* Surfaces */
+    --popover: var(--color-base-100);
+    --popover-foreground: var(--color-base-content);
+    --muted: var(--color-base-200);
+    --accent: var(--color-base-200);
+
+    /* Text */
+    --foreground: var(--color-base-content);
+    --muted-foreground: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+
+    /* Brand */
+    --primary: var(--color-primary);
+    --primary-foreground: var(--color-primary-content);
+
+    /* Structure */
+    --border: var(--color-base-300);
+    --ring: var(--color-primary);
+    --radius: var(--radius-box);
+
+    /* Shadow — mirrors Tailwind's shadow-md */
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+body .flatpickr-calendar {
+    /* ------------------------------------------------------------------ */
+    /* Geometry knobs — single source of truth for the calendar layout.   */
+    /* Declared on the calendar root, inherited by every part below.      */
+    /* Class rules only REFERENCE these — never recalculate. Replaces     */
+    /* flatpickr's hardcoded 307.875px formula with token-derived math.   */
+    /* ------------------------------------------------------------------ */
+
+    /* Inputs — geometry */
+    --fp-day-size: calc(var(--spacing) * 8); /* size-8 day cell */
+    --fp-day-gap: calc(var(--spacing) * 0.5); /* spacing-1 gap each side of a day */
+    --fp-calendar-padding: calc(var(--spacing) * 2.5); /* p-2 */
+
+    /* Inputs — radii (the app's radius scale is declared `@theme inline`,
+       which inlines into utilities and emits no variables — derive here) */
+    --fp-radius-day: calc(var(--radius) - 2px);
+    --fp-radius-nav: calc(var(--radius) - 4px);
+
+    /* Inputs — popup scrollbar (translucent thumb for the picker) */
+    --fp-scrollbar-thumb: color-mix(in oklab, var(--foreground) 30%, transparent);
+
+    /* Inputs — month/year select sizing */
+    --fp-month-select-min: 10ch;
+    --fp-year-select-min: 7ch;
+    --fp-option-padding-inline: calc(var(--spacing) * 2); /* px-2 */
+    --fp-select-icon-size: calc(var(--spacing) * 4); /* size-4 chevron */
+
+    /* Inputs — range highlight & month/year grid */
+    --fp-range-bg: color-mix(in oklab, var(--primary) 20%, transparent);
+    --fp-month-cell-width: calc((100% - (var(--fp-day-gap) * 6)) / 3); /* 3 columns incl. gaps */
+    --fp-month-cell-height: calc(var(--spacing) * 10); /* 4 rows of 40px */
+    --fp-year-cell-width: calc((100% - (var(--fp-day-gap) * 10)) / 5); /* 5 columns incl. gaps */
+
+    /* Derived — do not edit directly */
+    --fp-day-slot: calc(var(--fp-day-size) + (var(--fp-day-gap) * 2));
+    --fp-grid-width: calc(var(--fp-day-slot) * 7);
+    /* grid + padding on both sides + the two 1px borders (border-box sizing) */
+    --fp-calendar-width: calc(var(--fp-grid-width) + (var(--fp-calendar-padding) * 2) + 2px);
+
+    /* ------------------------------------------------------------------ */
+    /* Shell                                                               */
+    /* ------------------------------------------------------------------ */
+
+    background: var(--popover);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    color: var(--popover-foreground);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    padding: var(--fp-calendar-padding);
+    width: var(--fp-calendar-width);
+
+    /* Bubble arrow */
+    &.arrowTop:before {
+        border-bottom-color: var(--border);
+    }
+    &.arrowTop:after {
+        border-bottom-color: var(--popover);
+    }
+    &.arrowBottom:before {
+        border-top-color: var(--border);
+    }
+    &.arrowBottom:after {
+        border-top-color: var(--popover);
+    }
+
+    /* Header — month navigation arrows */
+    & .flatpickr-months {
+        margin-top: 0; /* base adds 5.678px — redundant now the calendar itself is padded */
+        /* The arrows are position:absolute anchored to the calendar's padding box
+           (left/right 0 = flush against the border). Re-anchor them here so they
+           sit inside the content area and respect the root padding. */
+        position: relative;
+
+        & .flatpickr-month {
+            color: var(--popover-foreground);
+            fill: var(--popover-foreground);
+        }
+
+        & .flatpickr-prev-month,
+        & .flatpickr-next-month {
+            margin-top: 0; /* base adds 5.678px — redundant now the calendar itself is padded */
+            border-radius: var(--fp-radius-nav);
+            color: var(--muted-foreground);
+            fill: var(--muted-foreground);
+
+            &:hover {
+                background: var(--muted);
+                color: var(--foreground);
+                fill: var(--foreground);
+            }
+        }
+    }
+
+    /* Header — current month / year (year is a dropdown via the fork's plugin) */
+    & .flatpickr-current-month {
+        &,
+        & span.cur-month,
+        & input.cur-year,
+        & .flatpickr-monthDropdown-months {
+            background-color: var(--popover);
+            color: var(--popover-foreground);
+            font-size: var(--text-sm); /* base enlarges the header to 135% — keep it text-sm */
+            font-weight: 500; /* match the weekday row weight (base uses 300/700) */
+        }
+
+        /* yearDropdownPlugin only class-disables the engine's raw year input —
+           keep it out of the layout so only the themed <select> shows. */
+        & .numInputWrapper.flatpickr-disabled {
+            display: none;
+        }
+
+        /*
+         * Customizable selects — progressive enhancement (Chromium/Safari).
+         * `appearance: base-select` turns the month/year popup into an
+         * author-stylable ::picker(select), the only CSS route to its
+         * scrollbar. Browsers without support drop every declaration below
+         * and keep the fully native popup.
+         */
+        & .flatpickr-monthDropdown-months {
+            &:hover {
+                background: var(--muted);
+            }
+
+            &,
+            &::picker(select) {
+                appearance: base-select;
+            }
+
+            /* Closed control — base-select drops the OS arrow, and its UA padding
+               breaks flatpickr's 34px header row (height: 100% + content-box =
+               oversized box). Re-pin the box; inline-flex centers text (and
+               picker icon) vertically. */
+            align-items: center;
+            box-sizing: border-box;
+            display: inline-flex;
+            font-variant-numeric: tabular-nums;
+            padding-inline: var(--fp-day-gap);
+
+            /* Chevron — lucide chevron-down as a mask over a token-colored box,
+               so it follows the theme (a plain url() image cannot inherit color). */
+            &::picker-icon {
+                background-color: var(--muted-foreground);
+                content: '';
+                height: var(--fp-select-icon-size);
+                mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+                mask-position: center;
+                mask-repeat: no-repeat;
+                mask-size: contain;
+                width: var(--fp-select-icon-size);
+            }
+
+            /* Popup */
+            &::picker(select) {
+                background: var(--popover);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                box-shadow: var(--shadow-md);
+                padding: var(--fp-day-gap);
+                scrollbar-color: var(--fp-scrollbar-thumb) transparent;
+                scrollbar-width: thin;
+            }
+        }
+
+        /* Static select minimums — the month select is a direct child of the
+           header; the year select is the one wrapped in the plugin's
+           numInputWrapper. */
+        & > .flatpickr-monthDropdown-months {
+            min-width: var(--fp-month-select-min);
+        }
+        & .numInputWrapper .flatpickr-monthDropdown-months {
+            min-width: var(--fp-year-select-min);
+            text-align: center;
+            padding-inline: calc(var(--spacing) * 2);
+        }
+
+        /* Options — the longer selector must beat flatpickr's base
+           `.flatpickr-current-month .flatpickr-monthDropdown-months
+           .flatpickr-monthDropdown-month { padding: 0 }` ((0,3,0)), which
+           otherwise kills the padding. */
+        & .flatpickr-monthDropdown-month {
+            background-color: var(--popover);
+            color: var(--popover-foreground);
+            font-size: var(--text-sm);
+            font-variant-numeric: tabular-nums;
+            font-weight: var(--font-weight-normal); /* regular, unlike the 500 header */
+            padding-block: var(--fp-day-gap);
+            padding-inline: var(--fp-option-padding-inline);
+        }
+    }
+
+    /* Option states — deliberately NOT nested under .flatpickr-current-month:
+       these target every monthDropdown option at the calendar level, matching
+       the original short selectors. */
+    & .flatpickr-monthDropdown-month {
+        &::checkmark {
+            display: none; /* the accent highlight is the only selected-state cue */
+        }
+        &:hover,
+        &:focus {
+            background: var(--muted);
+            color: var(--foreground);
+        }
+        &:checked {
+            background: var(--accent);
+            color: var(--accent-foreground);
+        }
+    }
+
+    /* Weekday header row */
+    & span.flatpickr-weekday {
+        color: var(--muted-foreground);
+        font-size: var(--text-sm); /* base shrinks to 90% — keep it text-sm */
+        font-weight: 500;
+    }
+
+    /* Days — the strip and each month container must match the derived grid;
+       flatpickr hardcodes all three at 307.875px. */
+    & .flatpickr-days,
+    & .dayContainer {
+        max-width: var(--fp-grid-width);
+        min-width: var(--fp-grid-width);
+        width: var(--fp-grid-width);
+    }
+
+    & .flatpickr-day {
+        border-radius: var(--fp-radius-day);
+        color: var(--popover-foreground);
+        /* Explicit pitch instead of the base 14.2857% basis: flexbox wrapping
+           uses the hypothetical size (basis clamped by max-width) + margins,
+           so with the base percentages the cells would fit 8-per-row at this
+           grid width. --fp-day-size + 2 × --fp-day-gap = one column slot:
+           exactly 7 columns, each cell centered under its weekday. The gap
+           applies on both axes — block margins separate the rows without
+           affecting the wrap math. */
+        flex-basis: auto;
+        height: var(--fp-day-size);
+        line-height: var(--fp-day-size);
+        margin: var(--fp-day-gap);
+        max-width: none;
+        width: var(--fp-day-size);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Two-month layout — showMonths: 2 (engine class "multiMonth").       */
+    /* The engine measures the days strip in a rAF (setCalendarWidth) and  */
+    /* writes INLINE widths on the calendar and the strip that ignore our  */
+    /* padding/border math, and the single-month max-width above would     */
+    /* clamp even an inline width — !important is the only thing that      */
+    /* beats an inline style.                                              */
+    /* ------------------------------------------------------------------ */
+    &.multiMonth {
+        /* Divider spacing matches the calendar padding, so the center gutter
+           reads as part of the frame rather than a seam. */
+        --fp-months-gap: var(--fp-calendar-padding);
+
+        width: calc(
+            (var(--fp-grid-width) * 2) + var(--fp-months-gap) + (var(--fp-calendar-padding) * 2) +
+                2px
+        ) !important;
+
+        /* Days strip — two grids side by side. */
+        & .flatpickr-days {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: var(--fp-months-gap);
+            max-width: none;
+            width: calc((var(--fp-grid-width) * 2) + var(--fp-months-gap)) !important;
+        }
+
+        /* Center divider — an element between the grids, not a border on the
+           second dayContainer. Absolutely positioned over the gutter from
+           rContainer (see twoMonthHeaderPlugin's ensureDivider for why it
+           cannot live in the strip), spanning the weekday rows and the days. */
+        & .flatpickr-rContainer {
+            position: relative;
+        }
+        & .fp-months-divider {
+            background: var(--border);
+            bottom: 0;
+            left: calc(50% - 0.5px);
+            position: absolute;
+            top: 0;
+            width: 1px;
+        }
+        /* Kill the base stylesheet's own divider — box-shadow bars (#e6e6e6,
+           off-token) hugging the second grid's first in-range column whenever
+           a range crosses the boundary. Its 6-class selector outranks the day
+           rules' box-shadow: none, so it must be matched head-on; the
+           fp-months-divider above is the only separator. */
+        & .flatpickr-days .dayContainer:nth-child(n + 1) .flatpickr-day.inRange:nth-child(7n + 7),
+        & .flatpickr-days .dayContainer:nth-child(n + 2) .flatpickr-day.inRange:nth-child(7n + 1) {
+            box-shadow: none;
+        }
+        /* …and the base's primary multi-month divider: a 1px #e6e6e6 shadow on
+           the left edge of every adjacent dayContainer (flatpickr.css
+           `.dayContainer + .dayContainer`), always on in two-month mode and
+           off-token in dark. */
+        & .flatpickr-days .dayContainer + .dayContainer {
+            box-shadow: none;
+        }
+
+        /* Weekday rows mirror the days strip; one container, one row per month. */
+        & .flatpickr-weekdays {
+            display: flex;
+            gap: var(--fp-months-gap);
+        }
+
+        /* Header months and weekday rows split the width evenly (off by half
+           the gap from true column alignment — imperceptible for centered
+           text). */
+        & .flatpickr-months .flatpickr-month,
+        & .flatpickr-weekdaycontainer {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        /* Composite header — twoMonthHeaderPlugin rewrites the first month
+           block to `Month 1 - Month 2`; the engine-rendered second block is
+           hidden (the engine keeps updating it — display concern only). With
+           one visible block, flex:1 centers the composite label across the
+           full calendar width. The yearDropdownPlugin's themed <select>
+           follows the span. */
+        & .flatpickr-months .flatpickr-month + .flatpickr-month {
+            display: none;
+        }
+        /* The base stylesheet gaps the flex row for two per-panel controls;
+           the composite span plus the year select need only a breath. Center
+           the pair. */
+        & .flatpickr-current-month {
+            align-items: center;
+            gap: 0.5ch;
+        }
+        & .flatpickr-current-month span.cur-month {
+            line-height: var(--text-sm--line-height);
+            margin: 0;
+        }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Day states — kept as a second .flatpickr-day block AFTER the         */
+    /* multiMonth section, mirroring the original file order (the cascade   */
+    /* between day states and the multiMonth overrides was tuned this way). */
+    /* ------------------------------------------------------------------ */
+    & .flatpickr-day {
+        /* Programmatic focus must not fill a cell — the fork auto-focuses
+           today on open, which would otherwise paint it as a filled block.
+           Keyboard focus (:focus-visible) still gets the accent treatment. */
+        &:focus {
+            background: transparent;
+            border-color: transparent;
+            color: var(--popover-foreground);
+        }
+        &:hover,
+        &:focus-visible,
+        &.prevMonthDay:hover,
+        &.nextMonthDay:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--accent-foreground);
+        }
+        /* Today stays outlined at all times — on hover the generic accent fill
+           applies, but the .today rule (later in the cascade) keeps its
+           primary border. */
+        &.today {
+            border-color: var(--primary);
+        }
+        /* Range mode — base hardcodes #e6e6e6 and !important pill radii tuned
+           for its 39px/2px pitch; retune to tokens and square ends (cells are
+           gap-separated). */
+        &.inRange {
+            background: var(--fp-range-bg);
+            border-color: var(--fp-range-bg);
+            box-shadow: none;
+            color: var(--popover-foreground);
+        }
+        &.selected.startRange,
+        &.selected.endRange,
+        &.startRange.startRange,
+        &.endRange.endRange {
+            border-radius: var(--fp-radius-day) !important;
+        }
+        /* Filled selection state — scoped to .selected: the engine's
+           range-hover preview adds bare startRange/endRange to the cell under
+           the cursor (onMouseOver), which must read as hover (accent), not as
+           a committed endpoint. Committed endpoints always carry .selected as
+           well (createDay), so they keep the primary fill. */
+        &.selected,
+        &.selected:hover,
+        &.selected:focus,
+        &.selected.prevMonthDay,
+        &.selected.nextMonthDay {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: none;
+            color: var(--primary-foreground);
+        }
+        &.flatpickr-disabled,
+        &.prevMonthDay,
+        &.nextMonthDay,
+        &.notAllowed {
+            color: var(--muted-foreground);
+        }
+        &.flatpickr-disabled:before {
+            border-top-color: var(--muted-foreground);
+        }
+    }
+
+    /* Month / year picker grid — the fork's monthSelect plugin builds its
+       cells via fp.createDay(), so they carry .flatpickr-day and inherit the
+       fixed 32px day-box sizing above. Loosen them back into the fluid
+       3-column × 4-row grid; colors (hover/selected/today/disabled) already
+       come from the day rules. */
+    & .flatpickr-monthSelect-months .flatpickr-day {
+        /* the plugin's :hover pill rule (3 classes) outranks the day rule —
+           set the radius here, where the selector carries enough weight to
+           hold it. Row separation comes from the day rule's block margins
+           now. */
+        border-radius: var(--fp-radius-day);
+        height: auto;
+        line-height: var(--fp-month-cell-height);
+        width: var(--fp-month-cell-width);
+    }
+
+    /* Year grid — 5×5 paged years built by the year-select plugin. The popup
+       is nothing but the grid: the whole header row is hidden (the native
+       arrows step ±1 month, and the year dropdown is redundant — the action
+       wrapper skips the year-dropdown plugin in this mode) and the grid
+       carries its own pager. */
+    &:has(.fp-year-grid) .flatpickr-months {
+        display: none;
+    }
+    & .fp-year-grid .flatpickr-day {
+        /* placed after the month-grid rule — same specificity, later wins */
+        height: auto;
+        line-height: var(--fp-month-cell-height);
+        width: var(--fp-year-cell-width);
+    }
+    & .fp-year-grid-pager {
+        align-items: center;
+        color: var(--popover-foreground);
+        display: flex;
+        font-size: var(--text-sm);
+        font-weight: var(--font-weight-medium);
+        justify-content: space-between;
+        margin-block: var(--fp-day-gap);
+
+        & button {
+            background: transparent;
+            border: none;
+            border-radius: var(--fp-radius-nav);
+            color: var(--muted-foreground);
+            cursor: pointer;
+            display: flex;
+            padding: var(--fp-day-gap);
+
+            &:hover {
+                background: var(--muted);
+                color: var(--foreground);
+            }
+            &:disabled {
+                cursor: default;
+                opacity: 0.5;
+                pointer-events: none;
+            }
+        }
+        & svg {
+            height: var(--fp-select-icon-size);
+            width: var(--fp-select-icon-size);
+        }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Time picker                                                          */
+    /* ------------------------------------------------------------------ */
+
+    &.hasTime .flatpickr-time {
+        border-top-color: var(--border);
+    }
+    & .flatpickr-time {
+        & input,
+        & .flatpickr-time-separator,
+        & .flatpickr-am-pm {
+            color: var(--popover-foreground);
+            font-size: var(--text-sm); /* keep it text-sm */
+        }
+        & input:hover,
+        & input:focus,
+        & .flatpickr-am-pm:hover,
+        & .flatpickr-am-pm:focus {
+            background: var(--muted);
+        }
+        & .numInputWrapper span.arrowUp:after {
+            border-bottom-color: var(--popover-foreground);
+        }
+        & .numInputWrapper span.arrowDown:after {
+            border-top-color: var(--popover-foreground);
+        }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Split time range (date-time-range) — timeRangePlugin                */
+    /* ------------------------------------------------------------------ */
+
+    /* Hide the engine's single shared panel when the split controls are on. */
+    &.fp-time-range-active .flatpickr-time {
+        display: none;
+    }
+
+    & .fp-time-range {
+        border-top: 1px solid var(--border);
+        display: flex;
+        flex-wrap: wrap; /* narrow (single-month) popups wrap instead of overflow */
+        gap: calc(var(--spacing) * 4);
+        justify-content: space-around;
+        margin-top: calc(var(--spacing) * 2);
+        padding-top: calc(var(--spacing) * 2);
+    }
+
+    /* One-liner: `Start - [ 09:30 🕐 ]` — label inline-left of the input box. */
+    & .fp-time-range-field {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        gap: calc(var(--spacing) * 2);
+
+        /* Clock icon dims with its disabled input */
+        &:has(input:disabled) .fp-time-range-icon {
+            opacity: 0.5;
+        }
+        & input:hover:not(:disabled) {
+            border-color: var(--muted-foreground);
+        }
+        & input:focus-visible {
+            border-color: var(--ring);
+            box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+            outline: none;
+        }
+        & input:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+    }
+    & .fp-time-range-label {
+        color: var(--muted-foreground);
+        font-size: var(--text-xs);
+        line-height: var(--text-xs--line-height);
+        white-space: nowrap;
+    }
+    & .fp-time-range-box {
+        display: inline-flex;
+        position: relative;
+
+        & input {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--fp-radius-nav);
+            color: var(--popover-foreground);
+            font-size: var(--text-sm);
+            height: calc(var(--spacing) * 8);
+            /* symmetric padding keeps the centered text optically centered
+               while the clock icon overlays the end side */
+            padding-inline: calc(var(--spacing) * 2);
+            text-align: center;
+            width: calc(var(--spacing) * 25);
+        }
+    }
+    /* Clock icon — lucide clock, themed via currentColor. */
+    & .fp-time-range-icon {
+        align-items: center;
+        color: var(--muted-foreground);
+        display: inline-flex;
+        pointer-events: none;
+        position: absolute;
+        right: calc(var(--spacing) * 2);
+        top: 50%;
+        transform: translateY(-50%);
+
+        & svg {
+            height: var(--fp-select-icon-size);
+            width: var(--fp-select-icon-size);
+        }
+    }
+}
