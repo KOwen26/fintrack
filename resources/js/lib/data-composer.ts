@@ -1,9 +1,9 @@
-import type { AppTableFeatures } from './datatable.svelte';
 import type { FormGeneratorProps } from './form-helper.svelte';
+import type { AppTableFeatures } from '@lib/table/datatable.svelte';
 import type { ColumnDef } from '@tanstack/svelte-table';
 import type { AnyRecord, DotNotationKey, ValueOrFunction } from '@type/index';
 
-import { DataTable } from './datatable.svelte';
+import { DataTable } from '@lib/table/datatable.svelte';
 
 type TableProps<T extends AnyRecord> = {
     headerSortable?: boolean;

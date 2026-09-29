@@ -2,7 +2,7 @@
     import type { Snippet } from 'svelte';
     import type { HTMLAttributes } from 'svelte/elements';
 
-    import { useFlashToast } from '@hooks/flash-handler.svelte';
+    import { useFlashToast } from '@lib/toast-handler.svelte';
 
     import Toaster from '@components/ui/toaster.svelte';
 

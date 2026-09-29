@@ -3,12 +3,12 @@
 
     import ErrorWrapper from './error-wrapper.svelte';
 
-    import { IsMobile } from '@/svelte/is-mobile.svelte.js';
     import { flatMenu, transformMenuToBreadcrumbs } from '@data/menu';
-    import { useFlashToast } from '@hooks/flash-handler.svelte';
     import { page } from '@inertiajs/svelte';
+    import { getBreadcrumbItems } from '@lib/global-states.svelte';
+    import { IsMobile } from '@lib/is-mobile.svelte';
+    import { useFlashToast } from '@lib/toast-handler.svelte';
 
-    import { getBreadcrumbItems } from '@utilities/global-states.svelte';
     import { getTitleFromMenu } from '@utilities/helper.svelte';
 
     import BottomNav from '@components/navigation/bottom-nav.svelte';

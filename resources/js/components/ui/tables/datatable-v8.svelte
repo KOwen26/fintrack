@@ -1,9 +1,8 @@
 <script generics="TData, TValue" lang="ts">
     import type { Snippet } from 'svelte';
 
+    import { DataTable } from '@lib/table/datatable-v8.svelte';
     import { twMerge } from 'tailwind-merge';
-
-    import { DataTable } from '@utilities/datatable-v8.svelte';
 
     import TableBody from '@components/ui/atoms/table/table-body.svelte';
     import TableCell from '@components/ui/atoms/table/table-cell.svelte';

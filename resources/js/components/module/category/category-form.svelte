@@ -2,11 +2,10 @@
     import type { InertiaForm } from '@inertiajs/svelte';
     import type { App } from '@wayfinder/types';
 
+    import { DataComposer } from '@lib/data-composer';
     import CategoryController from '@wayfinder/App/Http/Controllers/CategoryController';
 
     import { categorySchema } from '@schema/category.schema';
-
-    import { DataComposer } from '@utilities/data-composer';
 
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';

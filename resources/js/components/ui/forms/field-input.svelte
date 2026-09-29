@@ -1,6 +1,6 @@
 <script lang="ts" module>
     import type { FieldProps as BaseFieldProps } from './field.svelte';
-    import type { FormGeneratorProps } from '@utilities/form-helper.svelte';
+    import type { FormGeneratorProps } from '@lib/form-helper.svelte';
     import type { Snippet } from 'svelte';
 
     export type FieldInputProps = FormGeneratorProps &

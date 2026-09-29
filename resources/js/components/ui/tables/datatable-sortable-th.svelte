@@ -1,6 +1,6 @@
 <script generics="TData extends RowData" lang="ts">
+    import type { AppTableFeatures } from '@lib/table/datatable.svelte';
     import type { Column, RowData } from '@tanstack/svelte-table';
-    import type { AppTableFeatures } from '@utilities/datatable.svelte';
     import type { HTMLAttributes } from 'svelte/elements';
 
     import { cn } from '@utilities/shadcn';

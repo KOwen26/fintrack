@@ -1,15 +1,15 @@
 <script lang="ts">
+    import type { AppTableFeatures } from '@lib/table/datatable.svelte';
     import type { ColumnDef } from '@tanstack/svelte-table';
-    import type { AppTableFeatures } from '@utilities/datatable.svelte';
-
-    import { createTable } from '@tanstack/svelte-table';
-    import DevController from '@wayfinder/App/Http/Controllers/DevController';
 
     import {
         DataTable,
         dataTableFeatures,
         defaultDatatableOptions,
-    } from '@utilities/datatable.svelte';
+    } from '@lib/table/datatable.svelte';
+    import { createTable } from '@tanstack/svelte-table';
+    import DevController from '@wayfinder/App/Http/Controllers/DevController';
+
     import DateTimeHelper from '@utilities/date-time-helper';
     import { debounce } from '@utilities/helper.svelte';
 

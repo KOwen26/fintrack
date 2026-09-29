@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { useFlashToast } from '@hooks/flash-handler.svelte';
-    import { useTheme } from '@hooks/use-theme.svelte';
+    import { useTheme } from '@lib/theme-handler.svelte';
+    import { useFlashToast } from '@lib/toast-handler.svelte';
 
     import BottomNav from '@components/navigation/bottom-nav.svelte';
     import Toaster from '@components/ui/toaster.svelte';

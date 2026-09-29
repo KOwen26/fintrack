@@ -1,6 +1,6 @@
 <script lang="ts" module>
+    import type { InputMaskPresetKey } from '@lib/masking-handler';
     import type { RestProps } from '@type/index';
-    import type { InputMaskPresetKey } from '@utilities/masking-helper';
 
     export interface MaskedInputProps {
         value: string | number;
@@ -12,10 +12,9 @@
 </script>
 
 <script lang="ts">
+    import MaskingHelper from '@lib/masking-handler';
     import IMask, { InputMask } from 'imask';
     import { onDestroy, onMount } from 'svelte';
-
-    import MaskingHelper from '@utilities/masking-helper';
 
     let {
         value = $bindable(),

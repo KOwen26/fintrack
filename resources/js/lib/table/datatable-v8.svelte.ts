@@ -13,8 +13,6 @@ import type {
 } from '@tanstack/table-core';
 import type { ComponentProps } from 'svelte';
 
-import { renderComponent } from './render-helper';
-
 import { useHttp } from '@inertiajs/svelte';
 import {
     createTable,
@@ -24,6 +22,8 @@ import {
     getSortedRowModel,
 } from '@tanstack/table-core';
 import { SvelteSet, SvelteURLSearchParams } from 'svelte/reactivity';
+
+import { renderComponent } from '@utilities/render-helper';
 
 import DatatableRowAction from '@components/ui/tables/datatable-v8-row-action.svelte';
 import DatatableSortableTh from '@components/ui/tables/datatable-v8-sortable-th.svelte';

@@ -1,6 +1,6 @@
 <script lang="ts" module>
+    import type { HTMLInputValidationOptions } from '@lib/form-helper.svelte';
     import type { RestProps } from '@type/index';
-    import type { HTMLInputValidationOptions } from '@utilities/form-helper.svelte';
 
     export type FileInputProps = Pick<HTMLInputValidationOptions, 'accept' | 'multiple'> & {
         files?: FileList;

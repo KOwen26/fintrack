@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { THEMES, themeState, updateTheme } from '@hooks/use-theme.svelte';
+    import { THEMES, themeState, updateTheme } from '@lib/theme-handler.svelte';
 
     import Badge from '@components/ui/badge.svelte';
     import Card from '@components/ui/card.svelte';

@@ -1,7 +1,8 @@
 <script lang="ts">
     import type { ColumnDef } from '@tanstack/table-core';
 
-    import { DataTable } from '@utilities/datatable-v8.svelte';
+    import { DataTable } from '@lib/table/datatable-v8.svelte';
+
     import { debounce } from '@utilities/helper.svelte';
 
     import Field from '@components/ui/forms/field.svelte';

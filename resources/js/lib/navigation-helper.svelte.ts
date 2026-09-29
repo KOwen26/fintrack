@@ -1,7 +1,7 @@
 import type { BreadcrumbItem } from '@components/ui/breadcrumbs.svelte';
 import type { Menu, MenuGroup, Submenu } from '@data/menu';
 
-import { useUrlHandler } from '@/hooks/url-handler.svelte';
+import { useUrlHandler } from '@lib/url-handler.svelte';
 
 /**
  * @deprecated

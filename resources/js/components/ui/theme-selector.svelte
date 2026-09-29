@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { THEME_OPTIONS, themeState } from '@hooks/use-theme.svelte';
+    import { THEME_OPTIONS, themeState } from '@lib/theme-handler.svelte';
 
     import Select from '@components/ui/forms/select.svelte';
 

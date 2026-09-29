@@ -2,7 +2,7 @@ import type { Permissions } from '@type/permission';
 
 import '@inertiajs/core';
 
-import type { ToastProps } from '@utilities/helper.svelte';
+import type { ToastProps } from '@lib/toast-handler.svelte';
 
 type Page = {
     csrf_token?: string;

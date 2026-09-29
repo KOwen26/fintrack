@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { themeState } from '@hooks/use-theme.svelte';
+    import { setBreadcrumbItems } from '@lib/global-states.svelte';
+    import { themeState } from '@lib/theme-handler.svelte';
     import { tick } from 'svelte';
-
-    import { setBreadcrumbItems } from '@utilities/global-states.svelte';
 
     import ThemeSelector from '@components/ui/theme-selector.svelte';
 

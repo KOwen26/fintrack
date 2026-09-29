@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { setBreadcrumbItems } from '@utilities/global-states.svelte';
+    import { setBreadcrumbItems } from '@lib/global-states.svelte';
 
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
 

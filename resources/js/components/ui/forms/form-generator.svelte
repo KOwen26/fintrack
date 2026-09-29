@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { FormGeneratorProps } from '@utilities/form-helper.svelte';
+    import type { FormGeneratorProps } from '@lib/form-helper.svelte';
     import type { ComponentProps } from 'svelte';
 
     import FieldInput from './field-input.svelte';

@@ -15,7 +15,7 @@ import type { TextareaProps } from '@components/ui/forms/textarea.svelte';
 import type { AnyRecord, PickAndWrapOthers, WithoutValue } from '@type/index';
 import type { Attachment } from 'svelte/attachments';
 
-import { renderComponent, renderSnippet } from './render-helper';
+import { renderComponent, renderSnippet } from '@utilities/render-helper';
 
 /**
  * Generic HTML input validation attributes

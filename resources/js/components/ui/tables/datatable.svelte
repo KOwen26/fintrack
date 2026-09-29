@@ -2,10 +2,9 @@
     import type { RowData } from '@tanstack/svelte-table';
     import type { Snippet } from 'svelte';
 
+    import { DataTable } from '@lib/table/datatable.svelte';
     import { FlexRender } from '@tanstack/svelte-table';
     import { twMerge } from 'tailwind-merge';
-
-    import { DataTable } from '@utilities/datatable.svelte';
 
     import TableBody from '@components/ui/atoms/table/table-body.svelte';
     import TableCell from '@components/ui/atoms/table/table-cell.svelte';

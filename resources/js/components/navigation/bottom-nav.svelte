@@ -2,8 +2,8 @@
     import type { Menu } from '@data/menu';
 
     import { dashboardMenu } from '@data/menu';
-    import { useUrlHandler } from '@hooks/url-handler.svelte';
     import { Link } from '@inertiajs/svelte';
+    import { useUrlHandler } from '@lib/url-handler.svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
     import { cn } from '@utilities/shadcn';

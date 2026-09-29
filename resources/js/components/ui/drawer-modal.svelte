@@ -16,7 +16,7 @@
 </script>
 
 <script lang="ts">
-    import { IsMobile } from '@/svelte/is-mobile.svelte.js';
+    import { IsMobile } from '@lib/is-mobile.svelte';
 
     import { cn } from '@utilities/shadcn';
 
