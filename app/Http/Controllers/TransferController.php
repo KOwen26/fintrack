@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\Transaction\TransactionFormData;
 use App\Data\Transaction\TransferData;
 use App\Http\Requests\SaveTransferRequest;
 use App\Models\Transaction;
@@ -28,8 +29,8 @@ class TransferController extends Controller
         $this->authorize('update', $transfer);
 
         return Inertia::render('transactions/edit', [
-            'transfer' => $transfer->load('transactions.account'),
             'accounts' => $this->accountService->getAccountsByUser($this->user),
+            'transaction' => TransactionFormData::fromTransfer($transfer),
         ]);
     }
 

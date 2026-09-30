@@ -42,11 +42,10 @@ class TransactionObserver
 
         if ($originalAccountId !== null) {
             $originalAmount = (float) $transaction->getOriginal('amount');
-            $originalFlow = TransactionFlow::from($transaction->getOriginal('flow'));
-            $originalMultiplier = $originalFlow === TransactionFlow::Inflow ? 1 : -1;
+            $originalFlow = $transaction->getOriginal('flow');
+            $originalMultiplier = $originalFlow->isInflow() ? 1 : -1;
 
-            Account::whereKey($originalAccountId)
-                ->decrement('current_balance', $originalMultiplier * $originalAmount);
+            Account::whereKey($originalAccountId)->decrement('current_balance', $originalMultiplier * $originalAmount);
         }
 
         if ($transaction->account_id !== null) {

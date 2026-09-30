@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Models } from '@type/type';
+    import type { Data, Models } from '@type/type';
 
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
@@ -8,9 +8,11 @@
     import Button from '@components/ui/button.svelte';
 
     let {
+        transaction,
         categories,
         accounts,
     }: {
+        transaction: Data.TransactionFormData;
         categories: Models.Category[];
         accounts: Models.Account[];
     } = $props();
@@ -34,4 +36,4 @@
     </div>
 </HeaderContext>
 
-<MobileTransactionForm {accounts} {categories} />
+<MobileTransactionForm {transaction} {accounts} {categories} />

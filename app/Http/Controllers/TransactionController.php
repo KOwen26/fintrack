@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransactionDetailData;
+use App\Data\Transaction\TransactionFormData;
 use App\Data\Transaction\TransactionListData;
 use App\Http\Requests\SaveTransactionRequest;
 use App\Models\Transaction;
@@ -57,6 +58,7 @@ class TransactionController extends Controller
         $accounts = $this->accountService->getAccountsByUser($this->user);
 
         return Inertia::render('transactions/create', [
+            'transaction' => TransactionFormData::defaultExpense(),
             'categories' => CategoryService::getCategories(),
             'accounts' => $accounts,
         ]);
@@ -74,8 +76,8 @@ class TransactionController extends Controller
 
         return Inertia::render('transactions/edit', [
             'accounts' => $accounts,
-            'transaction' => $transaction->load('category'),
             'categories' => CategoryService::getCategories(),
+            'transaction' => TransactionFormData::fromTransaction($transaction),
         ]);
     }
 

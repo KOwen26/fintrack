@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Data } from '@type/type';
     import type { App } from '@wayfinder/types';
 
     import { useForm } from '@inertiajs/svelte';
@@ -30,15 +31,29 @@
     const DEFAULT_AMOUNT_PRESETS: number[] = [10_000, 25_000, 50_000, 100_000];
 
     interface Props {
+        /** Server-folded form payload — covers seeded creates and both edit shapes. */
+        transaction: Data.TransactionFormData;
         accounts: App.Models.Account[];
         categories: App.Models.Category[];
         /** Quick amounts rendered as chips under the hero input. */
         amountPresets?: number[];
     }
 
-    let { accounts, categories, amountPresets = DEFAULT_AMOUNT_PRESETS }: Props = $props();
+    let {
+        transaction,
+        accounts,
+        categories,
+        amountPresets = DEFAULT_AMOUNT_PRESETS,
+    }: Props = $props();
 
-    let activeType = $state<App.Enums.TransactionType>(TransactionType.Expense);
+    const isEdit = $derived(transaction.id !== null);
+
+    /* Seeded once from the DTO — after mount, the tabs own the type. */
+    function buildInitialType(): App.Enums.TransactionType {
+        return transaction.type;
+    }
+
+    let activeType = $state<App.Enums.TransactionType>(buildInitialType());
     let calculatorOpen = $state(false);
     let calculatorValue = $state(0);
 
@@ -67,6 +82,12 @@
     const isTransfer = $derived(activeType === TransactionType.Transfer);
 
     const typeConfig = $derived.by(() => {
+        if (isEdit) {
+            return {
+                submitLabel: 'Save Changes',
+            };
+        }
+
         switch (activeType) {
             case TransactionType.Income:
                 return {
@@ -83,16 +104,20 @@
         }
     });
 
-    const form = useForm({
-        type: TransactionType.Expense,
-        amount: '',
-        description: '',
-        account_id: '',
-        destination_account_id: '',
-        fee_amount: '',
-        category_id: '',
-        transaction_date: new Date(),
-    });
+    function buildInitialData() {
+        return {
+            type: transaction.type,
+            amount: transaction.amount !== null ? String(transaction.amount) : '',
+            description: transaction.description ?? '',
+            account_id: transaction.account_id ?? '',
+            destination_account_id: transaction.destination_account_id ?? '',
+            fee_amount: transaction.fee_amount !== null ? String(transaction.fee_amount) : '',
+            category_id: transaction.category_id ?? '',
+            transaction_date: transaction.transaction_date,
+        };
+    }
+
+    const form = useForm(buildInitialData());
 
     /* The destination depends on a valid source: clearing the source, or moving it onto the current destination, resets the destination before a stale value can silently trip the backend's `different:account_id` rule. */
     $effect(() => {
@@ -107,10 +132,10 @@
     function swapTransferAccounts(): void {
         if (!form.account_id || !form.destination_account_id) return;
 
-        const source = form.account_id;
+        const previousSource = form.account_id;
 
         form.account_id = form.destination_account_id;
-        form.destination_account_id = source;
+        form.destination_account_id = previousSource;
     }
 
     /* A transfer's destination never offers the source account. */
@@ -139,9 +164,27 @@
         return payload;
     });
 
-    const formAction = $derived(
-        isTransfer ? TransferController.store : TransactionController.store
-    );
+    const formAction = $derived.by(() => {
+        if (isTransfer) {
+            return transaction.transfer_id !== null
+                ? TransferController.update.form({ transfer: transaction.transfer_id })
+                : TransferController.store.form();
+        }
+
+        return transaction.id !== null
+            ? TransactionController.update.form({ transaction: transaction.id })
+            : TransactionController.store.form();
+    });
+
+    /* A type switch keeps the shared values (amount, date, notes, account) and
+       drops the type-specific ones, so nothing stale leaks into the other
+       payload shape. */
+    function handleTypeChange(): void {
+        form.category_id = '';
+        form.destination_account_id = '';
+        form.fee_amount = '';
+        form.clearErrors();
+    }
 </script>
 
 <MobilePageLayout heroClass="flex flex-col justify-center" variant="4/5">
@@ -189,20 +232,26 @@
         </div>
     {/snippet}
 
-    <Form id="transaction-form" {...formAction.form()} {form}>
-        <Tabs onchange={() => form.resetAndClearErrors()} bind:value={activeType}>
-            <TabsList class="w-full bg-secondary">
-                <TabsTrigger
-                    class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-content"
-                    value={TransactionType.Income}>Income</TabsTrigger>
-                <TabsTrigger
-                    class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-content"
-                    value={TransactionType.Expense}>Expense</TabsTrigger>
-                <TabsTrigger
-                    class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-content"
-                    value={TransactionType.Transfer}>Transfer</TabsTrigger>
-            </TabsList>
-        </Tabs>
+    <Form id="transaction-form" {...formAction} {form}>
+        <!-- Create is fully open; a plain-row edit may flip income/expense;
+             transfer units are fixed. Cross-type morphing is a planned
+             follow-up: docs/plans/2026-09-30-transaction-type-morph.md -->
+        {#if !(isEdit && isTransfer)}
+            <Tabs onchange={handleTypeChange} bind:value={activeType}>
+                <TabsList class="w-full bg-secondary">
+                    <TabsTrigger
+                        class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-content"
+                        value={TransactionType.Income}>Income</TabsTrigger>
+                    <TabsTrigger
+                        class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-content"
+                        value={TransactionType.Expense}>Expense</TabsTrigger>
+                    <TabsTrigger
+                        class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-content"
+                        disabled={isEdit}
+                        value={TransactionType.Transfer}>Transfer</TabsTrigger>
+                </TabsList>
+            </Tabs>
+        {/if}
 
         <div class="mt-5 space-y-4">
             <Field
