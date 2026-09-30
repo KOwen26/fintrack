@@ -105,13 +105,14 @@ export type TransactionDetailData = {
     flow: App.Enums.TransactionFlow;
     transfer_id: number | null;
     amount: number;
-    description: string;
     transaction_date: string;
-    created_at: string;
-    updated_at: string;
+    description: string | null;
+    account_id: number | null;
+    destination_account_id: number | null;
+    category_id: number | null;
     account: App.Models.Account;
+    destination_account: App.Models.Account;
     category: App.Models.Category;
-    creator: App.Models.User;
 };
 export type TransactionFormData = {
     id: number | null;

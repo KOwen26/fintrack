@@ -24,11 +24,9 @@ export default class DateTimeHelper {
             | 'day-date'
             | 'day-date-long' = 'datetime'
     ): string {
-        const date = new Date(
-            typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
-                ? `${value}T00:00:00`
-                : value
-        );
+        if (!value) return '';
+
+        const date = new Date(value);
 
         if (preset === 'datetime') {
             const parts = new Intl.DateTimeFormat('id-ID', {

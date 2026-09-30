@@ -4,164 +4,116 @@
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
 
+    import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountInfo from '@components/module/account/account-info.svelte';
     import CategoryInfo from '@components/module/category/category-info.svelte';
-    import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
-    import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
+    import Field from '@components/ui/forms/field.svelte';
 
     interface Props {
-        transaction: Data.Transaction.TransactionDetailData;
+        transaction: Data.TransactionDetailData;
     }
 
     let { transaction }: Props = $props();
 
     const isInflow = $derived(transaction.flow === 'inflow');
-
     const isTransfer = $derived(transaction.type === 'transfer');
 
-    const accentClass = $derived(isInflow ? 'bg-success' : isTransfer ? 'bg-warning' : 'bg-error');
-
-    const amountColor = $derived(
-        isInflow ? 'text-success' : isTransfer ? 'text-info' : 'text-error'
+    /* The DTO already folds the counterpart account — which side this row
+       sits on decides which of the two is source and which is destination. */
+    const sourceAccount = $derived(
+        isTransfer && isInflow ? transaction.destination_account : transaction.account
+    );
+    const destinationAccount = $derived(
+        isTransfer && !isInflow ? transaction.destination_account : transaction.account
     );
 
-    const createdAt = $derived(DateTimeHelper.format(transaction.created_at, 'datetime'));
-    const updatedAt = $derived(DateTimeHelper.format(transaction.updated_at, 'datetime'));
+    /* Contextual page title — it replaces the type badge and carries the type
+       color, since the hero amount stays neutral. */
+    const titleConfig = $derived.by(() => {
+        switch (transaction.type) {
+            case 'income':
+                return { label: 'Income Detail', color: 'text-success' };
+            case 'transfer':
+                return { label: 'Transfer Detail', color: 'text-info' };
+            default:
+                return { label: 'Expense Detail', color: 'text-error' };
+        }
+    });
+
+    const amountClass = $derived(
+        transaction.amount.toString().length > 10 ? 'text-[--spacing(10)]' : 'text-5xl'
+    );
 </script>
 
-<div class="space-y-5">
-    <ResponsiveCard class="overflow-x-clip">
-        <!-- Colour-coded accent bar — the page's signature element -->
-        <div class="-mx-5 h-1 md:-mx-6 {accentClass}"></div>
-
-        <div class="space-y-5 pt-5 md:p-0">
-            <!-- Type badge row -->
-            <div>
-                <TransactionTypeBadge type={transaction.type} />
-            </div>
-
-            <!-- Amount -->
-            <div class="flex items-start gap-1.5">
-                <span
-                    class="font-mono text-xl leading-none font-semibold tracking-tight text-base-content/50">
-                    Rp
-                </span>
-                <span
-                    class="font-mono text-5xl leading-none font-semibold tracking-tight {amountColor}">
-                    {Formatter.currency(transaction.amount, true)}
-                </span>
-            </div>
-
-            <!-- Description (payee/merchant name) + date -->
-            {#if transaction.description}
-                <p class="text-base font-semibold text-base-content">{transaction.description}</p>
-            {/if}
-
-            <div class="flex items-center gap-2 text-sm text-base-content/70">
-                <span class="flex items-center gap-1">
-                    <i class="iconify size-5 solar--calendar-bold-duotone"></i>
-                    {DateTimeHelper.format(transaction.transaction_date, 'date')}
-                </span>
-                <span class="size-1 rounded-full bg-base-content/30"></span>
-                <span class="flex items-center gap-1">
-                    <i class="iconify size-5 solar--clock-circle-bold-duotone"></i>
-                    {DateTimeHelper.format(transaction.transaction_date, 'time')}
-                </span>
-            </div>
-        </div>
-    </ResponsiveCard>
-
-    <ResponsiveCard>
-        <div class="grid grid-cols-2 gap-5">
-            <div class={['text-left', !isTransfer ? 'col-span-full' : '']}>
-                <h4
-                    class="mb-1.5 text-sm font-semibold tracking-widest text-base-content/50 uppercase">
-                    {isInflow ? 'Destination Account' : 'Source Account'}
-                </h4>
-
-                <AccountInfo account={transaction.account} />
-            </div>
-
-            <div class={['text-right', !isTransfer ? 'hidden' : '']}>
-                <h4
-                    class="mb-1.5 text-sm font-semibold tracking-widest text-base-content/50 uppercase">
-                    {isInflow ? 'Destination Account' : 'Source Account'}
-                </h4>
-
-                <AccountInfo account={transaction.account} reverse />
-            </div>
-        </div>
-    </ResponsiveCard>
-
-    <ResponsiveCard>
-        <h4 class="mb-1.5 text-sm font-semibold tracking-widest text-base-content/50 uppercase">
-            Category
-        </h4>
-
-        <CategoryInfo category={transaction.category} />
-    </ResponsiveCard>
-
-    <ResponsiveCard>
-        <h4 class="mb-1.5 text-sm font-semibold tracking-widest text-base-content/50 uppercase">
-            Details
-        </h4>
-
-        <div class="space-y-3">
-            <!-- Notes -->
-            {#if transaction.description}
-                <div class="flex items-start gap-3">
-                    <i
-                        class="mt-0.5 iconify size-5 shrink text-base-content/50 solar--document-text-bold-duotone"
-                    ></i>
-                    <div>
-                        <p class="mb-0.5 text-sm text-base-content/50">Notes</p>
-                        <p class="text-sm leading-relaxed font-medium text-pretty">
-                            {transaction.description}
-                        </p>
-                    </div>
-                </div>
-
-                <hr class="border-base-content/25" />
-            {/if}
-            <!-- Created / Updated -->
-            <div class="flex items-start justify-between gap-4">
-                <div class="flex items-start gap-3">
-                    <i
-                        class="mt-0.5 iconify size-5 shrink text-base-content/50 solar--clock-circle-bold-duotone"
-                    ></i>
-                    <div>
-                        <p class="mb-0.5 text-sm text-base-content/50">Created</p>
-                        <p class="text-sm font-medium">{createdAt}</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <p class="mb-0.5 text-sm text-base-content/50">Updated</p>
-                    <p class="text-sm font-medium">{updatedAt}</p>
+<MobilePageLayout heroClass="flex flex-col justify-center" variant="4/5">
+    {#snippet hero()}
+        <div class="w-full px-5">
+            <div class="text-center">
+                <div class="mt-1 flex items-center justify-center gap-1.5">
+                    <span class="text-lg font-medium text-secondary-content/50">Rp</span>
+                    <span
+                        class="leading-none font-medium tracking-tight text-secondary-content tabular-nums {amountClass}">
+                        {Formatter.currency(transaction.amount, true)}
+                    </span>
                 </div>
             </div>
         </div>
-    </ResponsiveCard>
+    {/snippet}
 
-    <!-- ════════════════════════════════════════════ -->
-    <!--  CREATOR INFO (if available)                -->
-    <!-- ════════════════════════════════════════════ -->
-    {#if transaction?.creator}
-        <ResponsiveCard>
-            <h4 class="mb-1.5 text-sm font-semibold tracking-widest text-base-content/50 uppercase">
-                Created by
-            </h4>
+    <h2 class="text-center text-lg font-semibold tracking-tight {titleConfig.color}">
+        {titleConfig.label}
+    </h2>
 
-            <div class="flex items-center gap-3">
+    <div class="mt-5 space-y-4">
+        <!-- 1 · Source account (the row's own side for outflows / plain rows) -->
+        <Field
+            titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+            title="Account">
+            <AccountInfo account={sourceAccount} />
+        </Field>
+
+        <!-- 2 · Destination — transfer only, mirroring the form's switch row -->
+        {#if isTransfer}
+            <div class="flex justify-center">
                 <div
-                    class="flex size-10 shrink items-center justify-center rounded-xl bg-accent/10">
-                    <i class="iconify size-5 text-accent solar--user-bold-duotone"></i>
-                </div>
-                <div>
-                    <p class="font-semibold">
-                        {transaction.creator.name}
-                    </p>
+                    class="flex size-8 items-center justify-center rounded-full border border-base-content/15 text-base-content/50">
+                    <i class="iconify size-4 solar--transfer-vertical-line-duotone"></i>
                 </div>
             </div>
-        </ResponsiveCard>
-    {/if}
-</div>
+
+            <Field
+                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                title="Destination Account">
+                <AccountInfo account={destinationAccount} />
+            </Field>
+        {:else}
+            <!-- 3 · Category — income / expense -->
+            <Field
+                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                title="Category">
+                <CategoryInfo category={transaction.category} />
+            </Field>
+        {/if}
+
+        <!-- 4 · Date -->
+        <Field
+            titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+            title="Date">
+            <p
+                class="flex min-h-12 items-center rounded-lg px-4 text-sm font-medium transition-colors">
+                {DateTimeHelper.format(transaction.transaction_date, 'date')}
+            </p>
+        </Field>
+
+        <!-- 5 · Notes -->
+        {#if transaction.description}
+            <Field
+                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                title="Notes">
+                <p class="min-h-12 px-4 py-2 text-sm leading-relaxed font-medium text-pretty">
+                    {transaction.description}
+                </p>
+            </Field>
+        {/if}
+    </div>
+</MobilePageLayout>

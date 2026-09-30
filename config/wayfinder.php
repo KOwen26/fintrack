@@ -2,6 +2,11 @@
 
 return [
     'generate' => [
+        'ignore' => [
+            'attributes' => [],
+            'tags' => ['wayfinder-ignore'],
+        ],
+
         'route' => [
             'actions' => env('WAYFINDER_GENERATE_ROUTE_ACTIONS', true),
             'named' => env('WAYFINDER_GENERATE_NAMED_ROUTES', true),
@@ -13,16 +18,22 @@ return [
                 'names' => ['nova.*', 'debugbar.*', 'telescope.*', 'boost.*', 'laravel_brain.*'],
             ],
         ],
+
         'models' => env('WAYFINDER_GENERATE_MODELS', true),
+
         'inertia' => [
             'shared_data' => env('WAYFINDER_GENERATE_INERTIA_SHARED_DATA', true),
         ],
+
         'broadcast' => [
             'channels' => env('WAYFINDER_GENERATE_BROADCAST_CHANNELS', true),
             'events' => env('WAYFINDER_GENERATE_BROADCAST_EVENTS', true),
         ],
+
         'environment_variables' => env('WAYFINDER_GENERATE_ENVIRONMENT_VARIABLES', true),
+
         'enums' => env('WAYFINDER_GENERATE_ENUMS', true),
+        'enum_methods' => env('WAYFINDER_GENERATE_ENUM_METHODS', true),
     ],
 
     // Format the generated files
@@ -34,4 +45,6 @@ return [
         'enabled' => env('WAYFINDER_CACHE_ENABLED', true),
         'directory' => env('WAYFINDER_CACHE_DIRECTORY', storage_path('wayfinder-cache')),
     ],
+
+    'memory_limit' => env('WAYFINDER_MEMORY_LIMIT'),
 ];

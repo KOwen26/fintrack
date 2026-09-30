@@ -7,10 +7,17 @@ use App\Enums\TransactionType;
 use App\Helpers\TypeScript\Attributes\TypeScriptModel;
 use App\Models\Account;
 use App\Models\Category;
-use App\Models\User;
+use App\Models\Transaction;
+use Carbon\CarbonInterface;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
+/**
+ * Read-side detail payload. Mirrors the transfer folding used by
+ * TransactionListData / TransactionFormData: a transfer movement row always
+ * carries its counterpart account in `destination_account_*`, so consumers
+ * never fold transfer members themselves.
+ */
 #[TypeScript]
 class TransactionDetailData extends Data
 {
@@ -25,21 +32,59 @@ class TransactionDetailData extends Data
 
         public float $amount,
 
-        public string $description,
+        public CarbonInterface $transaction_date,
 
-        public string $transaction_date,
+        public ?string $description,
 
-        public string $created_at,
+        public ?int $account_id,
 
-        public string $updated_at,
+        public ?int $destination_account_id,
+
+        public ?int $category_id,
 
         #[TypeScriptModel(Account::class)]
-        public mixed $account,
+        public ?Account $account,
+
+        #[TypeScriptModel(Account::class)]
+        public ?Account $destination_account,
 
         #[TypeScriptModel(Category::class)]
-        public mixed $category,
-
-        #[TypeScriptModel(User::class)]
-        public mixed $creator,
+        public ?Category $category,
     ) {}
+
+    public static function fromTransaction(Transaction $transaction): self
+    {
+        $transaction->loadMissing([
+            'account',
+            'category.parent',
+            'transfer.sourceTransaction.account',
+            'transfer.destinationTransaction.account',
+        ]);
+
+        $transfer = $transaction->getRelation('transfer');
+
+        $counterpart = null;
+
+        if ($transfer !== null && $transaction->type === TransactionType::Transfer) {
+            $counterpart = $transaction->flow === TransactionFlow::Outflow
+                ? $transfer->destinationTransaction
+                : $transfer->sourceTransaction;
+        }
+
+        return new self(
+            id: $transaction->id,
+            type: $transaction->type,
+            flow: $transaction->flow,
+            transfer_id: $transaction->transfer_id,
+            amount: (float) $transaction->amount,
+            transaction_date: $transaction->transaction_date,
+            description: $transaction->description,
+            account_id: $transaction->account_id,
+            destination_account_id: $counterpart?->account_id,
+            category_id: $transaction->category_id,
+            account: $transaction->relationLoaded('account') ? $transaction->account : null,
+            destination_account: $counterpart?->account,
+            category: $transaction->relationLoaded('category') ? $transaction->category : null,
+        );
+    }
 }

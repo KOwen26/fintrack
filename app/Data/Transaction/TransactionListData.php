@@ -8,6 +8,7 @@ use App\Helpers\TypeScript\Attributes\TypeScriptModel;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
+use Carbon\CarbonInterface;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -25,7 +26,7 @@ class TransactionListData extends Data
 
         public ?string $description,
 
-        public string $transaction_date,
+        public CarbonInterface $transaction_date,
 
         public ?int $category_id,
 
@@ -70,7 +71,7 @@ class TransactionListData extends Data
             flow: $transaction->flow,
             amount: (float) $transaction->amount,
             description: $transaction->description,
-            transaction_date: $transaction->transaction_date->toDateString(),
+            transaction_date: $transaction->transaction_date,
             category_id: $transaction->category_id,
             account_id: $transaction->account_id,
             transfer_id: $transaction->transfer_id,

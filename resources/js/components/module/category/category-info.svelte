@@ -4,39 +4,39 @@
     import { getDecorationColor } from '@data/decoration-colors';
     import { getDecorationIcon } from '@data/decoration-icons';
 
+    import StringHelper from '@utilities/string-helper';
+
+    import DecorationBadge from '@components/ui/decoration-badge.svelte';
+
     interface Props {
         category: App.Models.Category;
     }
 
     let { category }: Props = $props();
 
-    const color = $derived(
-        category?.decorations?.color
-            ? (getDecorationColor(category.decorations.color)?.hex ?? undefined)
-            : undefined
-    );
+    const hex = $derived(getDecorationColor(category?.decorations?.color)?.hex);
+    const icon = $derived(getDecorationIcon(category?.decorations?.icon)?.value);
 
-    const iconClass = $derived(
-        category?.decorations?.icon
-            ? (getDecorationIcon(category.decorations.icon)?.value ?? 'solar--tag-bold-duotone')
-            : 'solar--tag-bold-duotone'
-    );
+    /* Lettermark fallback when the category has no decoration icon — the same
+       visual contract as the category-select chips. */
+    const visual = $derived({
+        icon,
+        text: icon ? undefined : StringHelper.getInitials(category?.name),
+        background: hex ? `${hex}20` : undefined,
+        color: hex ?? undefined,
+    });
 </script>
 
-<div class="flex items-center gap-3">
-    <div
-        style:background={color ? `${color}20` : undefined}
-        style:color={color ?? undefined}
-        class="flex size-10 shrink items-center justify-center rounded-xl">
-        <i class="iconify size-5 {iconClass}"></i>
-    </div>
+<div class="flex items-center gap-3 rounded-lg border border-border p-2">
+    <DecorationBadge size="md" {...visual} />
     <div class="grow">
         {#if category.parent}
-            <p class="truncate text-sm text-base-content/50">{category.parent.name}</p>
+            <h6 class="text-sm font-medium tracking-wide text-base-content/80">
+                {category.parent.name}
+            </h6>
         {/if}
-        <p class="truncate text-sm font-semibold">
+        <p class="text-sm font-bold">
             {category.name}
         </p>
     </div>
-    <i class="iconify size-5 text-base-content/60 solar--alt-arrow-right-line-duotone"></i>
 </div>

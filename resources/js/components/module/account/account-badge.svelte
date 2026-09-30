@@ -20,9 +20,9 @@
 
 <span
     data-slot="account-badge"
-    style:--bg-color={labelOnly ? 'transparent' : colorObj?.value}
+    style:--bg-color={labelOnly ? 'transparent' : colorObj?.oklch}
     style:--text-color={labelOnly
-        ? `color-mix(in oklab, ${colorObj?.value} 100%, #000 40%)`
+        ? `color-mix(in oklab, ${colorObj?.oklch} 100%, #000 40%)`
         : (colorObj?.text_color ?? '#FFFFFF')}
     class={cn(
         'font-semibold ',
