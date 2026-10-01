@@ -16,6 +16,7 @@
     import DashboardHeader from '@components/navigation/dashboard-header.svelte';
     import DashboardSidebar from '@components/navigation/dashboard-sidebar.svelte';
     import * as Sidebar from '@components/ui/atoms/sidebar';
+    import Dock from '@components/ui/dock.svelte';
     import Toaster from '@components/ui/toaster.svelte';
 
     let {
@@ -78,11 +79,9 @@
         {@render pageContent()}
 
         {#if bottomActionBar}
-            <div
-                data-slot="bottom-action-bar"
-                class="sticky bottom-0 z-30 border-t border-base-content/10 bg-base-100 px-5 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] text-base-content">
+            <Dock data-slot="bottom-action-bar" position="fixed" variant="float">
                 {@render bottomActionBar.render()}
-            </div>
+            </Dock>
         {:else}
             <BottomNav />
         {/if}

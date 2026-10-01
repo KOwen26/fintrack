@@ -49,7 +49,7 @@
 <header
     data-slot="header-mobile"
     class={cn(
-        'flex min-h-14 items-center gap-2 px-3 pt-[env(safe-area-inset-top)] text-base-content md:hidden',
+        'flex min-h-14 items-center gap-2 px-4 pt-[env(safe-area-inset-top)] text-base-content md:hidden',
         _class,
         scrolledClass && scrolled && scrolledClass
     )}>
