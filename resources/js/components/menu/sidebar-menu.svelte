@@ -2,11 +2,10 @@
     import type { Menu, MenuGroup } from '@/data/menu';
 
     import { dashboardMenu } from '@/data/menu';
-    import { useUrlHandler } from '@/hooks/url-handler.svelte';
     import { inertia } from '@inertiajs/svelte';
+    import { sidebar } from '@lib/global-states.svelte';
+    import { useUrlHandler } from '@lib/url-handler.svelte';
     import { fly } from 'svelte/transition';
-
-    import { sidebar } from '@states/reactive.svelte';
 
     let { menus = dashboardMenu }: { menus?: MenuGroup } = $props();
 

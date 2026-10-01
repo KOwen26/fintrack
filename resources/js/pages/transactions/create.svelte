@@ -1,45 +1,39 @@
 <script lang="ts">
-    import type { Models } from '@type/type';
+    import type { Data, Models } from '@type/type';
 
-    import { router } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
-    import PageSection from '@components/layouts/page-section.svelte';
-    import TransactionForm from '@components/module/transaction/transaction-form.svelte';
-    import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
-    import TabsList from '@components/ui/atoms/tabs/tabs-list.svelte';
-    import TabsTrigger from '@components/ui/atoms/tabs/tabs-trigger.svelte';
-    import Tabs from '@components/ui/atoms/tabs/tabs.svelte';
+    import MobileTransactionForm from '@components/module/transaction/mobile-transaction-form.svelte';
+    import HeaderContext from '@components/navigation/header-context.svelte';
+    import Button from '@components/ui/button.svelte';
 
     let {
+        transaction,
         categories,
         accounts,
     }: {
+        transaction: Data.TransactionFormData;
         categories: Models.Category[];
         accounts: Models.Account[];
     } = $props();
 
-    let activeTab = $state<'income' | 'expense' | 'transfer'>('expense');
+    const backUrl = TransactionController.index.url();
 </script>
 
-<DashboardPageHeader title="New Transaction" />
+<HeaderContext>
+    <div class="flex w-full items-center justify-between gap-3">
+        <Button
+            class="size-10 shrink-0 p-1 btn-sm md:hidden"
+            aria-label="Back to transactions"
+            href={backUrl}
+            variant="ghost">
+            <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
+        </Button>
 
-<PageSection>
-    <Tabs bind:value={activeTab}>
-        <TabsList>
-            <TabsTrigger value="income">Income</TabsTrigger>
-            <TabsTrigger value="expense">Expense</TabsTrigger>
-            <TabsTrigger value="transfer">Transfer</TabsTrigger>
-        </TabsList>
-    </Tabs>
+        <h1 class="grow text-center font-medium text-primary">Add New Transaction</h1>
 
-    {#key activeTab}
-        <div class="mt-4">
-            <TransactionForm
-                {accounts}
-                {categories}
-                onCancel={() => router.visit(TransactionController.index.url())}
-                type={activeTab} />
-        </div>
-    {/key}
-</PageSection>
+        <div class="size-10"></div>
+    </div>
+</HeaderContext>
+
+<MobileTransactionForm {transaction} {accounts} {categories} />

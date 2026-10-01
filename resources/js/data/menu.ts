@@ -1,15 +1,14 @@
 import type { BreadcrumbItem } from '@components/ui/breadcrumbs.svelte';
-import type { Permissions } from '@utilities/authorization.svelte';
+import type { Permissions } from '@lib/auth/authorization.svelte';
 import type { Component, Snippet } from 'svelte';
 
+import { can } from '@lib/auth/authorization.svelte';
 import { appearance, dashboard } from '@wayfinder/routes';
 import accounts from '@wayfinder/routes/accounts';
 import dev from '@wayfinder/routes/dev';
 import profile from '@wayfinder/routes/profile';
 import security from '@wayfinder/routes/security';
 import transactions from '@wayfinder/routes/transactions';
-
-import { can } from '@utilities/authorization.svelte';
 
 export type MenuType = 'group-label' | 'menu' | 'submenu-1' | 'submenu-2';
 

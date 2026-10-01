@@ -1,81 +1,81 @@
 <script lang="ts">
+    import type { Data } from '@type/type';
     import type { App } from '@wayfinder/types';
 
     import { router } from '@inertiajs/svelte';
+    import TransactionType from '@wayfinder/App/Enums/TransactionType';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
-    import PageSection from '@components/layouts/page-section.svelte';
-    import TransactionForm from '@components/module/transaction/transaction-form.svelte';
-    import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
-    import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
+    import MobileTransactionForm from '@components/module/transaction/mobile-transaction-form.svelte';
+    import HeaderContext from '@components/navigation/header-context.svelte';
     import Button from '@components/ui/button.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
     let {
-        account,
         transaction,
-        categories,
+        accounts = [],
+        categories = [],
     }: {
-        account: App.Models.Account;
-        transaction: App.Models.Transaction;
-        categories: App.Models.Category[];
+        transaction: Data.TransactionFormData;
+        accounts?: App.Models.Account[];
+        categories?: App.Models.Category[];
     } = $props();
+
+    // The DTO collapses both edit shapes — a plain row and a transfer unit —
+    // into one payload; `transaction.id` is always the source (outflow) row id,
+    // which doubles as the delete target for both variants.
+    const isTransfer = $derived(transaction.type === TransactionType.Transfer);
 
     let showDeleteConfirm = $state(false);
 
+    // Deleting any unit member deletes the whole unit; the plain variant
+    // deletes just the row.
     function destroy(): void {
-        router.delete(
-            TransactionController.destroy.url({ account: account.id, transaction: transaction.id })
-        );
+        if (transaction.id === null) {
+            return;
+        }
+
+        router.delete(TransactionController.destroy.url({ transaction: transaction.id }));
     }
 
-    // Transfer rows cannot have their type changed — show a read-only badge instead of the type select
-    const isTransferRow = $derived(
-        transaction.type === 'transfer_out' ||
-            transaction.type === 'transfer_in' ||
-            transaction.type === 'fee'
-    );
+    const backUrl = TransactionController.index.url();
 </script>
 
-<DashboardPageHeader title="">
-    <div class="space-y-1">
-        <h1 class="text-xl font-bold">Edit Transaction</h1>
-        <div class="flex items-center gap-1.5">
-            <TransactionTypeBadge type={transaction.type} />
-            {#if isTransferRow}
-                <span class="text-xs text-base-content/50">Transfer — type cannot be changed</span>
-            {/if}
-        </div>
-    </div>
-</DashboardPageHeader>
-
-<PageSection>
-    <TransactionForm
-        {account}
-        {categories}
-        onCancel={() => router.visit(TransactionController.index.url({ account: account.id }))}
-        {transaction} />
-
-    <div class="mt-4">
+<HeaderContext>
+    <div class="flex w-full items-center justify-between gap-3">
         <Button
-            class="w-full"
+            class="size-10 shrink-0 p-1 btn-sm"
+            aria-label="Back to transactions"
+            href={backUrl}
+            variant="ghost">
+            <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
+        </Button>
+
+        <h1 class="grow text-center font-medium text-primary">
+            {isTransfer ? 'Edit Transfer' : 'Edit Transaction'}
+        </h1>
+
+        <Button
+            class="size-10 shrink-0 p-1 btn-sm"
+            aria-label={isTransfer ? 'Delete transfer' : 'Delete transaction'}
             color="error"
             onclick={() => (showDeleteConfirm = true)}
-            variant="outline">
-            <i class="iconify size-4 solar--trash-bin-2-bold-duotone"></i>
-            {isTransferRow ? 'Delete Transfer (all linked rows)' : 'Delete Transaction'}
+            variant="ghost">
+            <i class="iconify size-6 solar--trash-bin-2-line-duotone"></i>
         </Button>
     </div>
-</PageSection>
+</HeaderContext>
+
+<MobileTransactionForm {transaction} {accounts} {categories} />
 
 <ConfirmationModal
     cancelText="Cancel"
     confirmButtonProps={{ color: 'error' }}
     confirmText="Delete"
     onConfirm={destroy}
-    title="Delete Transaction"
+    title={isTransfer ? 'Delete Transfer' : 'Delete Transaction'}
     bind:open={showDeleteConfirm}>
-    {#if isTransferRow}
+    {#if isTransfer}
         This is part of a transfer. Deleting it will soft-delete all linked transfer rows.
     {:else}
         This transaction will be soft-deleted and cannot be recovered from the UI.

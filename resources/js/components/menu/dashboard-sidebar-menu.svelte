@@ -2,8 +2,8 @@
     import type { Menu, MenuGroup, MenuGroups, Submenu } from '@data/menu';
     import type { AnyRecord, RestProps } from '@type/index';
 
-    import { useUrlHandler } from '@/hooks/url-handler.svelte';
     import { inertia } from '@inertiajs/svelte';
+    import { useUrlHandler } from '@lib/url-handler.svelte';
     import { Collapsible } from 'bits-ui';
 
     import * as DropdownMenu from '@components/ui/atoms/dropdown-menu';

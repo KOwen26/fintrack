@@ -1,11 +1,13 @@
 <script lang="ts">
-    import { router, useForm } from '@inertiajs/svelte';
-    import { SvelteDate } from 'svelte/reactivity';
+    import type { CalculatorOperator } from '@components/ui/forms/calculator-input.svelte';
 
-    import { showToast } from '@utilities/helper.svelte';
+    import { router, useForm } from '@inertiajs/svelte';
+    import { showToast } from '@lib/toast-handler.svelte';
+    import { SvelteDate } from 'svelte/reactivity';
 
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
+    import CalculatorInput from '@components/ui/forms/calculator-input.svelte';
     import CheckboxGroup from '@components/ui/forms/checkbox-group.svelte';
     import Checkbox from '@components/ui/forms/checkbox.svelte';
     import DateInput from '@components/ui/forms/date-input.svelte';
@@ -42,7 +44,10 @@
         textarea_input: '',
         masked_input: '',
         masked_value_input: '',
+        calculator_input: 0,
     });
+
+    let calculatorOperator: CalculatorOperator | '' = $state('');
 
     const onsubmit = (event: SubmitEvent) => {
         event.preventDefault();
@@ -93,8 +98,8 @@
                 >Open Toast Error</Button>
         </div>
     </section>
-    <section class="grid grid-cols-2 gap-5">
-        <Card class="grid grid-cols-2 gap-5" title="Text Inputs">
+    <section class="grid gap-5 md:grid-cols-2">
+        <Card class="grid gap-5 md:grid-cols-2" title="Text Inputs">
             <Field title="Text Input (email)">
                 <Input name="email" type="email" bind:value={form.email} />
             </Field>
@@ -119,7 +124,27 @@
                 <Textarea name="textarea" bind:value={form.textarea_input}></Textarea>
             </Field>
         </Card>
-        <Card class="grid grid-cols-2 gap-5" title="Predefined Inputs">
+        <Card class="grid gap-5 md:grid-cols-2" title="Calculator">
+            <Field title="Calculator Input">
+                <div
+                    class="flex h-14 w-full items-center justify-end gap-2 rounded-sm border
+                           border-base-content/20 bg-base-100 px-3 font-mono text-xl font-medium tabular-nums">
+                    {new Intl.NumberFormat('id-ID').format(form.calculator_input || 0)}
+                    {#if calculatorOperator}
+                        <span class="text-primary">{calculatorOperator}</span>
+                    {/if}
+                </div>
+                {form.calculator_input}
+                <CalculatorInput
+                    class="mt-1.5"
+                    bind:value={form.calculator_input}
+                    bind:currentOperator={calculatorOperator} />
+            </Field>
+            <Field title="Calculator Input (disabled)">
+                <CalculatorInput disabled bind:value={form.calculator_input} />
+            </Field>
+        </Card>
+        <Card class="grid gap-5 md:grid-cols-2" title="Predefined Inputs">
             <Field title="Radio Input" value={form.radio_input}>
                 <RadioGroup name="radio_input" class="flex" bind:value={form.radio_input}>
                     <RadioItem name="radio" value="A">Option A</RadioItem>
@@ -142,7 +167,7 @@
                     Checkbox A</Checkbox>
             </Field>
         </Card>
-        <Card class="grid grid-cols-2 gap-5" title="Selects">
+        <Card class="grid gap-5 md:grid-cols-2" title="Selects">
             <Field title="Basic Select / Auto Complete">
                 <Select
                     name="select_input"
@@ -183,7 +208,7 @@
                     bind:value={form.select_advance_input} />
             </Field>
         </Card>
-        <Card class="grid grid-cols-2 gap-5" title="Date Inputs">
+        <Card class="grid gap-5 md:grid-cols-2" title="Date Inputs">
             <Field title="Date Picker w Validations">
                 <DateInput
                     name="date_input"
@@ -201,19 +226,12 @@
             <Field title="Date Time Picker">
                 <DateInput
                     name="date_time_input"
-                    options={{
-                        enableTime: true,
-                        altFormat: 'd F Y H:i',
-                        dateFormat: 'Y-m-d H:i:S',
-                    }}
+                    type="date-time"
                     bind:value={form.date_time_input} />
                 {form.date_time_input}
             </Field>
             <Field title="Month Picker">
-                <DateInput
-                    name="month_input"
-                    options={{ isMonthPicker: true, altFormat: 'F Y', dateFormat: 'Y-m' }}
-                    bind:value={form.month_input} />
+                <DateInput name="month_input" type="month-year" bind:value={form.month_input} />
                 {form.month_input}
             </Field>
         </Card>

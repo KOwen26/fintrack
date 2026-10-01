@@ -9,6 +9,7 @@
 
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
+    import StringHelper from '@utilities/string-helper';
 
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
     import PageSection from '@components/layouts/page-section.svelte';
@@ -20,7 +21,10 @@
     import StatCard from '@components/ui/cards/stat-card.svelte';
     import DonutChart from '@components/ui/charts/donut-chart.svelte';
 
-    let { account }: { account: App.Models.Account } = $props();
+    let {
+        account,
+        transactions,
+    }: { account: App.Models.Account; transactions: TransactionList[] } = $props();
 
     setLayoutProps({ title: account?.name, backUrl: AccountController.index.url() });
 
@@ -40,8 +44,6 @@
         color: string;
         percentage: number;
     }
-
-    const transactions = $derived(account.transactions ?? []);
 
     const categorySpending = $derived.by<CategoryItem[]>(() => {
         const groups = new SvelteMap<string, { name: string; amount: number; color: string }>();
@@ -80,13 +82,13 @@
 
     const incomeTotal = $derived(
         transactions
-            .filter((t) => t.type === 'income' || t.type === 'transfer_in')
+            .filter((t) => t.type === 'income')
             .reduce((sum, t) => sum + Number(t.amount), 0)
     );
 
     const expenseTotal = $derived(
         transactions
-            .filter((t) => t.type !== 'income' && t.type !== 'transfer_in')
+            .filter((t) => t.type === 'expense')
             .reduce((sum, t) => sum + Number(t.amount), 0)
     );
 
@@ -154,15 +156,6 @@
         { name: 'John Doe', email: 'john@example.com', role: 'Owner' },
         { name: 'Jane Smith', email: 'jane@example.com', role: 'Member' },
     ]);
-
-    function getMemberInitials(name: string): string {
-        return name
-            .split(' ')
-            .map((w) => w[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
-    }
 </script>
 
 <DashboardPageHeader title="Account Detail">
@@ -254,7 +247,7 @@
                             <div
                                 style:background={bgColor}
                                 class="avatar flex size-10 shrink-0 items-center justify-center rounded-md text-sm font-bold text-white">
-                                {getMemberInitials(member.name)}
+                                {StringHelper.getInitials(member.name)}
                             </div>
 
                             <div class="flex-1">
@@ -334,7 +327,7 @@
         <!-- ════════════════════════════════════════════ -->
         <!--  RECENT TRANSACTIONS                         -->
         <!-- ════════════════════════════════════════════ -->
-        <PageSection>
+        <PageSection breakMargin>
             <Collapsible.Root bind:open={transactionsOpen}>
                 <Card class=" {!transactionsOpen ? 'gap-0' : ''}">
                     {#snippet header()}

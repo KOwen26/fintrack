@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UserThemeController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,9 +39,17 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
         Route::get('', [TransactionController::class, 'index'])->name('index');
         Route::get('create', [TransactionController::class, 'create'])->name('create');
         Route::get('{transaction}', [TransactionController::class, 'show'])->name('show');
+        Route::get('{transaction}/edit', [TransactionController::class, 'edit'])->name('edit');
         Route::post('', [TransactionController::class, 'store'])->name('store');
         Route::put('{transaction}', [TransactionController::class, 'update'])->name('update');
         Route::delete('{transaction}', [TransactionController::class, 'destroy'])->name('destroy');
+    });
+
+    // Transfers (unit write surface — listing/show/delete stay on transactions)
+    Route::prefix('transfers')->name('transfers.')->group(function (): void {
+        Route::post('', [TransferController::class, 'store'])->name('store');
+        Route::get('{transfer}/edit', [TransferController::class, 'edit'])->name('edit');
+        Route::put('{transfer}', [TransferController::class, 'update'])->name('update');
     });
 
     // Reports (read-only — all GET)

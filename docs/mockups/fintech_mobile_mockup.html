@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Fintech Mobile Mockup — Page 1 & 2</title>
+        <style>
+            :root {
+                --bg: #858d7b;
+                --phone: #090a0c;
+                --panel: #191a1e;
+                --panel2: #222328;
+                --text: #f6f6f7;
+                --muted: #92949c;
+                --lime: #a8f34d;
+                --lav: #a9a4ff;
+                --green: #5bd18d;
+                --white: #f7f7f5;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                margin: 0;
+                min-height: 100%;
+                font-family:
+                    Inter,
+                    ui-sans-serif,
+                    system-ui,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    'Segoe UI',
+                    sans-serif;
+                background: var(--bg);
+            }
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 36px;
+            }
+            .stage {
+                width: min(1120px, 100%);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 24px;
+            }
+            .toolbar {
+                display: flex;
+                gap: 8px;
+                padding: 6px;
+                border: 1px solid rgba(255, 255, 255, 0.32);
+                background: rgba(255, 255, 255, 0.08);
+                border-radius: 999px;
+                backdrop-filter: blur(12px);
+            }
+            .toolbar button {
+                border: 0;
+                background: transparent;
+                color: white;
+                padding: 10px 18px;
+                border-radius: 999px;
+                cursor: pointer;
+                font-weight: 700;
+            }
+            .toolbar button.active {
+                background: #fff;
+                color: #333;
+            }
+            .pages {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+            .page {
+                display: none;
+                width: 100%;
+                justify-content: center;
+            }
+            .page.active {
+                display: flex;
+            }
+            .phone {
+                width: 390px;
+                height: 790px;
+                border: 8px solid #1d1d1f;
+                border-radius: 47px;
+                background: var(--phone);
+                box-shadow:
+                    0 25px 65px rgba(0, 0, 0, 0.34),
+                    inset 0 0 0 2px #4b4b4d;
+                overflow: hidden;
+                position: relative;
+                color: var(--text);
+            }
+            .phone:before {
+                content: '';
+                position: absolute;
+                z-index: 20;
+                left: 50%;
+                top: 11px;
+                transform: translateX(-50%);
+                width: 74px;
+                height: 24px;
+                border-radius: 18px;
+                background: #000;
+            }
+            .screen {
+                height: 100%;
+                padding: 23px 22px 0;
+                position: relative;
+                overflow: hidden;
+            }
+            .status {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 13px;
+                font-weight: 700;
+                margin: 1px 2px 0;
+            }
+            .status .icons {
+                letter-spacing: 2px;
+                font-size: 11px;
+            }
+            .header {
+                margin-top: 37px;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+            .greeting {
+                font-size: 13px;
+                color: #aaa;
+                line-height: 1.2;
+            }
+            .name {
+                font-size: 20px;
+                font-weight: 800;
+                margin-top: 2px;
+            }
+            .bell {
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                background: #242528;
+                display: grid;
+                place-items: center;
+                position: relative;
+            }
+            .badge {
+                position: absolute;
+                right: 2px;
+                top: 0;
+                background: #ff6f6f;
+                color: #fff;
+                font-size: 8px;
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                display: grid;
+                place-items: center;
+            }
+            .label {
+                color: #a7a8ad;
+                font-size: 14px;
+                margin-top: 30px;
+            }
+            .balance {
+                font-size: 43px;
+                letter-spacing: -2px;
+                font-weight: 500;
+                line-height: 1.1;
+                margin-top: 2px;
+            }
+            .balance span {
+                font-size: 24px;
+                color: #8f9096;
+                letter-spacing: -1px;
+            }
+            .quick {
+                display: grid;
+                grid-template-columns: 1fr 1fr 48px;
+                gap: 10px;
+                margin-top: 18px;
+            }
+            .quick button,
+            .filter {
+                border: 0;
+                color: #eee;
+                background: #202124;
+                border-radius: 25px;
+                height: 46px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 9px;
+            }
+            .qicon {
+                width: 28px;
+                height: 28px;
+                border: 1px solid #666;
+                border-radius: 50%;
+                display: grid;
+                place-items: center;
+            }
+            .cards-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 26px;
+            }
+            .section-title {
+                font-size: 16px;
+                font-weight: 800;
+            }
+            .add {
+                color: #9b9ca2;
+                font-size: 13px;
+            }
+            .cards {
+                display: flex;
+                gap: 14px;
+                margin-top: 14px;
+                overflow: hidden;
+            }
+            .card {
+                flex: 0 0 316px;
+                height: 187px;
+                border-radius: 22px;
+                background: var(--lime);
+                color: #080909;
+                padding: 20px;
+                position: relative;
+                overflow: hidden;
+            }
+            .card:after {
+                content: '';
+                position: absolute;
+                width: 230px;
+                height: 230px;
+                border-radius: 50%;
+                right: -50px;
+                bottom: -90px;
+                background: rgba(255, 255, 255, 0.13);
+            }
+            .cardchip {
+                width: 61px;
+                height: 19px;
+                background: #080909;
+                margin-bottom: 38px;
+            }
+            .digits {
+                font-size: 18px;
+                font-weight: 800;
+                letter-spacing: 2px;
+            }
+            .card-bottom {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                margin-top: 23px;
+            }
+            .small {
+                font-size: 10px;
+                font-weight: 700;
+            }
+            .cardvalue {
+                font-size: 23px;
+                font-weight: 900;
+            }
+            .transactions {
+                position: absolute;
+                left: 7px;
+                right: 7px;
+                bottom: 0;
+                height: 325px;
+                background: #fafaf8;
+                color: #151619;
+                border-radius: 28px 28px 0 0;
+                padding: 11px 20px 0;
+                box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.12);
+            }
+            .grab {
+                width: 52px;
+                height: 4px;
+                background: #8f9090;
+                border-radius: 10px;
+                margin: 0 auto 23px;
+            }
+            .tx-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .tx-head b {
+                font-size: 16px;
+            }
+            .tx-head span {
+                color: #85868b;
+                font-size: 12px;
+            }
+            .tx {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 13px 0;
+                border-bottom: 1px solid #ddd;
+            }
+            .logo {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: #e8e8e8;
+                display: grid;
+                place-items: center;
+                font-weight: 900;
+            }
+            .txmain {
+                flex: 1;
+            }
+            .txmain b {
+                font-size: 14px;
+            }
+            .txmain div {
+                font-size: 11px;
+                color: #7f8084;
+                margin-top: 3px;
+            }
+            .amount {
+                font-size: 12px;
+                font-weight: 800;
+            }
+            .positive {
+                color: #47aa76;
+            }
+            .nav {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: 83px;
+                background: #fafaf8;
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                align-items: end;
+                padding: 0 8px 13px;
+            }
+            .nav-item {
+                font-size: 11px;
+                text-align: center;
+                color: #111;
+            }
+            .nav-icon {
+                height: 31px;
+                display: grid;
+                place-items: center;
+                font-size: 19px;
+                margin-bottom: 3px;
+            }
+            .nav-item.active {
+                font-weight: 800;
+                color: #0d6b3e;
+            }
+            .scan {
+                width: 54px;
+                height: 54px;
+                background: var(--lime);
+                border-radius: 50%;
+                display: grid;
+                place-items: center;
+                margin: -25px auto 2px;
+                border: 3px solid #fafaf8;
+                font-size: 25px;
+            }
+            /* Analytics */
+            .analytics .screen {
+                padding-left: 22px;
+                padding-right: 22px;
+            }
+            .topbar {
+                margin-top: 36px;
+                display: grid;
+                grid-template-columns: 42px 1fr 42px;
+                align-items: center;
+                text-align: center;
+            }
+            .circle-btn {
+                height: 42px;
+                width: 42px;
+                border-radius: 50%;
+                background: #242528;
+                display: grid;
+                place-items: center;
+                font-size: 22px;
+            }
+            .topbar h1 {
+                font-size: 21px;
+                margin: 0;
+            }
+            .filters {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+                margin-top: 18px;
+            }
+            .filter {
+                height: 42px;
+                font-size: 12px;
+                padding: 0 10px;
+                white-space: nowrap;
+            }
+            .filter.active {
+                background: var(--lime);
+                color: #111;
+            }
+            .analytics .label {
+                margin-top: 26px;
+            }
+            .chart {
+                height: 190px;
+                position: relative;
+                margin-top: 4px;
+            }
+            .chart svg {
+                width: 100%;
+                height: 100%;
+            }
+            .tooltip {
+                position: absolute;
+                left: 57%;
+                top: 8px;
+                transform: translateX(-50%);
+                background: var(--lime);
+                color: #111;
+                padding: 9px 13px;
+                border-radius: 18px;
+                font-weight: 900;
+                font-size: 13px;
+            }
+            .tooltip:after {
+                content: '';
+                position: absolute;
+                left: 50%;
+                bottom: -7px;
+                transform: translateX(-50%);
+                border: 7px solid transparent;
+                border-top-color: var(--lime);
+                border-bottom: 0;
+            }
+            .statgrid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-top: 3px;
+            }
+            .stat {
+                background: #1b1c20;
+                border-radius: 21px;
+                padding: 14px 15px;
+                height: 111px;
+            }
+            .stat-icon {
+                width: 31px;
+                height: 31px;
+                border-radius: 50%;
+                display: grid;
+                place-items: center;
+                color: #111;
+                font-weight: 900;
+                margin-bottom: 11px;
+            }
+            .lime {
+                background: var(--lime);
+            }
+            .lav {
+                background: var(--lav);
+            }
+            .stat .value {
+                font-size: 18px;
+                font-weight: 800;
+            }
+            .stat .value span {
+                font-size: 10px;
+                color: #888;
+            }
+            .stat small {
+                font-size: 11px;
+                color: #8e8f94;
+            }
+            .alert {
+                height: 80px;
+                background: var(--lav);
+                border-radius: 17px;
+                color: #111;
+                padding: 13px 15px;
+                margin-top: 13px;
+                position: relative;
+            }
+            .alert strong {
+                font-size: 18px;
+            }
+            .alert div {
+                font-size: 11px;
+                margin-top: 5px;
+                color: #3e3d57;
+            }
+            .arrow {
+                position: absolute;
+                right: 16px;
+                top: 29px;
+                font-size: 24px;
+            }
+            .history {
+                margin-top: 25px;
+                display: flex;
+                justify-content: space-between;
+                font-size: 14px;
+                font-weight: 800;
+            }
+            .history span {
+                color: #888;
+                font-weight: 500;
+            }
+            .fade-tx {
+                margin-top: 12px;
+                opacity: 0.22;
+            }
+            @media (max-width: 520px) {
+                body {
+                    padding: 16px;
+                }
+                .phone {
+                    width: 360px;
+                    height: 730px;
+                }
+                .stage {
+                    gap: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="stage">
+            <div class="toolbar" aria-label="Page navigation">
+                <button id="p1btn" class="active" onclick="showPage(1)">Page 1 · Home</button>
+                <button id="p2btn" onclick="showPage(2)">Page 2 · Analytics</button>
+            </div>
+
+            <main class="pages">
+                <!-- PAGE 1 -->
+                <section id="page1" class="page active">
+                    <div class="phone">
+                        <div class="screen">
+                            <div class="status">
+                                <span>9:41</span><span class="icons">▮▮▮ ◔ ▰</span>
+                            </div>
+                            <div class="header">
+                                <div>
+                                    <div class="greeting">Good Morning,</div>
+                                    <div class="name">Jhonny Cantona</div>
+                                </div>
+                                <div class="bell">♧<span class="badge">9+</span></div>
+                            </div>
+
+                            <div class="label">Total balance</div>
+                            <div class="balance">$367,289<span>.00</span></div>
+
+                            <div class="quick">
+                                <button><span class="qicon">↗</span>Transfer</button>
+                                <button><span class="qicon">↙</span>Request</button>
+                                <button><span class="qicon">•••</span></button>
+                            </div>
+
+                            <div class="cards-head">
+                                <span class="section-title">My Cards</span
+                                ><span class="add">⊕ Add</span>
+                            </div>
+                            <div class="cards">
+                                <div class="card">
+                                    <div class="cardchip"></div>
+                                    <div class="digits">**** **** **** 3281</div>
+                                    <div class="card-bottom">
+                                        <div>
+                                            <div class="small">Balance</div>
+                                            <div class="cardvalue">
+                                                $218,000<span style="font-size: 11px">.00</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="small">Valid Thru</div>
+                                            <div class="small" style="font-size: 13px">06/27</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card" style="background: #aaa6ff">
+                                    <div class="cardchip"></div>
+                                    <div class="digits">**** **** ****</div>
+                                    <div class="card-bottom">
+                                        <div>
+                                            <div class="small">Balance</div>
+                                            <div class="cardvalue">$128,000</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="transactions">
+                                <div class="grab"></div>
+                                <div class="tx-head">
+                                    <b>Latest Transactions</b><span>See all</span>
+                                </div>
+                                <div class="tx">
+                                    <div class="logo" style="color: #c11">N</div>
+                                    <div class="txmain">
+                                        <b>Netflix</b>
+                                        <div>Entertainment · Jun 23</div>
+                                    </div>
+                                    <div class="amount">− $42.00</div>
+                                </div>
+                                <div class="tx">
+                                    <div class="logo" style="color: #1477c9">P</div>
+                                    <div class="txmain">
+                                        <b>PayPal Transfer</b>
+                                        <div>Income · Jun 22</div>
+                                    </div>
+                                    <div class="amount positive">+ $2,500.00</div>
+                                </div>
+                            </div>
+
+                            <div class="nav">
+                                <div class="nav-item active">
+                                    <div class="nav-icon">⌂</div>
+                                    Home
+                                </div>
+                                <div class="nav-item">
+                                    <div class="nav-icon">⇄</div>
+                                    Transaction
+                                </div>
+                                <div class="nav-item"><div class="scan">⌗</div></div>
+                                <div class="nav-item">
+                                    <div class="nav-icon">◔</div>
+                                    Deposit
+                                </div>
+                                <div class="nav-item">
+                                    <div class="nav-icon">♙</div>
+                                    Profile
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PAGE 2 -->
+                <section id="page2" class="page analytics">
+                    <div class="phone">
+                        <div class="screen">
+                            <div class="status">
+                                <span>9:41</span><span class="icons">▮▮▮ ◔ ▰</span>
+                            </div>
+                            <div class="topbar">
+                                <button class="circle-btn" onclick="showPage(1)">‹</button>
+                                <h1>Analytics</h1>
+                                <button class="circle-btn">•••</button>
+                            </div>
+
+                            <div class="filters">
+                                <button class="active filter">All</button>
+                                <button class="filter">Income</button>
+                                <button class="filter">Outcome</button>
+                                <button class="filter">Savings</button>
+                            </div>
+
+                            <div class="label">Total balance</div>
+                            <div class="balance">$367,289<span>.00</span></div>
+
+                            <div class="chart">
+                                <div class="tooltip">$1,250</div>
+                                <svg
+                                    viewBox="0 0 350 190"
+                                    preserveAspectRatio="none"
+                                    aria-label="Income and outcome line chart">
+                                    <defs>
+                                        <linearGradient id="glow" x1="0" x2="0" y1="0" y2="1">
+                                            <stop
+                                                offset="0"
+                                                stop-color="#a8f34d"
+                                                stop-opacity=".25" />
+                                            <stop
+                                                offset="1"
+                                                stop-color="#a8f34d"
+                                                stop-opacity="0" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path
+                                        d="M0 72 C45 46 76 40 111 82 S170 102 205 66 S272 39 350 82 L350 130 L0 130Z"
+                                        fill="url(#glow)" />
+                                    <path
+                                        d="M0 72 C45 46 76 40 111 82 S170 102 205 66 S272 39 350 82"
+                                        fill="none"
+                                        stroke="#a8f34d"
+                                        stroke-width="2" />
+                                    <path
+                                        d="M0 94 C42 122 75 135 110 98 S170 40 207 86 S270 124 350 98"
+                                        fill="none"
+                                        stroke="#b3b0ff"
+                                        stroke-width="2" />
+                                    <line
+                                        x1="205"
+                                        y1="55"
+                                        x2="205"
+                                        y2="145"
+                                        stroke="#a8f34d"
+                                        stroke-opacity=".14"
+                                        stroke-width="16" />
+                                    <circle
+                                        cx="205"
+                                        cy="66"
+                                        r="7"
+                                        fill="#f1f2e8"
+                                        stroke="#a8f34d"
+                                        stroke-width="3" />
+                                    <g fill="#8d8e94" font-size="11">
+                                        <text x="0" y="165">Feb</text>
+                                        <text x="45" y="165">Mar</text>
+                                        <text x="91" y="165">Apr</text>
+                                        <text x="139" y="165">May</text>
+                                        <text x="188" y="165" fill="#a8f34d">Jun</text>
+                                        <text x="237" y="165">Jul</text>
+                                        <text x="285" y="165">Aug</text>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div class="statgrid">
+                                <div class="stat">
+                                    <div class="stat-icon lime">▣</div>
+                                    <div class="value">$524,000<span>.00</span></div>
+                                    <small>Total Income</small>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-icon lav">▣</div>
+                                    <div class="value">$409,380<span>.00</span></div>
+                                    <small>Total Outcome</small>
+                                </div>
+                            </div>
+
+                            <div class="alert">
+                                <strong>+12.5% ↑</strong>
+                                <div>Expense was up than last month</div>
+                                <div class="arrow">›</div>
+                            </div>
+
+                            <div class="history">
+                                <span style="color: #eee">Transactions History</span
+                                ><span>Today⌄</span>
+                            </div>
+                            <div class="tx fade-tx">
+                                <div class="logo" style="color: #c11">N</div>
+                                <div class="txmain">
+                                    <b>Netflix</b>
+                                    <div>Entertainment · Today</div>
+                                </div>
+                                <div class="amount">− $42.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <script>
+            function showPage(n) {
+                document.querySelectorAll('.page').forEach((p) => p.classList.remove('active'));
+                document.getElementById('page' + n).classList.add('active');
+                document.getElementById('p1btn').classList.toggle('active', n === 1);
+                document.getElementById('p2btn').classList.toggle('active', n === 2);
+            }
+        </script>
+    </body>
+</html>

@@ -1,6 +1,6 @@
 <script lang="ts">
+    import type { DataDisplay } from '@lib/data-composer';
     import type { RestProps } from '@type/index';
-    import type { DataDisplay } from '@utilities/data-composer';
     import type { Snippet } from 'svelte';
 
     import DataListItem from './data-list-item.svelte';

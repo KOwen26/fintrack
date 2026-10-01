@@ -5,6 +5,7 @@
 
     import { getRandomDecorationColor } from '@data/decoration-colors';
     import { router, useForm } from '@inertiajs/svelte';
+    import { DataComposer } from '@lib/data-composer';
     import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
     import AccountType from '@wayfinder/App/Enums/AccountType';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
@@ -15,8 +16,6 @@
         accountTypeOptions,
         iconForAccountType,
     } from '@schema/account.schema';
-
-    import { DataComposer } from '@utilities/data-composer';
 
     import Card from '@components/ui/card.svelte';
     import DecorationColorSelector from '@components/ui/forms/decoration-color-selector.svelte';

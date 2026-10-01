@@ -1,7 +1,7 @@
-import type { DataSchema } from '@utilities/data-composer';
+import type { DataSchema } from '@lib/data-composer';
 import type { App } from '@wayfinder/types';
 
-import { DataComposer } from '@utilities/data-composer';
+import { DataComposer } from '@lib/data-composer';
 
 export type TransactionFormData = {
     type: string;

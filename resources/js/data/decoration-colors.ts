@@ -36,7 +36,7 @@ export function getRandomDecorationColor(): DecorationColor | undefined {
  * @param {string} slug - The unique slug identifying the decoration color.
  * @returns {DecorationColor | undefined} The matching DecorationColor or undefined.
  */
-export function getDecorationColor(slug: string): DecorationColor | undefined {
+export function getDecorationColor(slug?: string | null): DecorationColor | undefined {
     if (slug == null) {
         return undefined;
     }

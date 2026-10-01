@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Finance app — Home mockup</title>
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" />
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <style type="text/tailwindcss">
+            @theme {
+                --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+                --color-canvas: #858d7d;
+                --color-screen: #0b0b0d;
+                --color-surface: #1b1b1e;
+                --color-lime: #a8f246;
+                --color-ink: #101012;
+            }
+
+            @layer base {
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+                    font-family:
+                        'Manrope',
+                        ui-sans-serif,
+                        system-ui,
+                        -apple-system,
+                        BlinkMacSystemFont,
+                        'Segoe UI',
+                        sans-serif;
+                }
+
+                button {
+                    font: inherit;
+                }
+            }
+
+            .screen-shadow {
+                box-shadow: 0 36px 90px rgb(9 12 8 / 35%);
+            }
+
+            .card-pattern {
+                background-image:
+                    radial-gradient(
+                        circle at 78% 100%,
+                        rgb(255 255 255 / 16%) 0 19%,
+                        transparent 19.3%
+                    ),
+                    radial-gradient(
+                        circle at 77% 100%,
+                        rgb(255 255 255 / 10%) 0 37%,
+                        transparent 37.3%
+                    ),
+                    linear-gradient(133deg, rgb(255 255 255 / 10%), transparent 42%);
+            }
+
+            .home-nav::before {
+                content: '';
+                position: absolute;
+                top: -1px;
+                left: 16px;
+                width: 42px;
+                height: 3px;
+                border-radius: 999px;
+                background: #173d27;
+            }
+        </style>
+    </head>
+    <body class="bg-canvas min-h-dvh text-white antialiased">
+        <main class="flex min-h-dvh items-center justify-center px-4 py-10 sm:px-8 sm:py-16">
+            <article
+                class="screen-shadow bg-screen relative flex h-[830px] w-full max-w-[430px] flex-col overflow-hidden rounded-[39px] ring-1 ring-white/10 sm:h-[875px]"
+                aria-label="Finance app home screen mockup">
+                <div
+                    class="flex items-center justify-between px-8 pt-6 pb-3 text-[15px] font-semibold tracking-tight">
+                    <time datetime="09:41">9:41</time>
+                    <div class="flex items-center gap-1.5" aria-label="Phone connection status">
+                        <svg
+                            class="size-4"
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            aria-hidden="true">
+                            <path d="M1 12h2V9H1v3Zm4 0h2V7H5v5Zm4 0h2V4H9v8Zm4 0h2V1h-2v11Z" />
+                        </svg>
+                        <svg
+                            class="size-[17px]"
+                            viewBox="0 0 20 16"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            aria-hidden="true">
+                            <path
+                                d="M2 5.5a11.3 11.3 0 0 1 16 0M5 8.5a7 7 0 0 1 10 0M8 11.5a2.8 2.8 0 0 1 4 0"
+                                stroke-linecap="round" />
+                        </svg>
+                        <span
+                            class="h-3.5 w-6 rounded-[3px] border border-white/80 p-px"
+                            aria-hidden="true"
+                            ><span class="block h-full w-full rounded-[1px] bg-white"></span
+                        ></span>
+                    </div>
+                </div>
+
+                <header class="flex items-start justify-between px-8 pt-5">
+                    <div>
+                        <p class="text-[16px] font-medium text-white/55">Good Morning,</p>
+                        <h1 class="mt-0.5 text-[21px] font-bold tracking-[-0.03em]">
+                            Jhonny Cantona
+                        </h1>
+                    </div>
+                    <button
+                        type="button"
+                        aria-label="Notifications"
+                        class="focus-visible:outline-lime relative grid size-11 place-items-center rounded-full bg-white/[0.07] text-white transition hover:bg-white/[0.14] focus-visible:outline-2 focus-visible:outline-offset-2">
+                        <svg
+                            class="size-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            aria-hidden="true">
+                            <path
+                                d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"
+                                stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                        <span
+                            class="absolute top-0.5 right-0.5 grid size-4 place-items-center rounded-full bg-[#ef6c69] text-[9px] font-bold"
+                            >9+</span
+                        >
+                    </button>
+                </header>
+
+                <section class="px-8 pt-6" aria-labelledby="total-balance">
+                    <p id="total-balance" class="text-[16px] font-medium text-white/55">
+                        Total balance
+                    </p>
+                    <p
+                        class="mt-1 text-[42px] leading-none font-semibold tracking-[-0.07em] tabular-nums sm:text-[45px]">
+                        $367,289<span class="font-sans text-[28px] font-medium text-white/55"
+                            >.00</span
+                        >
+                    </p>
+                </section>
+
+                <section class="flex gap-3 px-8 pt-6" aria-label="Quick actions">
+                    <button
+                        type="button"
+                        class="bg-surface focus-visible:outline-lime flex h-12 flex-1 items-center justify-center gap-3 rounded-full text-[15px] font-semibold transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2">
+                        <span
+                            class="grid size-7 place-items-center rounded-full border border-white/20"
+                            ><svg
+                                class="size-4"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true">
+                                <path
+                                    d="M7 17 17 7M8 7h9v9"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" /></svg
+                        ></span>
+                        Transfer
+                    </button>
+                    <button
+                        type="button"
+                        class="bg-surface focus-visible:outline-lime flex h-12 flex-1 items-center justify-center gap-3 rounded-full text-[15px] font-semibold transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2">
+                        <span
+                            class="grid size-7 place-items-center rounded-full border border-white/20"
+                            ><svg
+                                class="size-4"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true">
+                                <path
+                                    d="M17 7 7 17M16 17H7V8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" /></svg
+                        ></span>
+                        Request
+                    </button>
+                    <button
+                        type="button"
+                        aria-label="More actions"
+                        class="bg-surface focus-visible:outline-lime grid size-12 place-items-center rounded-full transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2">
+                        <span class="grid grid-cols-2 gap-1"
+                            ><span class="size-1.5 rounded-full border border-white"></span
+                            ><span class="size-1.5 rounded-full border border-white"></span
+                            ><span class="size-1.5 rounded-full border border-white"></span
+                            ><span class="size-1.5 rounded-full border border-white"></span
+                        ></span>
+                    </button>
+                </section>
+
+                <section class="min-h-0 flex-1 px-8 pt-6" aria-labelledby="cards-heading">
+                    <div class="flex items-center justify-between">
+                        <h2 id="cards-heading" class="text-[17px] font-semibold">My Cards</h2>
+                        <button
+                            type="button"
+                            class="focus-visible:outline-lime flex items-center gap-1 text-[15px] text-white/55 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2">
+                            <span
+                                class="grid size-4 place-items-center rounded-full border border-white/45 text-[12px] leading-none"
+                                >+</span
+                            >
+                            Add
+                        </button>
+                    </div>
+
+                    <div class="mt-4 flex gap-4 overflow-hidden" aria-label="Bank cards">
+                        <section
+                            class="card-pattern bg-lime text-ink w-[315px] shrink-0 rounded-[27px] px-5 py-5 shadow-lg"
+                            aria-label="Primary card ending in 3281">
+                            <div class="bg-ink h-5 w-15"></div>
+                            <p class="mt-6 text-[22px] font-bold tracking-[0.12em]">
+                                **** **** **** 3281
+                            </p>
+                            <div class="mt-5 flex items-end justify-between">
+                                <div>
+                                    <p class="text-[13px] font-medium">Balance</p>
+                                    <p class="text-[27px] font-bold tracking-[-0.08em]">
+                                        $218,000<span class="font-sans text-[17px] font-medium"
+                                            >.00</span
+                                        >
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[13px] font-medium">Valid Thru</p>
+                                    <p class="text-[17px] font-bold">06/27</p>
+                                </div>
+                            </div>
+                        </section>
+                        <section
+                            class="text-ink w-[210px] shrink-0 rounded-[27px] bg-[#b7b8ff] px-5 py-5"
+                            aria-label="Secondary card">
+                            <div class="bg-ink h-5 w-15"></div>
+                            <p class="mt-7 text-[20px] font-bold tracking-[0.12em]">**** 1280</p>
+                            <p class="mt-6 text-[13px] font-medium">Balance</p>
+                            <p class="text-[25px] font-bold tracking-[-0.08em]">
+                                $149,289<span class="font-sans text-[16px] font-medium">.00</span>
+                            </p>
+                        </section>
+                    </div>
+                </section>
+
+                <section
+                    class="text-ink relative mt-6 min-h-[293px] rounded-t-[28px] bg-white px-8 pt-3 pb-22"
+                    aria-labelledby="transactions-heading">
+                    <div class="mx-auto h-1.5 w-13 rounded-full bg-black/40"></div>
+                    <div class="mt-4 flex items-center justify-between">
+                        <h2
+                            id="transactions-heading"
+                            class="text-[18px] font-bold tracking-[-0.03em]">
+                            Latest Transactions
+                        </h2>
+                        <button
+                            type="button"
+                            class="focus-visible:outline-lime text-[14px] font-medium text-black/50 transition hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2">
+                            See all
+                        </button>
+                    </div>
+                    <ul class="mt-3 divide-y divide-black/15">
+                        <li class="flex items-center gap-3 py-3">
+                            <span
+                                class="grid size-12 place-items-center rounded-full bg-[#ececee] text-[24px] font-black text-[#e40914]"
+                                >N</span
+                            >
+                            <span class="min-w-0 flex-1"
+                                ><span class="block text-[16px] font-bold">Netflix</span
+                                ><span class="mt-0.5 block text-[13px] text-black/50"
+                                    >Entertainment&nbsp; • &nbsp;Jun 23</span
+                                ></span
+                            >
+                            <span class="text-[15px] font-bold tracking-[-0.04em]">− $42.00</span>
+                        </li>
+                        <li class="flex items-center gap-3 py-3">
+                            <span
+                                class="grid size-12 place-items-center rounded-full bg-[#ececee] text-[23px] font-black text-[#1665ad] italic"
+                                >P</span
+                            >
+                            <span class="min-w-0 flex-1"
+                                ><span class="block text-[16px] font-bold">PayPal Transfer</span
+                                ><span class="mt-0.5 block text-[13px] text-black/50"
+                                    >Income&nbsp; • &nbsp;Jun 22</span
+                                ></span
+                            >
+                            <span class="text-[15px] font-bold tracking-[-0.04em] text-[#40a77b]"
+                                >+ $2,500.00</span
+                            >
+                        </li>
+                    </ul>
+                </section>
+
+                <nav
+                    class="home-nav text-ink absolute inset-x-0 bottom-0 flex h-[78px] items-end justify-between bg-white px-8 pb-4"
+                    aria-label="Main navigation">
+                    <a
+                        href="#"
+                        class="focus-visible:outline-lime flex min-w-11 flex-col items-center gap-1 text-[12px] font-semibold text-[#173d27] focus-visible:outline-2 focus-visible:outline-offset-2"
+                        ><svg
+                            class="size-6"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            aria-hidden="true">
+                            <path
+                                d="m3 11 9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9Z" /></svg
+                        >Home</a
+                    >
+                    <a
+                        href="#"
+                        class="focus-visible:outline-lime flex min-w-11 flex-col items-center gap-1 text-[12px] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
+                        ><svg
+                            class="size-6"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.6"
+                            aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="16" rx="3" />
+                            <path
+                                d="M8 9h7M8 14h8M15 7l2 2-2 2M9 12l-2 2 2 2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round" /></svg
+                        >Transaction</a
+                    >
+                    <a
+                        href="#"
+                        aria-label="Scan payment"
+                        class="bg-lime text-ink focus-visible:outline-lime -mt-9 grid size-16 place-items-center rounded-full shadow-[0_9px_20px_rgb(105_185_42/35%)] transition hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2"
+                        ><svg
+                            class="size-8"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            aria-hidden="true">
+                            <path
+                                d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3M7 12h10"
+                                stroke-linecap="round" /></svg
+                    ></a>
+                    <a
+                        href="#"
+                        class="focus-visible:outline-lime flex min-w-11 flex-col items-center gap-1 text-[12px] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
+                        ><svg
+                            class="size-6"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            aria-hidden="true">
+                            <path
+                                d="M12 3v9l6 3M21 12a9 9 0 1 1-2.64-6.36"
+                                stroke-linecap="round"
+                                stroke-linejoin="round" /></svg
+                        >Deposito</a
+                    >
+                    <a
+                        href="#"
+                        class="focus-visible:outline-lime flex min-w-11 flex-col items-center gap-1 text-[12px] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
+                        ><svg
+                            class="size-6"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            aria-hidden="true">
+                            <circle cx="12" cy="8" r="3.5" />
+                            <path d="M4.5 21a7.5 7.5 0 0 1 15 0" stroke-linecap="round" /></svg
+                        >Profile</a
+                    >
+                </nav>
+            </article>
+        </main>
+    </body>
+</html>

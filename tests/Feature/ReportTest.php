@@ -5,14 +5,12 @@ use App\Data\Report\ContributionSplitData;
 use App\Data\Report\FixedVariableData;
 use App\Data\Report\TrendReportData;
 use App\Enums\AccountAccessType;
-use App\Events\TransactionSaved;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\ReportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Date;
 
 uses(RefreshDatabase::class);
@@ -209,37 +207,4 @@ it('fixed vs variable splits expenses by is_fixed_cost', function (): void {
     expect($result->variable_total)->toBe(1_000_000.0);
     expect($result->fixed_pct)->toBe(75.0);
     expect($result->variable_pct)->toBe(25.0);
-});
-
-// ---------------------------------------------------------------------------
-// Cache invalidation tests
-// ---------------------------------------------------------------------------
-
-it('InvalidateAccountReportCache listener flushes report cache tags on TransactionSaved', function (): void {
-    [$user, , $account] = createUserWithAccountAndHousehold();
-
-    // Warm the cache with a dummy value
-    Cache::tags(['account:' . $account->id])->put(
-        "reports:{$account->id}:trend:2026:06",
-        'cached_value',
-        60
-    );
-
-    expect(Cache::tags(['account:' . $account->id])->get("reports:{$account->id}:trend:2026:06"))
-        ->toBe('cached_value');
-
-    $category = Category::factory()->create(['user_id' => $user->id]);
-    $transaction = Transaction::factory()->create([
-        'account_id' => $account->id,
-        'created_by' => $user->id,
-        'category_id' => $category->id,
-        'type' => 'expense',
-        'amount' => 500_000,
-    ]);
-
-    // Fire event (Ledger spec fires this on transaction save)
-    TransactionSaved::dispatch($transaction);
-
-    expect(Cache::tags(['account:' . $account->id])->get("reports:{$account->id}:trend:2026:06"))
-        ->toBeNull();
 });

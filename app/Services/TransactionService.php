@@ -2,53 +2,62 @@
 
 namespace App\Services;
 
-use App\Enums\TransactionType;
+use App\Data\Transaction\TransactionData;
 use App\Events\TransactionDeleted;
 use App\Events\TransactionSaved;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class TransactionService
 {
-    public static function getTransactions(): LengthAwarePaginator
+    /**
+     * Global list: one row per transfer unit (the outflow row) plus plain
+     * rows and fee rows — inflow rows are hidden.
+     */
+    public static function getTransactions(User $user): Collection
     {
-        return Transaction::query()->with(['account', 'category'])->latest('transaction_date')->paginate(30);
+        return Transaction::query()
+            ->where('created_by', $user->id)
+            ->whereNot(fn ($query) => $query->where('type', 'transfer')->where('flow', 'inflow'))
+            ->with(['account', 'category', 'transfer.transactions.account'])
+            ->latest('transaction_date')
+            ->get();
     }
 
-    public static function getAccountTransactions(Account $account): LengthAwarePaginator
+    public static function getAccountTransactions(Account $account): Collection
     {
         return Transaction::query()
             ->where('account_id', $account->id)
-            ->with(['account', 'category'])
+            ->with(['account', 'category', 'transfer.transactions.account'])
             ->latest('transaction_date')
-            ->paginate(30);
+            ->get();
     }
 
-    public static function getCategoryTransactions(Category $category): LengthAwarePaginator
+    public static function getCategoryTransactions(Category $category): Collection
     {
         return Transaction::query()
             ->where('category_id', $category->id)
             ->with(['account', 'category'])
             ->latest('transaction_date')
-            ->paginate(30);
+            ->get();
     }
 
-    public function create(Account $account, User $creator, array $data): Transaction
+    public function create(User $creator, TransactionData $data): Transaction
     {
         $transaction = Transaction::create([
-            'account_id' => $account->id,
+            'account_id' => $data->account_id,
             'created_by' => $creator->id,
-            'amount' => $data['amount'],
-            'type' => $data['type'],
-            'transfer_link_id' => $data['transfer_link_id'] ?? null,
-            'transaction_date' => $data['transaction_date'],
-            'category_id' => $data['category_id'] ?? null,
-            'description' => $data['description'] ?? null,
+            'amount' => $data->amount,
+            'type' => $data->type,
+            'flow' => $data->derivedFlow(),
+            'transfer_id' => $data->transfer_id,
+            'transaction_date' => $data->transaction_date,
+            'category_id' => $data->category_id,
+            'description' => $data->description,
         ]);
 
         TransactionSaved::dispatch($transaction);
@@ -56,13 +65,20 @@ class TransactionService
         return $transaction;
     }
 
-    public function update(Transaction $transaction, array $data): Transaction
+    /**
+     * Plain-row edit — the controller guarantees the row is not a transfer
+     * unit member (unit members are rejected with 422 upstream).
+     */
+    public function update(Transaction $transaction, TransactionData $data): Transaction
     {
         $transaction->update([
-            'amount' => $data['amount'],
-            'transaction_date' => $data['transaction_date'],
-            'category_id' => $data['category_id'] ?? null,
-            'description' => $data['description'] ?? null,
+            'account_id' => $data->account_id,
+            'type' => $data->type,
+            'flow' => $data->derivedFlow(),
+            'amount' => $data->amount,
+            'transaction_date' => $data->transaction_date,
+            'category_id' => $data->category_id,
+            'description' => $data->description,
         ]);
 
         TransactionSaved::dispatch($transaction->fresh());
@@ -70,71 +86,15 @@ class TransactionService
         return $transaction->fresh();
     }
 
+    /**
+     * Soft-delete a plain row. Transfer-unit members are routed to
+     * TransferService::deleteUnit() by the controller.
+     */
     public function softDelete(Transaction $transaction): void
     {
-        if ($transaction->transfer_link_id) {
-            $linked = Transaction::where('transfer_link_id', $transaction->transfer_link_id)->get();
-
-            foreach ($linked as $linked_tx) {
-                $linked_tx->delete();
-                TransactionDeleted::dispatch($linked_tx);
-            }
-
-            return;
-        }
-
-        $transaction->delete();
-        TransactionDeleted::dispatch($transaction);
-    }
-
-    public function createTransfer(
-        Account $sourceAccount,
-        Account $destinationAccount,
-        User $creator,
-        float $amount,
-        string $transactionDate,
-        ?float $feeAmount,
-        ?string $description
-    ): Transaction {
-        $linkId = (string) Str::uuid();
-
-        return DB::transaction(function () use (
-            $sourceAccount,
-            $destinationAccount,
-            $creator,
-            $amount,
-            $transactionDate,
-            $feeAmount,
-            $description,
-            $linkId,
-        ): Transaction {
-            $outflow = $this->create($sourceAccount, $creator, [
-                'amount' => $amount,
-                'type' => TransactionType::TransferOut->value,
-                'transfer_link_id' => $linkId,
-                'transaction_date' => $transactionDate,
-                'description' => $description,
-            ]);
-
-            $this->create($destinationAccount, $creator, [
-                'amount' => $amount,
-                'type' => TransactionType::TransferIn->value,
-                'transfer_link_id' => $linkId,
-                'transaction_date' => $transactionDate,
-                'description' => $description,
-            ]);
-
-            if ($feeAmount !== null && $feeAmount > 0) {
-                $this->create($sourceAccount, $creator, [
-                    'amount' => $feeAmount,
-                    'type' => TransactionType::Fee->value,
-                    'transfer_link_id' => $linkId,
-                    'transaction_date' => $transactionDate,
-                    'description' => 'Transfer fee',
-                ]);
-            }
-
-            return $outflow;
+        DB::transaction(function () use ($transaction): void {
+            $transaction->delete();
+            TransactionDeleted::dispatch($transaction);
         });
     }
 }

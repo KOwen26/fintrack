@@ -6,8 +6,8 @@ Rules for `app/Http/Controllers/**` and `routes/**`.
 
 Glob: `app/Http/Controllers/**`, `routes/**`
 
-Default to singular-named, multi-method resource-style controllers (`AccountController`,
-not `AccountsController`) with explicit verb routes registered per action — this app does
+Default to singular-named, multi-method resource-style controllers (`UserController`,
+not `UsersController`) with explicit verb routes registered per action — this app does
 not use `Route::resource` or invokable controllers. Custom actions (e.g. `archive`,
 `restore`, report endpoints) are extra verb routes on the same controller, named
 `resource.action`. This is the house default, not a hard rule — deviate when context
@@ -36,7 +36,8 @@ Glob: `app/Http/Controllers/**`
 
 Type-hint models in controller action signatures for route params; never use `Route::bind`
 or manual `findOrFail` for the primary route model. `findOrFail` is only for secondary
-models resolved from validated request data (e.g. the destination account of a transfer).
+models resolved from validated request data (e.g. a target record chosen from a select
+input).
 
 ## Flash messages via the `->flash()` macro
 

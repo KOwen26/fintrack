@@ -1,4 +1,4 @@
-import type { DataSchema } from '@utilities/data-composer';
+import type { DataSchema } from '@lib/data-composer';
 import type { App } from '@wayfinder/types';
 
 import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';

@@ -26,6 +26,7 @@
 
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
+    import StringHelper from '@utilities/string-helper';
 
     import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
 
@@ -194,15 +195,6 @@
 
         return rows;
     });
-
-    function getMemberInitials(name: string): string {
-        return name
-            .split(' ')
-            .map((w) => w[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
-    }
 </script>
 
 <div class="space-y-5">
@@ -528,7 +520,7 @@
                     <div
                         style:background={i === 0 ? bgColor : '#7A5CB8'}
                         class="avatar flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white">
-                        {getMemberInitials(member.name)}
+                        {StringHelper.getInitials(member.name)}
                     </div>
                     <div class="flex-1">
                         <p class="mb-0.5 text-sm font-semibold text-base-content">

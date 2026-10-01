@@ -1,0 +1,979 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Fintech UI — Page 1 & 2</title>
+        <style>
+            :root {
+                --bg: #090a0c;
+                --surface: #17181b;
+                --surface2: #202125;
+                --surface3: #27282c;
+                --text: #f7f7f8;
+                --muted: #909198;
+                --muted2: #66686e;
+                --lime: #a8f34d;
+                --lav: #aaa5ff;
+                --green: #48b87d;
+                --red: #ef7272;
+                --line: #292a2e;
+                --white: #fafaf8;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                margin: 0;
+                background: #0d0e10;
+                color: var(--text);
+                font-family:
+                    Inter,
+                    ui-sans-serif,
+                    system-ui,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    'Segoe UI',
+                    sans-serif;
+            }
+            body {
+                min-height: 100vh;
+            }
+            button {
+                font: inherit;
+                cursor: pointer;
+            }
+            .app {
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            .topbar {
+                height: 72px;
+                border-bottom: 1px solid var(--line);
+                background: #101114;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 32px;
+                position: sticky;
+                top: 0;
+                z-index: 20;
+            }
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 900;
+                font-size: 18px;
+            }
+            .brand-mark {
+                width: 31px;
+                height: 31px;
+                border-radius: 10px;
+                background: var(--lime);
+                color: #111;
+                display: grid;
+                place-items: center;
+                font-weight: 1000;
+            }
+            .toolbar {
+                display: flex;
+                gap: 7px;
+                padding: 5px;
+                background: #191a1d;
+                border: 1px solid #2a2b30;
+                border-radius: 999px;
+            }
+            .toolbar button {
+                border: 0;
+                background: transparent;
+                color: #aaa;
+                padding: 8px 16px;
+                border-radius: 999px;
+                font-weight: 700;
+                font-size: 13px;
+            }
+            .toolbar button.active {
+                background: #f7f7f7;
+                color: #111;
+            }
+            .avatar {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                background: #2a2b2f;
+                display: grid;
+                place-items: center;
+                font-weight: 800;
+            }
+            .page {
+                display: none;
+                flex: 1;
+            }
+            .page.active {
+                display: block;
+            }
+            .container {
+                max-width: 1250px;
+                margin: 0 auto;
+                padding: 34px 32px 60px;
+            }
+            .grid-home {
+                display: grid;
+                grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.8fr);
+                gap: 24px;
+            }
+            .grid-analytics {
+                display: grid;
+                grid-template-columns: minmax(0, 1.6fr) minmax(300px, 0.7fr);
+                gap: 24px;
+            }
+            .panel {
+                background: var(--surface);
+                border: 1px solid var(--line);
+                border-radius: 25px;
+                padding: 24px;
+            }
+            .panel-title {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            .panel-title h2 {
+                font-size: 17px;
+                margin: 0;
+            }
+            .panel-title span {
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .greeting {
+                color: var(--muted);
+                font-size: 14px;
+            }
+            .name {
+                font-size: 27px;
+                font-weight: 850;
+                margin-top: 2px;
+            }
+            .hero {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                margin: 25px 0 24px;
+            }
+            .label {
+                font-size: 13px;
+                color: var(--muted);
+                margin-bottom: 4px;
+            }
+            .balance {
+                font-size: 51px;
+                letter-spacing: -2.5px;
+                font-weight: 600;
+            }
+            .balance span {
+                font-size: 27px;
+                color: #777980;
+                letter-spacing: -1px;
+            }
+            .hero-actions {
+                display: flex;
+                gap: 9px;
+            }
+            .pill {
+                height: 43px;
+                border: 1px solid #303136;
+                background: var(--surface2);
+                color: #eee;
+                border-radius: 23px;
+                padding: 0 17px;
+                font-weight: 750;
+            }
+            .pill.primary {
+                background: var(--lime);
+                border-color: var(--lime);
+                color: #111;
+            }
+            .cards {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 14px;
+            }
+            .card {
+                height: 190px;
+                border-radius: 22px;
+                padding: 21px;
+                background: var(--lime);
+                color: #080909;
+                position: relative;
+                overflow: hidden;
+            }
+            .card:nth-child(2) {
+                background: var(--lav);
+            }
+            .card:after {
+                content: '';
+                position: absolute;
+                width: 270px;
+                height: 270px;
+                border-radius: 50%;
+                right: -65px;
+                bottom: -110px;
+                background: rgba(255, 255, 255, 0.13);
+            }
+            .chip {
+                height: 19px;
+                width: 61px;
+                background: #090909;
+                margin-bottom: 38px;
+            }
+            .digits {
+                font-weight: 850;
+                letter-spacing: 2px;
+                font-size: 17px;
+            }
+            .card-info {
+                position: absolute;
+                left: 21px;
+                right: 21px;
+                bottom: 19px;
+                display: flex;
+                justify-content: space-between;
+                align-items: end;
+            }
+            .card-label {
+                font-size: 10px;
+                font-weight: 700;
+            }
+            .card-value {
+                font-size: 23px;
+                font-weight: 900;
+            }
+            .valid {
+                font-size: 13px;
+                font-weight: 800;
+            }
+            .transactions {
+                margin-top: 20px;
+                background: var(--white);
+                color: #151619;
+                border-radius: 24px;
+                padding: 20px;
+            }
+            .tx-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+            .tx-head b {
+                font-size: 16px;
+            }
+            .tx-head span {
+                font-size: 12px;
+                color: #85868b;
+            }
+            .tx {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                padding: 14px 0;
+                border-bottom: 1px solid #dededb;
+            }
+            .tx:last-child {
+                border-bottom: 0;
+            }
+            .logo {
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                background: #e8e8e8;
+                display: grid;
+                place-items: center;
+                font-weight: 900;
+                flex: none;
+            }
+            .txmain {
+                flex: 1;
+            }
+            .txmain b {
+                font-size: 14px;
+            }
+            .txmain div {
+                font-size: 11px;
+                color: #85868b;
+                margin-top: 3px;
+            }
+            .amount {
+                font-size: 13px;
+                font-weight: 850;
+            }
+            .positive {
+                color: var(--green);
+            }
+            .side-stack {
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+            }
+            .balance-mini {
+                font-size: 31px;
+                font-weight: 650;
+                margin-top: 7px;
+            }
+            .balance-mini span {
+                font-size: 17px;
+                color: #777;
+            }
+            .metric-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .metric {
+                padding: 17px;
+                background: var(--surface2);
+                border-radius: 19px;
+            }
+            .metric-icon {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: grid;
+                place-items: center;
+                color: #111;
+                font-weight: 900;
+                margin-bottom: 12px;
+            }
+            .metric strong {
+                font-size: 20px;
+            }
+            .metric small {
+                display: block;
+                color: var(--muted);
+                margin-top: 4px;
+            }
+            .budget {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin: 15px 0;
+            }
+            .progress {
+                height: 9px;
+                background: #2a2b2f;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            .progress span {
+                display: block;
+                height: 100%;
+                width: 68%;
+                background: var(--lime);
+                border-radius: 10px;
+            }
+            .category {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin: 15px 0;
+            }
+            .cat-icon {
+                width: 34px;
+                height: 34px;
+                border-radius: 12px;
+                background: #292a2e;
+                display: grid;
+                place-items: center;
+            }
+            .category b {
+                font-size: 13px;
+            }
+            .category small {
+                color: var(--muted);
+                display: block;
+                margin-top: 2px;
+            }
+            .category .right {
+                margin-left: auto;
+                text-align: right;
+                font-size: 12px;
+            }
+            .filters {
+                display: flex;
+                gap: 9px;
+                margin: 0 0 22px;
+            }
+            .filter {
+                border: 0;
+                background: var(--surface2);
+                color: #aaa;
+                height: 42px;
+                border-radius: 22px;
+                padding: 0 19px;
+                font-weight: 750;
+                font-size: 12px;
+            }
+            .filter.active {
+                background: var(--lime);
+                color: #111;
+            }
+            .chart-panel {
+                padding-bottom: 17px;
+            }
+            .chart-wrap {
+                height: 310px;
+                position: relative;
+            }
+            .chart-wrap svg {
+                width: 100%;
+                height: 100%;
+            }
+            .tooltip {
+                position: absolute;
+                left: 58%;
+                top: 17px;
+                transform: translateX(-50%);
+                background: var(--lime);
+                color: #111;
+                padding: 9px 14px;
+                border-radius: 18px;
+                font-size: 13px;
+                font-weight: 900;
+            }
+            .tooltip:after {
+                content: '';
+                position: absolute;
+                left: 50%;
+                bottom: -7px;
+                transform: translateX(-50%);
+                border: 7px solid transparent;
+                border-top-color: var(--lime);
+                border-bottom: 0;
+            }
+            .statgrid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+                margin-top: 15px;
+            }
+            .stat {
+                background: var(--surface2);
+                border-radius: 21px;
+                padding: 18px;
+            }
+            .stat-icon {
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                display: grid;
+                place-items: center;
+                color: #111;
+                font-weight: 900;
+                margin-bottom: 13px;
+            }
+            .stat strong {
+                font-size: 22px;
+            }
+            .stat small {
+                display: block;
+                color: var(--muted);
+                font-size: 11px;
+                margin-top: 4px;
+            }
+            .insight {
+                margin-top: 15px;
+                background: var(--lav);
+                color: #111;
+                border-radius: 18px;
+                padding: 15px 17px;
+                display: flex;
+                align-items: center;
+            }
+            .insight strong {
+                font-size: 19px;
+            }
+            .insight div {
+                font-size: 11px;
+                color: #46445d;
+                margin-top: 4px;
+            }
+            .insight .arrow {
+                margin-left: auto;
+                font-size: 27px;
+            }
+            .legend {
+                display: flex;
+                gap: 18px;
+                font-size: 11px;
+                color: var(--muted);
+                margin-top: 2px;
+            }
+            .dot {
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                margin-right: 5px;
+            }
+            .dot.l {
+                background: var(--lime);
+            }
+            .dot.v {
+                background: var(--lav);
+            }
+            .history {
+                margin-top: 20px;
+            }
+            .history-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 7px;
+            }
+            .history-head b {
+                font-size: 16px;
+            }
+            .history-head span {
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .month-row {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+                margin-top: 10px;
+            }
+            .month {
+                background: var(--surface2);
+                padding: 14px;
+                border-radius: 16px;
+            }
+            .month small {
+                color: var(--muted);
+                font-size: 10px;
+            }
+            .month strong {
+                display: block;
+                font-size: 16px;
+                margin-top: 5px;
+            }
+            @media (max-width: 900px) {
+                .grid-home,
+                .grid-analytics {
+                    grid-template-columns: 1fr;
+                }
+                .topbar {
+                    padding: 0 18px;
+                }
+                .container {
+                    padding: 24px 18px 45px;
+                }
+            }
+            @media (max-width: 620px) {
+                .toolbar button {
+                    padding: 8px 10px;
+                }
+                .brand span {
+                    display: none;
+                }
+                .avatar {
+                    display: none;
+                }
+                .hero {
+                    display: block;
+                }
+                .hero-actions {
+                    margin-top: 15px;
+                }
+                .cards {
+                    grid-template-columns: 1fr;
+                }
+                .balance {
+                    font-size: 43px;
+                }
+                .month-row {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="app">
+            <header class="topbar">
+                <div class="brand">
+                    <div class="brand-mark">F</div>
+                    <span>Fintrack</span>
+                </div>
+                <div class="toolbar">
+                    <button id="p1btn" class="active" onclick="showPage(1)">Page 1 · Home</button>
+                    <button id="p2btn" onclick="showPage(2)">Page 2 · Analytics</button>
+                </div>
+                <div class="avatar">JC</div>
+            </header>
+
+            <section id="page1" class="page active">
+                <div class="container">
+                    <div class="grid-home">
+                        <main>
+                            <div class="panel">
+                                <div class="greeting">Good Morning,</div>
+                                <div class="name">Jhonny Cantona</div>
+
+                                <div class="hero">
+                                    <div>
+                                        <div class="label">Total balance</div>
+                                        <div class="balance">$367,289<span>.00</span></div>
+                                    </div>
+                                    <div class="hero-actions">
+                                        <button class="pill">↗ &nbsp;Transfer</button>
+                                        <button class="pill">↙ &nbsp;Request</button>
+                                        <button class="pill">•••</button>
+                                    </div>
+                                </div>
+
+                                <div class="panel-title">
+                                    <h2>My Cards</h2>
+                                    <span>⊕ Add card</span>
+                                </div>
+                                <div class="cards">
+                                    <div class="card">
+                                        <div class="chip"></div>
+                                        <div class="digits">
+                                            **** &nbsp;**** &nbsp;**** &nbsp;3281
+                                        </div>
+                                        <div class="card-info">
+                                            <div>
+                                                <div class="card-label">BALANCE</div>
+                                                <div class="card-value">
+                                                    $218,000<span style="font-size: 11px">.00</span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="card-label">VALID THRU</div>
+                                                <div class="valid">06/27</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="chip"></div>
+                                        <div class="digits">
+                                            **** &nbsp;**** &nbsp;**** &nbsp;7924
+                                        </div>
+                                        <div class="card-info">
+                                            <div>
+                                                <div class="card-label">BALANCE</div>
+                                                <div class="card-value">
+                                                    $149,289<span style="font-size: 11px">.00</span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="card-label">VALID THRU</div>
+                                                <div class="valid">11/28</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="transactions">
+                                    <div class="tx-head">
+                                        <b>Latest Transactions</b><span>See all →</span>
+                                    </div>
+                                    <div class="tx">
+                                        <div class="logo" style="color: #c11">N</div>
+                                        <div class="txmain">
+                                            <b>Netflix</b>
+                                            <div>Entertainment · Jun 23, 2026</div>
+                                        </div>
+                                        <div class="amount">− $42.00</div>
+                                    </div>
+                                    <div class="tx">
+                                        <div class="logo" style="color: #1477c9">P</div>
+                                        <div class="txmain">
+                                            <b>PayPal Transfer</b>
+                                            <div>Income · Jun 22, 2026</div>
+                                        </div>
+                                        <div class="amount positive">+ $2,500.00</div>
+                                    </div>
+                                    <div class="tx">
+                                        <div class="logo">◎</div>
+                                        <div class="txmain">
+                                            <b>Apple Store</b>
+                                            <div>Shopping · Jun 21, 2026</div>
+                                        </div>
+                                        <div class="amount">− $129.00</div>
+                                    </div>
+                                    <div class="tx">
+                                        <div class="logo">↗</div>
+                                        <div class="txmain">
+                                            <b>Salary Deposit</b>
+                                            <div>Income · Jun 20, 2026</div>
+                                        </div>
+                                        <div class="amount positive">+ $8,500.00</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+
+                        <aside class="side-stack">
+                            <div class="panel">
+                                <div class="panel-title">
+                                    <h2>Overview</h2>
+                                    <span>June 2026</span>
+                                </div>
+                                <div class="label">Available balance</div>
+                                <div class="balance-mini">$367,289<span>.00</span></div>
+                                <div class="metric-row" style="margin-top: 18px">
+                                    <div class="metric">
+                                        <div class="metric-icon" style="background: var(--lime)">
+                                            ↗
+                                        </div>
+                                        <strong>$524K</strong><small>Total income</small>
+                                    </div>
+                                    <div class="metric">
+                                        <div class="metric-icon" style="background: var(--lav)">
+                                            ↘
+                                        </div>
+                                        <strong>$409K</strong><small>Total outcome</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel">
+                                <div class="panel-title">
+                                    <h2>Monthly budget</h2>
+                                    <span>$7,500 / $11,000</span>
+                                </div>
+                                <div class="budget">
+                                    <b>Overall spending</b
+                                    ><span style="color: var(--muted); font-size: 12px">68%</span>
+                                </div>
+                                <div class="progress"><span></span></div>
+                                <div class="category">
+                                    <div class="cat-icon">⌂</div>
+                                    <div><b>Housing</b><small>Rent & utilities</small></div>
+                                    <div class="right">$2,400</div>
+                                </div>
+                                <div class="category">
+                                    <div class="cat-icon">◆</div>
+                                    <div><b>Shopping</b><small>Retail & online</small></div>
+                                    <div class="right">$1,820</div>
+                                </div>
+                                <div class="category">
+                                    <div class="cat-icon">●</div>
+                                    <div>
+                                        <b>Food & dining</b><small>Restaurants & groceries</small>
+                                    </div>
+                                    <div class="right">$1,460</div>
+                                </div>
+                                <div class="category">
+                                    <div class="cat-icon">✈</div>
+                                    <div><b>Travel</b><small>Flights & hotels</small></div>
+                                    <div class="right">$980</div>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page2" class="page">
+                <div class="container">
+                    <div class="grid-analytics">
+                        <main>
+                            <div class="panel chart-panel">
+                                <div class="panel-title">
+                                    <h2>Analytics</h2>
+                                    <span>June 2026 · Monthly</span>
+                                </div>
+                                <div class="filters">
+                                    <button class="active filter">All</button
+                                    ><button class="filter">Income</button
+                                    ><button class="filter">Outcome</button
+                                    ><button class="filter">Savings</button>
+                                </div>
+                                <div class="label">Total balance</div>
+                                <div class="balance">$367,289<span>.00</span></div>
+
+                                <div class="chart-wrap">
+                                    <div class="tooltip">$1,250</div>
+                                    <svg viewBox="0 0 760 310" preserveAspectRatio="none">
+                                        <defs>
+                                            <linearGradient id="area" x1="0" x2="0" y1="0" y2="1">
+                                                <stop
+                                                    offset="0"
+                                                    stop-color="#a8f34d"
+                                                    stop-opacity=".22" />
+                                                <stop
+                                                    offset="1"
+                                                    stop-color="#a8f34d"
+                                                    stop-opacity="0" />
+                                            </linearGradient>
+                                        </defs>
+                                        <path
+                                            d="M0 120 C90 68 145 60 230 130 S360 175 440 105 S580 65 760 120 L760 215 L0 215Z"
+                                            fill="url(#area)" />
+                                        <path
+                                            d="M0 120 C90 68 145 60 230 130 S360 175 440 105 S580 65 760 120"
+                                            fill="none"
+                                            stroke="#a8f34d"
+                                            stroke-width="3" />
+                                        <path
+                                            d="M0 154 C90 205 155 215 240 155 S360 60 455 145 S600 208 760 150"
+                                            fill="none"
+                                            stroke="#aaa5ff"
+                                            stroke-width="3" />
+                                        <line
+                                            x1="440"
+                                            y1="92"
+                                            x2="440"
+                                            y2="245"
+                                            stroke="#a8f34d"
+                                            stroke-opacity=".12"
+                                            stroke-width="28" />
+                                        <circle
+                                            cx="440"
+                                            cy="105"
+                                            r="9"
+                                            fill="#f1f2e8"
+                                            stroke="#a8f34d"
+                                            stroke-width="4" />
+                                        <g fill="#74767d" font-size="12">
+                                            <text x="0" y="275">Feb</text>
+                                            <text x="105" y="275">Mar</text>
+                                            <text x="215" y="275">Apr</text>
+                                            <text x="325" y="275">May</text>
+                                            <text x="430" y="275" fill="#a8f34d">Jun</text>
+                                            <text x="535" y="275">Jul</text>
+                                            <text x="650" y="275">Aug</text>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div class="legend">
+                                    <span><i class="dot l"></i>Income / balance trend</span
+                                    ><span><i class="dot v"></i>Outcome trend</span>
+                                </div>
+
+                                <div class="statgrid">
+                                    <div class="stat">
+                                        <div class="stat-icon" style="background: var(--lime)">
+                                            ↗
+                                        </div>
+                                        <strong
+                                            >$524,000<span style="font-size: 11px; color: #777"
+                                                >.00</span
+                                            ></strong
+                                        ><small>Total Income</small>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-icon" style="background: var(--lav)">
+                                            ↘
+                                        </div>
+                                        <strong
+                                            >$409,380<span style="font-size: 11px; color: #777"
+                                                >.00</span
+                                            ></strong
+                                        ><small>Total Outcome</small>
+                                    </div>
+                                </div>
+                                <div class="insight">
+                                    <div>
+                                        <strong>+12.5% ↑</strong>
+                                        <div>Expense was up compared with last month</div>
+                                    </div>
+                                    <div class="arrow">›</div>
+                                </div>
+                            </div>
+                        </main>
+
+                        <aside class="side-stack">
+                            <div class="panel">
+                                <div class="panel-title">
+                                    <h2>Spending breakdown</h2>
+                                    <span>This month</span>
+                                </div>
+                                <div class="category">
+                                    <div class="cat-icon">⌂</div>
+                                    <div><b>Housing</b><small>29% of spending</small></div>
+                                    <div class="right">$2,400</div>
+                                </div>
+                                <div class="category">
+                                    <div class="cat-icon">◆</div>
+                                    <div><b>Shopping</b><small>22% of spending</small></div>
+                                    <div class="right">$1,820</div>
+                                </div>
+                                <div class="category">
+                                    <div class="cat-icon">●</div>
+                                    <div><b>Food & dining</b><small>18% of spending</small></div>
+                                    <div class="right">$1,460</div>
+                                </div>
+                                <div class="category">
+                                    <div class="cat-icon">✈</div>
+                                    <div><b>Travel</b><small>12% of spending</small></div>
+                                    <div class="right">$980</div>
+                                </div>
+                                <div class="category">
+                                    <div class="cat-icon">+</div>
+                                    <div><b>Other</b><small>19% of spending</small></div>
+                                    <div class="right">$1,570</div>
+                                </div>
+                            </div>
+
+                            <div class="panel history">
+                                <div class="history-head">
+                                    <b>Transactions History</b><span>Today⌄</span>
+                                </div>
+                                <div class="tx">
+                                    <div class="logo" style="color: #c11">N</div>
+                                    <div class="txmain">
+                                        <b>Netflix</b>
+                                        <div>Entertainment</div>
+                                    </div>
+                                    <div class="amount">− $42.00</div>
+                                </div>
+                                <div class="tx">
+                                    <div class="logo" style="color: #1477c9">P</div>
+                                    <div class="txmain">
+                                        <b>PayPal Transfer</b>
+                                        <div>Income</div>
+                                    </div>
+                                    <div class="amount positive">+ $2,500</div>
+                                </div>
+                            </div>
+
+                            <div class="panel">
+                                <div class="panel-title">
+                                    <h2>Monthly totals</h2>
+                                    <span>2026</span>
+                                </div>
+                                <div class="month-row">
+                                    <div class="month"><small>MAR</small><strong>$82K</strong></div>
+                                    <div class="month"><small>APR</small><strong>$91K</strong></div>
+                                    <div class="month">
+                                        <small>MAY</small><strong>$104K</strong>
+                                    </div>
+                                    <div class="month">
+                                        <small>JUN</small><strong>$115K</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <script>
+            function showPage(n) {
+                document.querySelectorAll('.page').forEach((p) => p.classList.remove('active'));
+                document.getElementById('page' + n).classList.add('active');
+                document.getElementById('p1btn').classList.toggle('active', n === 1);
+                document.getElementById('p2btn').classList.toggle('active', n === 2);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        </script>
+    </body>
+</html>

@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransactionDetailData;
-use App\Http\Requests\StoreTransactionRequest;
-use App\Http\Requests\UpdateTransactionRequest;
-use App\Models\Account;
+use App\Data\Transaction\TransactionFormData;
+use App\Data\Transaction\TransactionListData;
+use App\Http\Requests\SaveTransactionRequest;
 use App\Models\Transaction;
+use App\Models\User;
 use App\Services\AccountService;
-use App\Services\BalanceService;
 use App\Services\CategoryService;
 use App\Services\TransactionService;
+use App\Services\TransferService;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -20,93 +23,92 @@ class TransactionController extends Controller
 {
     public function __construct(
         private readonly TransactionService $transactionService,
-        private readonly BalanceService $balanceService,
+        private readonly TransferService $transferService,
         private readonly AccountService $accountService,
+        #[CurrentUser] private readonly ?User $user
     ) {}
 
-    public function index(Request $request, Account $account): Response
+    public function index(Request $request): Response
     {
-        $this->authorize('viewAny', [Transaction::class, $account]);
+        $this->authorize('viewAny', Transaction::class);
+
+        $transactions = TransactionListData::collect($this->transactionService->getTransactions($this->user));
 
         return Inertia::render('transactions/index', [
-            'transactions' => $this->transactionService->getTransactions(),
+            'transactions' => $transactions,
             'summary' => [],
         ]);
-    }
-
-    public function create(Request $request, Account $account): Response
-    {
-        $this->authorize('create', [Transaction::class, $account]);
-
-        return Inertia::render('transactions/create', [
-            'account' => $account,
-            'categories' => CategoryService::getCategories(),
-            'accounts' => $this->accountService->getTransferEligibleAccounts($account),
-        ]);
-    }
-
-    public function store(StoreTransactionRequest $request, Account $account): RedirectResponse
-    {
-        $this->authorize('create', [Transaction::class, $account]);
-
-        $data = $request->validated();
-
-        if ($data['type'] === 'transfer') {
-            $destinationAccount = Account::findOrFail($data['destination_account_id']);
-
-            $this->transactionService->createTransfer(
-                sourceAccount: $account,
-                destinationAccount: $destinationAccount,
-                creator: $request->user(),
-                amount: (float) $data['amount'],
-                transactionDate: $data['transaction_date'],
-                feeAmount: isset($data['fee_amount']) ? (float) $data['fee_amount'] : null,
-                description: $data['description'] ?? null,
-            );
-        } else {
-            $this->transactionService->create($account, $request->user(), $data);
-        }
-
-        return to_route('transactions.index', $account)->flash('Transaction saved.');
     }
 
     public function show(Request $request, Transaction $transaction): Response
     {
         $this->authorize('view', $transaction);
 
-        $transaction->load(['account', 'category.parent', 'creator']);
-
         return Inertia::render('transactions/show', [
-            'transaction' => TransactionDetailData::from($transaction),
+            'transaction' => TransactionDetailData::fromTransaction($transaction),
         ]);
     }
 
-    public function edit(Request $request, Account $account, Transaction $transaction): Response
+    public function create(Request $request): Response
+    {
+        $this->authorize('create', Transaction::class);
+
+        $accounts = $this->accountService->getAccountsByUser($this->user);
+
+        return Inertia::render('transactions/create', [
+            'transaction' => TransactionFormData::defaultExpense(),
+            'categories' => CategoryService::getCategories(),
+            'accounts' => $accounts,
+        ]);
+    }
+
+    public function edit(Request $request, Transaction $transaction): Response | RedirectResponse
     {
         $this->authorize('update', $transaction);
+
+        if ($transaction->transfer_id !== null) {
+            return to_route('transfers.edit', $transaction->transfer_id);
+        }
+
+        $accounts = $this->accountService->getAccountsByUser($this->user);
 
         return Inertia::render('transactions/edit', [
-            'account' => $account,
-            'transaction' => $transaction->load('category'),
-            'categories' => $this->transactionService->getCategories(),
+            'accounts' => $accounts,
+            'categories' => CategoryService::getCategories(),
+            'transaction' => TransactionFormData::fromTransaction($transaction),
         ]);
     }
 
-    public function update(UpdateTransactionRequest $request, Account $account, Transaction $transaction): RedirectResponse
+    public function store(SaveTransactionRequest $request): RedirectResponse
+    {
+        $this->authorize('create', Transaction::class);
+
+        $this->transactionService->create($this->user, TransactionData::from($request->validated()));
+
+        return to_route('transactions.index')->flash('Transaction saved.');
+    }
+
+    public function update(SaveTransactionRequest $request, Transaction $transaction): RedirectResponse
     {
         $this->authorize('update', $transaction);
 
-        $this->transactionService->update($transaction, $request->validated());
+        abort_unless($transaction->transfer_id === null, 422, 'Transfer unit members must be edited via their transfer.');
 
-        return to_route('transactions.index', $account)->flash('Transaction updated.');
+        $this->transactionService->update($transaction, TransactionData::from($request->validated()));
+
+        return to_route('transactions.index')->flash('Transaction updated.');
     }
 
-    public function destroy(Account $account, Transaction $transaction): RedirectResponse
+    public function destroy(Transaction $transaction): RedirectResponse
     {
         $this->authorize('delete', $transaction);
 
-        $this->transactionService->softDelete($transaction);
+        if ($transaction->transfer_id !== null) {
+            $this->transferService->deleteUnit($transaction);
+        } else {
+            $this->transactionService->softDelete($transaction);
+        }
 
-        return to_route('transactions.index', $account)->flash('Transaction deleted.');
+        return to_route('transactions.index')->flash('Transaction deleted.');
     }
 }

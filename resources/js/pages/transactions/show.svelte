@@ -3,11 +3,11 @@
 
     import { router } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
+    import TransferController from '@wayfinder/App/Http/Controllers/TransferController';
 
-    import PageSection from '@components/layouts/page-section.svelte';
     import TransactionDetail from '@components/module/transaction/transaction-detail.svelte';
-    import TransactionTypeBadge from '@components/module/transaction/transaction-type-badge.svelte';
-    import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
+    import BottomActionBar from '@components/navigation/bottom-action-bar.svelte';
+    import HeaderContext from '@components/navigation/header-context.svelte';
     import Button from '@components/ui/button.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
@@ -15,69 +15,57 @@
 
     let showDeleteConfirm = $state(false);
 
+    const isTransferRow = $derived(transaction.type === 'transfer');
+
+    const editHref = $derived(
+        transaction.transfer_id !== null
+            ? TransferController.edit.url({ transfer: transaction.transfer_id })
+            : TransactionController.edit.url({ transaction: transaction.id })
+    );
+
     function destroy(): void {
         router.delete(TransactionController.destroy.url({ transaction: transaction.id }));
     }
 
-    const isTransferRow = $derived(
-        transaction.type === 'transfer_out' ||
-            transaction.type === 'transfer_in' ||
-            transaction.type === 'fee'
-    );
+    const backUrl = TransactionController.index.url();
 </script>
 
-<DashboardPageHeader title="">
-    <div class="space-y-1">
-        <h1 class="text-xl font-bold">Transaction Details</h1>
-        <div class="flex items-center gap-1.5">
-            <TransactionTypeBadge type={transaction.type} />
-            {#if isTransferRow}
-                <span class="text-xs text-base-content/50">Transfer</span>
-            {/if}
-        </div>
-    </div>
-
-    {#snippet actions()}
+<HeaderContext>
+    <div class="flex w-full items-center justify-between gap-3">
         <Button
-            color="light"
-            // href={TransactionController.edit.url({ transaction: transaction.id })}
-            variant="outline">
-            <i class="iconify size-5 solar--pen-bold-duotone"></i>
-            Edit
+            class="size-10 shrink-0 p-1 btn-sm"
+            aria-label="Back to transactions"
+            href={backUrl}
+            variant="ghost">
+            <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
         </Button>
-    {/snippet}
-</DashboardPageHeader>
 
-<PageSection breakMargin>
-    <TransactionDetail {transaction} />
-
-    <!-- Action Buttons -->
-    <div class="mt-4 flex gap-3">
         <Button
-            class="flex-1"
-            color="light"
-            // href={TransactionController.edit.url({ transaction: transaction.id })}
-            variant="outline">
-            <i class="iconify size-4 solar--pen-bold-duotone"></i>
-            Edit
-        </Button>
-        <Button
-            class="flex-1"
+            class="size-10 shrink-0 p-1 btn-sm"
+            aria-label={isTransferRow ? 'Delete transfer' : 'Delete transaction'}
             color="error"
             onclick={() => (showDeleteConfirm = true)}
-            variant="outline">
-            <i class="iconify size-4 solar--trash-bin-2-bold-duotone"></i>
-            Delete
+            variant="ghost">
+            <i class="iconify size-6 solar--trash-bin-2-line-duotone"></i>
         </Button>
     </div>
-</PageSection>
+</HeaderContext>
+
+<TransactionDetail {transaction} />
+
+<BottomActionBar>
+    <Button class="w-full grow" color="primary" href={editHref}>
+        <i class="iconify size-5 solar--pen-line-duotone"></i>
+        Edit {isTransferRow ? 'Transfer' : 'Transaction'}
+    </Button>
+</BottomActionBar>
 
 <ConfirmationModal
     cancelText="Cancel"
     confirmButtonProps={{ color: 'error' }}
     confirmText="Delete"
     onConfirm={destroy}
-    title="Delete Transaction"
+    title={isTransferRow ? 'Delete Transfer' : 'Delete Transaction'}
     bind:open={showDeleteConfirm}>
     {#if isTransferRow}
         This is part of a transfer. Deleting it will soft-delete all linked transfer rows.

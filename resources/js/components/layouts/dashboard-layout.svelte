@@ -4,16 +4,19 @@
     import ErrorWrapper from './error-wrapper.svelte';
 
     import { flatMenu, transformMenuToBreadcrumbs } from '@data/menu';
-    import { useFlashToast } from '@hooks/flash-handler.svelte';
     import { page } from '@inertiajs/svelte';
+    import { getBreadcrumbItems } from '@lib/global-states.svelte';
+    import { IsMobile } from '@lib/is-mobile.svelte';
+    import { useFlashToast } from '@lib/toast-handler.svelte';
 
-    import { getBreadcrumbItems } from '@utilities/global-states.svelte';
     import { getTitleFromMenu } from '@utilities/helper.svelte';
 
     import BottomNav from '@components/navigation/bottom-nav.svelte';
+    import DashboardHeaderMobile from '@components/navigation/dashboard-header-mobile.svelte';
     import DashboardHeader from '@components/navigation/dashboard-header.svelte';
     import DashboardSidebar from '@components/navigation/dashboard-sidebar.svelte';
     import * as Sidebar from '@components/ui/atoms/sidebar';
+    import Dock from '@components/ui/dock.svelte';
     import Toaster from '@components/ui/toaster.svelte';
 
     let {
@@ -21,6 +24,12 @@
         backUrl = undefined,
         breadcrumbs = [],
         title: layoutTitle = undefined,
+        headerContext = undefined,
+        bottomActionBar = undefined,
+        mobileShellClass = undefined,
+        mobileHeaderClass = undefined,
+        mobileHeaderScrolledClass = undefined,
+        mobileHeaderScrollThreshold = undefined,
         children,
         ...props
     }: RestProps = $props();
@@ -30,6 +39,9 @@
     const appName = import.meta.env.VITE_APP_NAME || page?.props?.meta?.app_name;
 
     useFlashToast();
+
+    // The sidebar shell is desktop-only; mobile renders a plain stacked layout.
+    const isMobile = new IsMobile();
 
     const menuBreadcrumbs = $derived(transformMenuToBreadcrumbs());
     const currentMenuBreadcrumbs = $derived(
@@ -54,24 +66,47 @@
 
 <Toaster />
 
-<Sidebar.Provider>
-    <DashboardSidebar />
-    <Sidebar.Inset>
-        <DashboardHeader {backUrl} breadcrumbs={breadcrumbItems} {title} />
+{#if isMobile.current}
+    <div class="relative flex min-h-svh w-full flex-1 flex-col {mobileShellClass}">
+        <DashboardHeaderMobile
+            class={mobileHeaderClass}
+            scrolledClass={mobileHeaderScrolledClass}
+            {backUrl}
+            {headerContext}
+            scrollThreshold={mobileHeaderScrollThreshold}
+            {title} />
 
-        <ErrorWrapper>
-            <div class="flex h-full flex-col gap-6 p-3 md:p-5">
-                {@render children?.()}
-            </div>
+        {@render pageContent()}
 
-            <div class="my-10"></div>
+        {#if bottomActionBar}
+            <Dock data-slot="bottom-action-bar" position="fixed" variant="float">
+                {@render bottomActionBar.render()}
+            </Dock>
+        {:else}
+            <BottomNav />
+        {/if}
+    </div>
+{:else}
+    <Sidebar.Provider>
+        <DashboardSidebar />
+        <Sidebar.Inset>
+            <DashboardHeader {backUrl} breadcrumbs={breadcrumbItems} {headerContext} />
+
+            {@render pageContent()}
 
             {@render footer()}
-        </ErrorWrapper>
+        </Sidebar.Inset>
+    </Sidebar.Provider>
+{/if}
 
-        <BottomNav />
-    </Sidebar.Inset>
-</Sidebar.Provider>
+{#snippet pageContent()}
+    <ErrorWrapper>
+        <!-- Mobile padding is page-controlled; desktop keeps the shared padding. -->
+        <div class="flex h-full flex-col gap-6 md:p-5">
+            {@render children?.()}
+        </div>
+    </ErrorWrapper>
+{/snippet}
 
 {#snippet footer()}
     <footer></footer>

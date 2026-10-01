@@ -1,8 +1,7 @@
 <script lang="ts">
+    import { sidebar } from '@lib/global-states.svelte';
     import { dashboard } from '@wayfinder/routes';
     import { Menubar } from 'bits-ui';
-
-    import { sidebar } from '@states/reactive.svelte';
 
     interface MenuItem {
         id: number;
@@ -45,6 +44,20 @@
     };
 </script>
 
+<ul class="space-y-1 text-sm">
+    {#if sidebar.is_collapsed}
+        <Menubar.Root class="mx-0">
+            {#each menus as menu (menu)}
+                {@render menuItem(menu)}
+            {/each}
+        </Menubar.Root>
+    {:else}
+        {#each menus as menu (menu)}
+            {@render menuContent(menu)}
+        {/each}
+    {/if}
+</ul>
+
 {#snippet menuContent(menu: MenuItem, isSubmenu = false)}
     {@const isLink = menu.route?.length > 0 && !sidebar.is_collapsed}
     <li
@@ -55,7 +68,7 @@
         <svelte:element
             this={isLink ? 'a' : 'button'}
             class={[
-                'hover:bg-secondary/40 flex w-full cursor-pointer gap-x-[calc(--spacing(5.5))] rounded px-3 py-2',
+                'flex w-full cursor-pointer gap-x-[calc(--spacing(5.5))] rounded px-3 py-2 hover:bg-secondary/40',
                 sidebar.is_collapsed ? 'flex-col items-center gap-1 text-xs' : '',
             ]}
             href={isLink ? menu.route : undefined}
@@ -123,17 +136,3 @@
         </Menubar.Portal>
     </Menubar.Menu>
 {/snippet}
-
-<ul class="space-y-1 text-sm">
-    {#if sidebar.is_collapsed}
-        <Menubar.Root class="mx-0">
-            {#each menus as menu (menu)}
-                {@render menuItem(menu)}
-            {/each}
-        </Menubar.Root>
-    {:else}
-        {#each menus as menu (menu)}
-            {@render menuContent(menu)}
-        {/each}
-    {/if}
-</ul>

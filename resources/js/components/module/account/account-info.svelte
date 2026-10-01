@@ -4,10 +4,10 @@
     import { getDecorationColor } from '@data/decoration-colors';
     import { getDecorationIcon } from '@data/decoration-icons';
     import { Link } from '@inertiajs/svelte';
+    import { AccountType, AccountTypeMeta } from '@wayfinder/App/Enums/AccountType';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
-    import AccountBadge from '@components/module/account/account-badge.svelte';
-    import AccountTypeBadge from '@components/module/account/account-type-badge.svelte';
+    import DecorationBadge from '@components/ui/decoration-badge.svelte';
 
     interface Props {
         account: Models.Account;
@@ -17,18 +17,26 @@
 
     let { account, asLink = false, reverse = false }: Props = $props();
 
-    const iconClass = $derived(
-        account?.decorations?.icon
-            ? (getDecorationIcon(account.decorations.icon)?.value ??
-                  'solar--banknote-2-bold-duotone')
-            : 'solar--banknote-2-bold-duotone'
-    );
+    /* Type-driven icon fallback — the decoration icon wins, then the account
+       type's icon (same chain as account-card). */
+    const typeIcons: Record<string, string> = {
+        [AccountType.DebitAccount]: 'solar--banknote-2-bold-duotone',
+        [AccountType.CreditCard]: 'solar--card-bold-duotone',
+        [AccountType.CashWallet]: 'solar--wallet-bold-duotone',
+        [AccountType.EWallet]: 'solar--smartphone-bold-duotone',
+        [AccountType.Investment]: 'solar--graph-bold-duotone',
+    };
 
-    const colorValue = $derived(
-        account?.decorations?.color
-            ? getDecorationColor(account.decorations.color)?.value
-            : undefined
-    );
+    const hex = $derived(getDecorationColor(account?.decorations?.color)?.hex);
+
+    const visual = $derived({
+        icon:
+            getDecorationIcon(account?.decorations?.icon)?.value ??
+            typeIcons[account?.type ?? ''] ??
+            'solar--banknote-2-bold-duotone',
+        background: hex ? `${hex}20` : undefined,
+        color: hex ?? undefined,
+    });
 </script>
 
 {#if asLink}
@@ -40,17 +48,18 @@
 {/if}
 
 {#snippet Item()}
-    <div class="flex {reverse ? 'flex-row-reverse' : ''} items-center gap-3">
-        <div
-            style:background={colorValue ? `${colorValue}20` : undefined}
-            style:color={colorValue ?? undefined}
-            class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-base-content/10">
-            <i class="iconify size-5 {iconClass}"></i>
-        </div>
+    <div
+        class="flex {reverse
+            ? 'flex-row-reverse'
+            : ''} items-center gap-3 rounded-lg border border-border p-2">
+        <DecorationBadge size="md" {...visual} />
         <div class="grow">
-            <AccountBadge {account} labelOnly />
-            <p class="my-1"></p>
-            <AccountTypeBadge type={account?.type} />
+            <h6 class="text-sm font-medium tracking-wide text-base-content/80">
+                {AccountTypeMeta?.[account.type]?.label}
+            </h6>
+            <p class="text-sm font-bold">
+                {account.name}
+            </p>
         </div>
     </div>
 {/snippet}

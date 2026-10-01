@@ -48,7 +48,10 @@
 </CollapsiblePrimitive.Root>
 
 {#snippet triggerSnippet()}
-    <CollapsiblePrimitive.Trigger data-slot="collapsible-trigger" bind:ref={triggerRef}>
+    <CollapsiblePrimitive.Trigger
+        data-slot="collapsible-trigger"
+        class="w-full"
+        bind:ref={triggerRef}>
         {#if typeof trigger === 'function'}
             {@render trigger?.()}
         {:else}

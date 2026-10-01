@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Transaction List — Combined (Collapsible Days + Summary Card)</title>
+        <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+        <style>
+            :root {
+                --base-100: oklch(100% 0 0);
+                --base-200: oklch(96% 0.005 260);
+                --base-300: oklch(89% 0.008 260);
+                --base-content: oklch(24% 0.02 260);
+                --primary: oklch(55% 0.19 268);
+                --primary-800: oklch(42% 0.17 268);
+                --primary-content: oklch(98% 0.01 268);
+                --success: oklch(62% 0.15 155);
+                --error: oklch(60% 0.2 22);
+                --warning: oklch(72% 0.15 75);
+                --info: oklch(62% 0.15 230);
+                --secondary: oklch(60% 0.12 310);
+                --deco-food: oklch(72% 0.15 60);
+                --deco-transport: oklch(65% 0.15 240);
+                --deco-shopping: oklch(70% 0.16 330);
+            }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: 'Segoe UI', system-ui, sans-serif;
+                background: oklch(94% 0.01 260);
+                color: var(--base-content);
+                padding: 40px 24px;
+            }
+            h1 {
+                font-size: 18px;
+                margin-bottom: 4px;
+            }
+            .sub {
+                font-size: 13px;
+                color: oklch(50% 0.02 260);
+                margin-bottom: 32px;
+            }
+            .frame-wrap {
+                width: 390px;
+            }
+            .frame-label {
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                margin-bottom: 6px;
+                color: var(--primary);
+            }
+            .frame-tag {
+                font-size: 12px;
+                color: oklch(45% 0.02 260);
+                margin-bottom: 10px;
+            }
+            .phone {
+                background: var(--base-100);
+                border-radius: 24px;
+                padding: 20px 16px;
+                box-shadow: 0 10px 40px oklch(20% 0.02 260 / 0.18);
+            }
+            .notes {
+                font-size: 12px;
+                line-height: 1.7;
+                color: oklch(45% 0.02 260);
+                margin-top: 14px;
+                padding-left: 4px;
+            }
+            .notes b {
+                color: var(--base-content);
+            }
+            .notes li {
+                margin-left: 16px;
+            }
+            .mono {
+                font-family: 'Cascadia Mono', ui-monospace, monospace;
+            }
+            .muted {
+                opacity: 0.45;
+            }
+
+            /* current-list chrome: search + chips + tags */
+            .search {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                border-radius: 12px;
+                padding: 10px 14px;
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06);
+                border: 1px solid oklch(94% 0.005 260);
+            }
+            .search input {
+                border: 0;
+                outline: 0;
+                flex: 1;
+                font-size: 13px;
+                background: transparent;
+            }
+            .chips {
+                display: flex;
+                gap: 6px;
+                margin: 12px 0;
+                align-items: center;
+            }
+            .chip {
+                font-size: 11px;
+                font-weight: 600;
+                padding: 6px 12px;
+                border-radius: 999px;
+                border: 1.5px solid oklch(89% 0.01 260);
+                color: oklch(45% 0.02 260);
+                white-space: nowrap;
+            }
+            .chip.active {
+                background: var(--primary);
+                border-color: var(--primary);
+                color: var(--primary-content);
+            }
+            .sort-btn {
+                margin-left: auto;
+                width: 34px;
+                height: 34px;
+                border-radius: 12px;
+                border: 1.5px solid oklch(89% 0.01 260);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: oklch(45% 0.02 260);
+                flex-shrink: 0;
+            }
+            .tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--primary);
+                background: oklch(96% 0.03 268);
+                border-radius: 999px;
+                padding: 4px 10px;
+                margin: 0 6px 12px;
+            }
+
+            /* gradient summary card (aligned design) */
+            .summary {
+                position: relative;
+                overflow: hidden;
+                border-radius: 12px;
+                padding: 16px;
+                background: linear-gradient(135deg, var(--primary), var(--primary-800));
+                color: var(--primary-content);
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.1);
+            }
+            .blob {
+                position: absolute;
+                border-radius: 999px;
+                pointer-events: none;
+            }
+            .b1 {
+                top: -80px;
+                right: -60px;
+                width: 210px;
+                height: 210px;
+                background: rgb(255 255 255 / 0.25);
+                filter: blur(42px);
+            }
+            .b2 {
+                bottom: -70px;
+                left: -50px;
+                width: 170px;
+                height: 170px;
+                background: oklch(80% 0.15 75 / 0.4);
+                filter: blur(48px);
+            }
+            .hero {
+                position: relative;
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+            }
+            .hero .lbl {
+                font-size: 0.68rem;
+                font-weight: 600;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                opacity: 0.75;
+            }
+            .hero .num {
+                font-size: 28px;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                margin-top: 8px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .hero .tile {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: rgb(255 255 255 / 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .substats {
+                position: relative;
+                margin-top: 16px;
+                padding-top: 12px;
+                border-top: 1px solid rgb(255 255 255 / 0.2);
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+            .substats .cell:first-child {
+                padding-right: 14px;
+            }
+            .substats .cell:last-child {
+                border-left: 1px solid rgb(255 255 255 / 0.2);
+                padding-left: 14px;
+            }
+            .substats .lbl {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 0.6rem;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                opacity: 0.7;
+            }
+            .substats .num {
+                font-size: 15px;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+                margin-top: 4px;
+            }
+
+            /* count header */
+            .count {
+                font-size: 13px;
+                font-weight: 500;
+                opacity: 0.6;
+                margin: 16px 2px 8px;
+            }
+
+            /* collapsible days */
+            .col-day {
+                border-radius: 8px;
+                background: var(--base-100);
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06);
+                margin-bottom: 10px;
+                overflow: hidden;
+            }
+            .col-hdr {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 13px 16px;
+                cursor: pointer;
+                user-select: none;
+            }
+            .col-hdr .d {
+                font-size: 0.72rem;
+                font-weight: 700;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+            }
+            .col-hdr .n {
+                font-size: 11px;
+                opacity: 0.5;
+            }
+            .col-hdr .net {
+                margin-left: auto;
+                font-size: 12px;
+                font-weight: 500;
+            }
+            .col-hdr .chev {
+                transition: transform 0.15s ease;
+            }
+            .col-day.closed .chev {
+                transform: rotate(180deg);
+            }
+            .col-body {
+                border-top: 1px solid oklch(91% 0.01 260);
+                padding: 2px 16px;
+                display: block;
+            }
+            .col-day.closed .col-body {
+                display: none;
+            }
+
+            /* aligned rows (current aligned anatomy) */
+            .row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 0;
+            }
+            .row + .row {
+                border-top: 1px solid oklch(94% 0.005 260);
+            }
+            .row .tile {
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .row .desc {
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .row .meta {
+                font-size: 11px;
+                color: oklch(50% 0.02 260);
+                margin-top: 3px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .row .amt {
+                font-size: 13px;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 3px;
+            }
+            .type-pill {
+                font-size: 9px;
+                font-weight: 500;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                border-radius: 999px;
+                padding: 2px 7px;
+            }
+            .pill-expense {
+                background: oklch(96% 0.03 22);
+                color: var(--error);
+            }
+            .pill-income {
+                background: oklch(96% 0.03 155);
+                color: var(--success);
+            }
+            .pill-fee {
+                background: oklch(96% 0.02 310);
+                color: var(--secondary);
+            }
+
+            /* load more */
+            .load-more {
+                margin-top: 10px;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                border-radius: 12px;
+                padding: 14px;
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--primary);
+                background: var(--base-100);
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06);
+                border: 0;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Transaction List — Combined Direction</h1>
+        <p class="sub">
+            Alt 4 (collapsible days) + current list chrome &amp; aligned rows + gradient summary
+            card. <b>The day headers are clickable.</b>
+        </p>
+
+        <div class="frame-wrap">
+            <div class="frame-label">● Combined — final candidate</div>
+            <div class="frame-tag">
+                Summary card (aligned) · chips/search/tags (current) · collapsible day cards (Alt 4)
+                · aligned row anatomy
+            </div>
+
+            <div class="phone">
+                <!-- current chrome -->
+                <div class="search">
+                    <iconify-icon
+                        icon="solar:magnifer-linear"
+                        width="16"
+                        class="muted"></iconify-icon>
+                    <input placeholder="Cari transaksi atau merchant…" />
+                </div>
+                <div class="chips">
+                    <div class="chip active">Semua Akun ▾</div>
+                    <div class="chip">Semua Tipe ▾</div>
+                    <div class="sort-btn">
+                        <iconify-icon
+                            icon="solar:sort-vertical-line-duotone"
+                            width="15"></iconify-icon>
+                    </div>
+                </div>
+                <div>
+                    <span class="tag">Makan &amp; Minum ✕</span>
+                </div>
+
+                <!-- gradient summary card -->
+                <div class="summary">
+                    <div class="blob b1"></div>
+                    <div class="blob b2"></div>
+                    <div class="hero">
+                        <div>
+                            <div class="lbl">Arus Kas Bersih</div>
+                            <div class="num mono">
+                                <iconify-icon
+                                    icon="solar:add-bold-duotone"
+                                    width="18"></iconify-icon
+                                >Rp7.218.000
+                            </div>
+                        </div>
+                        <div class="tile">
+                            <iconify-icon
+                                icon="solar:transfer-vertical-line-duotone"
+                                width="20"></iconify-icon>
+                        </div>
+                    </div>
+                    <div class="substats">
+                        <div class="cell">
+                            <div class="lbl">
+                                <iconify-icon
+                                    icon="solar:arrow-up-line-duotone"
+                                    width="14"></iconify-icon
+                                >Masuk
+                            </div>
+                            <div class="num mono">Rp8.530.000</div>
+                        </div>
+                        <div class="cell">
+                            <div class="lbl">
+                                <iconify-icon
+                                    icon="solar:arrow-down-line-duotone"
+                                    width="14"></iconify-icon
+                                >Keluar
+                            </div>
+                            <div class="num mono">Rp1.312.000</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="count">12 Transaksi</div>
+
+                <!-- today — expanded -->
+                <div class="col-day">
+                    <div class="col-hdr">
+                        <span class="d">Hari Ini</span>
+                        <span class="n">· 3 transaksi</span>
+                        <span class="net mono" style="color: var(--success)">+Rp8.469.500</span>
+                        <iconify-icon
+                            class="chev"
+                            icon="solar:alt-arrow-up-line-duotone"
+                            width="16"
+                            class="muted"></iconify-icon>
+                    </div>
+                    <div class="col-body">
+                        <div class="row">
+                            <div class="tile" style="background: oklch(96% 0.04 60)">
+                                <iconify-icon
+                                    icon="solar:wallet-money-bold-duotone"
+                                    style="color: var(--deco-food)"></iconify-icon>
+                            </div>
+                            <div style="flex: 1; min-width: 0">
+                                <div class="desc">Gaji Bulanan</div>
+                                <div class="meta">
+                                    <span class="type-pill pill-income">Pemasukan</span
+                                    ><span>BCA Active</span>
+                                </div>
+                            </div>
+                            <div class="amt mono" style="color: var(--success)">
+                                <iconify-icon
+                                    icon="solar:add-bold-duotone"
+                                    width="13"></iconify-icon
+                                >Rp8.500.000
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="tile" style="background: oklch(96% 0.04 240)">
+                                <iconify-icon
+                                    icon="solar:cup-star-bold-duotone"
+                                    style="color: var(--deco-transport)"></iconify-icon>
+                            </div>
+                            <div style="flex: 1; min-width: 0">
+                                <div class="desc">Kopi Senja</div>
+                                <div class="meta">
+                                    <span class="type-pill pill-expense">Pengeluaran</span
+                                    ><span>GoPay</span>
+                                </div>
+                            </div>
+                            <div class="amt mono" style="color: var(--error)">
+                                <iconify-icon
+                                    icon="solar:minus-bold-duotone"
+                                    width="13"></iconify-icon
+                                >Rp28.000
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="tile" style="background: oklch(96% 0.03 310)">
+                                <iconify-icon
+                                    icon="solar:tag-bold-duotone"
+                                    style="color: var(--secondary)"></iconify-icon>
+                            </div>
+                            <div style="flex: 1; min-width: 0">
+                                <div class="desc">Biaya Admin Transfer</div>
+                                <div class="meta">
+                                    <span class="type-pill pill-fee">Biaya</span
+                                    ><span>BCA Active</span>
+                                </div>
+                            </div>
+                            <div class="amt mono" style="color: var(--secondary)">
+                                <iconify-icon
+                                    icon="solar:minus-bold-duotone"
+                                    width="13"></iconify-icon
+                                >Rp2.500
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- past days — collapsed -->
+                <div class="col-day closed">
+                    <div class="col-hdr">
+                        <span class="d">Min, 6 Sep 26</span>
+                        <span class="n">· 2 transaksi</span>
+                        <span class="net mono" style="color: var(--error)">−Rp310.000</span>
+                        <iconify-icon
+                            class="chev"
+                            icon="solar:alt-arrow-up-line-duotone"
+                            width="16"
+                            class="muted"></iconify-icon>
+                    </div>
+                    <div class="col-body">
+                        <div class="row">
+                            <div class="tile" style="background: oklch(96% 0.04 330)">
+                                <iconify-icon
+                                    icon="solar:cart-large-bold-duotone"
+                                    style="color: var(--deco-shopping)"></iconify-icon>
+                            </div>
+                            <div style="flex: 1; min-width: 0">
+                                <div class="desc">Belanja Mingguan</div>
+                                <div class="meta">
+                                    <span class="type-pill pill-expense">Pengeluaran</span
+                                    ><span>BCA Active</span>
+                                </div>
+                            </div>
+                            <div class="amt mono" style="color: var(--error)">
+                                <iconify-icon
+                                    icon="solar:minus-bold-duotone"
+                                    width="13"></iconify-icon
+                                >Rp305.000
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="tile" style="background: oklch(96% 0.03 310)">
+                                <iconify-icon
+                                    icon="solar:tag-bold-duotone"
+                                    style="color: var(--secondary)"></iconify-icon>
+                            </div>
+                            <div style="flex: 1; min-width: 0">
+                                <div class="desc">Biaya Admin</div>
+                                <div class="meta">
+                                    <span class="type-pill pill-fee">Biaya</span
+                                    ><span>BCA Active</span>
+                                </div>
+                            </div>
+                            <div class="amt mono" style="color: var(--secondary)">
+                                <iconify-icon
+                                    icon="solar:minus-bold-duotone"
+                                    width="13"></iconify-icon
+                                >Rp5.000
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-day closed">
+                    <div class="col-hdr">
+                        <span class="d">Sab, 5 Sep 26</span>
+                        <span class="n">· 4 transaksi</span>
+                        <span class="net mono" style="color: var(--error)">−Rp845.000</span>
+                        <iconify-icon
+                            class="chev"
+                            icon="solar:alt-arrow-up-line-duotone"
+                            width="16"
+                            class="muted"></iconify-icon>
+                    </div>
+                    <div class="col-body">
+                        <div class="row"><div class="desc">(hidden — click to expand)</div></div>
+                    </div>
+                </div>
+
+                <button class="load-more">
+                    <iconify-icon
+                        icon="solar:alt-arrow-down-line-duotone"
+                        width="15"></iconify-icon>
+                    Muat lebih banyak
+                </button>
+            </div>
+
+            <div class="notes">
+                <b>Combination recipe:</b>
+                <ul>
+                    <li>
+                        <b>Summary card</b> (aligned design): gradient hero — Net as hero stat,
+                        Masuk/Keluar sub-stats. Reflects the <i>filtered</i> set, same as today's
+                        strip.
+                    </li>
+                    <li>
+                        <b>Chrome</b>: search, chips, sort button, active tags — unchanged from the
+                        current implementation.
+                    </li>
+                    <li>
+                        <b>Day groups → collapsible cards</b>: trigger = uppercase date · count ·
+                        colored net · chevron. <b>Today (first group) open by default</b>, rest
+                        collapsed — a month fits one screen.
+                    </li>
+                    <li>
+                        <b>Rows</b>: aligned anatomy — category-decoration tile, type pill + account
+                        subline, sign icon + mono amount, hairline dividers.
+                    </li>
+                    <li>
+                        <b>Day net returns</b> — it's the collapse affordance now (we removed it
+                        from the flat header earlier; here it has a job).
+                    </li>
+                </ul>
+                <b>Implementation mapping:</b> `Collapsible.Root/Trigger/Content` (already used in
+                accounts/show) per day · restore the net computation in `groupedTransactions` · new
+                `transaction-summary-card` module component (AccountsSummaryCard pattern) ·
+                `transaction-list-item` gains decoration tile + type pill.
+            </div>
+        </div>
+
+        <script>
+            document.querySelectorAll('.col-hdr').forEach((hdr) => {
+                hdr.addEventListener('click', () => {
+                    hdr.parentElement.classList.toggle('closed');
+                });
+            });
+        </script>
+    </body>
+</html>

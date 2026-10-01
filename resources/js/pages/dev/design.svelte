@@ -1,8 +1,7 @@
 <script lang="ts">
     import { useForm } from '@inertiajs/svelte';
-
-    import { setBreadcrumbItems } from '@utilities/global-states.svelte';
-    import { showToast } from '@utilities/helper.svelte';
+    import { setBreadcrumbItems } from '@lib/global-states.svelte';
+    import { showToast } from '@lib/toast-handler.svelte';
 
     import Button from '@components/ui/button.svelte';
     import SubmitButton from '@components/ui/forms/submit-button.svelte';

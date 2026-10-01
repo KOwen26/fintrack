@@ -15,6 +15,85 @@ import ts from 'typescript-eslint';
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
+// ── personal-svelte/sort-tags ────────────────────────────────────────────────
+// Enforces top-level block order in .svelte files:
+//   module <script> → <script> → markup → {#snippet} → <style>
+const sortTagsRule = {
+    meta: {
+        type: 'suggestion',
+        docs: { description: 'Enforce top-level block order in Svelte components.' },
+        fixable: 'code',
+        schema: [],
+    },
+    create(context) {
+        const isModuleScript = (node) =>
+            (node.startTag?.attributes ?? []).some((attr) => {
+                const name = attr.key?.name;
+                const value = String(
+                    Array.isArray(attr.value) ? (attr.value[0]?.value ?? '') : (attr.value ?? '')
+                );
+
+                return name === 'module' || (name === 'context' && value === 'module');
+            });
+
+        const rankOf = (node) => {
+            switch (node.type) {
+                case 'SvelteScriptElement':
+                    return isModuleScript(node) ? 0 : 1;
+                case 'SvelteSnippetBlock':
+                    return 3;
+                case 'SvelteStyleElement':
+                    return 4;
+                default:
+                    return 2; // markup
+            }
+        };
+
+        // Spacers = whitespace text nodes and HTML comments. They don't carry
+        // their own rank — they inherit the preceding block's rank so they
+        // never trigger a violation on their own.
+        const isSpacer = (node) =>
+            node.type === 'SvelteHTMLComment' || (node.type === 'SvelteText' && !node.value.trim());
+
+        return {
+            Program(program) {
+                // Only check the meaningful (non-spacer) nodes.
+                const meaningful = program.body.filter((node) => !isSpacer(node));
+                if (meaningful.length < 2) return;
+
+                const ranks = meaningful.map(rankOf);
+                if (ranks.every((r, i) => i === 0 || ranks[i - 1] <= r)) return;
+
+                const offender = meaningful.find((node, i) => i > 0 && ranks[i - 1] > ranks[i]);
+
+                context.report({
+                    node: offender ?? meaningful[0],
+                    message:
+                        'Expected top-level block order: module script, script, markup, snippets, style.',
+                    fix: (fixer) => {
+                        // Sort only the meaningful nodes by rank, then rebuild the
+                        // entire top-level span. Scripts stay in place because their
+                        // rank (0/1) sorts them first — but we preserve their text
+                        // verbatim so inner fixes (import sorting etc.) don't clash.
+                        const sorted = meaningful
+                            .map((node) => ({ node, rank: rankOf(node) }))
+                            .sort((a, b) => a.rank - b.rank)
+                            .map((entry) => context.sourceCode.getText(entry.node));
+
+                        return fixer.replaceTextRange(
+                            [meaningful[0].range[0], meaningful[meaningful.length - 1].range[1]],
+                            sorted.join('\n\n')
+                        );
+                    },
+                });
+            },
+        };
+    },
+};
+
+const personalSveltePlugin = { rules: { 'sort-tags': sortTagsRule } };
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default defineConfig([
     includeIgnoreFile(gitignorePath),
     globalIgnores(
@@ -135,6 +214,14 @@ export default defineConfig([
                     ],
                 },
             ],
+        },
+    },
+    {
+        name: 'Personal Svelte Rules',
+        files: ['resources/**/*.svelte'],
+        plugins: { 'personal-svelte': personalSveltePlugin },
+        rules: {
+            'personal-svelte/sort-tags': 'error',
         },
     },
 ]);

@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Transaction List — Accounts Alignment Mockup</title>
+        <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+        <style>
+            :root {
+                --base-100: oklch(100% 0 0);
+                --base-200: oklch(96% 0.005 260);
+                --base-300: oklch(89% 0.008 260);
+                --base-content: oklch(24% 0.02 260);
+                --primary: oklch(55% 0.19 268);
+                --primary-800: oklch(42% 0.17 268);
+                --primary-content: oklch(98% 0.01 268);
+                --success: oklch(62% 0.15 155);
+                --error: oklch(60% 0.2 22);
+                --warning: oklch(72% 0.15 75);
+                --info: oklch(62% 0.15 230);
+                --secondary: oklch(60% 0.12 310);
+                /* category decoration oklch colors (from decoration-colors data) */
+                --deco-food: oklch(72% 0.15 60);
+                --deco-transport: oklch(65% 0.15 240);
+                --deco-shopping: oklch(70% 0.16 330);
+            }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family:
+                    'Segoe UI',
+                    system-ui,
+                    -apple-system,
+                    sans-serif;
+                background: oklch(94% 0.01 260);
+                color: var(--base-content);
+                padding: 40px 24px;
+            }
+            h1 {
+                font-size: 18px;
+                margin-bottom: 4px;
+            }
+            .sub {
+                font-size: 13px;
+                color: oklch(50% 0.02 260);
+                margin-bottom: 32px;
+            }
+            .board {
+                display: flex;
+                gap: 40px;
+                flex-wrap: wrap;
+                align-items: flex-start;
+            }
+            .frame-wrap {
+                width: 390px;
+            }
+            .frame-label {
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                margin-bottom: 10px;
+                color: oklch(45% 0.02 260);
+            }
+            .frame-label.badge {
+                color: var(--error);
+            }
+            .frame-label.badge2 {
+                color: var(--success);
+            }
+            .phone {
+                background: var(--base-100);
+                border-radius: 24px;
+                padding: 20px 16px;
+                box-shadow: 0 10px 40px oklch(20% 0.02 260 / 0.18);
+                min-height: 720px;
+            }
+            .notes {
+                font-size: 12px;
+                line-height: 1.7;
+                color: oklch(45% 0.02 260);
+                margin-top: 14px;
+                padding-left: 4px;
+            }
+            .notes b {
+                color: var(--base-content);
+            }
+            .notes li {
+                margin-left: 16px;
+            }
+
+            /* ── shared bits ── */
+            iconify-icon {
+                display: inline-block;
+                vertical-align: -0.125em;
+            }
+            .mono {
+                font-family: 'Cascadia Mono', ui-monospace, monospace;
+            }
+
+            /* search + chips (unchanged in both frames) */
+            .search {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                background: var(--base-100);
+                border-radius: 12px;
+                padding: 10px 14px;
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06);
+            }
+            .search input {
+                border: 0;
+                outline: 0;
+                flex: 1;
+                font-size: 13px;
+                background: transparent;
+            }
+            .chips {
+                display: flex;
+                gap: 6px;
+                margin: 12px 0;
+            }
+            .chip {
+                font-size: 11px;
+                font-weight: 600;
+                padding: 6px 12px;
+                border-radius: 999px;
+                white-space: nowrap;
+                border: 1.5px solid oklch(89% 0.01 260);
+                color: oklch(45% 0.02 260);
+            }
+            .chip.active {
+                background: var(--primary);
+                border-color: var(--primary);
+                color: var(--primary-content);
+            }
+
+            /* ════ CURRENT ════ */
+            .cur-summary {
+                display: flex;
+                border-radius: 16px;
+                overflow: hidden;
+                background: var(--base-100);
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06);
+            }
+            .cur-summary > div {
+                flex: 1;
+                padding: 14px 16px;
+            }
+            .cur-summary > div + div {
+                border-left: 1px solid oklch(92% 0.01 260);
+            }
+            .cur-summary .lbl {
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                opacity: 0.45;
+            }
+            .cur-summary .val {
+                font-size: 13px;
+                font-weight: 500;
+                margin-top: 4px;
+            }
+            .cur-day-hdr {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 4px 8px;
+            }
+            .cur-day-hdr .d {
+                font-size: 12px;
+                font-weight: 700;
+                opacity: 0.6;
+            }
+            .cur-day-hdr .n {
+                font-size: 10.5px;
+                font-weight: 600;
+                opacity: 0.4;
+                background: oklch(92% 0.01 260);
+                border-radius: 999px;
+                padding: 2px 8px;
+            }
+            .cur-card {
+                border-radius: 16px;
+                background: var(--base-100);
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06);
+                overflow: hidden;
+            }
+            .cur-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                border-bottom: 1px solid oklch(94% 0.005 260);
+            }
+            .cur-row:last-child {
+                border-bottom: 0;
+            }
+            .cur-tile {
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .cur-desc {
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .cur-meta {
+                font-size: 11px;
+                opacity: 0.45;
+                margin-top: 2px;
+                display: flex;
+                gap: 6px;
+                align-items: center;
+            }
+            .cur-amt {
+                font-size: 13px;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 2px;
+            }
+            .dot {
+                width: 2px;
+                height: 2px;
+                border-radius: 99px;
+                background: oklch(70% 0.02 260);
+            }
+
+            /* ════ ALIGNED ════ */
+            /* gradient hero summary — AccountsSummaryCard pattern */
+            .ali-summary {
+                position: relative;
+                overflow: hidden;
+                border-radius: 12px;
+                padding: 16px;
+                background: linear-gradient(135deg, var(--primary), var(--primary-800));
+                color: var(--primary-content);
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.1);
+            }
+            .blob {
+                position: absolute;
+                border-radius: 999px;
+                pointer-events: none;
+            }
+            .b1 {
+                top: -80px;
+                right: -60px;
+                width: 210px;
+                height: 210px;
+                background: rgb(255 255 255 / 0.25);
+                filter: blur(42px);
+            }
+            .b2 {
+                bottom: -70px;
+                left: -50px;
+                width: 170px;
+                height: 170px;
+                background: oklch(80% 0.15 75 / 0.4);
+                filter: blur(48px);
+            }
+            .ali-hero {
+                position: relative;
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+            }
+            .ali-hero .lbl {
+                font-size: 0.68rem;
+                font-weight: 600;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                opacity: 0.75;
+            }
+            .ali-hero .num {
+                font-size: 28px;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                margin-top: 8px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .ali-hero .tile {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: rgb(255 255 255 / 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .ali-sub {
+                position: relative;
+                margin-top: 16px;
+                padding-top: 12px;
+                border-top: 1px solid rgb(255 255 255 / 0.2);
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+            .ali-sub .cell:first-child {
+                padding-right: 14px;
+            }
+            .ali-sub .cell:last-child {
+                border-left: 1px solid rgb(255 255 255 / 0.2);
+                padding-left: 14px;
+            }
+            .ali-sub .lbl {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 0.6rem;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                opacity: 0.7;
+            }
+            .ali-sub .num {
+                font-size: 15px;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+                margin-top: 4px;
+            }
+
+            /* count header — AccountList pattern */
+            .ali-count {
+                font-size: 13px;
+                font-weight: 500;
+                opacity: 0.6;
+                margin: 16px 2px 8px;
+            }
+
+            /* day group — uppercase section header + hr dividers */
+            .ali-day-hdr {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+                padding: 10px 2px 6px;
+            }
+            .ali-day-hdr .d {
+                font-size: 0.66rem;
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                opacity: 0.5;
+            }
+            .ali-day-hdr .n {
+                font-size: 12px;
+                font-weight: 500;
+                opacity: 0.6;
+            }
+            .ali-card {
+                border-radius: 8px;
+                background: var(--base-100);
+                box-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06);
+                overflow: hidden;
+                padding: 4px 16px;
+            }
+            .ali-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 0;
+            }
+            .ali-row + .ali-row {
+                border-top: 1px solid oklch(90% 0.01 260);
+            }
+            .ali-tile {
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .ali-desc {
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .ali-meta {
+                font-size: 11px;
+                color: oklch(50% 0.02 260);
+                margin-top: 3px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .type-pill {
+                font-size: 9px;
+                font-weight: 500;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                border-radius: 999px;
+                padding: 2px 7px;
+            }
+            .pill-expense {
+                background: oklch(96% 0.03 22);
+                color: var(--error);
+            }
+            .pill-income {
+                background: oklch(96% 0.03 155);
+                color: var(--success);
+            }
+            .pill-fee {
+                background: oklch(96% 0.02 310);
+                color: var(--secondary);
+            }
+            .ali-amt {
+                font-size: 13px;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 3px;
+            }
+            .muted-ic {
+                opacity: 0.35;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Transaction List — Alignment with Accounts</h1>
+        <p class="sub">
+            Left: current implementation &nbsp;·&nbsp; Right: aligned design (accounts design
+            language)
+        </p>
+
+        <div class="board">
+            <!-- ══════════════ CURRENT ══════════════ -->
+            <div class="frame-wrap">
+                <div class="frame-label badge">● Current — misaligned</div>
+                <div class="phone">
+                    <div class="search">
+                        <iconify-icon
+                            icon="solar:magnifer-linear"
+                            width="16"
+                            style="opacity: 0.4"></iconify-icon>
+                        <input placeholder="Cari transaksi atau merchant…" />
+                    </div>
+                    <div class="chips">
+                        <div class="chip active">Semua Akun ▾</div>
+                        <div class="chip">Semua Kategori ▾</div>
+                        <div class="chip">Semua Tipe ▾</div>
+                    </div>
+
+                    <div class="cur-summary">
+                        <div>
+                            <div class="lbl" style="color: var(--success)">↑ Masuk</div>
+                            <div class="val mono" style="color: var(--success)">Rp8.530.000</div>
+                        </div>
+                        <div>
+                            <div class="lbl" style="color: var(--error)">↓ Keluar</div>
+                            <div class="val mono" style="color: var(--error)">Rp1.312.000</div>
+                        </div>
+                        <div>
+                            <div class="lbl">⇅ Net</div>
+                            <div class="val mono" style="color: var(--success)">+Rp7.218.000</div>
+                        </div>
+                    </div>
+
+                    <div class="cur-day-hdr">
+                        <span class="d">Sen, 7 Sep 26</span>
+                        <span class="n">3 transaksi</span>
+                    </div>
+                    <div class="cur-card">
+                        <div class="cur-row">
+                            <div class="cur-tile" style="background: oklch(96% 0.03 155)">
+                                <iconify-icon
+                                    icon="solar:arrow-up-line-duotone"
+                                    style="color: var(--success)"></iconify-icon>
+                            </div>
+                            <div style="flex: 1; min-width: 0">
+                                <div class="cur-desc">Gaji Bulanan</div>
+                                <div class="cur-meta">
+                                    <span>Pemasukan</span><span class="dot"></span
+                                    ><span>BCA Active</span>
+                                </div>
+                            </div>
+                            <div class="cur-amt mono" style="color: var(--success)">
+                                <iconify-icon
+                                    icon="solar:add-bold-duotone"
+                                    width="14"></iconify-icon
+                                >Rp8.500.000
+                            </div>
+                        </div>
+                        <div class="cur-row">
+                            <div class="cur-tile" style="background: oklch(96% 0.03 22)">
+                                <iconify-icon
+                                    icon="solar:arrow-down-line-duotone"
+                                    style="color: var(--error)"></iconify-icon>
+                            </div>
+                            <div style="flex: 1; min-width: 0">
+                                <div class="cur-desc">Kopi Senja</div>
+                                <div class="cur-meta">
+                                    <span>Makan &amp; Minum</span><span class="dot"></span
+                                    ><span>GoPay</span>
+                                </div>
+                            </div>
+                            <div class="cur-amt mono" style="color: var(--error)">
+                                <iconify-icon
+                                    icon="solar:minus-bold-duotone"
+                                    width="14"></iconify-icon
+                                >Rp28.000
+                            </div>
+                        </div>
+                        <div class="cur-row">
+                            <div class="cur-tile" style="background: oklch(96% 0.02 310)">
+                                <iconify-icon
+                                    icon="solar:transfer-horizontal-bold-duotone"
+                                    style="color: var(--secondary)"></iconify-icon>
+                            </div>
+                            <div style="flex: 1; min-width: 0">
+                                <div class="cur-desc">Biaya Admin Transfer</div>
+                                <div class="cur-meta">
+                                    <span>Biaya</span><span class="dot"></span
+                                    ><span>BCA Active</span>
+                                </div>
+                            </div>
+                            <div class="cur-amt mono" style="color: var(--secondary)">
+                                <iconify-icon
+                                    icon="solar:minus-bold-duotone"
+                                    width="14"></iconify-icon
+                                >Rp2.500
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="notes">
+                    Flat 3-col strip, no hierarchy · type-tinted tiles, no decorations · type never
+                    labeled · border-b dividers · sentence-case day header + count pill ·
+                    rounded-2xl/12px scale.
+                </div>
+            </div>
+
+            <!-- ══════════════ ALIGNED ══════════════ -->
+            <div class="frame-wrap">
+                <div class="frame-label badge2">● Aligned — accounts language</div>
+                <div class="phone">
+                    <div class="search">
+                        <iconify-icon
+                            icon="solar:magnifer-linear"
+                            width="16"
+                            style="opacity: 0.4"></iconify-icon>
+                        <input placeholder="Cari transaksi atau merchant…" />
+                    </div>
+                    <div class="chips">
+                        <div class="chip active">Semua Akun ▾</div>
+                        <div class="chip">Semua Kategori ▾</div>
+                        <div class="chip">Semua Tipe ▾</div>
+                    </div>
+
+                    <!-- AccountsSummaryCard pattern: gradient hero, Net as hero stat, Masuk/Keluar as sub-stats -->
+                    <div class="ali-summary">
+                        <div class="blob b1"></div>
+                        <div class="blob b2"></div>
+                        <div class="ali-hero">
+                            <div>
+                                <div class="lbl">Arus Kas Bersih</div>
+                                <div class="num mono">
+                                    <iconify-icon
+                                        icon="solar:add-bold-duotone"
+                                        width="18"></iconify-icon
+                                    >Rp7.218.000
+                                </div>
+                            </div>
+                            <div class="tile">
+                                <iconify-icon
+                                    icon="solar:transfer-vertical-line-duotone"
+                                    width="20"></iconify-icon>
+                            </div>
+                        </div>
+                        <div class="ali-sub">
+                            <div class="cell">
+                                <div class="lbl">
+                                    <iconify-icon
+                                        icon="solar:arrow-up-line-duotone"
+                                        width="14"></iconify-icon
+                                    >Masuk
+                                </div>
+                                <div class="num mono">Rp8.530.000</div>
+                            </div>
+                            <div class="cell">
+                                <div class="lbl">
+                                    <iconify-icon
+                                        icon="solar:arrow-down-line-duotone"
+                                        width="14"></iconify-icon
+                                    >Keluar
+                                </div>
+                                <div class="num mono">Rp1.312.000</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AccountList pattern: plain count header -->
+                    <div class="ali-count">12 Transaksi</div>
+
+                    <div class="ali-day-hdr">
+                        <span class="d">Sen, 7 Sep 26</span>
+                        <span class="n">3 transaksi</span>
+                    </div>
+                    <div class="ali-card">
+                        <div class="ali-row">
+                            <div class="ali-tile" style="background: oklch(96% 0.04 60)">
+                                <iconify-icon
+                                    icon="solar:wallet-money-bold-duotone"
+                                    style="color: var(--deco-food)"></iconify-icon>
+                            </div>
+                            <div style="flex: 1; min-width: 0">
+                                <div class="ali-desc">Gaji Bulanan</div>
+                                <div class="ali-meta">
+                                    <span class="type-pill pill-income">Pemasukan</span>
+                                    <span>BCA Active</span>
+                                </div>
+                            </div>
+                            <div class="ali-amt mono" style="color: var(--success)">
+                                <iconify-icon
+                                    icon="solar:add-bold-duotone"
+                                    width="14"></iconify-icon
+                                >Rp8.500.000
+                            </div>
+                        </div>
+                        <div class="ali-row">
+                            <div class="ali-tile" style="background: oklch(96% 0.04 240)">
+                                <iconify-icon
+                                    icon="solar:cup-star-bold-duotone"
+                                    style="color: var(--deco-transport)"></iconify-icon>
+                            </div>
+                            <div style="flex: 1; min-width: 0">
+                                <div class="ali-desc">Kopi Senja</div>
+                                <div class="ali-meta">
+                                    <span class="type-pill pill-expense">Pengeluaran</span>
+                                    <span>GoPay</span>
+                                </div>
+                            </div>
+                            <div class="ali-amt mono" style="color: var(--error)">
+                                <iconify-icon
+                                    icon="solar:minus-bold-duotone"
+                                    width="14"></iconify-icon
+                                >Rp28.000
+                            </div>
+                        </div>
+                        <div class="ali-row">
+                            <div class="ali-tile" style="background: oklch(96% 0.03 310)">
+                                <iconify-icon
+                                    icon="solar:tag-bold-duotone"
+                                    style="color: var(--secondary)"></iconify-icon>
+                            </div>
+                            <div style="flex: 1; min-width: 0">
+                                <div class="ali-desc">Biaya Admin Transfer</div>
+                                <div class="ali-meta">
+                                    <span class="type-pill pill-fee">Biaya</span>
+                                    <span>BCA Active</span>
+                                </div>
+                            </div>
+                            <div class="ali-amt mono" style="color: var(--secondary)">
+                                <iconify-icon
+                                    icon="solar:minus-bold-duotone"
+                                    width="14"></iconify-icon
+                                >Rp2.500
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="notes">
+                    <b>What changed (accounts patterns applied):</b>
+                    <ul>
+                        <li>
+                            <b>Summary</b> → <code>AccountsSummaryCard</code> pattern: primary
+                            gradient, rounded-xl, glow blobs, <b>Net as the hero stat</b>,
+                            Masuk/Keluar as icon-labeled sub-stats with divider rules
+                        </li>
+                        <li>
+                            <b>Count header</b> → plain "12 Transaksi" like "N Accounts"
+                            (<code>AccountList</code>)
+                        </li>
+                        <li>
+                            <b>Day headers</b> → uppercase micro-labels; plain count replaces the
+                            pill
+                        </li>
+                        <li>
+                            <b>Tiles</b> → <code>size-9 rounded-lg</code>, tinted by
+                            <b>category decoration color</b> with the category's decoration icon
+                            (tag fallback) — replaces type-tinted tiles
+                        </li>
+                        <li>
+                            <b>Type pill</b> → tiny uppercase badge on the subline (account-card's
+                            <code>typeLabel</code> pill), replacing color-only type encoding
+                        </li>
+                        <li>
+                            <b>Dividers + radius</b> → <code>hr border-base-content/20</code> rows
+                            inside <code>rounded-lg</code> cards — the accounts row scale
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

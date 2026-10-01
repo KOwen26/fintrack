@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Observers\TransactionObserver;
 use Database\Factories\TransactionFactory;
@@ -23,6 +24,7 @@ class Transaction extends Model
     {
         return [
             'type' => TransactionType::class,
+            'flow' => TransactionFlow::class,
             'amount' => 'decimal:0',
             'transaction_date' => 'datetime',
         ];
@@ -41,5 +43,11 @@ class Transaction extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /** The transfer unit this row belongs to — null for plain rows. */
+    public function transfer(): BelongsTo
+    {
+        return $this->belongsTo(Transfer::class);
     }
 }

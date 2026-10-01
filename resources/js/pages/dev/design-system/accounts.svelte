@@ -1,12 +1,11 @@
 <script lang="ts">
     import type { App } from '@wayfinder/types';
 
+    import { setBreadcrumbItems } from '@lib/global-states.svelte';
     import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
     import AccountType from '@wayfinder/App/Enums/AccountType';
     import ProviderStatus from '@wayfinder/App/Enums/ProviderStatus';
     import ProviderType from '@wayfinder/App/Enums/ProviderType';
-
-    import { setBreadcrumbItems } from '@utilities/global-states.svelte';
 
     import AccountAccessTypeBadge from '@components/module/account/account-access-type-badge.svelte';
     import AccountBadge from '@components/module/account/account-badge.svelte';
