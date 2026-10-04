@@ -35,6 +35,8 @@
         transaction: Data.TransactionFormData;
         accounts: App.Models.Account[];
         categories: App.Models.Category[];
+        /** Query-prefilled type for creates; edits always retain the server payload. */
+        initialType?: App.Enums.TransactionType;
         /** Quick amounts rendered as chips under the hero input. */
         amountPresets?: number[];
     }
@@ -43,6 +45,7 @@
         transaction,
         accounts,
         categories,
+        initialType = 'expense',
         amountPresets = DEFAULT_AMOUNT_PRESETS,
     }: Props = $props();
 
@@ -50,6 +53,10 @@
 
     /* Seeded once from the DTO — after mount, the tabs own the type. */
     function buildInitialType(): App.Enums.TransactionType {
+        if (transaction.id === null && initialType) {
+            return initialType;
+        }
+
         return transaction.type;
     }
 
@@ -106,7 +113,7 @@
 
     function buildInitialData() {
         return {
-            type: transaction.type,
+            type: buildInitialType(),
             amount: transaction.amount !== null ? String(transaction.amount) : '',
             description: transaction.description ?? '',
             account_id: transaction.account_id ?? '',
@@ -351,19 +358,23 @@
             </Field>
         </div>
     </Form>
-
-    <BottomActionBar>
-        <div class="flex gap-3">
-            <Button class="btn-square" color="secondary" onclick={openCalculator} variant="outline">
-                <i class="iconify solar--calculator-minimalistic-bold-duotone"></i>
-            </Button>
-
-            <SubmitButton class="grow" form="transaction-form" submitting={form.processing}>
-                {typeConfig.submitLabel}
-            </SubmitButton>
-        </div>
-    </BottomActionBar>
 </MobilePageLayout>
+
+<BottomActionBar>
+    <div class="flex gap-3">
+        <Button class="btn-square" color="secondary" onclick={openCalculator} variant="outline">
+            <i class="iconify solar--calculator-minimalistic-bold-duotone"></i>
+        </Button>
+
+        <SubmitButton
+            class="grow"
+            disabled={!form.amount || !form.account_id}
+            form="transaction-form"
+            submitting={form.processing}>
+            {typeConfig.submitLabel}
+        </SubmitButton>
+    </div>
+</BottomActionBar>
 
 <Drawer overlay={false} bind:open={calculatorOpen}>
     <div class="p-5">

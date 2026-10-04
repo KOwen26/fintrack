@@ -6,7 +6,7 @@
     import TransactionType from '@wayfinder/App/Enums/TransactionType';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
-    import MobileTransactionForm from '@components/module/transaction/mobile-transaction-form.svelte';
+    import TransactionForm from '@components/module/transaction/transaction-form.svelte';
     import HeaderContext from '@components/navigation/header-context.svelte';
     import Button from '@components/ui/button.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
@@ -66,7 +66,7 @@
     </div>
 </HeaderContext>
 
-<MobileTransactionForm {transaction} {accounts} {categories} />
+<TransactionForm {accounts} {categories} {transaction} />
 
 <ConfirmationModal
     cancelText="Cancel"

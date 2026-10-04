@@ -1,17 +1,20 @@
 <script lang="ts">
     import type { Data, Models } from '@type/type';
+    import type { App } from '@wayfinder/types';
 
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
-    import MobileTransactionForm from '@components/module/transaction/mobile-transaction-form.svelte';
+    import TransactionForm from '@components/module/transaction/transaction-form.svelte';
     import HeaderContext from '@components/navigation/header-context.svelte';
     import Button from '@components/ui/button.svelte';
 
     let {
+        initialType = 'expense',
         transaction,
         categories,
         accounts,
     }: {
+        initialType: App.Enums.TransactionType;
         transaction: Data.TransactionFormData;
         categories: Models.Category[];
         accounts: Models.Account[];
@@ -36,4 +39,4 @@
     </div>
 </HeaderContext>
 
-<MobileTransactionForm {transaction} {accounts} {categories} />
+<TransactionForm {accounts} {categories} {initialType} {transaction} />

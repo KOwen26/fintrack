@@ -6,6 +6,7 @@ use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransactionDetailData;
 use App\Data\Transaction\TransactionFormData;
 use App\Data\Transaction\TransactionListData;
+use App\Enums\TransactionType;
 use App\Http\Requests\SaveTransactionRequest;
 use App\Models\Transaction;
 use App\Models\User;
@@ -56,6 +57,7 @@ class TransactionController extends Controller
         $accounts = $this->accountService->getAccountsByUser($this->user);
 
         return Inertia::render('transactions/create', [
+            'initialType' => $request->query('type', TransactionType::Expense),
             'transaction' => TransactionFormData::defaultExpense(),
             'categories' => CategoryService::getCategories(),
             'accounts' => $accounts,
