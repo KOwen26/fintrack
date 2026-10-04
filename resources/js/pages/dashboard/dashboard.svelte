@@ -4,6 +4,7 @@
     import { getDecorationColor } from '@data/decoration-colors';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
+    import settings from '@wayfinder/routes/settings';
 
     import Formatter from '@utilities/formatter';
 
@@ -126,14 +127,24 @@
     );
 </script>
 
-<HeaderContext></HeaderContext>
+<HeaderContext>
+    <div class="flex w-full items-center justify-end gap-3 md:w-auto">
+        <Button
+            class="size-10 shrink-0 p-1 btn-sm"
+            aria-label="Open settings"
+            href={settings.index.url()}
+            variant="ghost">
+            <i class="iconify size-6 solar--settings-bold-duotone"></i>
+        </Button>
+    </div>
+</HeaderContext>
 
 {#if !accounts.length}
     <MobilePageLayout variant="full">
         <DashboardWelcomeCard ctaUrl={AccountController.create.url()} />
     </MobilePageLayout>
 {:else}
-    <MobilePageLayout variant="2/5">
+    <MobilePageLayout variant="3/5">
         {#snippet hero()}
             <div class="space-y-3 px-3 pt-3">
                 <!-- ══════════════════════════════════════════════════ -->

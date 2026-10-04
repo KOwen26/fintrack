@@ -6,6 +6,7 @@
 @import './daisyui.css';
 @import './shadcn.css';
 @import './flatpickr.css';
+@import './view-transitions.css';
 
 @plugin '@iconify/tailwind4' {
     prefixes: solar, tabler;
