@@ -6,12 +6,10 @@
 
     import Formatter from '@utilities/formatter';
 
-    import PageSection from '@components/layouts/page-section.svelte';
+    import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountList from '@components/module/account/account-list.svelte';
     import AccountsSummaryCard from '@components/module/account/accounts-summary-card.svelte';
     import BaseAccountCard from '@components/module/account/base-account-card.svelte';
-    import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
-    import Button from '@components/ui/button.svelte';
 
     interface Summary {
         total_balance: number;
@@ -32,33 +30,25 @@
     } = $props();
 </script>
 
-<DashboardPageHeader class="hidden sm:block" title="Accounts">
-    {#snippet actions()}
-        <Button color="primary" href={AccountController.create.url()}>
-            <i class="iconify size-5 solar--add-bold-duotone"></i>
-            Add
-        </Button>
+<MobilePageLayout variant="4/5">
+    {#snippet hero()}
+        <div class="px-5">
+            <AccountsSummaryCard {summary} />
+        </div>
     {/snippet}
-</DashboardPageHeader>
 
-<PageSection>
-    <AccountsSummaryCard {summary} />
-</PageSection>
+    <div class="space-y-4">
+        <AccountList {accounts} />
 
-<PageSection class="space-y-5">
-    <AccountList {accounts} />
-
-    <!-- Add Account Placeholder -->
-    <div class="col-span-full">
         <Link class="block cursor-pointer" href={AccountController.create.url()}>
             <BaseAccountCard variant="create" />
         </Link>
-    </div>
 
-    {#if archived_accounts.length > 0}
-        {@render ArchivedAccounts()}
-    {/if}
-</PageSection>
+        {#if archived_accounts.length > 0}
+            {@render ArchivedAccounts()}
+        {/if}
+    </div>
+</MobilePageLayout>
 
 {#snippet ArchivedAccounts()}
     <details class="mt-6 rounded-xl bg-card">

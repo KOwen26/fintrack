@@ -146,7 +146,7 @@
 {:else}
     <MobilePageLayout variant="3/5">
         {#snippet hero()}
-            <div class="space-y-3 px-3 pt-3">
+            <div class="space-y-5 p-5">
                 <!-- ══════════════════════════════════════════════════ -->
                 <!-- Balance Hero -->
                 <!-- ══════════════════════════════════════════════════ -->

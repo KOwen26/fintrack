@@ -67,6 +67,7 @@
 <Toaster />
 
 {#if isMobile.current}
+    <!-- Start with the viewport, but let pages such as MobilePageLayout grow naturally; normal page scrolling remains available. -->
     <div class="relative flex min-h-svh w-full flex-1 flex-col {mobileShellClass}">
         <DashboardHeaderMobile
             class={mobileHeaderClass}
@@ -102,7 +103,8 @@
 {#snippet pageContent()}
     <ErrorWrapper>
         <!-- Mobile padding is page-controlled; desktop keeps the shared padding. -->
-        <div class="flex h-full flex-col gap-6 md:p-5">
+        <!-- `flex-1` fills the remaining viewport when content is short, but does not bound the sheet when content grows. -->
+        <div class="flex flex-1 flex-col gap-6 md:p-5">
             {@render children?.()}
         </div>
     </ErrorWrapper>

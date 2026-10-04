@@ -12,6 +12,7 @@
     import StringHelper from '@utilities/string-helper';
 
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
+    import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import PageSection from '@components/layouts/page-section.svelte';
     import AccountCard from '@components/module/account/account-card.svelte';
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
@@ -188,190 +189,199 @@
     {/snippet}
 </DashboardPageHeader>
 
-<div class="space-y-5">
-    <AccountCard {account} />
+<MobilePageLayout heroClass="px-5" variant="3/5">
+    {#snippet hero()}
+        <AccountCard {account} />
+    {/snippet}
 
-    <!-- Toggle detail view -->
-    <Button
-        class="w-full hover:bg-white"
-        color="light"
-        onclick={() => (showDetail = !showDetail)}
-        variant="outline">
-        <i class="iconify size-5 solar--hamburger-menu-linear"></i>
-        {showDetail ? 'Hide Account Details' : 'Show Account Details'}
-    </Button>
+    <div class="space-y-5">
+        <!-- Toggle detail view -->
+        <Button
+            class="w-full hover:bg-white"
+            color="light"
+            onclick={() => (showDetail = !showDetail)}
+            variant="outline">
+            <i class="iconify size-5 solar--hamburger-menu-linear"></i>
+            {showDetail ? 'Hide Account Details' : 'Show Account Details'}
+        </Button>
 
-    {#if showDetail}
-        <!-- ════════════════════════════════════════════ -->
-        <!--  ACCOUNT INFO                              -->
-        <!-- ════════════════════════════════════════════ -->
-        <Card contentClass="space-y-3">
-            <h5 class="text-sm font-bold tracking-wider text-base-content/80 uppercase">
-                Account Info
-            </h5>
-
-            <ul>
-                <hr class="border-base-content/20" />
-                {#each infoRows as row, i (row.label)}
-                    <li class="flex items-center justify-between gap-3 py-3">
-                        <span class="flex items-center gap-2 text-sm text-base-content/80">
-                            <i class="iconify size-4 text-base-content/80 {row.icon}"></i>
-                            {row.label}
-                        </span>
-                        <span class="text-sm font-medium text-base-content">
-                            {row.value}
-                        </span>
-                    </li>
-
-                    <hr class="border-base-content/20" />
-                {/each}
-            </ul>
-        </Card>
-
-        <!-- ════════════════════════════════════════════ -->
-        <!--  MEMBERS (joint accounts only)             -->
-        <!-- ════════════════════════════════════════════ -->
-        {#if members.length > 0}
+        {#if showDetail}
+            <!-- ════════════════════════════════════════════ -->
+            <!--  ACCOUNT INFO                              -->
+            <!-- ════════════════════════════════════════════ -->
             <Card contentClass="space-y-3">
                 <h5 class="text-sm font-bold tracking-wider text-base-content/80 uppercase">
-                    Members
+                    Account Info
                 </h5>
 
                 <ul>
-                    {#each members as member, i (member.name + member.email)}
-                        {#if i > 0}
-                            <hr class="border-base-content/20" />
-                        {/if}
-
-                        <li class="flex items-center gap-3 py-3">
-                            <div
-                                style:background={bgColor}
-                                class="avatar flex size-10 shrink-0 items-center justify-center rounded-md text-sm font-bold text-white">
-                                {StringHelper.getInitials(member.name)}
-                            </div>
-
-                            <div class="flex-1">
-                                <p class="mb-0.5 text-sm font-semibold text-base-content">
-                                    {member.name}
-                                </p>
-                                <p class="text-sm text-base-content/80">{member.email}</p>
-                            </div>
+                    <hr class="border-base-content/20" />
+                    {#each infoRows as row, i (row.label)}
+                        <li class="flex items-center justify-between gap-3 py-3">
+                            <span class="flex items-center gap-2 text-sm text-base-content/80">
+                                <i class="iconify size-4 text-base-content/80 {row.icon}"></i>
+                                {row.label}
+                            </span>
+                            <span class="text-sm font-medium text-base-content">
+                                {row.value}
+                            </span>
                         </li>
+
+                        <hr class="border-base-content/20" />
                     {/each}
                 </ul>
             </Card>
-        {/if}
-    {:else}
-        <!-- ════════════════════════════════════════════ -->
-        <!--  SPENDING BY CATEGORY                        -->
-        <!-- ════════════════════════════════════════════ -->
-        {#if categorySpending.length > 0}
-            <PageSection>
-                <Collapsible.Root bind:open={categoryOpen}>
+
+            <!-- ════════════════════════════════════════════ -->
+            <!--  MEMBERS (joint accounts only)             -->
+            <!-- ════════════════════════════════════════════ -->
+            {#if members.length > 0}
+                <Card contentClass="space-y-3">
+                    <h5 class="text-sm font-bold tracking-wider text-base-content/80 uppercase">
+                        Members
+                    </h5>
+
+                    <ul>
+                        {#each members as member, i (member.name + member.email)}
+                            {#if i > 0}
+                                <hr class="border-base-content/20" />
+                            {/if}
+
+                            <li class="flex items-center gap-3 py-3">
+                                <div
+                                    style:background={bgColor}
+                                    class="avatar flex size-10 shrink-0 items-center justify-center rounded-md text-sm font-bold text-white">
+                                    {StringHelper.getInitials(member.name)}
+                                </div>
+
+                                <div class="flex-1">
+                                    <p class="mb-0.5 text-sm font-semibold text-base-content">
+                                        {member.name}
+                                    </p>
+                                    <p class="text-sm text-base-content/80">{member.email}</p>
+                                </div>
+                            </li>
+                        {/each}
+                    </ul>
+                </Card>
+            {/if}
+        {:else}
+            <!-- ════════════════════════════════════════════ -->
+            <!--  SPENDING BY CATEGORY                        -->
+            <!-- ════════════════════════════════════════════ -->
+            {#if categorySpending.length > 0}
+                <PageSection>
+                    <Collapsible.Root bind:open={categoryOpen}>
+                        <Card class=" {!transactionsOpen ? 'gap-0' : ''}">
+                            {#snippet header()}
+                                <Collapsible.Trigger
+                                    class="flex w-full cursor-pointer items-center justify-between">
+                                    <p class="text-sm font-bold tracking-wide uppercase">
+                                        Spending Category {currentMonthLabel}
+                                    </p>
+                                    <div class="flex items-center gap-2">
+                                        <i
+                                            class="iconify size-4 {categoryOpen
+                                                ? 'solar--alt-arrow-up-line-duotone'
+                                                : 'solar--alt-arrow-down-line-duotone'}"></i>
+                                    </div>
+                                </Collapsible.Trigger>
+                            {/snippet}
+
+                            <Collapsible.Content>
+                                <div
+                                    class="flex flex-col items-center gap-5 px-5 pb-5 md:flex-row md:items-start md:gap-6 md:px-6">
+                                    <div class="w-36 shrink-0 md:w-40">
+                                        <DonutChart
+                                            centerSubtext="Total spent"
+                                            centerText={Formatter.currency(totalSpent, true)}
+                                            data={categorySpending.map((c) => ({
+                                                name: c.name,
+                                                value: c.amount,
+                                                color: c.color,
+                                            }))}
+                                            innerRadius={0.6} />
+                                    </div>
+                                    <div class="w-full space-y-2.5 md:flex-1">
+                                        {#each categorySpending as item (item.name)}
+                                            <div class="flex items-center gap-2.5">
+                                                <span
+                                                    style:background={item.color}
+                                                    class="size-3 shrink-0 rounded-full">
+                                                </span>
+                                                <span class="flex-1 text-sm text-base-content"
+                                                    >{item.name}</span>
+                                                <span
+                                                    class="text-sm font-semibold text-base-content">
+                                                    {Formatter.currency(item.amount, true)}
+                                                </span>
+                                                <span
+                                                    class="w-8 text-right text-sm text-base-content/50">
+                                                    {item.percentage}%
+                                                </span>
+                                            </div>
+                                        {/each}
+                                    </div>
+                                </div>
+                            </Collapsible.Content>
+                        </Card>
+                    </Collapsible.Root>
+                </PageSection>
+            {/if}
+
+            <!-- ════════════════════════════════════════════ -->
+            <!--  RECENT TRANSACTIONS                         -->
+            <!-- ════════════════════════════════════════════ -->
+            <PageSection breakMargin>
+                <Collapsible.Root bind:open={transactionsOpen}>
                     <Card class=" {!transactionsOpen ? 'gap-0' : ''}">
                         {#snippet header()}
                             <Collapsible.Trigger
                                 class="flex w-full cursor-pointer items-center justify-between">
                                 <p class="text-sm font-bold tracking-wide uppercase">
-                                    Spending Category {currentMonthLabel}
+                                    Recent Transactions
                                 </p>
-                                <div class="flex items-center gap-2">
-                                    <i
-                                        class="iconify size-4 {categoryOpen
-                                            ? 'solar--alt-arrow-up-line-duotone'
-                                            : 'solar--alt-arrow-down-line-duotone'}"></i>
-                                </div>
+                                <i
+                                    class="iconify size-4 {transactionsOpen
+                                        ? 'solar--alt-arrow-up-line-duotone'
+                                        : 'solar--alt-arrow-down-line-duotone'}"></i>
                             </Collapsible.Trigger>
                         {/snippet}
-
                         <Collapsible.Content>
-                            <div
-                                class="flex flex-col items-center gap-5 px-5 pb-5 md:flex-row md:items-start md:gap-6 md:px-6">
-                                <div class="w-36 shrink-0 md:w-40">
-                                    <DonutChart
-                                        centerSubtext="Total spent"
-                                        centerText={Formatter.currency(totalSpent, true)}
-                                        data={categorySpending.map((c) => ({
-                                            name: c.name,
-                                            value: c.amount,
-                                            color: c.color,
-                                        }))}
-                                        innerRadius={0.6} />
-                                </div>
-                                <div class="w-full space-y-2.5 md:flex-1">
-                                    {#each categorySpending as item (item.name)}
-                                        <div class="flex items-center gap-2.5">
-                                            <span
-                                                style:background={item.color}
-                                                class="size-3 shrink-0 rounded-full">
-                                            </span>
-                                            <span class="flex-1 text-sm text-base-content"
-                                                >{item.name}</span>
-                                            <span class="text-sm font-semibold text-base-content">
-                                                {Formatter.currency(item.amount, true)}
-                                            </span>
-                                            <span
-                                                class="w-8 text-right text-sm text-base-content/50">
-                                                {item.percentage}%
-                                            </span>
-                                        </div>
-                                    {/each}
-                                </div>
+                            <div>
+                                {#if transactions.length > 0}
+                                    <TransactionList {transactions} />
+                                {:else}
+                                    <EmptyItemPlaceholder label="No Transaction Yet" />
+                                {/if}
                             </div>
                         </Collapsible.Content>
                     </Card>
                 </Collapsible.Root>
             </PageSection>
+
+            <!-- ════════════════════════════════════════════ -->
+            <!--  DESKTOP STAT CARDS                         -->
+            <!-- ════════════════════════════════════════════ -->
+            <PageSection>
+                <div class="hidden md:grid md:grid-cols-3 md:gap-4">
+                    <StatCard
+                        color="success"
+                        icon="trending-up"
+                        label="Income"
+                        value={incomeTotal} />
+                    <StatCard
+                        color="error"
+                        icon="trending-down"
+                        label="Expenses"
+                        value={expenseTotal} />
+                    <StatCard
+                        color="primary"
+                        icon="piggy-bank"
+                        label="Savings"
+                        value={netSavings >= 0 ? netSavings : 0} />
+                </div>
+            </PageSection>
         {/if}
-
-        <!-- ════════════════════════════════════════════ -->
-        <!--  RECENT TRANSACTIONS                         -->
-        <!-- ════════════════════════════════════════════ -->
-        <PageSection breakMargin>
-            <Collapsible.Root bind:open={transactionsOpen}>
-                <Card class=" {!transactionsOpen ? 'gap-0' : ''}">
-                    {#snippet header()}
-                        <Collapsible.Trigger
-                            class="flex w-full cursor-pointer items-center justify-between">
-                            <p class="text-sm font-bold tracking-wide uppercase">
-                                Recent Transactions
-                            </p>
-                            <i
-                                class="iconify size-4 {transactionsOpen
-                                    ? 'solar--alt-arrow-up-line-duotone'
-                                    : 'solar--alt-arrow-down-line-duotone'}"></i>
-                        </Collapsible.Trigger>
-                    {/snippet}
-                    <Collapsible.Content>
-                        <div>
-                            {#if transactions.length > 0}
-                                <TransactionList {transactions} />
-                            {:else}
-                                <EmptyItemPlaceholder label="No Transaction Yet" />
-                            {/if}
-                        </div>
-                    </Collapsible.Content>
-                </Card>
-            </Collapsible.Root>
-        </PageSection>
-
-        <!-- ════════════════════════════════════════════ -->
-        <!--  DESKTOP STAT CARDS                         -->
-        <!-- ════════════════════════════════════════════ -->
-        <PageSection>
-            <div class="hidden md:grid md:grid-cols-3 md:gap-4">
-                <StatCard color="success" icon="trending-up" label="Income" value={incomeTotal} />
-                <StatCard
-                    color="error"
-                    icon="trending-down"
-                    label="Expenses"
-                    value={expenseTotal} />
-                <StatCard
-                    color="primary"
-                    icon="piggy-bank"
-                    label="Savings"
-                    value={netSavings >= 0 ? netSavings : 0} />
-            </div>
-        </PageSection>
-    {/if}
-</div>
+    </div>
+</MobilePageLayout>
