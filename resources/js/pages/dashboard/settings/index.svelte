@@ -2,9 +2,14 @@
     import { setLayoutProps } from '@inertiajs/svelte';
     import { dashboard } from '@wayfinder/routes';
 
+    import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import SettingsMenu from '@components/module/settings/settings-menu.svelte';
 
-    setLayoutProps({ title: 'Settings', backUrl: dashboard.url() });
+    setLayoutProps({ backUrl: dashboard.url() });
 </script>
 
-<SettingsMenu />
+<MobilePageLayout variant="4/5">
+    <div class="space-y-6">
+        <SettingsMenu />
+    </div>
+</MobilePageLayout>

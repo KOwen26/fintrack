@@ -27,18 +27,11 @@ createInertiaApp({
         ),
     layout: (name) => {
         switch (true) {
-            case name.startsWith('accounts'):
-            case name.startsWith('transactions'):
-            case name.startsWith('categories'):
-            case name.startsWith('household'):
-            case name.startsWith('settings/theme'):
-            case name.startsWith('reports'):
-            case name.startsWith('dev'):
-            case name.startsWith('dashboard'):
-                return DashboardLayout;
+            case name.startsWith('auth'):
+                return null;
 
             default:
-                return null;
+                return DashboardLayout;
         }
     },
 });

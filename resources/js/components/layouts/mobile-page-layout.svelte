@@ -38,8 +38,8 @@
     const heroClasses: Record<SheetVariant, string> = {
         full: 'hidden',
         '1/2': 'min-h-[50dvh] shrink-0',
-        '1/5': 'min-h-[20dvh] shrink-0',
-        '2/5': 'min-h-[40dvh] shrink-0',
+        '1/5': 'min-h-[80dvh] shrink-0',
+        '2/5': 'min-h-[60dvh] shrink-0',
         '3/5': 'min-h-[40dvh] shrink-0',
         '4/5': 'min-h-[20dvh] shrink-0',
     };
@@ -47,10 +47,10 @@
     const sheetClasses: Record<SheetVariant, string> = {
         full: 'flex-1',
         '1/2': 'min-h-[50dvh] rounded-t-2xl drop-shadow-2xl/50',
-        '1/5': 'min-h-[80dvh] rounded-t-2xl drop-shadow-2xl/50',
-        '2/5': 'min-h-[60dvh] rounded-t-2xl drop-shadow-2xl/50',
+        '1/5': 'min-h-[20dvh] rounded-t-2xl drop-shadow-2xl/50',
+        '2/5': 'min-h-[40dvh] rounded-t-2xl drop-shadow-2xl/50',
         '3/5': 'min-h-[60dvh] rounded-t-2xl drop-shadow-2xl/50',
-        '4/5': 'min-h-[20dvh] rounded-t-2xl drop-shadow-2xl/50',
+        '4/5': 'min-h-[80dvh] rounded-t-2xl drop-shadow-2xl/50',
     };
 
     // Register the shell class (tracked), and clear it on unmount — preserved-
@@ -68,11 +68,9 @@
         'relative flex min-h-dvh w-full flex-col bg-secondary text-secondary-content antialiased',
         _class
     )}>
-    {#if hero}
-        <section data-slot="mobile-page-layout-hero" class={cn(heroClasses[variant], heroClass)}>
-            {@render hero()}
-        </section>
-    {/if}
+    <section data-slot="mobile-page-layout-hero" class={cn(heroClasses[variant], heroClass)}>
+        {@render hero?.()}
+    </section>
 
     <!-- `contentClass` stays on the flex slice; padding lives on the inner wrapper so box padding cannot distort the hero/sheet ratio. -->
     <section

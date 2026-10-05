@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/svelte';
-import UserThemeController from '@wayfinder/App/Http/Controllers/UserThemeController';
+import ProfileController from '@wayfinder/App/Http/Controllers/Settings/ProfileController';
 
 // ──────────────────────────────────────────────
 // Shared private helpers
@@ -93,7 +93,7 @@ const setStoredTheme = (value: string): void => {
 
 const persistServerTheme = (value: string): void => {
     router.put(
-        UserThemeController.update.url(),
+        ProfileController.updateTheme.url(),
         { theme: value },
         {
             preserveScroll: true,
