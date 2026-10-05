@@ -5,42 +5,41 @@
     export type BadgeVariant = (typeof badgeVariants)[number];
     export type BadgeShape = (typeof badgeShapes)[number];
 
-    //     export const badgeVariants = tv({
-    //     base: 'focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-md border px-2 py-0.5 text-xs font-medium transition-[color,box-shadow] focus-visible:ring-[3px] [&>svg]:pointer-events-none [&>svg]:size-3',
-    //     variants: {
-    //         variant: {
-    //             default:
-    //                 'bg-primary text-primary-foreground [a&]:hover:bg-primary/90 border-transparent',
-    //             secondary:
-    //                 'bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90 border-transparent',
-    //             destructive:
-    //                 'bg-destructive [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/70 border-transparent text-white',
-    //             outline: 'text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
-    //         },
-    //     },
-    //     defaultVariants: {
-    //         variant: 'default',
-    //     },
-    // });
+    export const badgeSizes = ['sm', 'default', 'lg'] as const;
 
-    type BadgeProps = {
-        color?: ColorVariant;
-        variant?: BadgeVariant;
-        shape?: BadgeShape;
-    } & RestProps;
+    export type BadgeSize = (typeof badgeSizes)[number];
+
+    /** shadcn-style badge base — structure only; metrics live in badgeSizeClasses. */
+    export const badgeClasses =
+        'focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex w-fit shrink-0 items-center justify-center overflow-hidden whitespace-nowrap rounded-md border font-medium transition-[color,box-shadow] focus-visible:ring-[3px] [&>svg]:pointer-events-none [&>svg]:size-3';
+
+    /** Density metrics per size — `default` preserves the DaisyUI-md look the app ships. */
+    export const badgeSizeClasses: Record<BadgeSize, string> = {
+        sm: 'gap-1.5 h-5 px-2 text-xs',
+        default: 'gap-2 h-6 px-2.75 text-sm',
+        lg: 'gap-2 h-7 px-3.5 text-base',
+    };
 </script>
 
 <script lang="ts">
     import type { ColorVariant } from '@/data/theme';
     import type { RestProps } from '@type/index';
 
-    import { twMerge } from 'tailwind-merge';
+    import { cn } from '@utilities/shadcn.js';
+
+    type BadgeProps = {
+        color?: ColorVariant;
+        variant?: BadgeVariant;
+        shape?: BadgeShape;
+        size?: BadgeSize;
+    } & RestProps;
 
     let {
         ref = $bindable(null),
-        color = 'light',
+        color = 'primary',
         variant = 'solid',
         shape = 'rounded',
+        size = 'default',
         class: _class,
         children,
         ...props
@@ -52,26 +51,56 @@
         pill: 'rounded-full',
     };
 
-    const colorVariants: Record<ColorVariant, string> = {
-        primary: 'badge-primary',
-        secondary: 'badge-secondary',
-        accent: 'badge-accent',
-        success: 'badge-success',
-        info: 'badge-info',
-        warning: 'badge-warning',
-        error: 'badge-error',
-        light: '',
-        dark: 'badge-neutral',
+    const solidColors: Record<ColorVariant, string> = {
+        primary: 'border-transparent bg-primary text-primary-foreground',
+        secondary: 'border-transparent bg-secondary text-secondary-foreground',
+        accent: 'border-transparent bg-accent text-accent-foreground',
+        success: 'border-transparent bg-success text-success-foreground',
+        info: 'border-transparent bg-info text-info-foreground',
+        warning: 'border-transparent bg-warning text-warning-foreground',
+        error: 'border-transparent bg-error text-error-foreground',
+        light: 'border-base-200 bg-base-100 text-base-content',
+        dark: 'border-transparent bg-neutral text-neutral-content',
+    };
+
+    const outlineColors: Record<ColorVariant, string> = {
+        primary: 'border-primary text-primary',
+        secondary: 'border-secondary text-secondary',
+        accent: 'border-accent text-accent',
+        success: 'border-success text-success',
+        info: 'border-info text-info',
+        warning: 'border-warning text-warning',
+        error: 'border-error text-error',
+        light: 'border-base-300 text-base-content',
+        dark: 'border-neutral text-neutral',
+    };
+
+    const softColors: Record<ColorVariant, string> = {
+        primary: 'border-primary/10 bg-primary/10 text-primary',
+        secondary: 'border-secondary/10 bg-secondary/10 text-secondary',
+        accent: 'border-accent/10 bg-accent/10 text-accent',
+        success: 'border-success/10 bg-success/10 text-success',
+        info: 'border-info/10 bg-info/10 text-info',
+        warning: 'border-warning/10 bg-warning/10 text-warning',
+        error: 'border-error/10 bg-error/10 text-error',
+        light: 'border-base-content/10 bg-base-content/10 text-base-content',
+        dark: 'border-neutral/10 bg-neutral/10 text-neutral',
+    };
+
+    const variantColors: Record<BadgeVariant, Record<ColorVariant, string>> = {
+        solid: solidColors,
+        outline: outlineColors,
+        'outline-dash': outlineColors,
+        soft: softColors,
     };
 
     const badgeClass = $derived(
-        twMerge(
-            'badge',
-            colorVariants[color],
-            variant === 'outline' ? 'badge-outline' : '',
-            variant === 'outline-dash' ? 'badge-dash' : '',
-            variant === 'soft' ? 'badge-soft' : '',
+        cn(
+            badgeClasses,
+            badgeSizeClasses[size],
             shapesClass[shape],
+            variantColors[variant][color],
+            variant === 'outline-dash' ? 'border-dashed' : '',
             _class
         )
     );

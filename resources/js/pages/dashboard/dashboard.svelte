@@ -223,7 +223,7 @@
             <!-- ══════════════════════════════════════════════════ -->
             <!-- Spend Trend (bar chart) -->
             <!-- ══════════════════════════════════════════════════ -->
-            <Card class="p-5">
+            <Card>
                 {#snippet header()}
                     <h2 class="text-sm font-semibold">Spend Trend</h2>
                 {/snippet}
@@ -266,7 +266,7 @@
             <!-- ══════════════════════════════════════════════════ -->
 
             {#if budgetItems.length > 0}
-                <Card class="p-5">
+                <Card>
                     {#snippet header()}
                         <h2 class="text-sm font-semibold">Spending by Category</h2>
                     {/snippet}
@@ -306,7 +306,7 @@
             <!-- ══════════════════════════════════════════════════ -->
 
             {#if recent_transactions.length > 0}
-                <Card class="p-5">
+                <Card>
                     {#snippet header()}
                         <h2 class="text-sm font-semibold">Recent Transactions</h2>
                     {/snippet}
@@ -371,7 +371,7 @@
             <!-- ══════════════════════════════════════════════════ -->
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
                 <!-- Accounts -->
-                <Card class="p-5">
+                <Card>
                     {#snippet header()}
                         <h2 class="text-sm font-semibold">Accounts</h2>
                     {/snippet}
@@ -435,7 +435,7 @@
 
                 <!-- Category Spending (existing chart) -->
                 {#if category_spending}
-                    <Card class="p-5">
+                    <Card>
                         {#snippet header()}
                             <h2 class="text-sm font-semibold">Spending by Category</h2>
                         {/snippet}

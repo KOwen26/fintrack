@@ -8,6 +8,7 @@
     import profile from '@wayfinder/routes/profile';
 
     import Button from '@components/ui/button.svelte';
+    import Card from '@components/ui/card.svelte';
     import Field from '@components/ui/forms/field.svelte';
     import Input from '@components/ui/forms/input.svelte';
     import PasswordInput from '@components/ui/forms/password-input.svelte';
@@ -46,99 +47,89 @@
 
 <div class="space-y-6">
     <!-- Profile Info Card -->
-    <div class="card bg-base-100 shadow-sm">
-        <div class="card-body">
-            <h2 class="card-title">Profile Information</h2>
-            <p class="text-base-content/70 text-sm">Update your name and email address.</p>
+    <Card
+        class="shadow-sm"
+        description="Update your name and email address."
+        descriptionClass="text-base-content/70"
+        title="Profile Information">
+        <form class="mt-4 space-y-4" onsubmit={submitProfile}>
+            <Field error={profileForm.errors.name} title="Name">
+                <Input name="name" type="text" bind:value={profileForm.name} />
+            </Field>
 
-            <form class="mt-4 space-y-4" onsubmit={submitProfile}>
-                <Field error={profileForm.errors.name} title="Name">
-                    <Input name="name" type="text" bind:value={profileForm.name} />
-                </Field>
+            <Field error={profileForm.errors.email} title="Email">
+                <Input name="email" type="email" bind:value={profileForm.email} />
+            </Field>
 
-                <Field error={profileForm.errors.email} title="Email">
-                    <Input name="email" type="email" bind:value={profileForm.email} />
-                </Field>
-
-                <div class="card-actions mt-2 items-center justify-between">
-                    {#if profileForm.recentlySuccessful}
-                        <span class="text-success text-sm">Saved.</span>
-                    {:else}
-                        <span></span>
-                    {/if}
-                    <SubmitButton submitting={profileForm.processing}>Save</SubmitButton>
-                </div>
-            </form>
-        </div>
-    </div>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                {#if profileForm.recentlySuccessful}
+                    <span class="text-sm text-success">Saved.</span>
+                {:else}
+                    <span></span>
+                {/if}
+                <SubmitButton submitting={profileForm.processing}>Save</SubmitButton>
+            </div>
+        </form>
+    </Card>
 
     <!-- Email Verification Notice -->
     {#if mustVerifyEmail}
-        <div class="card bg-base-100 shadow-sm">
-            <div class="card-body">
-                <h2 class="card-title">Email Verification</h2>
-                <p class="text-base-content/70 text-sm">
-                    Your email address is unverified. Please check your inbox for a verification
-                    link.
+        <Card
+            class="shadow-sm"
+            contentClass="space-y-2"
+            description="Your email address is unverified. Please check your inbox for a verification link."
+            descriptionClass="text-base-content/70"
+            title="Email Verification">
+            {#if status === 'verification-link-sent'}
+                <p class="text-sm text-success">
+                    A new verification link has been sent to your email address.
                 </p>
-                {#if status === 'verification-link-sent'}
-                    <p class="text-success text-sm">
-                        A new verification link has been sent to your email address.
-                    </p>
-                {/if}
-                <div class="card-actions mt-2">
-                    <Button class="btn-sm" onclick={resendVerification} variant="outline">
-                        Resend Verification Email
-                    </Button>
-                </div>
+            {/if}
+            <div class="flex flex-wrap gap-2">
+                <Button class="btn-sm" onclick={resendVerification} variant="outline">
+                    Resend Verification Email
+                </Button>
             </div>
-        </div>
+        </Card>
     {/if}
 
     <!-- Delete Account Card -->
-    <div class="card border-error bg-base-100 border shadow-sm">
-        <div class="card-body">
-            <h2 class="card-title text-error">Delete Account</h2>
-            <p class="text-base-content/70 text-sm">
-                Once your account is deleted, all of its resources and data will be permanently
-                deleted.
-            </p>
+    <Card
+        class="border-error shadow-sm"
+        contentClass="space-y-2"
+        description="Once your account is deleted, all of its resources and data will be permanently deleted."
+        descriptionClass="text-base-content/70"
+        title="Delete Account"
+        titleClass="text-error">
+        {#if !showDeleteConfirm}
+            <div class="flex flex-wrap gap-2">
+                <Button
+                    class="btn-sm"
+                    color="error"
+                    onclick={() => (showDeleteConfirm = true)}
+                    variant="outline">
+                    Delete Account
+                </Button>
+            </div>
+        {:else}
+            <form class="space-y-4" onsubmit={submitDelete}>
+                <Field error={deleteForm.errors.password} title="Confirm your password to continue">
+                    <PasswordInput name="password" bind:value={deleteForm.password} />
+                </Field>
 
-            {#if !showDeleteConfirm}
-                <div class="card-actions mt-2">
+                <div class="flex flex-wrap gap-2">
                     <Button
                         class="btn-sm"
-                        color="error"
-                        onclick={() => (showDeleteConfirm = true)}
-                        variant="outline">
-                        Delete Account
+                        onclick={() => (showDeleteConfirm = false)}
+                        type="button"
+                        variant="ghost">
+                        Cancel
                     </Button>
+                    <SubmitButton class="btn-sm" color="error" submitting={deleteForm.processing}>
+                        Confirm Delete
+                    </SubmitButton>
                 </div>
-            {:else}
-                <form class="mt-4 space-y-4" onsubmit={submitDelete}>
-                    <Field
-                        error={deleteForm.errors.password}
-                        title="Confirm your password to continue">
-                        <PasswordInput name="password" bind:value={deleteForm.password} />
-                    </Field>
-
-                    <div class="card-actions mt-2 gap-2">
-                        <Button
-                            class="btn-sm"
-                            onclick={() => (showDeleteConfirm = false)}
-                            type="button"
-                            variant="ghost">
-                            Cancel
-                        </Button>
-                        <SubmitButton
-                            class="btn-sm"
-                            color="error"
-                            submitting={deleteForm.processing}>
-                            Confirm Delete
-                        </SubmitButton>
-                    </div>
-                </form>
-            {/if}
-        </div>
-    </div>
+            </form>
+        {/if}
+    </Card>
 </div>

@@ -8,7 +8,7 @@
         "components": "@components/shadcn/blocks",
         "utils": "@utilities/shadcn",
         "ui": "@components/shadcn/ui",
-        "hooks": "@/svelte",
+        "hooks": "@lib",
         "lib": "@/*"
     },
     "typescript": true,

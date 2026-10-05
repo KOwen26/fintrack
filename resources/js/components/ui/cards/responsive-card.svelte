@@ -10,13 +10,8 @@
 
 <Card
     {...props}
-    class={cn(
-        '',
-        'p-5 md:p-6',
-        'border-y border-x-none md:border rounded-none md:rounded-md',
-        _class
-    )}
-    headerClass="mx-2.5 md:mx-0"
+    class={cn('', 'md:py-6', 'border-x-none rounded-none border-y md:rounded-md md:border', _class)}
+    headerClass="px-8 md:px-6"
     titleClass="grow">
     {@render children?.()}
 </Card>
