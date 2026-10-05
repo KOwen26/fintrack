@@ -19,6 +19,7 @@
 </script>
 
 <script lang="ts">
+    import { inputGroupClasses } from './input.svelte';
     import MaskedInput from './masked-input.svelte';
 
     import { cn } from '@utilities/shadcn';
@@ -38,18 +39,19 @@
 
 <div
     class={cn(
-        'input min-h-12 w-full overflow-clip px-4 tabular-nums transition-colors focus-within:bg-base-content/5 focus-within:outline-none hover:bg-base-content/5',
+        inputGroupClasses,
+        'px-3 tabular-nums focus-within:bg-base-content/5 hover:bg-base-content/5',
         disabled && 'cursor-not-allowed opacity-50',
         _class
     )}>
     <span
-        class="me-1 flex items-center self-stretch border-r border-(--input-color) pe-3 text-sm font-medium whitespace-nowrap select-none">
+        class="me-1 flex items-center self-stretch border-r border-input pe-3 text-sm font-medium whitespace-nowrap select-none">
         {currency}
     </span>
     <MaskedInput
         {name}
         class={inputClass}
-        defaultClass=""
+        defaultClass="h-full w-full bg-transparent text-base outline-none md:text-sm"
         {disabled}
         maskPreset="currency"
         {required}

@@ -45,7 +45,7 @@
         --sv-bg: var(--color-base-100);
         --sv-disabled-bg: #eee;
 
-        --sv-border: 1px solid var(--input-color);
+        --sv-border: 1px solid var(--color-border);
         --sv-border-radius: calc(var(--spacing) * 1);
         --sv-general-padding: calc(var(--spacing) * 1) calc(var(--spacing) * 3);
         --sv-control-bg: var(--sv-bg);
@@ -61,7 +61,7 @@
         --sv-icon-color-hover: var(--color-primary);
         --sv-icon-bg: transparent;
         --sv-icon-size: 20px;
-        --sv-separator-bg: var(--input-color);
+        --sv-separator-bg: var(--color-border);
         --sv-btn-border: 0;
         --sv-placeholder-color: #ccccd6;
 
@@ -77,6 +77,6 @@
         --sv-create-kbd-border: 1px solid #efefef;
         --sv-create-kbd-bg: #fff;
         --sv-create-disabled-bg: #fcbaba;
-        --sv-loader-border: 2px solid var(--input-color);
+        --sv-loader-border: 2px solid var(--color-border);
     }
 </style>

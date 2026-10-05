@@ -12,9 +12,13 @@
 </script>
 
 <script lang="ts">
+    import { inputClasses } from './input.svelte';
+
     import MaskingHelper from '@lib/masking-handler';
     import IMask, { InputMask } from 'imask';
     import { onDestroy, onMount } from 'svelte';
+
+    import { cn } from '@utilities/shadcn.js';
 
     let {
         value = $bindable(),
@@ -22,6 +26,8 @@
         mask,
         maskPreset: _maskPreset = undefined,
         name,
+        defaultClass,
+        class: className,
         ...props
     }: MaskedInputProps & RestProps = $props();
 
@@ -79,7 +85,7 @@
 <input
     bind:this={input}
     name={`${name}_mask`}
-    class={['input w-full', props.class]}
+    class={cn(defaultClass ?? inputClasses, className)}
     type="text"
     {...props} />
 

@@ -20,7 +20,7 @@
     type="submit"
     {...props}>
     {#if submitting}
-        <span class="loading loading-spinner loading-sm"></span>
+        <i class="iconify size-4 animate-spin solar--refresh-bold-duotone"></i>
     {/if}
     {#if !!children}
         {@render children?.()}

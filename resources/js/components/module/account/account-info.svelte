@@ -7,7 +7,7 @@
     import { AccountType, AccountTypeMeta } from '@wayfinder/App/Enums/AccountType';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
-    import DecorationBadge from '@components/ui/decoration-badge.svelte';
+    import DecorationBadge from '@components/module/decoration-badge.svelte';
 
     interface Props {
         account: Models.Account;

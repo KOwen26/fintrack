@@ -40,7 +40,7 @@
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
 
-    import DecorationBadge from '@components/ui/decoration-badge.svelte';
+    import DecorationBadge from '@components/module/decoration-badge.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
 

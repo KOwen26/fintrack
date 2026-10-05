@@ -17,9 +17,9 @@
         iconForAccountType,
     } from '@schema/account.schema';
 
+    import DecorationColorSelector from '@components/module/decoration-color-selector.svelte';
+    import DecorationIconSelector from '@components/module/decoration-icon-selector.svelte';
     import Card from '@components/ui/card.svelte';
-    import DecorationColorSelector from '@components/ui/forms/decoration-color-selector.svelte';
-    import DecorationIconSelector from '@components/ui/forms/decoration-icon-selector.svelte';
     import FieldInput from '@components/ui/forms/field-input.svelte';
     import Field from '@components/ui/forms/field.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';

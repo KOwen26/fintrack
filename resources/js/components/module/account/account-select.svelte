@@ -5,6 +5,8 @@
     } from '@components/ui/forms/combobox.svelte';
     import type { App } from '@wayfinder/types';
 
+    import { inputGroupClasses } from '../../ui/forms/input.svelte';
+
     import { getDecorationColor } from '@data/decoration-colors';
     import { getDecorationIcon } from '@data/decoration-icons';
     import { page } from '@inertiajs/svelte';
@@ -13,7 +15,7 @@
     import { cn } from '@utilities/shadcn';
     import StringHelper from '@utilities/string-helper';
 
-    import DecorationBadge from '@components/ui/decoration-badge.svelte';
+    import DecorationBadge from '@components/module/decoration-badge.svelte';
     import Combobox from '@components/ui/forms/combobox.svelte';
 
     /** The account travels with its option — no lookups needed downstream. */
@@ -149,8 +151,9 @@
     <ComboboxPrimitive.Trigger
         {...triggerProps}
         class={cn(
-            'input flex min-h-12 w-full px-4 transition-colors focus-within:bg-base-content/5 focus-within:outline-none hover:bg-base-content/5 disabled:cursor-not-allowed',
-            'disabled:border-(--input-color) disabled:bg-base-content/10',
+            inputGroupClasses,
+            'relative px-3 hover:bg-base-content/5',
+            'disabled:border-input disabled:bg-base-content/10',
             _class
         )}>
         {#if account}
@@ -163,7 +166,7 @@
         <ComboboxPrimitive.Input
             {...inputProps}
             class={cn(
-                'w-full bg-transparent text-sm font-medium outline-none placeholder:text-base-content/80',
+                'h-full w-full bg-transparent text-sm font-medium outline-none placeholder:text-base-content/80',
                 account ? 'pr-16 pl-10' : ''
             )}
             aria-label={placeholder}

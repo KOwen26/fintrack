@@ -39,6 +39,8 @@
 <script lang="ts">
     import type { FlatpickrInstance } from '@lib/date-picker/flatpickr-action.svelte';
 
+    import { inputClasses } from './input.svelte';
+
     import { flatpickrAction } from '@lib/date-picker/flatpickr-action.svelte';
     import { timeRangePlugin, twoMonthHeaderPlugin } from '@lib/date-picker/flatpickr-plugins';
 
@@ -138,14 +140,7 @@
     const placeholder = $derived(_placeholder || typeConfig.placeholder);
     const allowInput = $derived(!!options?.allowInput);
 
-    const inputClass = $derived(
-        cn(
-            'input flex min-h-12 w-full px-4 transition-colors',
-            'focus-within:bg-base-content/5 focus-within:outline-none hover:bg-base-content/5',
-            'pr-9',
-            _class
-        )
-    );
+    const inputClass = $derived(cn(...inputClasses, 'pr-9 hover:bg-base-content/5', _class));
 
     const resolvedOptions = $derived.by(() => {
         const { onChange: userOnChange, plugins: userPlugins, ...rest } = options ?? {};

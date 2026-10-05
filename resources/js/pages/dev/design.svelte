@@ -5,8 +5,8 @@
 
     import Button from '@components/ui/button.svelte';
     import SubmitButton from '@components/ui/forms/submit-button.svelte';
-    import Modal from '@components/ui/modal.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
+    import Modal from '@components/ui/modals/modal.svelte';
 
     const form = useForm({
         name: '',

@@ -2,10 +2,11 @@
     import type {
         DecorationBadgeItem,
         DecorationBadgeSize,
-    } from '@components/ui/decoration-badge.svelte';
+    } from '@components/module/decoration-badge.svelte';
     import type { DecorationData } from '@type/generated';
 
-    import ScrollArea from '../scroll-area.svelte';
+    import { inputGroupClasses } from '../../ui/forms/input.svelte';
+    import ScrollArea from '../../ui/scroll-area.svelte';
 
     import { getDecorationColor } from '@data/decoration-colors';
     import { getDecorationIcon } from '@data/decoration-icons';
@@ -14,8 +15,8 @@
     import { cn } from '@utilities/shadcn';
     import StringHelper from '@utilities/string-helper';
 
+    import DecorationBadge from '@components/module/decoration-badge.svelte';
     import Collapsible from '@components/ui/collapsible.svelte';
-    import DecorationBadge from '@components/ui/decoration-badge.svelte';
     import Modal from '@components/ui/modals/modal.svelte';
     import Popover from '@components/ui/popover.svelte';
 
@@ -66,8 +67,10 @@
         children: CategoryNode[];
     }
 
-    const triggerClass =
-        'input flex min-h-12 w-full min-w-0 items-center gap-2.5 rounded-lg px-4 py-1 text-left transition-colors hover:bg-base-content/5 focus-visible:bg-base-content/5 focus-within:outline-none disabled:opacity-50';
+    const triggerClass = cn(
+        inputGroupClasses,
+        'gap-2.5 rounded-lg px-3 py-1 text-left hover:bg-base-content/5'
+    );
 
     const gridCols: Record<Exclude<ListLayout, 'list'>, string> = {
         'grid-2': 'grid grid-cols-2 gap-1',

@@ -10,15 +10,15 @@
     import Formatter from '@utilities/formatter';
 
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
+    import AccountSelect from '@components/module/account/account-select.svelte';
+    import CategorySelect from '@components/module/category/category-select.svelte';
     import BottomActionBar from '@components/navigation/bottom-action-bar.svelte';
     import TabsList from '@components/ui/atoms/tabs/tabs-list.svelte';
     import TabsTrigger from '@components/ui/atoms/tabs/tabs-trigger.svelte';
     import Tabs from '@components/ui/atoms/tabs/tabs.svelte';
     import Button from '@components/ui/button.svelte';
     import Drawer from '@components/ui/drawer.svelte';
-    import AccountSelect from '@components/ui/forms/account-select.svelte';
     import CalculatorInput from '@components/ui/forms/calculator-input.svelte';
-    import CategorySelect from '@components/ui/forms/category-select.svelte';
     import CurrencyInput from '@components/ui/forms/currency-input.svelte';
     import DateInput from '@components/ui/forms/date-input.svelte';
     import Field from '@components/ui/forms/field.svelte';
@@ -207,6 +207,7 @@
                                 ? 'text-[--spacing(10)]'
                                 : 'text-5xl',
                         ]}
+                        defaultClass=""
                         inputmode="numeric"
                         maskPreset="currency"
                         onclick={openCalculator}
