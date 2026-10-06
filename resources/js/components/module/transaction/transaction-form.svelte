@@ -306,14 +306,7 @@
                     error={form.errors.category_id}
                     required
                     title="Category">
-                    <CategorySelect
-                        {categories}
-                        groupVariant="text"
-                        optionVariant="icon"
-                        placeholder="Select category"
-                        required
-                        variant="modal"
-                        bind:value={form.category_id} />
+                    <CategorySelect {categories} required bind:value={form.category_id} />
                 </Field>
             {/if}
 

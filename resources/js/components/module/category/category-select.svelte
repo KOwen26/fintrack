@@ -3,6 +3,10 @@
         DecorationBadgeItem,
         DecorationBadgeSize,
     } from '@components/module/decoration-badge.svelte';
+    import type {
+        ComboboxTriggerContext,
+        SelectOption,
+    } from '@components/ui/forms/combobox.svelte';
     import type { DecorationData } from '@type/generated';
 
     import { inputGroupClasses } from '../../ui/forms/input.svelte';
@@ -11,12 +15,14 @@
     import { getDecorationColor } from '@data/decoration-colors';
     import { getDecorationIcon } from '@data/decoration-icons';
     import { page } from '@inertiajs/svelte';
+    import { Combobox as ComboboxPrimitive } from 'bits-ui';
 
     import { cn } from '@utilities/shadcn';
     import StringHelper from '@utilities/string-helper';
 
     import DecorationBadge from '@components/module/decoration-badge.svelte';
     import Collapsible from '@components/ui/collapsible.svelte';
+    import Combobox from '@components/ui/forms/combobox.svelte';
     import Modal from '@components/ui/modals/modal.svelte';
     import Popover from '@components/ui/popover.svelte';
 
@@ -35,7 +41,8 @@
         value?: string | number;
         categories?: CategoryOption[];
         placeholder?: string;
-        variant?: 'inline' | 'popover' | 'modal';
+        variant?: 'inline' | 'popover' | 'modal' | 'combobox';
+        clearable?: boolean;
         /** How groups render: toggleable sections or plain divider labels. Groups are never selectable. */
         groupVariant?: 'collapsible' | 'text';
         /** Row arrangement: single column rows, 2-column (chip + text), or icon tiles (chip top, text below, 4 columns). */
@@ -51,8 +58,9 @@
     let {
         value = $bindable(),
         categories = [],
-        placeholder = 'Pilih kategori',
-        variant = 'inline',
+        placeholder = 'Select Category',
+        variant = 'combobox',
+        clearable = true,
         groupVariant = 'collapsible',
         optionVariant = 'list',
         class: _class,
@@ -65,6 +73,10 @@
         name: string;
         visual: DecorationBadgeItem;
         children: CategoryNode[];
+    }
+
+    interface CategoryComboboxOption extends SelectOption {
+        category: CategoryNode;
     }
 
     const triggerClass = cn(
@@ -149,6 +161,28 @@
         return undefined;
     });
 
+    const comboboxOptions = $derived(
+        groups.flatMap((group) =>
+            group.children.map((child) => ({
+                value: String(child.id),
+                label: `${group.name} ${child.name}`,
+                category: child,
+                group: group.name,
+            }))
+        )
+    );
+
+    let comboboxInputRef = $state<HTMLInputElement | null>(null);
+    let comboboxOpen = $state(false);
+
+    // Mirror the selected category name onto the search input while closed;
+    // bits-ui only refreshes the display on selection events.
+    $effect(() => {
+        if (comboboxInputRef && !comboboxOpen) {
+            comboboxInputRef.value = selected?.name ?? '';
+        }
+    });
+
     /** All groups start collapsed; the group holding the current selection starts expanded. */
     function buildInitialExpanded(): Record<number, boolean> {
         const initial: Record<number, boolean> = {};
@@ -197,6 +231,23 @@
         open = false;
     }
 
+    function findComboboxCategory(val: string | number | undefined): CategoryNode | undefined {
+        if (val === undefined || val === '') {
+            return undefined;
+        }
+
+        return groups.flatMap((group) => group.children).find((child) => child.id === Number(val));
+    }
+
+    function getComboboxValue(): string {
+        return selected ? String(selected.id) : '';
+    }
+
+    /** Clearing resolves to `undefined`, matching the optional category id shape. */
+    function setComboboxValue(next: string): void {
+        value = findComboboxCategory(next)?.id ?? undefined;
+    }
+
     function revealSelectedGroup(): void {
         if (!selected) return;
 
@@ -238,7 +289,22 @@
 </script>
 
 <div class={cn('w-full', _class)}>
-    {#if variant === 'popover'}
+    {#if variant === 'combobox'}
+        <Combobox
+            {clearable}
+            contentProps={{ sideOffset: 10 }}
+            {disabled}
+            inputProps={{
+                class: 'placeholder:text-base-content/35',
+                'aria-required': required || undefined,
+            }}
+            option={comboboxOption}
+            options={comboboxOptions}
+            {placeholder}
+            trigger={comboboxTrigger}
+            bind:open={comboboxOpen}
+            bind:value={getComboboxValue, setComboboxValue} />
+    {:else if variant === 'popover'}
         <Popover
             {triggerClass}
             align="start"
@@ -285,6 +351,63 @@
     <i
         class="ml-auto iconify size-4 shrink-0 text-base-content transition-transform duration-200 solar--alt-arrow-down-linear"
         class:rotate-180={open}></i>
+{/snippet}
+
+{#snippet comboboxOption({ category }: CategoryComboboxOption)}
+    <div class="flex w-full min-w-0 items-center gap-2.5 pr-5">
+        {@render chip(category.visual)}
+        <span class="truncate text-sm font-medium">{category.name}</span>
+    </div>
+{/snippet}
+
+{#snippet comboboxTrigger({
+    inputProps,
+    triggerProps,
+    selected,
+    open,
+}: ComboboxTriggerContext<CategoryComboboxOption>)}
+    {const category = $derived(selected?.category)}
+
+    <ComboboxPrimitive.Trigger
+        {...triggerProps}
+        class={cn(
+            inputGroupClasses,
+            'relative px-3 hover:bg-base-content/5',
+            'disabled:cursor-not-allowed disabled:border-input disabled:bg-base-content/10',
+            _class
+        )}>
+        {#if category}
+            <span
+                class="pointer-events-none absolute top-1/2 left-2.5 z-10 flex -translate-y-1/2 items-center">
+                {@render chip(category.visual)}
+            </span>
+        {/if}
+
+        <ComboboxPrimitive.Input
+            {...inputProps}
+            class={cn(
+                'h-full w-full bg-transparent text-sm font-medium outline-none placeholder:text-base-content/80',
+                category ? 'pr-16 pl-10' : ''
+            )}
+            aria-label={placeholder}
+            autocomplete="off"
+            bind:ref={comboboxInputRef} />
+
+        {#if clearable && category && !disabled}
+            <button
+                class="absolute top-1/2 right-9 z-10 flex size-6 -translate-y-1/2 items-center justify-center rounded-full text-base-content/60 hover:bg-base-content/10 hover:text-base-content"
+                aria-label="Clear category"
+                onclick={() => setComboboxValue('')}
+                onpointerdown={(e) => e.stopPropagation()}
+                type="button">
+                <i class="iconify size-4 solar--close-linear"></i>
+            </button>
+        {/if}
+
+        <i
+            class="pointer-events-none absolute top-1/2 right-2.5 iconify flex size-4 -translate-y-1/2 items-center text-base-content solar--alt-arrow-down-linear"
+            class:rotate-180={open}></i>
+    </ComboboxPrimitive.Trigger>
 {/snippet}
 
 <!-- Grouped list, shared by all variants. Groups are separated by `hr`; groups are never selectable. -->

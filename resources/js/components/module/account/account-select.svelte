@@ -5,8 +5,6 @@
     } from '@components/ui/forms/combobox.svelte';
     import type { App } from '@wayfinder/types';
 
-    import { inputGroupClasses } from '../../ui/forms/input.svelte';
-
     import { getDecorationColor } from '@data/decoration-colors';
     import { getDecorationIcon } from '@data/decoration-icons';
     import { page } from '@inertiajs/svelte';
@@ -17,6 +15,7 @@
 
     import DecorationBadge from '@components/module/decoration-badge.svelte';
     import Combobox from '@components/ui/forms/combobox.svelte';
+    import { inputGroupClasses } from '@components/ui/forms/input.svelte';
 
     /** The account travels with its option — no lookups needed downstream. */
     interface AccountOption extends SelectOption {
