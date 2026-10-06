@@ -17,19 +17,23 @@
         {@render children?.()}
     </div>
 
-    <div class="join overflow-clip rounded-md border border-base-200">
+    <div class="flex overflow-clip rounded-md border border-base-200">
         <Button
-            class={cn('size-8 p-1', mode === 'list' ? 'btn-active' : '')}
+            aria-pressed={mode === 'list'}
+            class={cn(mode === 'list' ? 'bg-base-content/10 text-primary' : '')}
             color="light"
             onclick={() => (mode = 'list')}
+            size="icon-sm"
             variant="ghost">
             <i class="iconify size-6 solar--list-bold-duotone"></i>
         </Button>
 
         <Button
-            class={cn('size-8 p-1', mode === 'grid' ? 'btn-active' : '')}
+            aria-pressed={mode === 'grid'}
+            class={cn(mode === 'grid' ? 'bg-base-content/10 text-primary' : '')}
             color="light"
             onclick={() => (mode = 'grid')}
+            size="icon-sm"
             variant="ghost">
             <i class="iconify size-6 tabler--layout-grid"></i>
         </Button>

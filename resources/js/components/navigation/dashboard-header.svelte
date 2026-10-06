@@ -25,7 +25,7 @@
         </div>
 
         {#if backUrl}
-            <Button size="icon" color="secondary" href={backUrl} variant="ghost">
+            <Button color="secondary" href={backUrl} size="icon" variant="ghost">
                 <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
             </Button>
         {/if}
@@ -51,27 +51,7 @@
         class="hidden rounded-full md:inline-flex"
         color="accent"
         size="icon-sm"
-        popovertarget="profile-info"
         variant="outline">
         <i class="iconify solar--user-bold-duotone"></i>
     </Button>
-    <div
-        id="profile-info"
-        style="position-anchor:--anchor-1"
-        class="dropdown dropdown-end mt-2 w-52 rounded-lg bg-base-100 shadow-sm"
-        popover>
-        <ul class="menu w-full space-y-1 text-base-content">
-            <li class="menu-title">Title</li>
-            <li><a><i class="iconify solar--user-bold-duotone"></i> Item 1</a></li>
-            <li><a><i class="iconify solar--user-bold-duotone"></i> Item 2</a></li>
-            <hr class="-mx-2" />
-            <li><a><i class="iconify solar--user-bold-duotone"></i> Item 3</a></li>
-            <li>
-                <Button class="justify-start px-3" color="error" variant="soft">
-                    <i class="iconify solar--logout-bold-duotone"></i>
-                    Logout
-                </Button>
-            </li>
-        </ul>
-    </div>
 {/snippet}

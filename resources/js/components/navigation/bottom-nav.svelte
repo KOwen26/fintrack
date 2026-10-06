@@ -123,7 +123,7 @@
 
     <Link
         class={cn(
-            'relative mb-2 flex h-full max-w-32 basis-full flex-col items-center justify-center gap-px rounded-box transition-opacity',
+            'relative mb-2 flex h-full max-w-32 basis-full flex-col items-center justify-center gap-px rounded-lg transition-opacity',
             isActive ? 'text-primary' : 'text-base-content/60 hover:opacity-80'
         )}
         aria-current={isActive ? 'page' : undefined}

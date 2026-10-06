@@ -26,8 +26,8 @@ disguised as one:**
 ```
 1,012 daisy-dependent class occurrences (2026-09-30 baseline)
 ├─ 783 color utilities (bg-primary, text-base-content…)  → survive via tokens.css ✅
-├─  76 contained in ui/ wrappers                          → 19 done (input family, card-title, spinner); button/alert/modal/menu remain
-└─ 128 direct component classes (125 prod, 3 dev)         → 44 done (card + badge + input families); ~84 remain
+├─  76 contained in ui/ wrappers                          → ✅ all wrapper families done (input, badge, alert, button — 10-05..10-06)
+└─ 128 direct component classes (125 prod, 3 dev)         → ✅ 125 prod done (10-06); 3 dev-gallery stragglers remain (§1.5)
 ```
 
 ---
@@ -167,16 +167,22 @@ strings and flatpickr DOM queries — not classes.
   always did. Their trigger styling comes from `inputGroupClasses`.
 - flatpickr's `altInputClass` concern (§5) is resolved — `date-input` passes `inputClasses`.
 
-### ⏳ Remaining (verified 10-05 — much shorter than the baseline)
+### ⏳ Remaining (verified 10-06 — much shorter than the baseline)
 
-1. **dashboard-header.svelte** — raw `dropdown dropdown-end` + `menu`/`menu-title`
-   (~~`divider`~~ ✅ swapped to `ui/separator.svelte`, 10-06).
-2. **datatable-row-action + datatable-v8-row-action** — `dropdown dropdown-end` +
-   `menu dropdown-content rounded-box` ×2 files.
-3. **toggleable-grid** — `join` + `btn-active` ×2 (deferred by decision, 10-06);
-   **bottom-nav dockItem** — `rounded-box` ×1.
-4. Dev color-gallery pages.
-5. Token layer (B or C) + `@plugin 'daisyui'` removal — the unchanged finish line (§6).
+1. ~~dashboard-header.svelte~~ — the raw `dropdown`/`menu` popover markup was removed
+   by the owner (10-06); the profile trigger stays menu-less for now.
+2. ~~datatable-row-action + datatable-v8-row-action~~ ✅ done (10-06) — overflow menus
+   migrated to `ui/atoms/dropdown-menu` (Tooltip-wrapped Trigger via the bits-ui
+   `child` snippet); `menu dropdown-content rounded-box` gone.
+3. ~~toggleable-grid~~ ✅ done (10-06) — the active-state regression is fixed: dead
+   `join`/`btn-active` → bordered flex group with `bg-base-content/10 text-primary`
+   active state + `size="icon-sm"`; ~~bottom-nav `rounded-box`~~ ✅ → `rounded-lg`.
+4. Dev pages — down to a single `rounded-box` in `pages/dev/design-system/color.svelte`
+   (the `card-pattern` class in `examples/dashboard.svelte` is custom CSS, not daisy).
+   To be rewritten as the theme/token visual harness before step 1–2 land.
+5. Token layer (B or C shape per §2) — with §1.5 items 1–3 done, **production JS now
+   contains zero DaisyUI component classes** (10-06). The `@plugin 'daisyui'` removal
+   and `npm rm daisyui` will be run manually by the owner after the token layer lands.
 
 ---
 
@@ -430,9 +436,9 @@ directly with no bridge.
 | 2 | Add the daisy-vocab utility registrations to `tokens.css` (§1 Bucket 1) + `rounded-box` | low | ⏳ pending |
 | 3 | Rewrite the `ui/` wrappers (§1 Bucket 2), incl. tv `size` variants; add Avatar; fix alert no-ops | medium | ✅ essentially complete — all wrapper families done; only daisy `dropdown/menu` markup in dashboard-header + datatable row-actions remains (step 5) |
 | 4 | Hand-roll the Dock replacement; parity-test against current bottom-nav | medium | ✅ done — in-house `ui/dock.svelte` |
-| 5 | Replace direct usage by hotspot order: settings pages → transaction forms → reports → navigation → misc singles | medium | ◐ near-complete — button call sites done (10-06); remaining: dashboard-header menu, datatable row-actions ×2, toggleable-grid (deferred), bottom-nav rounded-box |
+| 5 | Replace direct usage by hotspot order: settings pages → transaction forms → reports → navigation → misc singles | medium | ✅ essentially complete (10-06) — button call sites, datatable row-actions ×2, toggleable-grid, bottom-nav `rounded-box` all done; dashboard-header's raw menu removed by the owner; only dev galleries remain (step 6) |
 | 6 | Rewrite or delete the dev color-gallery pages | low | ⏳ pending |
-| 7 | Remove `@plugin 'daisyui'`, delete `daisyui.css`/`themes.css` plugin blocks, `npm rm daisyui` | low | ⏳ pending |
+| 7 | Remove `@plugin 'daisyui'`, delete `daisyui.css`/`themes.css` plugin blocks, `npm rm daisyui` | low | ⏳ pending — owner will run the removal/uninstall manually once steps 1–2/6 land |
 | 8 | Full visual pass: all 11 themes × key screens (settings, reports, transaction create/detail, mobile nav) | — | ⏳ pending |
 | 9 | (Ongoing) migrate `text-base-content` → `text-foreground` etc. on touch; eventually delete the daisy-vocab registrations | opportunistic | ◐ ongoing — new code still adds `base-*` utilities (e.g. card descriptions use `text-base-content/70`) |
 
