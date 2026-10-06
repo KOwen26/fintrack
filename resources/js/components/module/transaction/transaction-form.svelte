@@ -363,7 +363,7 @@
 
 <BottomActionBar>
     <div class="flex gap-3">
-        <Button class="btn-square" color="secondary" onclick={openCalculator} variant="outline">
+        <Button color="secondary" onclick={openCalculator} size="icon" variant="outline">
             <i class="iconify solar--calculator-minimalistic-bold-duotone"></i>
         </Button>
 

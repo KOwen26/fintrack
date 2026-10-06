@@ -129,11 +129,7 @@
 
 <HeaderContext>
     <div class="flex w-full items-center justify-end gap-3 md:w-auto">
-        <Button
-            class="size-10 shrink-0 p-1 btn-sm"
-            aria-label="Open settings"
-            href={settings.index.url()}
-            variant="ghost">
+        <Button size="icon" aria-label="Open settings" href={settings.index.url()} variant="ghost">
             <i class="iconify size-6 solar--settings-bold-duotone"></i>
         </Button>
     </div>

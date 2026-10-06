@@ -59,11 +59,7 @@
         </div>
     {:else}
         {#if backUrl}
-            <Button
-                class="size-10 shrink-0 p-1 btn-sm"
-                color="secondary"
-                href={backUrl}
-                variant="ghost">
+            <Button size="icon" color="secondary" href={backUrl} variant="ghost">
                 <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
             </Button>
         {/if}

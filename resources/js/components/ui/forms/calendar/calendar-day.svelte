@@ -3,7 +3,7 @@
 
     import { cn } from '@utilities/shadcn.js';
 
-    import { tvButtonVariants as buttonVariants } from '@components/ui/button.svelte';
+    import { buttonClassVariants as buttonVariants } from '@components/ui/button.svelte';
 
     let {
         ref = $bindable(null),
@@ -14,20 +14,20 @@
 
 <CalendarPrimitive.Day
     class={cn(
-        buttonVariants({ variant: 'ghost' }),
+        buttonVariants({ variant: 'ghost', color: 'light' }),
         'flex size-(--cell-size) flex-col items-center justify-center gap-1 p-0 leading-none font-normal whitespace-nowrap select-none',
         '[&[data-today]:not([data-selected])]:bg-accent [&[data-today]:not([data-selected])]:text-accent-foreground [&[data-today][data-disabled]]:text-muted-foreground',
-        'data-[selected]:bg-primary dark:data-[selected]:hover:bg-accent/50 data-[selected]:text-primary-foreground',
+        'data-[selected]:bg-primary data-[selected]:text-primary-foreground dark:data-[selected]:hover:bg-accent/50',
         // Outside months
         '[&[data-outside-month]:not([data-selected])]:text-muted-foreground [&[data-outside-month]:not([data-selected])]:hover:text-accent-foreground',
         // Disabled
-        'data-[disabled]:text-muted-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+        'data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground data-[disabled]:opacity-50',
         // Unavailable
         'data-[unavailable]:text-muted-foreground data-[unavailable]:line-through',
         // hover
         'dark:hover:text-accent-foreground',
         // focus
-        'focus:border-ring focus:ring-ring/50 focus:relative',
+        'focus:relative focus:border-ring focus:ring-ring/50',
         // inner spans
         '[&>span]:text-xs [&>span]:opacity-70',
         className

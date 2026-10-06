@@ -5,7 +5,7 @@
 
     import { cn } from '@utilities/shadcn.js';
 
-    import { tvButtonVariants as buttonVariants } from '@components/ui/button.svelte';
+    import { buttonClassVariants as buttonVariants } from '@components/ui/button.svelte';
 
     let {
         ref = $bindable(null),
@@ -18,16 +18,16 @@
     } = $props();
 </script>
 
-{#snippet Fallback()}
-    <i class="iconify size-4 solar--alt-arrow-left-line-duotone"></i>
-{/snippet}
-
 <CalendarPrimitive.PrevButton
     class={cn(
-        buttonVariants({ variant }),
+        buttonVariants({ variant, color: 'light' }),
         'size-(--cell-size) bg-transparent p-0 select-none disabled:opacity-50 rtl:rotate-180',
         className
     )}
     children={children || Fallback}
     bind:ref
     {...restProps} />
+
+{#snippet Fallback()}
+    <i class="iconify size-4 solar--alt-arrow-left-line-duotone"></i>
+{/snippet}

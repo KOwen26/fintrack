@@ -78,7 +78,7 @@
             <Badge color="dark" size="sm">Coming Soon</Badge>
         {/snippet}
         <div class="flex flex-wrap gap-2">
-            <Button class="btn-sm" disabled variant="outline">Enable 2FA</Button>
+            <Button size="sm" disabled variant="outline">Enable 2FA</Button>
         </div>
     </Card>
 
@@ -93,7 +93,7 @@
             <Badge color="dark" size="sm">Coming Soon</Badge>
         {/snippet}
         <div class="flex flex-wrap gap-2">
-            <Button class="btn-sm" disabled variant="outline">Manage Passkeys</Button>
+            <Button size="sm" disabled variant="outline">Manage Passkeys</Button>
         </div>
     </Card>
 </div>

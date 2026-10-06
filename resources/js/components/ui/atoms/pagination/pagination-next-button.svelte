@@ -3,7 +3,7 @@
 
     import { cn } from '@utilities/shadcn.js';
 
-    import { tvButtonVariants as buttonVariants } from '@components/ui/button.svelte';
+    import { buttonClassVariants as buttonVariants } from '@components/ui/button.svelte';
 
     let {
         ref = $bindable(null),
@@ -13,16 +13,12 @@
     }: PaginationPrimitive.NextButtonProps = $props();
 </script>
 
-{#snippet Fallback()}
-    <span>Next</span>
-    <i class="iconify size-4 solar--alt-arrow-right-line-duotone"></i>
-{/snippet}
-
 <PaginationPrimitive.NextButton
     class={cn(
         buttonVariants({
             size: 'default',
             variant: 'ghost',
+            color: 'light',
             class: 'gap-1 px-2.5 sm:pr-2.5',
         }),
         className
@@ -31,3 +27,8 @@
     children={children || Fallback}
     bind:ref
     {...restProps} />
+
+{#snippet Fallback()}
+    <span>Next</span>
+    <i class="iconify size-4 solar--alt-arrow-right-line-duotone"></i>
+{/snippet}

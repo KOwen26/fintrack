@@ -86,7 +86,7 @@
                 </p>
             {/if}
             <div class="flex flex-wrap gap-2">
-                <Button class="btn-sm" onclick={resendVerification} variant="outline">
+                <Button size="sm" onclick={resendVerification} variant="outline">
                     Resend Verification Email
                 </Button>
             </div>
@@ -104,7 +104,7 @@
         {#if !showDeleteConfirm}
             <div class="flex flex-wrap gap-2">
                 <Button
-                    class="btn-sm"
+                    size="sm"
                     color="error"
                     onclick={() => (showDeleteConfirm = true)}
                     variant="outline">
@@ -119,13 +119,13 @@
 
                 <div class="flex flex-wrap gap-2">
                     <Button
-                        class="btn-sm"
+                        size="sm"
                         onclick={() => (showDeleteConfirm = false)}
                         type="button"
                         variant="ghost">
                         Cancel
                     </Button>
-                    <SubmitButton class="btn-sm" color="error" submitting={deleteForm.processing}>
+                    <SubmitButton size="sm" color="error" submitting={deleteForm.processing}>
                         Confirm Delete
                     </SubmitButton>
                 </div>

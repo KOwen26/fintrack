@@ -91,7 +91,7 @@
 
 <div class="space-y-4">
     {#if view === 'children' && selectedGroup}
-        <Button class="btn-sm" color="light" onclick={goBack} variant="outline">
+        <Button size="sm" color="light" onclick={goBack} variant="outline">
             <span>←</span>
             <span>{selectedGroup.name}</span>
         </Button>
@@ -106,9 +106,10 @@
 
     {#if view === 'parent' && donutSelectedGroup}
         <Button
-            class="btn-sm w-full"
+            class="w-full"
             color="light"
             onclick={() => drillDown(donutSelectedGroup)}
+            size="sm"
             variant="outline">
             See Detail
         </Button>

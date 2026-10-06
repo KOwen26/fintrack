@@ -43,11 +43,7 @@
 
 <HeaderContext>
     <div class="flex w-full items-center justify-between gap-3">
-        <Button
-            class="size-10 shrink-0 p-1 btn-sm"
-            aria-label="Back to transactions"
-            href={backUrl}
-            variant="ghost">
+        <Button size="icon" aria-label="Back to transactions" href={backUrl} variant="ghost">
             <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
         </Button>
 
@@ -56,7 +52,7 @@
         </h1>
 
         <Button
-            class="size-10 shrink-0 p-1 btn-sm"
+            size="icon"
             aria-label={isTransfer ? 'Delete transfer' : 'Delete transaction'}
             color="error"
             onclick={() => (showDeleteConfirm = true)}

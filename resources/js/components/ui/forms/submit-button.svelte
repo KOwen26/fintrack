@@ -1,8 +1,10 @@
 <script lang="ts" module>
+    import type { ButtonSize } from '../button.svelte';
     import type { RestProps } from '@type/index';
 
     export type SubmitButtonProps = {
         submitting: boolean;
+        size?: ButtonSize;
     };
 </script>
 
@@ -11,10 +13,17 @@
 
     import { twMerge } from 'tailwind-merge';
 
-    let { submitting, children, class: _class, ...props }: SubmitButtonProps & RestProps = $props();
+    let {
+        submitting,
+        size = 'default',
+        children,
+        class: _class,
+        ...props
+    }: SubmitButtonProps & RestProps = $props();
 </script>
 
 <Button
+    {size}
     class={twMerge('flex items-center gap-x-3', _class)}
     disabled={submitting}
     type="submit"

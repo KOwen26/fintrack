@@ -26,7 +26,8 @@
 <HeaderContext>
     <div class="flex w-full items-center justify-between gap-3">
         <Button
-            class="size-10 shrink-0 p-1 btn-sm md:hidden"
+            class="md:hidden"
+            size="icon"
             aria-label="Back to transactions"
             href={backUrl}
             variant="ghost">

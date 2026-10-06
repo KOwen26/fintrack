@@ -5,6 +5,7 @@
     import * as Sidebar from '@components/ui/atoms/sidebar';
     import Breadcrumbs from '@components/ui/breadcrumbs.svelte';
     import Button from '@components/ui/button.svelte';
+    import Separator from '@components/ui/separator.svelte';
 
     interface Props {
         backUrl?: string;
@@ -20,15 +21,11 @@
     <div class="flex min-w-0 items-center gap-2">
         <div class="flex items-center gap-2">
             <Sidebar.Trigger class="-ml-1" />
-            <div class="divider mx-0 divider-horizontal divide-base-300"></div>
+            <Separator orientation="vertical" />
         </div>
 
         {#if backUrl}
-            <Button
-                class="size-10 shrink-0 p-1 btn-sm"
-                color="secondary"
-                href={backUrl}
-                variant="ghost">
+            <Button size="icon" color="secondary" href={backUrl} variant="ghost">
                 <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
             </Button>
         {/if}
@@ -51,8 +48,9 @@
 {#snippet profileInfo()}
     <Button
         style="anchor-name:--anchor-1"
-        class="hidden btn-circle btn-sm md:inline-flex"
+        class="hidden rounded-full md:inline-flex"
         color="accent"
+        size="icon-sm"
         popovertarget="profile-info"
         variant="outline">
         <i class="iconify solar--user-bold-duotone"></i>
