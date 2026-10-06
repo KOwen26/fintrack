@@ -28,6 +28,16 @@
     <link rel="icon" href="/icons/favicon-16x16.png" type="image/png" sizes="16x16">
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180">
 
+    {{-- First-paint theme boot — mirrors theme-handler.svelte.ts (the cookie mirrors localStorage). --}}
+    <script>
+        (function() {
+            const theme = /(?:^|;\s*)fintrack-theme=([^;]+)/.exec(document.cookie);
+            const themeValue = theme ? decodeURIComponent(theme[1]) : '';
+
+            document.documentElement.dataset.theme = themeValue || 'electric';
+        })();
+    </script>
+
     <!-- Styles / Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.ts'])
 

@@ -35,6 +35,42 @@
         error: 'bg-error text-error-content',
     };
 
+    /* Daisy-vocab ↔ shadcn-vocab parity pairs — the Option D flip detector.
+       Both columns now resolve from themes/*.css through tokens.css: shadcn
+       names natively, daisy names through the compatibility block. Both tiles
+       must print identical computed values — if a row diverges, a token
+       registration is wrong. */
+    const parityPairs = [
+        { pair: 'base-100', daisy: 'bg-base-100', shadcn: 'bg-background' },
+        { pair: 'base-200', daisy: 'bg-base-200', shadcn: 'bg-card' },
+        { pair: 'base-200', daisy: 'bg-base-200', shadcn: 'bg-popover' },
+        { pair: 'base-300', daisy: 'bg-base-300', shadcn: 'bg-muted' },
+        { pair: 'base-300', daisy: 'bg-base-300', shadcn: 'bg-border' },
+        { pair: 'base-content', daisy: 'bg-base-content', shadcn: 'bg-foreground' },
+        { pair: 'primary', daisy: 'bg-primary', shadcn: 'bg-ring' },
+        {
+            pair: 'primary-content',
+            daisy: 'bg-primary-content',
+            shadcn: 'bg-primary-foreground',
+        },
+        {
+            pair: 'secondary-content',
+            daisy: 'bg-secondary-content',
+            shadcn: 'bg-secondary-foreground',
+        },
+        {
+            pair: 'accent-content',
+            daisy: 'bg-accent-content',
+            shadcn: 'bg-accent-foreground',
+        },
+        { pair: 'error', daisy: 'bg-error', shadcn: 'bg-destructive' },
+        {
+            pair: 'error-content',
+            daisy: 'bg-error-content',
+            shadcn: 'bg-destructive-foreground',
+        },
+    ] as const;
+
     /* Comparison grounds and the ramp combinations shown on each of them —
        solid (500 fill) and soft (100 fill), labeled with each color's
        content pair like the swatch tiles. */
@@ -110,9 +146,10 @@
     <div>
         <h1>Design System — Color Tokens</h1>
         <p class="text-sm text-base-content/60">
-            The six finance palettes as native DaisyUI themes. The selector below changes the
-            app-wide theme — layout chrome, tokens, ramps, and components all follow. Swatch values
-            are read live from the browser.
+            The 11 finance palettes rendered through every token vocabulary in play — shadcn names
+            natively, DaisyUI names through the compatibility block in tokens.css. The selector
+            below changes the app-wide theme; swatch values are read live from the browser, so this
+            page doubles as the verification harness for the DaisyUI drop (Option D, §2).
         </p>
     </div>
 
@@ -134,7 +171,7 @@
             </p>
 
             <!-- Layered composition: every depth token applied, not swatched. -->
-            <div class="overflow-hidden rounded-box border border-base-300">
+            <div class="overflow-hidden rounded-lg border border-base-300">
                 <!-- base-100 — page ground -->
                 <div class="bg-base-100 p-4" data-swatch="depth-ground">
                     <div class="flex items-center justify-between gap-2">
@@ -221,11 +258,35 @@
         </section>
 
         <section class="px-5">
+            <h2>Vocabulary Parity — Daisy ↔ shadcn</h2>
+            <hr class="mt-2 mb-4" />
+            <p class="mb-4 text-sm text-base-content/60">
+                Every migration-critical token rendered through both vocabularies. Both sides
+                resolve from themes/*.css via tokens.css — shadcn names natively, daisy names
+                through the compatibility block. Each row must print identical values on both sides;
+                a diverging row means a token registration is wrong.
+            </p>
+            <div class="grid gap-3 sm:grid-cols-2">
+                {#each parityPairs as entry (entry.pair + entry.shadcn)}
+                    <div class="rounded-lg border border-base-content/10 p-3">
+                        <p class="mb-2 text-xs font-semibold tracking-wide uppercase">
+                            {entry.pair}
+                        </p>
+                        <div class="grid grid-cols-2 gap-2">
+                            {@render parityTile('parity-' + entry.pair, entry.daisy, 'daisy')}
+                            {@render parityTile('shadcn-' + entry.shadcn, entry.shadcn, 'shadcn')}
+                        </div>
+                    </div>
+                {/each}
+            </div>
+        </section>
+
+        <section class="px-5">
             <h2>Combinations × Backgrounds</h2>
             <hr class="mt-2 mb-4" />
             <p class="mb-4 text-sm text-base-content/60">
                 Ramp combinations — solid (500 fill) and soft (100 fill), labeled with each color's
-                content pair — compared on base-100, base-300, white, black, and secondary grounds.
+                content pair — compared on base-100, base-content, and secondary grounds.
             </p>
             <div class="space-y-3">
                 {#each backgrounds as background (background.key)}
@@ -342,5 +403,14 @@
                 <p class="text-xs leading-tight opacity-70" data-color-hex={key}>—</p>
             </div>
         </div>
+    </div>
+{/snippet}
+
+{#snippet parityTile(key: string, tileClass: string, tag: string)}
+    <div class="min-w-0">
+        <div class="h-12 rounded-md border border-base-content/10 {tileClass}" data-swatch={key}>
+        </div>
+        <p class="mt-1 text-[10px] font-medium text-base-content/60">{tag}</p>
+        <p class="text-xs font-semibold" data-hex={key}>—</p>
     </div>
 {/snippet}

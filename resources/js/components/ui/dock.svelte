@@ -35,7 +35,7 @@
         },
         float: {
             dock: tw`bottom-[env(safe-area-inset-bottom)] p-4 overflow-clip`,
-            content: tw`min-h-16 rounded-xl border border-base-content/10 bg-base-100 shadow-popover p-3`,
+            content: tw`min-h-16 rounded-xl border border-base-content/10 bg-base-100 p-3`,
         },
     };
 

@@ -42,7 +42,7 @@ export const THEMES = THEME_OPTIONS.map(({ value }) => value);
 
 export type ThemeName = string;
 
-export const DEFAULT_THEME = 'cobalt';
+export const DEFAULT_THEME = 'electric';
 
 const STORAGE_KEY = 'fintrack-theme';
 

@@ -1,0 +1,41 @@
+/* Theme: mint (light) — values ported 1:1 from colors.css (Option D, section 2.1 shape) */
+:root[data-theme='mint'] {
+    color-scheme: light;
+
+    /* Surfaces */
+    --background: oklch(0.984 0.002 229.3);
+    --foreground: oklch(0.15 0.021 264.4);
+    --card: oklch(0.962 0.006 240.1);
+    --card-foreground: var(--foreground);
+    --popover: var(--card);
+    --popover-foreground: var(--foreground);
+    --muted: oklch(0.935 0.01 253);
+    --muted-foreground: var(--foreground);
+
+    /* Brand */
+    --primary: oklch(0.768 0.1812 154.4);
+    --primary-foreground: oklch(0.21 0.032 264.7);
+    --secondary: oklch(0.21 0.032 264.7);
+    --secondary-foreground: oklch(0.973 0.004 214.4);
+    --accent: oklch(0.902 0.085 162.3);
+    --accent-foreground: oklch(0.21 0.032 264.7);
+
+    /* Neutral - first-class token (kept native, not aliased to secondary) */
+    --neutral: oklch(0.973 0.004 214.4);
+    --neutral-foreground: oklch(0.372 0.035 258.4);
+
+    /* Status */
+    --success: oklch(0.65 0.14 145);
+    --success-foreground: oklch(0.97 0.005 220);
+    --info: oklch(0.55 0.11 245);
+    --info-foreground: oklch(0.97 0.005 220);
+    --warning: oklch(0.78 0.13 75);
+    --warning-foreground: oklch(0.15 0.021 264.4);
+    --error: oklch(0.55 0.15 30);
+    --error-foreground: oklch(0.97 0.005 220);
+
+    /* Structure */
+    --border: oklch(0.935 0.01 253);
+    --input: var(--border);
+    --ring: var(--primary);
+}

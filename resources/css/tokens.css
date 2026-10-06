@@ -1,0 +1,171 @@
+/*
+    themes/*.css define the raw variables (--background, --primary, …) per [data-theme]. This file registers the Tailwind utility vocabulary on top:
+*/
+
+:root {
+    --radius: 0.625rem;
+}
+
+@theme {
+    /* ── Typography & effects (absorbed from app.css) ─────────────────── */
+    --font-sans:
+        'Nunito', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-heading:
+        'Instrument Sans', 'Nunito', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --text-2xs: 0.625rem;
+
+    /* ── Surfaces ──────────────────────────────────────────────────────── */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    /* ── Brand + neutral + status (app-specific extensions included) ──── */
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-neutral: var(--neutral);
+    --color-neutral-foreground: var(--neutral-foreground);
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-foreground);
+    --color-info: var(--info);
+    --color-info-foreground: var(--info-foreground);
+    --color-warning: var(--warning);
+    --color-warning-foreground: var(--warning-foreground);
+    --color-error: var(--error);
+    --color-error-foreground: var(--error-foreground);
+    --color-destructive: var(--error);
+    --color-destructive-foreground: var(--error-foreground);
+
+    /* ── Structure ─────────────────────────────────────────────────────── */
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    /* ── Charts — derived defaults, overridable per theme ─────────────── */
+    --color-chart-1: var(--primary);
+    --color-chart-2: var(--secondary);
+    --color-chart-3: var(--accent);
+    --color-chart-4: var(--success);
+    --color-chart-5: var(--info);
+
+    /* ── Sidebar — derived defaults (parity: ring follows border, the old adapter mapped it to base-300, not primary) ─────────────────── */
+    --color-sidebar: var(--background);
+    --color-sidebar-foreground: var(--foreground);
+    --color-sidebar-primary: var(--primary);
+    --color-sidebar-primary-foreground: var(--primary-foreground);
+    --color-sidebar-accent: var(--accent);
+    --color-sidebar-accent-foreground: var(--accent-foreground);
+    --color-sidebar-border: var(--border);
+    --color-sidebar-ring: var(--border);
+
+    /* ═══ DaisyUI-vocabulary compatibility — DELETE when the name migration completes (text-base-content → text-foreground, …) ═══ */
+    --color-base-100: var(--background);
+    --color-base-200: var(--card);
+    --color-base-300: var(--border);
+    --color-base-content: var(--foreground);
+    --color-primary-content: var(--primary-foreground);
+    --color-secondary-content: var(--secondary-foreground);
+    --color-accent-content: var(--accent-foreground);
+    --color-neutral-content: var(--neutral-foreground);
+    --color-success-content: var(--success-foreground);
+    --color-info-content: var(--info-foreground);
+    --color-warning-content: var(--warning-foreground);
+    --color-error-content: var(--error-foreground);
+}
+
+@theme inline {
+    --color-primary-50: color-mix(in oklab, var(--primary) 10%, #fff 100%);
+    --color-primary-100: color-mix(in oklab, var(--primary) 20%, #fff 90%);
+    --color-primary-200: color-mix(in oklab, var(--primary) 30%, #fff 80%);
+    --color-primary-300: color-mix(in oklab, var(--primary) 60%, #fff 60%);
+    --color-primary-400: color-mix(in oklab, var(--primary) 80%, #fff 40%);
+    --color-primary-500: color-mix(in oklab, var(--primary) 90%, #fff 20%);
+    --color-primary-600: color-mix(in oklab, var(--primary) 100%, #fff 10%);
+    --color-primary-700: var(--primary);
+    --color-primary-800: color-mix(in oklab, var(--primary) 100%, #000 20%);
+    --color-primary-900: color-mix(in oklab, var(--primary) 100%, #000 40%);
+    --color-primary-950: color-mix(in oklab, var(--primary) 100%, #000 60%);
+
+    --color-secondary-50: color-mix(in oklab, var(--secondary) 10%, #fff 100%);
+    --color-secondary-100: color-mix(in oklab, var(--secondary) 20%, #fff 90%);
+    --color-secondary-200: color-mix(in oklab, var(--secondary) 30%, #fff 80%);
+    --color-secondary-300: color-mix(in oklab, var(--secondary) 60%, #fff 60%);
+    --color-secondary-400: color-mix(in oklab, var(--secondary) 80%, #fff 40%);
+    --color-secondary-500: color-mix(in oklab, var(--secondary) 90%, #fff 20%);
+    --color-secondary-600: color-mix(in oklab, var(--secondary) 100%, #fff 10%);
+    --color-secondary-700: var(--secondary);
+    --color-secondary-800: color-mix(in oklab, var(--secondary) 100%, #000 20%);
+    --color-secondary-900: color-mix(in oklab, var(--secondary) 100%, #000 40%);
+    --color-secondary-950: color-mix(in oklab, var(--secondary) 100%, #000 60%);
+
+    --color-accent-50: color-mix(in oklab, var(--accent) 10%, #fff 100%);
+    --color-accent-100: color-mix(in oklab, var(--accent) 20%, #fff 90%);
+    --color-accent-200: color-mix(in oklab, var(--accent) 30%, #fff 80%);
+    --color-accent-300: color-mix(in oklab, var(--accent) 60%, #fff 60%);
+    --color-accent-400: color-mix(in oklab, var(--accent) 80%, #fff 40%);
+    --color-accent-500: color-mix(in oklab, var(--accent) 90%, #fff 20%);
+    --color-accent-600: var(--accent);
+    --color-accent-700: color-mix(in oklab, var(--accent) 100%, #000 10%);
+    --color-accent-800: color-mix(in oklab, var(--accent) 100%, #000 20%);
+    --color-accent-900: color-mix(in oklab, var(--accent) 100%, #000 40%);
+    --color-accent-950: color-mix(in oklab, var(--accent) 100%, #000 80%);
+
+    --color-success-50: color-mix(in oklab, var(--success) 20%, #fff 100%);
+    --color-success-100: color-mix(in oklab, var(--success) 40%, #fff 80%);
+    --color-success-200: color-mix(in oklab, var(--success) 60%, #fff 60%);
+    --color-success-300: color-mix(in oklab, var(--success) 80%, #fff 40%);
+    --color-success-400: color-mix(in oklab, var(--success) 100%, #fff 20%);
+    --color-success-500: var(--success);
+    --color-success-600: color-mix(in oklab, var(--success) 100%, #000 20%);
+    --color-success-700: color-mix(in oklab, var(--success) 100%, #000 40%);
+    --color-success-800: color-mix(in oklab, var(--success) 100%, #000 60%);
+    --color-success-900: color-mix(in oklab, var(--success) 100%, #000 80%);
+    --color-success-950: color-mix(in oklab, var(--success) 100%, #000 100%);
+
+    --color-info-50: color-mix(in oklab, var(--info) 20%, #fff 100%);
+    --color-info-100: color-mix(in oklab, var(--info) 40%, #fff 80%);
+    --color-info-200: color-mix(in oklab, var(--info) 60%, #fff 60%);
+    --color-info-300: color-mix(in oklab, var(--info) 80%, #fff 40%);
+    --color-info-400: color-mix(in oklab, var(--info) 100%, #fff 20%);
+    --color-info-500: var(--info);
+    --color-info-600: color-mix(in oklab, var(--info) 100%, #000 20%);
+    --color-info-700: color-mix(in oklab, var(--info) 100%, #000 40%);
+    --color-info-800: color-mix(in oklab, var(--info) 100%, #000 60%);
+    --color-info-900: color-mix(in oklab, var(--info) 100%, #000 80%);
+    --color-info-950: color-mix(in oklab, var(--info) 100%, #000 100%);
+
+    --color-warning-50: color-mix(in oklab, var(--warning) 20%, #fff 100%);
+    --color-warning-100: color-mix(in oklab, var(--warning) 40%, #fff 80%);
+    --color-warning-200: color-mix(in oklab, var(--warning) 60%, #fff 60%);
+    --color-warning-300: color-mix(in oklab, var(--warning) 80%, #fff 40%);
+    --color-warning-400: color-mix(in oklab, var(--warning) 100%, #fff 20%);
+    --color-warning-500: var(--warning);
+    --color-warning-600: color-mix(in oklab, var(--warning) 100%, #000 20%);
+    --color-warning-700: color-mix(in oklab, var(--warning) 100%, #000 40%);
+    --color-warning-800: color-mix(in oklab, var(--warning) 100%, #000 60%);
+    --color-warning-900: color-mix(in oklab, var(--warning) 100%, #000 80%);
+    --color-warning-950: color-mix(in oklab, var(--warning) 100%, #000 100%);
+
+    --color-error-50: color-mix(in oklab, var(--error) 20%, #fff 100%);
+    --color-error-100: color-mix(in oklab, var(--error) 40%, #fff 80%);
+    --color-error-200: color-mix(in oklab, var(--error) 60%, #fff 60%);
+    --color-error-300: color-mix(in oklab, var(--error) 80%, #fff 40%);
+    --color-error-400: color-mix(in oklab, var(--error) 100%, #fff 20%);
+    --color-error-500: var(--error);
+    --color-error-600: color-mix(in oklab, var(--error) 100%, #000 20%);
+    --color-error-700: color-mix(in oklab, var(--error) 100%, #000 40%);
+    --color-error-800: color-mix(in oklab, var(--error) 100%, #000 60%);
+    --color-error-900: color-mix(in oklab, var(--error) 100%, #000 80%);
+    --color-error-950: color-mix(in oklab, var(--error) 100%, #000 100%);
+}

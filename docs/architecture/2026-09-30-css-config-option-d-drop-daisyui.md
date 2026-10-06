@@ -1,6 +1,8 @@
 # CSS Architecture Proposal D — Drop DaisyUI, Full shadcn
 
 > **Status:** Proposal — **incremental execution in progress** (see §1.5).
+> **Updated 2026-10-06:** Component purge + token layer complete — DaisyUI is
+> component-CSS-only; removal (§6 step 7) is pending, owner-executed.
 > **Updated 2026-10-05:** Forms, Badge, and Card families complete; inventories below carry
 > per-item migration status. Pending counts are from the 2026-09-30 baseline scan.
 > **Siblings:** `2026-09-29-css-config-option-a-daisyui-first.md`,
@@ -177,12 +179,38 @@ strings and flatpickr DOM queries — not classes.
 3. ~~toggleable-grid~~ ✅ done (10-06) — the active-state regression is fixed: dead
    `join`/`btn-active` → bordered flex group with `bg-base-content/10 text-primary`
    active state + `size="icon-sm"`; ~~bottom-nav `rounded-box`~~ ✅ → `rounded-lg`.
-4. Dev pages — down to a single `rounded-box` in `pages/dev/design-system/color.svelte`
-   (the `card-pattern` class in `examples/dashboard.svelte` is custom CSS, not daisy).
-   To be rewritten as the theme/token visual harness before step 1–2 land.
-5. Token layer (B or C shape per §2) — with §1.5 items 1–3 done, **production JS now
-   contains zero DaisyUI component classes** (10-06). The `@plugin 'daisyui'` removal
-   and `npm rm daisyui` will be run manually by the owner after the token layer lands.
+4. ~~Dev pages~~ ✅ done (10-06) — `pages/dev/design-system/color.svelte` is now the
+   **token harness**: a daisy ↔ shadcn vocabulary parity grid (literal-class pairs with
+   live computed readouts) that must render identical values before the flip (via the
+   `shadcn.css` adapter) and after it (via the §2.2 compatibility block); the last
+   `rounded-box` is gone. `pages/dev/color.svelte` stays as the Button/Badge matrix +
+   ramp-wall viewer; its ramp tiles get pruned when the ramp wall dies (steps 2/7).
+5. ~~Token layer (B or C shape per §2)~~ ✅ done (10-06, Wave C) — production JS has
+   zero DaisyUI component classes, and the token layer is live:
+   - `resources/css/themes/` — 11 palettes ported 1:1 from `colors.css` into the §2.1
+     shape (raw `--background`… vars, `color-scheme` per light/dark). **Specificity,
+     not import order, picks the winner:** cobalt is the plain `:root` fallback
+     (0,1,0, the pre-boot default), every active theme uses `:root[data-theme='x']`
+     (0,2,0) and always overrides it. (The first cut used bare `[data-theme]` +
+     order-dependent fallback; a late-imported `:root` silently overrode 8 themes —
+     caught from a user report 10-06 and resolved with the compound selectors.)
+   - `resources/css/tokens.css` — shadcn + daisy-vocab registrations via plain `@theme`
+     (real `:root` vars keep the ~40 runtime `var(--color-*)` consumers alive); neutral
+     first-class; ramps as a transitional inline block; `@layer base` consolidated.
+   - `app.css` — §2.4 wiring; `@plugin 'daisyui' { themes: false; }` = component-CSS
+     only. Compiled output verified: 0 daisy-injected theme vars, all 11 theme blocks
+     present, compat vars emitted, daisy + shadcn utilities resolve.
+   - `flatpickr.css` — token bridge scoped to the calendar (no global `:root`
+     overrides); keeps its deliberate deviations (popover = page ground, muted/accent =
+     card, 0.5rem radius).
+   - `app.blade.php` — first-paint boot script (cookie `fintrack-theme` → `data-theme`),
+     replacing DaisyUI's `--default`. Appearance (`.dark`) is deliberately NOT mirrored:
+     `initializeAppearance()` is disabled in `app.ts`, so the runtime never manages
+     `.dark`, and pre-paint system-dark detection would activate `dark:` variants the
+     app never expects (caught while debugging, 10-06).
+   - **Owner finishes:** delete the plugin line + `daisyui.css`/`colors.css`/
+     `shadcn.css`, `npm rm daisyui` (step 7), then the 11-theme visual pass (step 8)
+     using the design-system color harness.
 
 ---
 
@@ -203,7 +231,7 @@ Theme files are identical to B/C — D only changes `tokens.css`, `app.css`, and
     --foreground: oklch(30.1% 0 23.7);
     --card: oklch(97% 0.003 265.4);
     --card-foreground: var(--foreground);
-    --popover: var(--background);
+    --popover: var(--card);
     --popover-foreground: var(--foreground);
 
     --primary: oklch(77.9% 0.126 173.5);
@@ -310,8 +338,8 @@ explicitly temporary:
     --color-primary-content: var(--primary-foreground);
     --color-secondary-content: var(--secondary-foreground);
     --color-accent-content: var(--accent-foreground);
-    --color-neutral: var(--secondary);            /* 6 remaining text-neutral uses */
-    --color-neutral-content: var(--secondary-foreground);
+    --color-neutral: var(--neutral);              /* first-class, not aliased (as built) */
+    --color-neutral-content: var(--neutral-foreground);
     --color-success-content: var(--success-foreground);
     --color-info-content: var(--info-foreground);
     --color-warning-content: var(--warning-foreground);
@@ -340,6 +368,28 @@ explicitly temporary:
 Note `bg-primary`, `text-error`, `text-success-foreground` etc. resolve from the **main**
 block already — the compatibility block only carries what pure shadcn doesn't name:
 `base-*`, `*-content` pairs, `neutral`, `rounded-box`.
+
+**As built (2026-10-06), four deviations from the preview above — all parity-driven:**
+
+1. **Plain `@theme`, not `@theme inline`** for the main block. The codebase has ~40 raw
+   `var(--color-*)` runtime consumers (chart libs, svelecte `--sv-*`, toaster, progress
+   bar, inline styles) and `inline` emits no `:root` variables — plain `@theme` keeps
+   them alive. Verified in compiled output: `--color-base-100: var(--background)` etc.
+   are emitted; utilities resolve through them.
+2. **`neutral` is first-class** (`--neutral` in every theme), not aliased to `secondary`.
+   Far more than 6 uses depend on it (alert/badge/button `dark` variants, sidebar avatar,
+   settings menu) and royal/mint neutral ≠ secondary — aliasing would visibly shift them.
+3. **`popover` maps to `var(--card)`** (= old base-200), matching the previous
+   `shadcn.css` adapter rather than `background`, so popovers/toasts don't shift.
+4. **The shade ramps moved into `tokens.css` as a transitional `@theme inline` block**
+   (values now reference the raw vars) instead of being deleted — table atoms and the
+   dev ramp viewer still use them; they die with the opacity-modifier migration.
+5. **`--destructive` is not a theme var.** shadcn's destructive ≡ the app's error is a
+   *vocabulary synonym*, not a palette decision, so `tokens.css` maps
+   `--color-destructive: var(--error)` directly (same place the old `shadcn.css`
+   adapter mapped it). Rule of thumb: themes carry palette values + structural
+   relations shadcn expects themes to own (`popover`→card, `input`→border, `ring`→
+   primary); every cross-vocabulary synonym lives in `tokens.css`.
 
 ### 2.3 `tokens.css` — end state (compat block deleted)
 
@@ -432,14 +482,14 @@ directly with no bridge.
 
 | # | Step | Risk | Status |
 |---|---|---|---|
-| 1 | Execute **B or C's token layer first** (themes + tokens.css) — D consumes it | per B/C | ⏳ pending |
-| 2 | Add the daisy-vocab utility registrations to `tokens.css` (§1 Bucket 1) + `rounded-box` | low | ⏳ pending |
+| 1 | Execute **B or C's token layer first** (themes + tokens.css) — D consumes it | per B/C | ✅ done (10-06) — `themes/*.css` ported 1:1 from `colors.css`; first-paint boot script in `app.blade.php` |
+| 2 | Add the daisy-vocab utility registrations to `tokens.css` (§1 Bucket 1) + `rounded-box` | low | ✅ done (10-06) — incl. first-class `neutral` and ported ramps (§2.2 as-built notes) |
 | 3 | Rewrite the `ui/` wrappers (§1 Bucket 2), incl. tv `size` variants; add Avatar; fix alert no-ops | medium | ✅ essentially complete — all wrapper families done; only daisy `dropdown/menu` markup in dashboard-header + datatable row-actions remains (step 5) |
 | 4 | Hand-roll the Dock replacement; parity-test against current bottom-nav | medium | ✅ done — in-house `ui/dock.svelte` |
 | 5 | Replace direct usage by hotspot order: settings pages → transaction forms → reports → navigation → misc singles | medium | ✅ essentially complete (10-06) — button call sites, datatable row-actions ×2, toggleable-grid, bottom-nav `rounded-box` all done; dashboard-header's raw menu removed by the owner; only dev galleries remain (step 6) |
-| 6 | Rewrite or delete the dev color-gallery pages | low | ⏳ pending |
-| 7 | Remove `@plugin 'daisyui'`, delete `daisyui.css`/`themes.css` plugin blocks, `npm rm daisyui` | low | ⏳ pending — owner will run the removal/uninstall manually once steps 1–2/6 land |
-| 8 | Full visual pass: all 11 themes × key screens (settings, reports, transaction create/detail, mobile nav) | — | ⏳ pending |
+| 6 | Rewrite or delete the dev color-gallery pages | low | ✅ done (10-06) — design-system/color.svelte upgraded to the token harness (daisy↔shadcn parity grid + live readouts); dev/color.svelte kept as component matrix & ramp-wall viewer until the ramp wall is deleted |
+| 7 | Remove `@plugin 'daisyui'`, delete `daisyui.css`/`themes.css` plugin blocks, `npm rm daisyui` | low | ⏳ pending — owner-executed; only the `@plugin 'daisyui' { themes: false; }` line, the three dead files (`daisyui.css`, `colors.css`, `shadcn.css`), and `npm rm daisyui` remain |
+| 8 | Full visual pass: all 11 themes × key screens (settings, reports, transaction create/detail, mobile nav) | — | ⏳ pending — start from the design-system color harness (parity grid + live readouts), then key screens |
 | 9 | (Ongoing) migrate `text-base-content` → `text-foreground` etc. on touch; eventually delete the daisy-vocab registrations | opportunistic | ◐ ongoing — new code still adds `base-*` utilities (e.g. card descriptions use `text-base-content/70`) |
 
 **Effort estimate:** token layer (B/C scope) + ~1–2 days wrappers + ~2–4 days direct

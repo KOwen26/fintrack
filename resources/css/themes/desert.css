@@ -1,0 +1,41 @@
+/* Theme: desert (light) — values ported 1:1 from colors.css (Option D, section 2.1 shape) */
+:root[data-theme='desert'] {
+    color-scheme: light;
+
+    /* Surfaces */
+    --background: oklch(0.365 0.022 61.3);
+    --foreground: oklch(0.96 0.012 79.6);
+    --card: oklch(0.412 0.025 62.3);
+    --card-foreground: var(--foreground);
+    --popover: var(--card);
+    --popover-foreground: var(--foreground);
+    --muted: oklch(0.457 0.029 62.9);
+    --muted-foreground: var(--foreground);
+
+    /* Brand */
+    --primary: oklch(0.778 0.11 121.8);
+    --primary-foreground: oklch(0.365 0.022 61.3);
+    --secondary: oklch(0.862 0.129 80);
+    --secondary-foreground: oklch(0.365 0.022 61.3);
+    --accent: oklch(0.801 0.128 55.5);
+    --accent-foreground: oklch(0.365 0.022 61.3);
+
+    /* Neutral - first-class token (kept native, not aliased to secondary) */
+    --neutral: oklch(0.365 0.022 61.3);
+    --neutral-foreground: oklch(0.862 0.129 80);
+
+    /* Status */
+    --success: oklch(0.72 0.1 140);
+    --success-foreground: oklch(0.365 0.022 61.3);
+    --info: oklch(0.68 0.08 230);
+    --info-foreground: oklch(0.365 0.022 61.3);
+    --warning: oklch(0.82 0.12 80);
+    --warning-foreground: oklch(0.365 0.022 61.3);
+    --error: oklch(0.62 0.12 35);
+    --error-foreground: oklch(0.365 0.022 61.3);
+
+    /* Structure */
+    --border: oklch(0.457 0.029 62.9);
+    --input: var(--border);
+    --ring: var(--primary);
+}

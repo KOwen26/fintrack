@@ -1,0 +1,41 @@
+/* Theme: electric-dark (dark) — values ported 1:1 from colors.css (Option D, section 2.1 shape) */
+:root[data-theme='electric-dark'] {
+    color-scheme: dark;
+
+    /* Surfaces */
+    --background: oklch(0.288 0.05 265.9);
+    --foreground: oklch(0.952 0.007 268.9);
+    --card: oklch(0.352 0.063 264.3);
+    --card-foreground: var(--foreground);
+    --popover: var(--card);
+    --popover-foreground: var(--foreground);
+    --muted: oklch(0.412 0.076 263.3);
+    --muted-foreground: var(--foreground);
+
+    /* Brand */
+    --primary: oklch(0.952 0.16 120.2);
+    --primary-foreground: oklch(0.288 0.05 265.9);
+    --secondary: oklch(0.779 0.126 173.5);
+    --secondary-foreground: oklch(0.288 0.05 265.9);
+    --accent: oklch(0.891 0 23.7);
+    --accent-foreground: oklch(0.288 0.05 265.9);
+
+    /* Neutral - first-class token (kept native, not aliased to secondary) */
+    --neutral: oklch(0.301 0 23.7);
+    --neutral-foreground: oklch(0.891 0 23.7);
+
+    /* Status */
+    --success: oklch(0.8 0.17 135);
+    --success-foreground: oklch(0.288 0.05 265.9);
+    --info: oklch(0.75 0.1 215);
+    --info-foreground: oklch(0.288 0.05 265.9);
+    --warning: oklch(0.84 0.13 85);
+    --warning-foreground: oklch(0.288 0.05 265.9);
+    --error: oklch(0.62 0.16 25);
+    --error-foreground: oklch(0.288 0.05 265.9);
+
+    /* Structure */
+    --border: oklch(0.412 0.076 263.3);
+    --input: var(--border);
+    --ring: var(--primary);
+}
