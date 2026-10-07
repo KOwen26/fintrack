@@ -14,14 +14,24 @@ use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class ProfileController extends Controller
+final class ProfileController extends Controller
 {
+    public function index(): Response
+    {
+        return Inertia::render('app/settings/index');
+    }
+
+    public function appearance(): Response
+    {
+        return Inertia::render('app/settings/appearance');
+    }
+
     /**
      * Show the user's profile settings page.
      */
     public function edit(Request $request): Response
     {
-        return Inertia::render('dashboard/settings/profile', [
+        return Inertia::render('app/settings/profile', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => $request->session()->get('status'),
         ]);
@@ -69,7 +79,7 @@ class ProfileController extends Controller
      */
     public function editSecurity(Request $request): Response
     {
-        return Inertia::render('dashboard/settings/security', [
+        return Inertia::render('app/settings/security', [
             'status' => $request->session()->get('status'),
         ]);
     }

@@ -9,17 +9,19 @@
     export type ButtonVariant = (typeof buttonVariants)[number];
     export type ButtonSize = (typeof buttonSizes)[number];
 
-    /** Single source of Button styling: variant templates reference CSS vars,
-        color entries define them — no color×variant enumeration needed.
-        `light` inverts (surface bg ≠ content color), so it uses compounds. */
     export const buttonClassVariants = tv({
-        base: "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive cursor-pointer inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap outline-none transition-all select-none touch-manipulation active:translate-y-px focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        base: [
+            'cursor-pointer inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap outline-none transition-all select-none touch-manipulation active:translate-y-px',
+            'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50',
+            'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+            "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        ],
         variants: {
             variant: {
                 solid: 'border-transparent bg-(--btn-color) text-(--btn-color-fg) shadow-xs hover:bg-(--btn-color)/90',
-                outline: 'border-(--btn-color) text-(--btn-color) hover:bg-(--btn-color)/10',
-                soft: 'border-(--btn-color)/10 bg-(--btn-color)/10 text-(--btn-color) hover:bg-(--btn-color)/20',
-                ghost: 'text-(--btn-color) hover:bg-(--btn-color)/10',
+                outline: 'border border-(--btn-color) text-(--btn-color) hover:bg-(--btn-color)/20',
+                soft: 'border-(--btn-color)/10 bg-(--btn-color)/10 text-(--btn-color) hover:bg-(--btn-color)/30',
+                ghost: 'text-(--btn-color) hover:bg-(--btn-color)/30',
                 link: 'text-(--btn-color) underline-offset-4 hover:text-(--btn-color)/80 hover:underline h-fit p-1',
             },
             color: {

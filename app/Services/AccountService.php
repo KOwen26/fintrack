@@ -20,6 +20,16 @@ class AccountService
             ->get();
     }
 
+    public static function getArchivedAccountsByUser(User $user): Collection
+    {
+        return Account::query()
+            ->where('owner_id', $user->id)
+            ->archived()
+            ->shareable()
+            ->with('provider')
+            ->get();
+    }
+
     public static function summarize(Collection $accounts): array
     {
         $totalBalance = (float) $accounts->sum('current_balance');

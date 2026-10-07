@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StatisticController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransferController;
 use Illuminate\Support\Facades\Route;
@@ -18,32 +19,46 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
     Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
 
     // Accounts
-    Route::get('accounts', [AccountController::class, 'index'])->name('accounts.index');
-    Route::get('accounts/create', [AccountController::class, 'create'])->name('accounts.create');
-    Route::post('accounts', [AccountController::class, 'store'])->name('accounts.store');
-    Route::get('accounts/{account}', [AccountController::class, 'show'])->name('accounts.show');
-    Route::get('accounts/{account}/edit', [AccountController::class, 'edit'])->name('accounts.edit');
-    Route::put('accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');
-    Route::delete('accounts/{account}', [AccountController::class, 'destroy'])->name('accounts.destroy');
-    Route::post('accounts/{account}/archive', [AccountController::class, 'archive'])->name('accounts.archive');
-    Route::post('accounts/{account}/restore', [AccountController::class, 'restore'])->name('accounts.restore');
+    Route::prefix('accounts')->name('accounts.')->group(function (): void {
+        Route::controller(AccountController::class)->group(function (): void {
+            Route::get('', 'index')->name('index');
+            Route::get('create', 'create')->name('create');
+            Route::post('', 'store')->name('store');
+            Route::get('{account}', 'show')->name('show');
+            Route::get('{account}/edit', 'edit')->name('edit');
+            Route::put('{account}', 'update')->name('update');
+            Route::post('{account}/archive', 'archive')->name('archive');
+            Route::post('{account}/restore', 'restore')->name('restore');
+            Route::delete('{account}', 'destroy')->name('destroy');
+        });
+    });
 
     // Transactions
     Route::prefix('transactions')->name('transactions.')->group(function (): void {
-        Route::get('', [TransactionController::class, 'index'])->name('index');
-        Route::get('create', [TransactionController::class, 'create'])->name('create');
-        Route::get('{transaction}', [TransactionController::class, 'show'])->name('show');
-        Route::get('{transaction}/edit', [TransactionController::class, 'edit'])->name('edit');
-        Route::post('', [TransactionController::class, 'store'])->name('store');
-        Route::put('{transaction}', [TransactionController::class, 'update'])->name('update');
-        Route::delete('{transaction}', [TransactionController::class, 'destroy'])->name('destroy');
+        Route::controller(TransactionController::class)->group(function (): void {
+            Route::get('', 'index')->name('index');
+            Route::post('', 'store')->name('store');
+            Route::get('create', 'create')->name('create');
+            Route::get('{transaction}', 'show')->name('show');
+            Route::get('{transaction}/edit', 'edit')->name('edit');
+            Route::put('{transaction}', 'update')->name('update');
+            Route::delete('{transaction}', 'destroy')->name('destroy');
+        });
     });
 
     // Transfers (unit write surface — listing/show/delete stay on transactions)
     Route::prefix('transfers')->name('transfers.')->group(function (): void {
-        Route::post('', [TransferController::class, 'store'])->name('store');
-        Route::get('{transfer}/edit', [TransferController::class, 'edit'])->name('edit');
-        Route::put('{transfer}', [TransferController::class, 'update'])->name('update');
+        Route::controller(TransferController::class)->group(function (): void {
+            Route::post('', 'store')->name('store');
+            Route::get('{transfer}/edit', 'edit')->name('edit');
+            Route::put('{transfer}', 'update')->name('update');
+        });
+    });
+
+    Route::prefix('statistics')->name('statistics.')->group(function (): void {
+        Route::controller(StatisticController::class)->group(function (): void {
+            Route::get('', 'index')->name('index');
+        });
     });
 
     require __DIR__ . '/settings.php';

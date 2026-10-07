@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Date;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class DashboardController extends Controller
+final class DashboardController extends Controller
 {
     public function __construct(
         private readonly SpendingService $spendingService,
@@ -65,7 +65,7 @@ class DashboardController extends Controller
             ->with('provider')
             ->get();
 
-        return Inertia::render('dashboard/dashboard', [
+        return Inertia::render('app/dashboard', [
             'category_spending' => $categorySpending,
             'summary' => [
                 'total_balance' => $totalBalance,

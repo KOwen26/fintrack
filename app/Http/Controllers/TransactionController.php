@@ -20,7 +20,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class TransactionController extends Controller
+final class TransactionController extends Controller
 {
     public function __construct(
         private readonly TransactionService $transactionService,
@@ -35,7 +35,7 @@ class TransactionController extends Controller
 
         $transactions = TransactionListData::collect($this->transactionService->getTransactions($this->user));
 
-        return Inertia::render('transactions/index', [
+        return Inertia::render('app/transaction/index', [
             'transactions' => $transactions,
             'summary' => [],
         ]);
@@ -45,7 +45,7 @@ class TransactionController extends Controller
     {
         $this->authorize('view', $transaction);
 
-        return Inertia::render('transactions/show', [
+        return Inertia::render('app/transaction/show', [
             'transaction' => TransactionDetailData::fromTransaction($transaction),
         ]);
     }
@@ -56,7 +56,7 @@ class TransactionController extends Controller
 
         $accounts = $this->accountService->getAccountsByUser($this->user);
 
-        return Inertia::render('transactions/create', [
+        return Inertia::render('app/transaction/create', [
             'initialType' => $request->query('type', TransactionType::Expense),
             'transaction' => TransactionFormData::defaultExpense(),
             'categories' => CategoryService::getCategories(),
@@ -74,7 +74,7 @@ class TransactionController extends Controller
 
         $accounts = $this->accountService->getAccountsByUser($this->user);
 
-        return Inertia::render('transactions/edit', [
+        return Inertia::render('app/transaction/edit', [
             'accounts' => $accounts,
             'categories' => CategoryService::getCategories(),
             'transaction' => TransactionFormData::fromTransaction($transaction),
