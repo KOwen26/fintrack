@@ -4,7 +4,6 @@
     import { router, setLayoutProps } from '@inertiajs/svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
-    import PageSection from '@components/layouts/page-section.svelte';
     import AccountForm from '@components/module/account/account-form.svelte';
     import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
     import Button from '@components/ui/button.svelte';
@@ -28,12 +27,10 @@
 
 <DashboardPageHeader title="Edit Account" />
 
-<PageSection>
-    <AccountForm
-        {account}
-        onCancel={() => router.visit(AccountController.show.url({ account: account.id }))}
-        {providers} />
-
+<AccountForm
+    {account}
+    onCancel={() => router.visit(AccountController.show.url({ account: account.id }))}
+    {providers}>
     <div class="mt-4 space-y-3">
         <Button
             class="w-full"
@@ -52,7 +49,7 @@
             Delete Account
         </Button>
     </div>
-</PageSection>
+</AccountForm>
 
 <ConfirmationModal
     cancelText="Cancel"
