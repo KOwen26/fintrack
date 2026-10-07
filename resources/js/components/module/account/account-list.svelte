@@ -17,7 +17,7 @@
         hideActions?: boolean;
     }
 
-    let { accounts, mode = 'grid', hideActions = false }: Props = $props();
+    let { accounts, mode = 'list', hideActions = false }: Props = $props();
 </script>
 
 {#if accounts.length === 0}

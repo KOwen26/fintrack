@@ -8,6 +8,7 @@ import accounts from '@wayfinder/routes/accounts';
 import dev from '@wayfinder/routes/dev';
 import profile from '@wayfinder/routes/profile';
 import security from '@wayfinder/routes/security';
+import statistics from '@wayfinder/routes/statistics';
 import transactions from '@wayfinder/routes/transactions';
 
 export type MenuType = 'group-label' | 'menu' | 'submenu-1' | 'submenu-2';
@@ -105,23 +106,23 @@ export const dashboardMenu: MenuGroup = {
         transactions: {
             name: 'Transactions',
             url: transactions.index().url,
-            route: 'transactions.edit',
+            route: 'transactions',
             active: 'transactions.*',
             icon: 'iconify solar--bill-list-linear',
             type: 'menu',
         },
-        reports: {
-            name: 'Reports',
-            url: transactions.index().url,
-            route: 'transactions.edit',
-            active: 'transactions.*',
+        statistics: {
+            name: 'Statistics',
+            url: statistics.index().url,
+            route: 'statistics',
+            active: 'statistics.*',
             icon: 'iconify solar--chat-square-2-linear',
             type: 'menu',
         },
         accounts: {
             name: 'Accounts',
             url: accounts.index().url,
-            route: 'accounts.edit',
+            route: 'accounts',
             active: 'accounts.*',
             icon: 'iconify solar--user-line-duotone',
             type: 'menu',

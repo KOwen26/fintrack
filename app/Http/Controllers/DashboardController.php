@@ -33,7 +33,7 @@ final class DashboardController extends Controller
         $recentTransactions = $this->transactionService->getTransactions($this->user, DatePeriodPreset::Last14Days);
 
         return Inertia::render('app/dashboard', [
-            'category_spending' => $categorySpending,
+            'categorySpending' => $categorySpending,
             'summary' => [
                 'total_balance' => 0,
                 'monthly_income' => 0,

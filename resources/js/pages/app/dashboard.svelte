@@ -1,12 +1,12 @@
 <script lang="ts">
+    import type { CategorySpendingReportData, TransactionListData } from '@type/generated';
     import type { App } from '@wayfinder/types';
 
-    import { getDecorationColor } from '@data/decoration-colors';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
     import settings from '@wayfinder/routes/settings';
 
-    import Formatter from '@utilities/formatter';
+    import Icon from '@assets/images/icon-transparent.png';
 
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountList from '@components/module/account/account-list.svelte';
@@ -16,10 +16,8 @@
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
     import HeaderContext from '@components/navigation/header-context.svelte';
     import Button from '@components/ui/button.svelte';
-    import Card from '@components/ui/card.svelte';
+    import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
     import Separator from '@components/ui/separator.svelte';
-
-    /* ── Types ───────────────────────────────────────────── */
 
     interface Summary {
         total_balance: number;
@@ -28,111 +26,34 @@
         monthly_savings: number;
     }
 
-    interface ChildItem {
-        category_id: number;
-        name: string;
-        color: string;
-        icon: string;
-        total: number;
-        percentage: number;
-    }
-
-    interface ParentGroup {
-        category_id: number;
-        name: string;
-        color: string;
-        icon: string;
-        total: number;
-        percentage: number;
-        children: ChildItem[];
-    }
-
-    interface CategorySpendingReport {
-        categories: ParentGroup[];
-        period_total: number;
-        from: string;
-        to: string;
-    }
-
-    /* ── Props ───────────────────────────────────────────── */
-
     let {
-        category_spending = null,
+        categorySpending = null,
         summary = null,
         recent_transactions = [],
         accounts = [],
     }: {
-        category_spending?: CategorySpendingReport | null;
+        categorySpending?: CategorySpendingReportData | null;
         summary?: Summary | null;
-        recent_transactions?: App.Models.Transaction[];
+        recent_transactions?: TransactionListData[];
         accounts?: App.Models.Account[];
     } = $props();
-
-    /* ── Derived ─────────────────────────────────────────── */
-
-    const incomePct = $derived(
-        summary && summary.monthly_expenses > 0
-            ? Math.round((summary.monthly_income / summary.monthly_expenses) * 100 - 100)
-            : 0
-    );
-
-    const expensePct = $derived(
-        summary && summary.monthly_income > 0
-            ? Math.round((summary.monthly_expenses / summary.monthly_income) * 100 - 100)
-            : 0
-    );
-
-    const savingsRate = $derived(
-        summary && summary.monthly_income > 0
-            ? Math.round((summary.monthly_savings / summary.monthly_income) * 100)
-            : 0
-    );
-
-    const currentDate = $derived(
-        new Date().toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        })
-    );
-
-    const leftToSpend = $derived(summary ? summary.monthly_income - summary.monthly_expenses : 0);
-
-    const spendRate = $derived(
-        summary && summary.monthly_income > 0
-            ? Math.round((summary.monthly_expenses / summary.monthly_income) * 100)
-            : null
-    );
-
-    /* ── Budget helpers (derived from category spending) ─── */
-
-    // Budget targets derived from total expenses – shows each category as share of total
-    const budgetItems = $derived(
-        category_spending?.categories?.map((cat) => ({
-            name: cat.name,
-            spent: cat.total,
-            percentage: cat.percentage,
-            color: getDecorationColor(cat.color)?.oklch ?? cat.color,
-        })) ?? []
-    );
-
-    /* ── Week trend data ─────────────────────────────────── */
-
-    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    let trendData = $state(
-        weekDays.map((day) => ({
-            day,
-            income: 0.3 + Math.random() * 0.5,
-            expense: 0.2 + Math.random() * 0.6,
-        }))
-    );
 </script>
 
 <HeaderContext>
-    <div class="flex w-full items-center justify-end gap-3 md:w-auto">
-        <Button aria-label="Open settings" href={settings.index.url()} size="icon" variant="ghost">
-            <i class="iconify size-6 solar--settings-bold-duotone"></i>
-        </Button>
+    <div class="flex w-full items-center justify-between gap-3 md:w-auto">
+        <div>
+            <img class="aspect-square size-10" alt="Logo" src={Icon} />
+        </div>
+
+        <div>
+            <Button
+                aria-label="Open settings"
+                href={settings.index.url()}
+                size="icon"
+                variant="ghost">
+                <i class="iconify size-8 solar--settings-bold-duotone"></i>
+            </Button>
+        </div>
     </div>
 </HeaderContext>
 
@@ -143,173 +64,52 @@
 {:else}
     <MobilePageLayout variant="3/5">
         {#snippet hero()}
-            <div class="space-y-5 p-5">
-                <!-- ══════════════════════════════════════════════════ -->
-                <!-- Balance Hero -->
-                <!-- ══════════════════════════════════════════════════ -->
+            <div class="space-y-5 p-5 pt-20">
                 <BalanceHeroCard
                     loading={!summary}
                     monthlyExpenses={summary?.monthly_expenses ?? 0}
                     monthlyIncome={summary?.monthly_income ?? 0}
                     totalBalance={summary?.total_balance ?? null} />
-
-                <!-- ══════════════════════════════════════════════════ -->
-                <!-- Quick Stats -->
-                <!-- ══════════════════════════════════════════════════ -->
-                <!-- <div class="grid grid-cols-2 gap-3 md:gap-4">
-                    <StatCard
-                        color="success"
-                        icon="trending-up"
-                        label="Income"
-                        loading={!summary}
-                        trend={summary
-                            ? {
-                                  direction: incomePct > 0 ? 'up' : 'down',
-                                  value: Math.abs(incomePct),
-                                  label: `${incomePct > 0 ? '↑' : '↓'} ${Math.abs(incomePct)}% vs expenses`,
-                              }
-                            : null}
-                        value={summary?.monthly_income ?? null} />
-                    <StatCard
-                        color="error"
-                        icon="trending-down"
-                        label="Expenses"
-                        loading={!summary}
-                        trend={summary
-                            ? {
-                                  direction: expensePct > 0 ? 'up' : 'down',
-                                  value: Math.abs(expensePct),
-                                  label: `${expensePct > 0 ? '↑' : '↓'} ${Math.abs(expensePct)}% vs income`,
-                              }
-                            : null}
-                        value={summary?.monthly_expenses ?? null} />
-                    <StatCard
-                        color="info"
-                        icon="piggy-bank"
-                        label="Savings"
-                        loading={!summary}
-                        trend={summary
-                            ? {
-                                  direction: savingsRate > 0 ? 'up' : 'down',
-                                  value: savingsRate,
-                                  label: `${savingsRate}% savings rate`,
-                              }
-                            : null}
-                        value={summary?.monthly_savings ?? null} />
-                    <StatCard
-                        color="warning"
-                        icon="clock"
-                        label="Left to Spend"
-                        loading={!summary}
-                        trend={summary
-                            ? {
-                                  direction: leftToSpend > 0 ? 'up' : 'down',
-                                  value: Math.abs(leftToSpend),
-                                  label:
-                                      spendRate !== null
-                                          ? `${spendRate}% of income spent`
-                                          : 'Tracking this month',
-                              }
-                            : null}
-                        value={summary ? leftToSpend : null} />
-                </div> -->
             </div>
         {/snippet}
 
         <div class="grid grid-cols-1 gap-6">
             <!-- Accounts -->
-            <div class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                    <h2 class="font-semibold">Accounts</h2>
-
+            <ResponsiveCard title="Accounts">
+                {#snippet headerAction()}
                     <Button href={AccountController.index.url()} variant="ghost">Manage</Button>
-                </div>
+                {/snippet}
 
-                <AccountList {accounts} hideActions mode="grid" />
-            </div>
+                <div class="space-y-1.5">
+                    <AccountList {accounts} hideActions mode="grid" />
+                </div>
+            </ResponsiveCard>
 
             <Separator />
 
-            <!-- ══════════════════════════════════════════════════ -->
-            <!-- Recent Transactions -->
-            <!-- ══════════════════════════════════════════════════ -->
-
-            <div class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                    <h2 class="font-semibold">Recent Transactions</h2>
-
-                    <!-- <Button href={TransactionController.index.url()} variant="ghost"
-                        >View All</Button> -->
-                </div>
-
-                <TransactionList hideControl hideTotal transactions={recent_transactions} />
-
-                <Button
-                    class="w-full"
-                    color="light"
-                    href={TransactionController.index.url()}
-                    variant="soft">See More</Button>
-            </div>
-
-            <!-- ══════════════════════════════════════════════════ -->
-            <!-- Budget Overview -->
-            <!-- ══════════════════════════════════════════════════ -->
-
-            {#if budgetItems.length > 0}
-                <Card>
-                    {#snippet header()}
-                        <h2 class="text-sm font-semibold">Spending by Category</h2>
-                    {/snippet}
-                    {#snippet headerAction()}
-                        {#if category_spending?.period_total}
-                            <span class="text-xs text-base-content/50"
-                                >Total: {Formatter.currency(category_spending.period_total)}</span>
-                        {/if}
-                    {/snippet}
-
-                    <div class="space-y-3">
-                        {#each budgetItems as item, i (i)}
-                            <div>
-                                <div class="mb-1.5 flex items-center justify-between text-sm">
-                                    <span class="font-medium">{item.name}</span>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xs text-base-content/50"
-                                            >{item.percentage}%</span>
-                                        <span class="font-medium"
-                                            >{Formatter.currency(item.spent)}</span>
-                                    </div>
-                                </div>
-                                <div class="h-2 w-full rounded-full bg-base-200">
-                                    <div
-                                        style="width: {item.percentage}%; background: {item.color};"
-                                        class="h-full rounded-full transition-all">
-                                    </div>
-                                </div>
-                            </div>
-                        {/each}
-                    </div>
-                </Card>
+            {#if categorySpending}
+                <ResponsiveCard title="Spending by Category">
+                    <CategorySpendingChart
+                        categories={categorySpending.categories}
+                        emptyMessage="No spending data for this period"
+                        periodLabel="This month"
+                        periodTotal={categorySpending.period_total} />
+                </ResponsiveCard>
             {/if}
 
-            <!-- ══════════════════════════════════════════════════ -->
-            <!-- Accounts Overview + Category Spending (2-col on lg) -->
-            <!-- ══════════════════════════════════════════════════ -->
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
-                <!-- Category Spending (existing chart) -->
-                {#if category_spending}
-                    <Card>
-                        {#snippet header()}
-                            <h2 class="text-sm font-semibold">Spending by Category</h2>
-                        {/snippet}
+            <Separator />
 
-                        <CategorySpendingChart
-                            categories={category_spending.categories}
-                            emptyMessage="No spending data for this period"
-                            periodLabel="This month"
-                            periodTotal={category_spending.period_total} />
-                    </Card>
-                {/if}
-            </div>
+            <ResponsiveCard title="Recent Transactions">
+                <div class="space-y-1.5">
+                    <TransactionList hideControl hideTotal transactions={recent_transactions} />
+
+                    <Button
+                        class="w-full"
+                        color="light"
+                        href={TransactionController.index.url()}
+                        variant="soft">See More</Button>
+                </div>
+            </ResponsiveCard>
         </div>
     </MobilePageLayout>
 {/if}

@@ -113,7 +113,7 @@
         {/if}
     </div>
 
-    {@render dockItem(dashboardMenu.menus.reports)}
+    {@render dockItem(dashboardMenu.menus.statistics)}
 
     {@render dockItem(dashboardMenu.menus.accounts)}
 </Dock>
