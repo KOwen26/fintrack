@@ -2,19 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\TransactionType;
-use App\Models\Account;
-use App\Models\Transaction;
+use App\Enums\DatePeriodPreset;
 use App\Models\User;
+use App\Services\AccountService;
 use App\Services\SpendingService;
+use App\Services\TransactionService;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Date;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class DashboardController extends Controller
 {
     public function __construct(
+        #[CurrentUser()] private readonly ?User $user,
+        private readonly TransactionService $transactionService,
+        private readonly AccountService $accountService,
         private readonly SpendingService $spendingService,
     ) {}
 
@@ -23,55 +26,19 @@ final class DashboardController extends Controller
      */
     public function index(Request $request): Response
     {
-        /** @var User $user */
-        $user = $request->user();
+        $accounts = $this->accountService->getAccountsByUser($this->user);
 
-        $accountIds = Account::where('owner_id', $user->id)
-            ->notArchived()
-            ->pluck('id');
+        $categorySpending = $this->spendingService->globalCategorySpending($accounts->pluck('id')->all(), DatePeriodPreset::ThisMonth);
 
-        $now = Date::now();
-        $from = $now->startOfMonth()->toDateString();
-        $to = $now->endOfMonth()->toDateString();
-
-        $categorySpending = $accountIds->isNotEmpty()
-            ? $this->spendingService->globalCategorySpending($accountIds->all(), $from, $to)
-            : null;
-
-        $totalBalance = (float) Account::where('owner_id', $user->id)
-            ->notArchived()
-            ->sum('current_balance');
-
-        $monthlyIncome = (float) Transaction::whereIn('account_id', $accountIds)
-            ->where('type', TransactionType::Income->value)
-            ->whereBetween('transaction_date', [$from, $to])
-            ->whereNull('deleted_at')
-            ->sum('amount');
-
-        $monthlyExpenses = (float) Transaction::whereIn('account_id', $accountIds)
-            ->where('type', TransactionType::Expense->value)
-            ->whereBetween('transaction_date', [$from, $to])
-            ->whereNull('deleted_at')
-            ->sum('amount');
-
-        $recentTransactions = Transaction::whereIn('account_id', $accountIds)
-            ->with(['account', 'category'])
-            ->latest('transaction_date')
-            ->take(5)
-            ->get();
-
-        $accounts = Account::where('owner_id', $user->id)
-            ->notArchived()
-            ->with('provider')
-            ->get();
+        $recentTransactions = $this->transactionService->getTransactions($this->user, DatePeriodPreset::Last14Days);
 
         return Inertia::render('app/dashboard', [
             'category_spending' => $categorySpending,
             'summary' => [
-                'total_balance' => $totalBalance,
-                'monthly_income' => $monthlyIncome,
-                'monthly_expenses' => $monthlyExpenses,
-                'monthly_savings' => max($monthlyIncome - $monthlyExpenses, 0),
+                'total_balance' => 0,
+                'monthly_income' => 0,
+                'monthly_expenses' => 0,
+                'monthly_savings' => 0,
             ],
             'recent_transactions' => $recentTransactions,
             'accounts' => $accounts,

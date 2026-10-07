@@ -5,7 +5,7 @@
     export type BadgeVariant = (typeof badgeVariants)[number];
     export type BadgeShape = (typeof badgeShapes)[number];
 
-    export const badgeSizes = ['sm', 'default', 'lg'] as const;
+    export const badgeSizes = ['fit', 'sm', 'default', 'lg'] as const;
 
     export type BadgeSize = (typeof badgeSizes)[number];
 
@@ -15,6 +15,7 @@
 
     /** Density metrics per size — `default` preserves the DaisyUI-md look the app ships. */
     export const badgeSizeClasses: Record<BadgeSize, string> = {
+        fit: 'gap-1.5 h-fit px-1.5 py-0.5 text-2xs',
         sm: 'gap-1.5 h-5 px-2 text-xs',
         default: 'gap-2 h-6 px-2.75 text-sm',
         lg: 'gap-2 h-7 px-3.5 text-base',

@@ -44,7 +44,7 @@
     @inertiaHead
 </head>
 
-<body class="min-h-screen">
+<body class="min-h-screen antialiased">
     @inertia()
 </body>
 

@@ -8,14 +8,14 @@ use App\Models\Account;
 use App\Models\User;
 use Illuminate\Support\Collection;
 
-class AccountService
+final class AccountService
 {
     public static function getAccountsByUser(User $user): Collection
     {
         return Account::query()
             ->where('owner_id', $user->id)
             ->notArchived()
-            ->shareable()
+            // ->shareable()
             ->with('provider')
             ->get();
     }
@@ -25,7 +25,7 @@ class AccountService
         return Account::query()
             ->where('owner_id', $user->id)
             ->archived()
-            ->shareable()
+            // ->shareable()
             ->with('provider')
             ->get();
     }

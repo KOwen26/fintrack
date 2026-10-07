@@ -19,8 +19,8 @@
 
     <div class="flex overflow-clip rounded-md border border-base-200">
         <Button
-            aria-pressed={mode === 'list'}
             class={cn(mode === 'list' ? 'bg-base-content/10 text-primary' : '')}
+            aria-pressed={mode === 'list'}
             color="light"
             onclick={() => (mode = 'list')}
             size="icon-sm"
@@ -29,8 +29,8 @@
         </Button>
 
         <Button
-            aria-pressed={mode === 'grid'}
             class={cn(mode === 'grid' ? 'bg-base-content/10 text-primary' : '')}
+            aria-pressed={mode === 'grid'}
             color="light"
             onclick={() => (mode = 'grid')}
             size="icon-sm"

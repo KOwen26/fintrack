@@ -9,14 +9,15 @@
     import Formatter from '@utilities/formatter';
 
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
+    import AccountList from '@components/module/account/account-list.svelte';
     import BalanceHeroCard from '@components/module/dashboard/balance-hero-card.svelte';
     import DashboardWelcomeCard from '@components/module/dashboard/dashboard-welcome-card.svelte';
     import CategorySpendingChart from '@components/module/report/category-spending-chart.svelte';
-    import { TYPE_STYLE } from '@components/module/transaction/transaction-list-item.svelte';
+    import TransactionList from '@components/module/transaction/transaction-list.svelte';
     import HeaderContext from '@components/navigation/header-context.svelte';
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
-    import StatCard from '@components/ui/cards/stat-card.svelte';
+    import Separator from '@components/ui/separator.svelte';
 
     /* ── Types ───────────────────────────────────────────── */
 
@@ -129,7 +130,7 @@
 
 <HeaderContext>
     <div class="flex w-full items-center justify-end gap-3 md:w-auto">
-        <Button size="icon" aria-label="Open settings" href={settings.index.url()} variant="ghost">
+        <Button aria-label="Open settings" href={settings.index.url()} size="icon" variant="ghost">
             <i class="iconify size-6 solar--settings-bold-duotone"></i>
         </Button>
     </div>
@@ -155,7 +156,7 @@
                 <!-- ══════════════════════════════════════════════════ -->
                 <!-- Quick Stats -->
                 <!-- ══════════════════════════════════════════════════ -->
-                <div class="grid grid-cols-2 gap-3 md:gap-4">
+                <!-- <div class="grid grid-cols-2 gap-3 md:gap-4">
                     <StatCard
                         color="success"
                         icon="trending-up"
@@ -211,51 +212,44 @@
                               }
                             : null}
                         value={summary ? leftToSpend : null} />
-                </div>
+                </div> -->
             </div>
         {/snippet}
 
-        <div class="space-y-4">
-            <!-- ══════════════════════════════════════════════════ -->
-            <!-- Spend Trend (bar chart) -->
-            <!-- ══════════════════════════════════════════════════ -->
-            <Card>
-                {#snippet header()}
-                    <h2 class="text-sm font-semibold">Spend Trend</h2>
-                {/snippet}
-                {#snippet headerAction()}
-                    <span class="text-xs text-base-content/50">{currentDate}</span>
-                {/snippet}
+        <div class="grid grid-cols-1 gap-6">
+            <!-- Accounts -->
+            <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-semibold">Accounts</h2>
 
-                <div class="flex items-end gap-1.5 pt-1">
-                    {#each trendData as item, i (i)}
-                        <div class="flex flex-1 flex-col items-center gap-1">
-                            <div
-                                style="height: {item.expense *
-                                    100}%; background: oklch(from var(--color-primary) l c h / 0.2);"
-                                class="w-full rounded-t-sm">
-                            </div>
-                            <div
-                                style="height: {item.income *
-                                    100}%; background: var(--color-success);"
-                                class="w-full rounded-t-sm">
-                            </div>
-                            <span class="mt-1 text-[10px] text-base-content/50">{item.day}</span>
-                        </div>
-                    {/each}
+                    <Button href={AccountController.index.url()} variant="ghost">Manage</Button>
                 </div>
-                <div class="mt-3 flex items-center gap-4 text-xs text-base-content/50">
-                    <span class="flex items-center gap-1.5">
-                        <span class="size-2.5 rounded-sm bg-success"></span> Income
-                    </span>
-                    <span class="flex items-center gap-1.5">
-                        <span
-                            style="background: oklch(from var(--color-primary) l c h / 0.2);"
-                            class="size-2.5 rounded-sm"></span>
-                        Expenses
-                    </span>
+
+                <AccountList {accounts} hideActions mode="grid" />
+            </div>
+
+            <Separator />
+
+            <!-- ══════════════════════════════════════════════════ -->
+            <!-- Recent Transactions -->
+            <!-- ══════════════════════════════════════════════════ -->
+
+            <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-semibold">Recent Transactions</h2>
+
+                    <!-- <Button href={TransactionController.index.url()} variant="ghost"
+                        >View All</Button> -->
                 </div>
-            </Card>
+
+                <TransactionList hideControl hideTotal transactions={recent_transactions} />
+
+                <Button
+                    class="w-full"
+                    color="light"
+                    href={TransactionController.index.url()}
+                    variant="soft">See More</Button>
+            </div>
 
             <!-- ══════════════════════════════════════════════════ -->
             <!-- Budget Overview -->
@@ -298,137 +292,9 @@
             {/if}
 
             <!-- ══════════════════════════════════════════════════ -->
-            <!-- Recent Transactions -->
-            <!-- ══════════════════════════════════════════════════ -->
-
-            {#if recent_transactions.length > 0}
-                <Card>
-                    {#snippet header()}
-                        <h2 class="text-sm font-semibold">Recent Transactions</h2>
-                    {/snippet}
-                    {#snippet headerAction()}
-                        <Button
-                            class="text-xs"
-                            href={TransactionController.index.url()}
-                            size="sm"
-                            variant="link">
-                            View All
-                        </Button>
-                    {/snippet}
-
-                    <div class="-mx-5 divide-y divide-base-200">
-                        {#each recent_transactions as tx (tx.id)}
-                            {@const style = TYPE_STYLE[tx.type]}
-                            <a
-                                class="flex cursor-pointer items-center gap-3 px-5 py-3 transition-colors hover:bg-base-200/50"
-                                href={TransactionController.show.url({ transaction: tx.id })}>
-                                <div
-                                    style:background={style.bg}
-                                    class="flex size-9 shrink-0 items-center justify-center rounded-lg">
-                                    {#if tx.category?.decorations?.icon}
-                                        <i
-                                            style:color={style.color}
-                                            class="iconify size-4 {tx.category.decorations.icon}"
-                                        ></i>
-                                    {:else}
-                                        <i
-                                            style:color={style.color}
-                                            class="iconify size-4 solar--dollar-minimalistic-bold-duotone"
-                                        ></i>
-                                    {/if}
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <p class="truncate text-sm font-medium">
-                                        {tx.description || tx.category?.name || style.label}
-                                    </p>
-                                    <p class="text-xs text-base-content/50">
-                                        {tx.category?.name ?? style.label}
-                                        {#if tx.account}
-                                            · {tx.account.name}
-                                        {/if}
-                                    </p>
-                                </div>
-                                <span
-                                    style:color={style.color}
-                                    class="shrink-0 text-sm font-semibold">
-                                    {tx.flow === 'inflow' ? '+' : '−'}{Formatter.currency(
-                                        tx.amount,
-                                        true
-                                    )}
-                                </span>
-                            </a>
-                        {/each}
-                    </div>
-                </Card>
-            {/if}
-
-            <!-- ══════════════════════════════════════════════════ -->
             <!-- Accounts Overview + Category Spending (2-col on lg) -->
             <!-- ══════════════════════════════════════════════════ -->
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
-                <!-- Accounts -->
-                <Card>
-                    {#snippet header()}
-                        <h2 class="text-sm font-semibold">Accounts</h2>
-                    {/snippet}
-                    {#snippet headerAction()}
-                        <Button
-                            class="text-xs"
-                            href={AccountController.index.url()}
-                            size="sm"
-                            variant="link">
-                            Manage
-                        </Button>
-                    {/snippet}
-
-                    <div class="space-y-3">
-                        {#each accounts as account (account.id)}
-                            {@const decoColor = getDecorationColor(account.decorations?.color)}
-                            <a
-                                class="block rounded-lg border border-base-200 p-4 transition-shadow hover:shadow-sm"
-                                href={AccountController.show.url({ account: account.id })}>
-                                <div class="mb-2 flex items-center justify-between">
-                                    <div>
-                                        <p class="text-sm font-medium">{account.name}</p>
-                                        {#if account.provider}
-                                            <p class="text-xs text-base-content/50">
-                                                {account.provider.name}
-                                            </p>
-                                        {/if}
-                                    </div>
-                                    <div
-                                        class="flex size-8 items-center justify-center rounded-lg bg-base-200">
-                                        {#if decoColor}
-                                            <i
-                                                style="color: {decoColor.hex};"
-                                                class="iconify size-4"></i>
-                                        {:else}
-                                            <i
-                                                class="iconify size-4 text-base-content/50 solar--banknote-2-bold-duotone"
-                                            ></i>
-                                        {/if}
-                                    </div>
-                                </div>
-                                <p class="text-lg font-bold tracking-tight">
-                                    {Formatter.currency(account.current_balance ?? 0)}
-                                </p>
-                            </a>
-                        {/each}
-
-                        <!-- Add Account -->
-                        <a
-                            class="flex min-h-[88px] cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-base-300 transition-colors hover:border-base-content/30"
-                            href={AccountController.create.url()}>
-                            <div class="text-center">
-                                <i
-                                    class="mx-auto mb-1 iconify size-5 text-base-content/50 solar--add-bold-duotone"
-                                ></i>
-                                <p class="text-xs font-medium text-base-content/50">Add Account</p>
-                            </div>
-                        </a>
-                    </div>
-                </Card>
-
                 <!-- Category Spending (existing chart) -->
                 {#if category_spending}
                     <Card>

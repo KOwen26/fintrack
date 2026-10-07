@@ -6,16 +6,26 @@ use App\Data\Report\CategorySpendingItemData;
 use App\Data\Report\CategorySpendingReportData;
 use App\Data\Report\ChildSpendingItemData;
 use App\Data\Report\ParentSpendingItemData;
+use App\Enums\DatePeriodPreset;
 use App\Enums\TransactionType;
 use Illuminate\Support\Facades\DB;
 
-class SpendingService
+final class SpendingService
 {
     /**
      * Aggregate category spending across multiple accounts for a given period.
      */
-    public function globalCategorySpending(array $accountIds, string $from, string $to): CategorySpendingReportData
+    public function globalCategorySpending(array $accountIds, DatePeriodPreset $periodPreset): CategorySpendingReportData
     {
+        $period = $periodPreset->toPeriod();
+
+        if ($accountIds === []) {
+            return CategorySpendingReportData::emptyForPeriod($period);
+        }
+
+        $from = $period->startDate();
+        $to = $period->endDate();
+
         $periodTotal = (float) DB::table('transactions')
             ->whereIn('account_id', $accountIds)
             ->where('type', TransactionType::Expense->value)
@@ -24,12 +34,7 @@ class SpendingService
             ->sum('amount');
 
         if ($periodTotal <= 0) {
-            return new CategorySpendingReportData(
-                categories: [],
-                period_total: 0.0,
-                from: $from,
-                to: $to,
-            );
+            return CategorySpendingReportData::emptyForPeriod($period);
         }
 
         $rows = DB::table('transactions as t')

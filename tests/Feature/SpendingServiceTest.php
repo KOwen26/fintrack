@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\DatePeriodPreset;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
@@ -28,8 +29,7 @@ it('returns a single top-level category as a group without children', function (
     $service = new SpendingService;
     $report = $service->globalCategorySpending(
         [$account->id],
-        now()->startOfMonth()->toDateString(),
-        now()->endOfMonth()->toDateString(),
+        DatePeriodPreset::ThisMonth->toPeriod(),
     );
 
     expect($report->categories)->toHaveCount(1);
@@ -37,6 +37,18 @@ it('returns a single top-level category as a group without children', function (
         ->categoryId->toBe((int) $category->id)
         ->name->toBe('Groceries')
         ->children->toBe([]);
+});
+
+it('returns an empty report when no accounts are given', function (): void {
+    $service = new SpendingService;
+
+    $report = $service->globalCategorySpending(
+        [],
+        DatePeriodPreset::ThisMonth->toPeriod(),
+    );
+
+    expect($report->categories)->toBe([])
+        ->and($report->period_total)->toBe(0.0);
 });
 
 it('returns child category nested under its parent group', function (): void {
@@ -54,8 +66,7 @@ it('returns child category nested under its parent group', function (): void {
     $service = new SpendingService;
     $report = $service->globalCategorySpending(
         [$account->id],
-        now()->startOfMonth()->toDateString(),
-        now()->endOfMonth()->toDateString(),
+        DatePeriodPreset::ThisMonth->toPeriod(),
     );
 
     expect($report->categories)->toHaveCount(1);
@@ -92,8 +103,7 @@ it('merges parent direct spending and child spending into one group', function (
     $service = new SpendingService;
     $report = $service->globalCategorySpending(
         [$account->id],
-        now()->startOfMonth()->toDateString(),
-        now()->endOfMonth()->toDateString(),
+        DatePeriodPreset::ThisMonth->toPeriod(),
     );
 
     // Both should be merged into 1 group
