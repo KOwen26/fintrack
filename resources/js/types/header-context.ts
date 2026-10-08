@@ -7,10 +7,19 @@ import type { Snippet } from 'svelte';
  * The contract is semantic, not visual: it describes what the page offers,
  * while each header decides how to present it for its viewport.
  */
-export type HeaderContext = HeaderCustomContext;
+export type HeaderContext = HeaderActionsContext | HeaderCustomContext;
 
 /**
- * MVP escape hatch: fully page-owned markup. The snippet must adapt to both
+ * Page action(s) that augment the shared back button and title. The owning
+ * page should still declare `title` and `backUrl` through layout props.
+ */
+export interface HeaderActionsContext {
+    type: 'actions';
+    render: Snippet;
+}
+
+/**
+ * Escape hatch: fully page-owned markup. The snippet must adapt to both
  * viewports with responsive utility classes and may only fill the header's
  * fixed-height context zone.
  *

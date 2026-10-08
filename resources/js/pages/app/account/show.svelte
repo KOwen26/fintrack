@@ -1,99 +1,40 @@
 <script lang="ts">
+    import type { CategorySpendingReportData } from '@type/generated';
     import type { App } from '@wayfinder/types';
 
     import { getDecorationColor } from '@data/decoration-colors';
-    import { setLayoutProps } from '@inertiajs/svelte';
+    import { router, setLayoutProps } from '@inertiajs/svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
+    import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
     import { Collapsible } from 'bits-ui';
-    import { SvelteMap } from 'svelte/reactivity';
 
     import DateTimeHelper from '@utilities/date-time-helper';
-    import Formatter from '@utilities/formatter';
     import StringHelper from '@utilities/string-helper';
 
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
-    import PageSection from '@components/layouts/page-section.svelte';
     import AccountCard from '@components/module/account/account-card.svelte';
+    import CategorySpendingChart from '@components/module/report/category-spending-chart.svelte';
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
-    import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
+    import HeaderContext from '@components/navigation/header-context.svelte';
     import Button from '@components/ui/button.svelte';
-    import Card from '@components/ui/card.svelte';
-    import StatCard from '@components/ui/cards/stat-card.svelte';
-    import DonutChart from '@components/ui/charts/donut-chart.svelte';
+    import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
 
     let {
         account,
         transactions,
-    }: { account: App.Models.Account; transactions: TransactionList[] } = $props();
+        categorySpending,
+    }: {
+        account: App.Models.Account;
+        transactions: TransactionList[];
+        categorySpending: CategorySpendingReportData;
+    } = $props();
 
     setLayoutProps({ title: account?.name, backUrl: AccountController.index.url() });
-
-    const providerName = $derived<string | undefined>(
-        (account.provider as { name?: string } | null)?.name
-    );
 
     let showDetail = $state(false);
     let transactionsOpen = $state(true);
     let categoryOpen = $state(true);
-
-    // ── Category spending from transactions ────────────────────
-
-    interface CategoryItem {
-        name: string;
-        amount: number;
-        color: string;
-        percentage: number;
-    }
-
-    const categorySpending = $derived.by<CategoryItem[]>(() => {
-        const groups = new SvelteMap<string, { name: string; amount: number; color: string }>();
-
-        for (const txn of transactions) {
-            const cat = txn.category;
-            if (!cat) continue;
-
-            const existing = groups.get(cat.name) ?? {
-                name: cat.name,
-                amount: 0,
-                color: '#6b7280',
-            };
-
-            if (cat.decorations?.color) {
-                const dc = getDecorationColor(cat.decorations.color);
-                if (dc?.hex) existing.color = dc.hex;
-            }
-
-            existing.amount += Number(txn.amount);
-            groups.set(cat.name, existing);
-        }
-
-        const items = [...groups.values()];
-        const total = items.reduce((sum, i) => sum + i.amount, 0);
-
-        return items.map((i) => ({
-            ...i,
-            percentage: total > 0 ? Math.round((i.amount / total) * 100) : 0,
-        }));
-    });
-
-    const totalSpent = $derived(categorySpending.reduce((sum, i) => sum + i.amount, 0));
-
-    // ── Income / expense totals for stat cards ─────────────────
-
-    const incomeTotal = $derived(
-        transactions
-            .filter((t) => t.type === 'income')
-            .reduce((sum, t) => sum + Number(t.amount), 0)
-    );
-
-    const expenseTotal = $derived(
-        transactions
-            .filter((t) => t.type === 'expense')
-            .reduce((sum, t) => sum + Number(t.amount), 0)
-    );
-
-    const netSavings = $derived(incomeTotal - expenseTotal);
 
     // ── Quick actions ──────────────────────────────────────────
 
@@ -115,7 +56,7 @@
         icon: string;
     }
 
-    const infoRows = $derived.by<InfoRow[]>(() => {
+    const details = $derived.by<InfoRow[]>(() => {
         const rows: InfoRow[] = [
             {
                 icon: 'solar--user-id-bold-duotone',
@@ -125,11 +66,11 @@
             },
         ];
 
-        if (providerName) {
+        if (account.provider) {
             rows.push({
                 icon: 'solar--buildings-bold-duotone',
                 label: 'Provider',
-                value: providerName,
+                value: account.provider?.name,
                 mono: false,
             });
         }
@@ -159,39 +100,21 @@
     ]);
 </script>
 
-<DashboardPageHeader title="Account Detail">
-    <div class="flex items-center gap-3">
-        <div class="space-y-1.5">
-            <h1 class="text-xl font-bold">{account.name}</h1>
-        </div>
-
-        <!-- ═══ Breadcrumb — desktop only ═══ -->
-        <nav class="mb-4 hidden items-center gap-1.5 text-sm text-base-content/60 md:flex">
-            <a class="transition-colors hover:text-base-content" href="/">Home</a>
-            <span>/</span>
-            <a
-                class="transition-colors hover:text-base-content"
-                href={AccountController.index.url()}>
-                Accounts
-            </a>
-        </nav>
-    </div>
-
+<HeaderContext>
     {#snippet actions()}
         <Button
-            class="hidden md:inline-flex"
-            color="light"
+            color="primary"
             href={AccountController.edit.url({ account: account.id })}
-            variant="outline">
-            <i class="iconify size-4 solar--pen-line-duotone"></i>
-            Edit
+            size="icon"
+            variant="soft">
+            <i class="ml-0.5 iconify size-4 solar--pen-new-square-line-duotone"></i>
         </Button>
     {/snippet}
-</DashboardPageHeader>
+</HeaderContext>
 
-<MobilePageLayout heroClass="px-5" variant="3/5">
+<MobilePageLayout variant="3/5">
     {#snippet hero()}
-        <AccountCard {account} />
+        <AccountCard {account} hideEdit />
     {/snippet}
 
     <div class="space-y-5">
@@ -206,45 +129,39 @@
         </Button>
 
         {#if showDetail}
-            <!-- ════════════════════════════════════════════ -->
-            <!--  ACCOUNT INFO                              -->
-            <!-- ════════════════════════════════════════════ -->
-            <Card contentClass="space-y-3">
-                <h5 class="text-sm font-bold tracking-wider text-base-content/80 uppercase">
+            <ResponsiveCard contentClass="space-y-3">
+                <h5 class="text-sm font-bold tracking-wider text-foreground uppercase">
                     Account Info
                 </h5>
 
                 <ul>
-                    <hr class="border-base-content/20" />
-                    {#each infoRows as row, i (row.label)}
+                    <hr class="border-border" />
+                    {#each details as row, i (row.label)}
                         <li class="flex items-center justify-between gap-3 py-3">
-                            <span class="flex items-center gap-2 text-sm text-base-content/80">
-                                <i class="iconify size-4 text-base-content/80 {row.icon}"></i>
+                            <span class="flex items-center gap-2 text-sm text-foreground">
+                                <i class="iconify size-5 text-foreground {row.icon}"></i>
                                 {row.label}
                             </span>
-                            <span class="text-sm font-medium text-base-content">
+                            <span class="text-sm font-medium text-foreground">
                                 {row.value}
                             </span>
                         </li>
 
-                        <hr class="border-base-content/20" />
+                        <hr class="border-border" />
                     {/each}
                 </ul>
-            </Card>
+            </ResponsiveCard>
 
-            <!-- ════════════════════════════════════════════ -->
-            <!--  MEMBERS (joint accounts only)             -->
-            <!-- ════════════════════════════════════════════ -->
             {#if members.length > 0}
-                <Card contentClass="space-y-3">
-                    <h5 class="text-sm font-bold tracking-wider text-base-content/80 uppercase">
+                <ResponsiveCard contentClass="space-y-3">
+                    <h5 class="text-sm font-bold tracking-wider text-foreground uppercase">
                         Members
                     </h5>
 
                     <ul>
                         {#each members as member, i (member.name + member.email)}
                             {#if i > 0}
-                                <hr class="border-base-content/20" />
+                                <hr class="border-border" />
                             {/if}
 
                             <li class="flex items-center gap-3 py-3">
@@ -255,133 +172,77 @@
                                 </div>
 
                                 <div class="flex-1">
-                                    <p class="mb-0.5 text-sm font-semibold text-base-content">
+                                    <p class="mb-0.5 text-sm font-semibold text-foreground">
                                         {member.name}
                                     </p>
-                                    <p class="text-sm text-base-content/80">{member.email}</p>
+                                    <p class="text-sm text-foreground">{member.email}</p>
                                 </div>
                             </li>
                         {/each}
                     </ul>
-                </Card>
+                </ResponsiveCard>
             {/if}
         {:else}
             <!-- ════════════════════════════════════════════ -->
             <!--  SPENDING BY CATEGORY                        -->
             <!-- ════════════════════════════════════════════ -->
-            {#if categorySpending.length > 0}
-                <PageSection>
-                    <Collapsible.Root bind:open={categoryOpen}>
-                        <Card class=" {!transactionsOpen ? 'gap-0' : ''}">
-                            {#snippet header()}
-                                <Collapsible.Trigger
-                                    class="flex w-full cursor-pointer items-center justify-between">
-                                    <p class="text-sm font-bold tracking-wide uppercase">
-                                        Spending Category {currentMonthLabel}
-                                    </p>
-                                    <div class="flex items-center gap-2">
-                                        <i
-                                            class="iconify size-4 {categoryOpen
-                                                ? 'solar--alt-arrow-up-line-duotone'
-                                                : 'solar--alt-arrow-down-line-duotone'}"></i>
-                                    </div>
-                                </Collapsible.Trigger>
-                            {/snippet}
-
-                            <Collapsible.Content>
-                                <div
-                                    class="flex flex-col items-center gap-5 px-5 pb-5 md:flex-row md:items-start md:gap-6 md:px-6">
-                                    <div class="w-36 shrink-0 md:w-40">
-                                        <DonutChart
-                                            centerSubtext="Total spent"
-                                            centerText={Formatter.currency(totalSpent, true)}
-                                            data={categorySpending.map((c) => ({
-                                                name: c.name,
-                                                value: c.amount,
-                                                color: c.color,
-                                            }))}
-                                            innerRadius={0.6} />
-                                    </div>
-                                    <div class="w-full space-y-2.5 md:flex-1">
-                                        {#each categorySpending as item (item.name)}
-                                            <div class="flex items-center gap-2.5">
-                                                <span
-                                                    style:background={item.color}
-                                                    class="size-3 shrink-0 rounded-full">
-                                                </span>
-                                                <span class="flex-1 text-sm text-base-content"
-                                                    >{item.name}</span>
-                                                <span
-                                                    class="text-sm font-semibold text-base-content">
-                                                    {Formatter.currency(item.amount, true)}
-                                                </span>
-                                                <span
-                                                    class="w-8 text-right text-sm text-base-content/50">
-                                                    {item.percentage}%
-                                                </span>
-                                            </div>
-                                        {/each}
-                                    </div>
+            {#if categorySpending}
+                <Collapsible.Root bind:open={categoryOpen}>
+                    <ResponsiveCard class=" {!transactionsOpen ? 'gap-0' : ''}">
+                        {#snippet header()}
+                            <Collapsible.Trigger
+                                class="flex w-full cursor-pointer items-center justify-between">
+                                <p class="text-sm font-bold tracking-wide uppercase">
+                                    Spending Category {currentMonthLabel}
+                                </p>
+                                <div class="flex items-center gap-2">
+                                    <i
+                                        class="iconify size-4 {categoryOpen
+                                            ? 'solar--alt-arrow-up-line-duotone'
+                                            : 'solar--alt-arrow-down-line-duotone'}"></i>
                                 </div>
-                            </Collapsible.Content>
-                        </Card>
-                    </Collapsible.Root>
-                </PageSection>
+                            </Collapsible.Trigger>
+                        {/snippet}
+
+                        <Collapsible.Content>
+                            <CategorySpendingChart {categorySpending} />
+                        </Collapsible.Content>
+                    </ResponsiveCard>
+                </Collapsible.Root>
             {/if}
 
             <!-- ════════════════════════════════════════════ -->
             <!--  RECENT TRANSACTIONS                         -->
             <!-- ════════════════════════════════════════════ -->
-            <PageSection breakMargin>
-                <Collapsible.Root bind:open={transactionsOpen}>
-                    <Card class=" {!transactionsOpen ? 'gap-0' : ''}">
-                        {#snippet header()}
-                            <Collapsible.Trigger
-                                class="flex w-full cursor-pointer items-center justify-between">
-                                <p class="text-sm font-bold tracking-wide uppercase">
-                                    Recent Transactions
-                                </p>
-                                <i
-                                    class="iconify size-4 {transactionsOpen
-                                        ? 'solar--alt-arrow-up-line-duotone'
-                                        : 'solar--alt-arrow-down-line-duotone'}"></i>
-                            </Collapsible.Trigger>
-                        {/snippet}
-                        <Collapsible.Content>
-                            <div>
-                                {#if transactions.length > 0}
-                                    <TransactionList {transactions} />
-                                {:else}
-                                    <EmptyItemPlaceholder label="No Transaction Yet" />
-                                {/if}
-                            </div>
-                        </Collapsible.Content>
-                    </Card>
-                </Collapsible.Root>
-            </PageSection>
 
-            <!-- ════════════════════════════════════════════ -->
-            <!--  DESKTOP STAT CARDS                         -->
-            <!-- ════════════════════════════════════════════ -->
-            <PageSection>
-                <div class="hidden md:grid md:grid-cols-3 md:gap-4">
-                    <StatCard
-                        color="success"
-                        icon="trending-up"
-                        label="Income"
-                        value={incomeTotal} />
-                    <StatCard
-                        color="error"
-                        icon="trending-down"
-                        label="Expenses"
-                        value={expenseTotal} />
-                    <StatCard
-                        color="primary"
-                        icon="piggy-bank"
-                        label="Savings"
-                        value={netSavings >= 0 ? netSavings : 0} />
-                </div>
-            </PageSection>
+            <Collapsible.Root bind:open={transactionsOpen}>
+                <ResponsiveCard class=" {!transactionsOpen ? 'gap-0' : ''}">
+                    {#snippet header()}
+                        <Collapsible.Trigger
+                            class="flex w-full cursor-pointer items-center justify-between">
+                            <p class="text-sm font-bold tracking-wide uppercase">
+                                Recent Transactions
+                            </p>
+                            <i
+                                class="iconify size-4 {transactionsOpen
+                                    ? 'solar--alt-arrow-up-line-duotone'
+                                    : 'solar--alt-arrow-down-line-duotone'}"></i>
+                        </Collapsible.Trigger>
+                    {/snippet}
+                    <Collapsible.Content>
+                        <div class="space-y-1.5">
+                            {#if transactions.length > 0}
+                                <TransactionList
+                                    loadMoreAction={() =>
+                                        router.visit(TransactionController.index.url())}
+                                    {transactions} />
+                            {:else}
+                                <EmptyItemPlaceholder label="No Transaction Yet" />
+                            {/if}
+                        </div>
+                    </Collapsible.Content>
+                </ResponsiveCard>
+            </Collapsible.Root>
         {/if}
     </div>
 </MobilePageLayout>

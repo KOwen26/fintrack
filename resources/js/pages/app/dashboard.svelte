@@ -2,6 +2,7 @@
     import type { CategorySpendingReportData, TransactionListData } from '@type/generated';
     import type { App } from '@wayfinder/types';
 
+    import { router } from '@inertiajs/svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
     import settings from '@wayfinder/routes/settings';
@@ -64,13 +65,11 @@
 {:else}
     <MobilePageLayout variant="3/5">
         {#snippet hero()}
-            <div class="space-y-5 p-5 pt-20">
-                <BalanceHeroCard
-                    loading={!summary}
-                    monthlyExpenses={summary?.monthly_expenses ?? 0}
-                    monthlyIncome={summary?.monthly_income ?? 0}
-                    totalBalance={summary?.total_balance ?? null} />
-            </div>
+            <BalanceHeroCard
+                loading={!summary}
+                monthlyExpenses={summary?.monthly_expenses ?? 0}
+                monthlyIncome={summary?.monthly_income ?? 0}
+                totalBalance={summary?.total_balance ?? null} />
         {/snippet}
 
         <div class="grid grid-cols-1 gap-6">
@@ -90,10 +89,9 @@
             {#if categorySpending}
                 <ResponsiveCard title="Spending by Category">
                     <CategorySpendingChart
-                        categories={categorySpending.categories}
+                        {categorySpending}
                         emptyMessage="No spending data for this period"
-                        periodLabel="This month"
-                        periodTotal={categorySpending.period_total} />
+                        periodLabel="This month" />
                 </ResponsiveCard>
             {/if}
 
@@ -101,13 +99,10 @@
 
             <ResponsiveCard title="Recent Transactions">
                 <div class="space-y-1.5">
-                    <TransactionList hideControl hideTotal transactions={recent_transactions} />
-
-                    <Button
-                        class="w-full"
-                        color="light"
-                        href={TransactionController.index.url()}
-                        variant="soft">See More</Button>
+                    <TransactionList
+                        hideTotal
+                        loadMoreAction={() => router.visit(TransactionController.index.url())}
+                        transactions={recent_transactions} />
                 </div>
             </ResponsiveCard>
         </div>

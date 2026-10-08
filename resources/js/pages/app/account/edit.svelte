@@ -5,14 +5,18 @@
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
     import AccountForm from '@components/module/account/account-form.svelte';
-    import DashboardPageHeader from '@components/navigation/dashboard-page-header.svelte';
+    import HeaderContext from '@components/navigation/header-context.svelte';
+    import * as DropdownMenu from '@components/ui/atoms/dropdown-menu';
     import Button from '@components/ui/button.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
     let { account, providers }: { account: App.Models.Account; providers: App.Models.Provider[] } =
         $props();
 
-    setLayoutProps({ backUrl: AccountController.show.url({ account: account.id }) });
+    setLayoutProps({
+        title: 'Edit Account',
+        backUrl: AccountController.show.url({ account: account.id }),
+    });
 
     let showArchiveConfirm = $state(false);
     let showDeleteConfirm = $state(false);
@@ -25,31 +29,36 @@
     }
 </script>
 
-<DashboardPageHeader title="Edit Account" />
+<HeaderContext>
+    {#snippet actions()}
+        <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+                {#snippet child({ props })}
+                    <Button {...props} color="primary" size="icon" variant="soft">
+                        <i class="iconify size-5 solar--menu-dots-vertical-bold-duotone"></i>
+                    </Button>
+                {/snippet}
+            </DropdownMenu.Trigger>
+
+            <DropdownMenu.Content class="w-44 rounded-lg" align="end">
+                <DropdownMenu.Item onclick={() => (showArchiveConfirm = true)}>
+                    <i class="iconify size-5 solar--archive-bold-duotone"></i>
+                    Archive Account
+                </DropdownMenu.Item>
+
+                <DropdownMenu.Item onclick={() => (showDeleteConfirm = true)} variant="destructive">
+                    <i class="iconify size-5 solar--trash-bin-2-bold-duotone"></i>
+                    Delete Account
+                </DropdownMenu.Item>
+            </DropdownMenu.Content>
+        </DropdownMenu.Root>
+    {/snippet}
+</HeaderContext>
 
 <AccountForm
     {account}
     onCancel={() => router.visit(AccountController.show.url({ account: account.id }))}
-    {providers}>
-    <div class="mt-4 space-y-3">
-        <Button
-            class="w-full"
-            color="warning"
-            onclick={() => (showArchiveConfirm = true)}
-            variant="outline">
-            <i class="iconify size-4 solar--archive-bold-duotone"></i>
-            Archive Account
-        </Button>
-        <Button
-            class="w-full"
-            color="error"
-            onclick={() => (showDeleteConfirm = true)}
-            variant="outline">
-            <i class="iconify size-4 solar--trash-bin-2-bold-duotone"></i>
-            Delete Account
-        </Button>
-    </div>
-</AccountForm>
+    {providers} />
 
 <ConfirmationModal
     cancelText="Cancel"

@@ -3,9 +3,10 @@
 </script>
 
 <script lang="ts">
-    import { router, useForm, usePage } from '@inertiajs/svelte';
+    import { router, setLayoutProps, useForm, usePage } from '@inertiajs/svelte';
     import authVerification from '@wayfinder/routes/auth/verification';
     import profile from '@wayfinder/routes/profile';
+    import settings from '@wayfinder/routes/settings';
 
     import Button from '@components/ui/button.svelte';
     import Card from '@components/ui/card.svelte';
@@ -15,6 +16,8 @@
     import SubmitButton from '@components/ui/forms/submit-button.svelte';
 
     let { mustVerifyEmail, status }: { mustVerifyEmail: boolean; status: string | null } = $props();
+
+    setLayoutProps({ title: 'Profile', backUrl: settings.index.url() });
 
     const page = usePage();
     const user = page.props?.auth?.user as { name: string; email: string } | undefined;

@@ -9,18 +9,19 @@
     import DonutChart from '@components/ui/charts/donut-chart.svelte';
 
     let {
-        categories,
-        periodTotal,
+        categorySpending,
         periodLabel,
         emptyMessage = 'No spending data for this period',
         variant = 'donut',
     }: {
-        categories: CategorySpendingReportData['categories'];
-        periodTotal: CategorySpendingReportData['period_total'];
+        categorySpending: CategorySpendingReportData;
         periodLabel?: string;
         emptyMessage?: string;
         variant?: 'donut' | 'bar';
     } = $props();
+
+    const categories = $derived(categorySpending.categories);
+    const periodTotal = $derived(categorySpending.period_total);
 
     // View state: 'parent' shows grouped parents, 'children' shows one parent's breakdown
     let view: 'parent' | 'children' = $state('parent');

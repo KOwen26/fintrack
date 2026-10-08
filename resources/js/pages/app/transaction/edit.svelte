@@ -2,7 +2,7 @@
     import type { Data } from '@type/type';
     import type { App } from '@wayfinder/types';
 
-    import { router } from '@inertiajs/svelte';
+    import { router, setLayoutProps } from '@inertiajs/svelte';
     import TransactionType from '@wayfinder/App/Enums/TransactionType';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
@@ -39,18 +39,15 @@
     }
 
     const backUrl = TransactionController.index.url();
+
+    setLayoutProps({
+        title: isTransfer ? 'Edit Transfer' : 'Edit Transaction',
+        backUrl,
+    });
 </script>
 
 <HeaderContext>
-    <div class="flex w-full items-center justify-between gap-3">
-        <Button size="icon" aria-label="Back to transactions" href={backUrl} variant="ghost">
-            <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
-        </Button>
-
-        <h1 class="grow text-center font-medium text-primary">
-            {isTransfer ? 'Edit Transfer' : 'Edit Transaction'}
-        </h1>
-
+    {#snippet actions()}
         <Button
             size="icon"
             aria-label={isTransfer ? 'Delete transfer' : 'Delete transaction'}
@@ -59,7 +56,7 @@
             variant="ghost">
             <i class="iconify size-6 solar--trash-bin-2-line-duotone"></i>
         </Button>
-    </div>
+    {/snippet}
 </HeaderContext>
 
 <TransactionForm {accounts} {categories} {transaction} />

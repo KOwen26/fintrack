@@ -104,6 +104,8 @@
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
 
+    import Button from '@components/ui/button.svelte';
+
     /* ── Props ───────────────────────────────────────────── */
 
     interface Props extends RestProps {
@@ -112,9 +114,16 @@
         class?: string;
         hideTotal?: boolean;
         hideControl?: boolean;
+        loadMoreAction?: () => void;
     }
 
-    let { transactions, class: _class, hideTotal = false, hideControl = false }: Props = $props();
+    let {
+        transactions,
+        class: _class,
+        hideTotal = false,
+        hideControl = false,
+        loadMoreAction,
+    }: Props = $props();
 
     /* ── Group by date ───────────────────────────────────── */
 
@@ -164,12 +173,6 @@
     const filteredCount = $derived(transactions.length);
 
     /* ── Load more ───────────────────────────────────────── */
-
-    let allLoaded = $state(false);
-
-    function loadMore() {
-        allLoaded = true;
-    }
 </script>
 
 <div class={cn('flex flex-col gap-3', _class)}>
@@ -229,15 +232,11 @@
 
     {#if !hideControl}
         <!-- Load more -->
-        {#if !allLoaded}
-            <button
-                class="mx-0 mt-2 mb-0 flex w-full items-center justify-center gap-2 rounded-lg bg-base-200 p-3.5 font-sans text-sm font-semibold text-primary shadow-xs transition-colors duration-150 hover:bg-primary/10"
-                onclick={loadMore}>
+        {#if loadMoreAction}
+            <Button class="mt-2 w-full" color="light" onclick={loadMoreAction} variant="soft">
                 <i class="iconify size-3.5 solar--alt-arrow-down-line-duotone"></i>
                 Load more
-            </button>
-        {:else}
-            <p class="py-3 text-center text-xs text-base-content/40">All transactions are shown</p>
+            </Button>
         {/if}
     {/if}
 </div>

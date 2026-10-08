@@ -3,8 +3,9 @@
 </script>
 
 <script lang="ts">
-    import { useForm } from '@inertiajs/svelte';
+    import { setLayoutProps, useForm } from '@inertiajs/svelte';
     import security from '@wayfinder/routes/security';
+    import settings from '@wayfinder/routes/settings';
 
     import Badge from '@components/ui/badge.svelte';
     import Button from '@components/ui/button.svelte';
@@ -14,6 +15,8 @@
     import SubmitButton from '@components/ui/forms/submit-button.svelte';
 
     let { status }: { status: string | null } = $props();
+
+    setLayoutProps({ title: 'Security', backUrl: settings.index.url() });
 
     const form = useForm({
         current_password: '',

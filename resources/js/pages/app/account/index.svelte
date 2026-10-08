@@ -32,9 +32,7 @@
 
 <MobilePageLayout variant="4/5">
     {#snippet hero()}
-        <div class="px-5">
-            <AccountsSummaryCard {summary} />
-        </div>
+        <AccountsSummaryCard {summary} />
     {/snippet}
 
     <div class="space-y-4">

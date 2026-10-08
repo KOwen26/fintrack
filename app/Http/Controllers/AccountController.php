@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Data\Transaction\TransactionListData;
+use App\Enums\DatePeriodPreset;
 use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
 use App\Models\Account;
 use App\Models\Provider;
 use App\Models\User;
 use App\Services\AccountService;
+use App\Services\SpendingService;
 use App\Services\TransactionService;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
@@ -36,17 +37,22 @@ final class AccountController extends Controller
         ]);
     }
 
-    public function show(Request $request, Account $account, TransactionService $transactionService): Response
+    public function show(Request $request, Account $account, TransactionService $transactionService, SpendingService $spendingService): Response
     {
         $this->authorize('view', $account);
 
         $account->load(['provider']);
 
-        $transactions = TransactionListData::collect($transactionService->getAccountTransactions($account));
+        $period = DatePeriodPreset::ThisMonth;
+
+        $transactions = $transactionService->getAccountTransactions($account, $period);
+
+        $categorySpending = $spendingService->globalCategorySpending([$account->id], $period);
 
         return Inertia::render('app/account/show', [
             'account' => $account,
             'transactions' => $transactions,
+            'categorySpending' => $categorySpending,
         ]);
     }
 

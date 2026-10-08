@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { TransactionListData } from '@type/generated';
 
+    import { router } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
@@ -55,24 +56,17 @@
         table.resetColumnFilters();
         table.setSorting(SORT_STATE.newest);
     }
-</script>
 
-<!-- <DashboardPageHeader title="Transactions">
-    {#snippet actions()}
-        <Button color="primary" href={TransactionController.create.url()}>
-            <i class="iconify size-5 solar--add-bold-duotone"></i>
-            Add
-        </Button>
-    {/snippet}
-</DashboardPageHeader> -->
+    function loadMoreAction() {
+        router.reload({ only: ['transactions'] });
+    }
+</script>
 
 <MobilePageLayout contentClass="[timeline-scope:--filter-stuck]" variant="4/5">
     {#snippet hero()}
         <!-- ── SUMMARY CARD ────────────────────────────────────── -->
         {#if transactions.length > 0}
-            <div class="px-6">
-                <TransactionSummaryCard {summary} />
-            </div>
+            <TransactionSummaryCard {summary} />
         {/if}
     {/snippet}
 
@@ -102,7 +96,7 @@
                 label="No transactions" />
         {/if}
     {:else}
-        <TransactionList transactions={filteredTransactions} />
+        <TransactionList {loadMoreAction} transactions={filteredTransactions} />
     {/if}
 </MobilePageLayout>
 

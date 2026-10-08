@@ -100,7 +100,7 @@
     });
 </script>
 
-<MobilePageLayout heroClass="flex flex-col justify-center px-5" variant="4/5">
+<MobilePageLayout heroClass="flex flex-col justify-center" variant="4/5">
     {#snippet hero()}
         <AccountCard class="w-full" account={previewAccount} hideActions hideEdit hideFooter />
     {/snippet}

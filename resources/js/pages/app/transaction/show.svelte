@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Data } from '@type/type';
 
-    import { router } from '@inertiajs/svelte';
+    import { router, setLayoutProps } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
     import TransferController from '@wayfinder/App/Http/Controllers/TransferController';
 
@@ -28,14 +28,15 @@
     }
 
     const backUrl = TransactionController.index.url();
+
+    setLayoutProps({
+        title: isTransferRow ? 'Transfer Detail' : 'Transaction Detail',
+        backUrl,
+    });
 </script>
 
 <HeaderContext>
-    <div class="flex w-full items-center justify-between gap-3">
-        <Button size="icon" aria-label="Back to transactions" href={backUrl} variant="ghost">
-            <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
-        </Button>
-
+    {#snippet actions()}
         <Button
             size="icon"
             aria-label={isTransferRow ? 'Delete transfer' : 'Delete transaction'}
@@ -44,7 +45,7 @@
             variant="ghost">
             <i class="iconify size-6 solar--trash-bin-2-line-duotone"></i>
         </Button>
-    </div>
+    {/snippet}
 </HeaderContext>
 
 <TransactionDetail {transaction} />

@@ -23,7 +23,7 @@
     }
 
     let {
-        shellClass = 'bg-secondary',
+        shellClass = 'bg-secondary text-primary',
         variant = 'full',
         hero,
         children,
@@ -65,18 +65,20 @@
 <!-- Start at the viewport, but let the sheet grow with its content so normal page scrolling is preserved. -->
 <div
     class={cn(
-        'relative flex min-h-dvh w-full flex-col bg-secondary text-secondary-content antialiased',
+        'relative flex min-h-dvh w-full flex-col bg-secondary text-secondary-foreground antialiased',
         _class
     )}>
-    <section data-slot="mobile-page-layout-hero" class={cn(heroClasses[variant], heroClass)}>
+    <section
+        data-slot="mobile-page-layout-hero"
+        class={cn(heroClasses[variant], 'px-5 py-10', heroClass)}>
         {@render hero?.()}
     </section>
 
     <!-- `contentClass` stays on the flex slice; padding lives on the inner wrapper so box padding cannot distort the hero/sheet ratio. -->
     <section
         data-slot="mobile-page-layout-content"
-        class={cn('relative bg-base-100 text-base-content', sheetClasses[variant], contentClass)}>
-        <div class="px-5 pt-5 pb-25">
+        class={cn('relative bg-background text-foreground', sheetClasses[variant], contentClass)}>
+        <div class="p-5 pb-25">
             {@render children()}
         </div>
     </section>
