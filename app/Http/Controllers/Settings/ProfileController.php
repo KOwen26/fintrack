@@ -31,9 +31,10 @@ final class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $user = $request->user();
+
         return Inertia::render('app/settings/profile', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => $request->session()->get('status'),
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail(),
         ]);
     }
 
@@ -80,7 +81,7 @@ final class ProfileController extends Controller
     public function editSecurity(Request $request): Response
     {
         return Inertia::render('app/settings/security', [
-            'status' => $request->session()->get('status'),
+
         ]);
     }
 

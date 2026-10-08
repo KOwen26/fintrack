@@ -44,8 +44,8 @@
                     Total Balance
                 </h6>
                 <CurrencyAmount
-                    value={summary.total_balance}
-                    class="mt-2 text-3xl leading-none font-bold tracking-tight lg:mt-1.5" />
+                    class="mt-2 text-3xl leading-none font-bold tracking-tight lg:mt-1.5"
+                    value={summary.total_balance} />
             </div>
             <div
                 class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/20 lg:order-first">
@@ -64,8 +64,8 @@
                     </span>
                 </div>
                 <CurrencyAmount
-                    value={summary.available_balance}
-                    class="mt-1 text-base font-bold tracking-tight lg:mt-1.5" />
+                    class="mt-1 text-base font-bold tracking-tight lg:mt-1.5"
+                    value={summary.available_balance} />
             </div>
             <div class="min-w-0 border-l border-primary-foreground/40 pl-4">
                 <div class="flex items-center gap-1.5 text-primary-foreground/70">
@@ -75,8 +75,8 @@
                     </span>
                 </div>
                 <CurrencyAmount
-                    value={summary.investment_balance}
-                    class="mt-1 text-base font-bold tracking-tight lg:mt-1.5" />
+                    class="mt-1 text-base font-bold tracking-tight lg:mt-1.5"
+                    value={summary.investment_balance} />
             </div>
         </div>
     </div>

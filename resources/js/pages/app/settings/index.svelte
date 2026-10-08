@@ -7,7 +7,7 @@
     import SettingsMenu from '@components/module/settings/settings-menu.svelte';
     import Button from '@components/ui/button.svelte';
 
-    setLayoutProps({ backUrl: dashboard.url() });
+    setLayoutProps({ backUrl: dashboard.url(), title: 'Settings' });
 </script>
 
 <MobilePageLayout variant="4/5">

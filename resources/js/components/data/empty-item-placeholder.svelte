@@ -1,4 +1,6 @@
 <script lang="ts">
+    import type { Snippet } from 'svelte';
+
     import { cn } from '@utilities/shadcn';
 
     import Button from '@components/ui/button.svelte';
@@ -6,12 +8,13 @@
     interface Props {
         label: string;
         icon?: string;
+        cta?: Snippet;
         ctaUrl?: string;
         ctaLabel?: string;
         ctaOnclick?: () => void;
     }
 
-    let { label, icon, ctaUrl, ctaLabel, ctaOnclick }: Props = $props();
+    let { label, icon, cta, ctaUrl, ctaLabel, ctaOnclick }: Props = $props();
 
     const hasIcon = $derived(!!icon?.length);
     const hasCta = $derived(!!ctaUrl?.length || !!ctaOnclick);
@@ -24,7 +27,9 @@
 
     <p class="text-pretty">{label}</p>
 
-    {#if hasCta}
+    {#if cta}
+        {@render cta?.()}
+    {:else if hasCta}
         <Button color="primary" href={ctaUrl} onclick={ctaOnclick}>
             {ctaLabel ?? label}
         </Button>

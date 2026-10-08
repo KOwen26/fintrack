@@ -2,9 +2,12 @@
     import { setLayoutProps } from '@inertiajs/svelte';
     import settings from '@wayfinder/routes/settings';
 
+    import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import ThemeSelector from '@components/ui/theme-selector.svelte';
 
-    setLayoutProps({ title: 'Settings', backUrl: settings.index.url() });
+    setLayoutProps({ title: 'Appearance', backUrl: settings.index.url() });
 </script>
 
-<ThemeSelector />
+<MobilePageLayout variant="full">
+    <ThemeSelector />
+</MobilePageLayout>

@@ -37,9 +37,11 @@
     <div class="space-y-4">
         <AccountList {accounts} />
 
-        <Link class="block cursor-pointer" href={AccountController.create.url()}>
-            <BaseAccountCard variant="create" />
-        </Link>
+        {#if accounts?.length}
+            <Link class="block cursor-pointer" href={AccountController.create.url()}>
+                <BaseAccountCard variant="create" />
+            </Link>
+        {/if}
 
         {#if archived_accounts.length > 0}
             {@render ArchivedAccounts()}

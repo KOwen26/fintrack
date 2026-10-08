@@ -28,7 +28,7 @@
         <div class="flex w-full flex-col justify-center p-8 sm:p-12 lg:w-1/2 lg:p-16">
             <!-- App Logo/Icon -->
             <div class="mb-8 flex justify-center lg:justify-start">
-                <AppIcon />
+                <AppIcon class="size-20" />
             </div>
 
             <!-- Form Content via Slots -->

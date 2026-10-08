@@ -58,8 +58,10 @@
 </HeaderContext>
 
 {#if !accounts.length}
-    <MobilePageLayout variant="full">
-        <DashboardWelcomeCard ctaUrl={AccountController.create.url()} />
+    <MobilePageLayout variant="4/5">
+        <div class="py-24">
+            <DashboardWelcomeCard ctaUrl={AccountController.create.url()} />
+        </div>
     </MobilePageLayout>
 {:else}
     <MobilePageLayout variant="3/5">

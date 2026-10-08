@@ -4,7 +4,7 @@ import '@inertiajs/core';
 
 import type { ToastProps } from '@lib/toast-handler.svelte';
 
-type Page = {
+export type Page = {
     csrf_token?: string;
     auth?: {
         user?: {
