@@ -9,9 +9,9 @@
 
     import Icon from '@assets/images/icon-transparent.png';
 
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountList from '@components/module/account/account-list.svelte';
-    import BalanceHeroCard from '@components/module/dashboard/balance-hero-card.svelte';
     import DashboardWelcomeCard from '@components/module/dashboard/dashboard-welcome-card.svelte';
     import CategorySpendingChart from '@components/module/report/category-spending-chart.svelte';
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
@@ -21,7 +21,7 @@
     import Separator from '@components/ui/separator.svelte';
 
     interface Summary {
-        total_balance: number;
+        current_balance: number;
         monthly_income: number;
         monthly_expenses: number;
         monthly_savings: number;
@@ -65,11 +65,14 @@
 {:else}
     <MobilePageLayout variant="3/5">
         {#snippet hero()}
-            <BalanceHeroCard
-                loading={!summary}
-                monthlyExpenses={summary?.monthly_expenses ?? 0}
-                monthlyIncome={summary?.monthly_income ?? 0}
-                totalBalance={summary?.total_balance ?? null} />
+            <div>
+                <h3 class="mb-1 text-lg font-medium text-current/70">Current Balance</h3>
+                <div class="mb-2 flex items-center gap-0.5">
+                    <CurrencyAmount
+                        class="text-5xl font-semibold"
+                        value={summary?.current_balance} />
+                </div>
+            </div>
         {/snippet}
 
         <div class="grid grid-cols-1 gap-6">

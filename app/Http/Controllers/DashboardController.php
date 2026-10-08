@@ -32,16 +32,18 @@ final class DashboardController extends Controller
 
         $recentTransactions = $this->transactionService->getTransactions($this->user, DatePeriodPreset::Last14Days);
 
+        $summary = [
+            'current_balance' => $this->accountService->summarize($accounts)['total_balance'],
+            'monthly_income' => 0,
+            'monthly_expenses' => 0,
+            'monthly_savings' => 0,
+        ];
+
         return Inertia::render('app/dashboard', [
-            'categorySpending' => $categorySpending,
-            'summary' => [
-                'total_balance' => 0,
-                'monthly_income' => 0,
-                'monthly_expenses' => 0,
-                'monthly_savings' => 0,
-            ],
-            'recent_transactions' => $recentTransactions,
             'accounts' => $accounts,
+            'summary' => $summary,
+            'categorySpending' => $categorySpending,
+            'recent_transactions' => $recentTransactions,
         ]);
     }
 }
