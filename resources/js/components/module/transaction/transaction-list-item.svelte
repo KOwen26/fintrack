@@ -37,9 +37,9 @@
     import { Link } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
-    import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
 
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
     import DecorationBadge from '@components/module/decoration-badge.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
@@ -108,8 +108,8 @@
     </div>
 
     <div class="shrink-0 text-right">
-        <div style:color={typeConfig.color} class="font-mono text-sm font-semibold">
-            {Formatter.currency(transaction.amount)}
+        <div style:color={typeConfig.color} class="text-sm font-semibold">
+            <CurrencyAmount value={transaction.amount} />
         </div>
     </div>
 </Link>

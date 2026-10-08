@@ -8,8 +8,8 @@
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
     import DateTimeHelper from '@utilities/date-time-helper';
-    import Formatter from '@utilities/formatter';
 
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
     import BaseAccountCard from '@components/module/account/base-account-card.svelte';
     import Badge from '@components/ui/badge.svelte';
     import Link from '@components/ui/link.svelte';
@@ -173,7 +173,7 @@
             {#if balanceHidden}
                 ••••••
             {:else}
-                {Formatter.currency(account.current_balance ?? 0)}
+                <CurrencyAmount value={account.current_balance ?? 0} />
             {/if}
         </p>
     </div>

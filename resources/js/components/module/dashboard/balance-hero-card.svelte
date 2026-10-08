@@ -1,8 +1,9 @@
 <script lang="ts">
     import type { RestProps } from '@type/index';
 
-    import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
+
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
 
     interface Props extends RestProps {
         totalBalance: number | null;
@@ -51,18 +52,22 @@
         </div>
 
         <p class="mt-1 text-3xl font-bold tracking-tight lg:text-4xl">
-            {Formatter.currency(totalBalance ?? 0)}
+            <CurrencyAmount value={totalBalance ?? 0} />
         </p>
 
         <div class="mt-3 flex items-center gap-4 text-sm">
             <span class="flex items-center gap-1">
                 <i class="iconify size-4 text-success-300 shadow solar--course-up-bold-duotone"></i>
-                <span class="text-white/85">+ {Formatter.currency(monthlyIncome)}</span>
+                <span class="inline-flex items-baseline gap-1 text-white/85">
+                    + <CurrencyAmount value={monthlyIncome} />
+                </span>
                 <span class="text-white/60">this month</span>
             </span>
             <span class="flex items-center gap-1">
                 <i class="iconify size-4 text-error-300 shadow solar--course-down-bold-duotone"></i>
-                <span class="text-white/85">- {Formatter.currency(monthlyExpenses)}</span>
+                <span class="inline-flex items-baseline gap-1 text-white/85">
+                    - <CurrencyAmount value={monthlyExpenses} />
+                </span>
                 <span class="text-white/60">this month</span>
             </span>
         </div>

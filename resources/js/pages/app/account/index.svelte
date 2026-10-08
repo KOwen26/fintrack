@@ -4,8 +4,7 @@
     import { Link } from '@inertiajs/svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
-    import Formatter from '@utilities/formatter';
-
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountList from '@components/module/account/account-list.svelte';
     import AccountsSummaryCard from '@components/module/account/accounts-summary-card.svelte';
@@ -67,7 +66,7 @@
                         <div>
                             <p class="text-sm font-medium text-base-content/60">{acct.name}</p>
                             <p class="text-xs text-base-content/40">
-                                Final balance: {Formatter.currency(acct.current_balance)}
+                                Final balance: <CurrencyAmount value={acct.current_balance} />
                             </p>
                         </div>
                     </div>

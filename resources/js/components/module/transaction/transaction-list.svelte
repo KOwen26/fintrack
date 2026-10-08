@@ -101,9 +101,9 @@
     import { SvelteMap } from 'svelte/reactivity';
 
     import DateTimeHelper from '@utilities/date-time-helper';
-    import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
 
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
     import Button from '@components/ui/button.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
@@ -200,14 +200,14 @@
 
                     <span
                         class={cn(
-                            'ml-auto flex items-center font-mono text-sm font-semibold whitespace-nowrap',
+                            'ml-auto flex items-center text-sm font-semibold whitespace-nowrap',
                             group.net > 0
                                 ? 'text-success'
                                 : group.net < 0
                                   ? 'text-error'
                                   : 'text-base-content'
                         )}>
-                        {Formatter.currency(group.net)}
+                        <CurrencyAmount value={group.net} />
                     </span>
                     <i
                         class={cn(

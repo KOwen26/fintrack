@@ -3,8 +3,9 @@
 
     import { Progress } from 'bits-ui';
 
-    import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
+
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
 
     interface Props extends RestProps {
         label: string;
@@ -42,24 +43,6 @@
 
         return preset[color] ?? color;
     });
-
-    let formattedValue = $derived.by(() => {
-        switch (format) {
-            case 'currency':
-                return Formatter.currency(value, true);
-            default:
-                return value.toLocaleString();
-        }
-    });
-
-    let formattedMax = $derived.by(() => {
-        switch (format) {
-            case 'currency':
-                return Formatter.currency(max, true);
-            default:
-                return max.toLocaleString();
-        }
-    });
 </script>
 
 <div class={cn('space-y-1.5', _class)} {...props}>
@@ -71,7 +54,17 @@
                     'text-xs',
                     isOverBudget ? 'font-medium text-error' : 'text-base-content/60'
                 )}>
-                {formattedValue} / {formattedMax}
+                {#if format === 'currency'}
+                    <CurrencyAmount {value} />
+                {:else}
+                    {value.toLocaleString()}
+                {/if}
+                /
+                {#if format === 'currency'}
+                    <CurrencyAmount {max} />
+                {:else}
+                    {max.toLocaleString()}
+                {/if}
             </span>
         {/if}
     </div>

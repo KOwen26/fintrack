@@ -1,4 +1,6 @@
 <script lang="ts">
+    import Formatter from '@utilities/formatter';
+
     interface Member {
         name: string;
         contributed: number;
@@ -9,14 +11,6 @@
 
     // Assign a DaisyUI color class per member position (predictable order)
     const memberColors = ['bg-primary', 'bg-secondary', 'bg-accent', 'bg-info', 'bg-success'];
-
-    function formatIDR(value: number): string {
-        return value.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            maximumFractionDigits: 0,
-        });
-    }
 </script>
 
 {#if members.length === 0}
@@ -48,7 +42,9 @@
                     <span class="font-medium">{member.name}</span>
                 </div>
                 <div class="text-right">
-                    <span class="font-mono">{formatIDR(member.contributed)}</span>
+                    <span class="font-mono">
+                        {Formatter.currency(member.contributed, true)}
+                    </span>
                     <span class="ml-1 text-base-content/50">{member.percentage}%</span>
                 </div>
             </li>
@@ -56,6 +52,6 @@
     </ul>
 
     <p class="mt-3 text-right text-xs text-base-content/40">
-        Total: {formatIDR(total)}
+        Total: {Formatter.currency(total, true)}
     </p>
 {/if}

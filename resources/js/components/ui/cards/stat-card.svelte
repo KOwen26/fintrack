@@ -1,8 +1,9 @@
 <script lang="ts">
     import type { RestProps } from '@type/index';
 
-    import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
+
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
 
     interface Props extends RestProps {
         label: string;
@@ -62,14 +63,6 @@
     };
 
     let iconClass = $derived(() => KNOWN_ICONS[icon] ?? icon);
-
-    let formattedValue = $derived(() => {
-        if (value === null || value === undefined) return null;
-        if (typeof value === 'string') return value;
-        if (format === 'number') return value.toLocaleString();
-
-        return Formatter.currency(value);
-    });
 </script>
 
 <div
@@ -105,7 +98,15 @@
         </div>
 
         <p class="mt-3 text-2xl font-bold tracking-tight text-base-content">
-            {formattedValue() ?? '—'}
+            {#if value === null || value === undefined}
+                —
+            {:else if typeof value === 'string'}
+                {value}
+            {:else if format === 'number'}
+                {value.toLocaleString()}
+            {:else}
+                <CurrencyAmount {value} />
+            {/if}
         </p>
 
         {#if trend}

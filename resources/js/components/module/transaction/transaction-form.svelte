@@ -7,8 +7,7 @@
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
     import TransferController from '@wayfinder/App/Http/Controllers/TransferController';
 
-    import Formatter from '@utilities/formatter';
-
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountSelect from '@components/module/account/account-select.svelte';
     import CategorySelect from '@components/module/category/category-select.svelte';
@@ -232,7 +231,7 @@
                             aria-pressed={selected}
                             onclick={() => (form.amount = preset.toString())}
                             type="button">
-                            {Formatter.currency(preset, true)}
+                            <CurrencyAmount value={preset} />
                         </button>
                     {/each}
                 </div>

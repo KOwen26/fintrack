@@ -5,6 +5,7 @@
 
     import Formatter from '@utilities/formatter';
 
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
     import Button from '@components/ui/button.svelte';
     import DonutChart from '@components/ui/charts/donut-chart.svelte';
 
@@ -48,13 +49,7 @@
         view === 'parent' ? periodTotal : (selectedGroup?.total ?? 0)
     );
 
-    const formattedCenterTotal = $derived(
-        currentCenterTotal.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            maximumFractionDigits: 0,
-        })
-    );
+    const formattedCenterTotal = $derived(Formatter.currency(currentCenterTotal, true));
 
     const centerSubtext = $derived(view === 'children' ? selectedGroup?.name : periodLabel);
 
@@ -153,7 +148,7 @@
                             </button>
                             <div class="ml-4 shrink-0 text-right">
                                 <span class="font-semibold tracking-wide"
-                                    >{Formatter.currency(group.total)}</span>
+                                    ><CurrencyAmount value={group.total} /></span>
                                 <!-- <span class="ml-1 text-base-content/50">{group.percentage}%</span> -->
                             </div>
                         </li>
@@ -173,12 +168,7 @@
                                 <span class="truncate">{item.name}</span>
                             </div>
                             <div class="ml-4 shrink-0 text-right">
-                                <span class="font-mono font-medium"
-                                    >{item.total.toLocaleString('id-ID', {
-                                        style: 'currency',
-                                        currency: 'IDR',
-                                        maximumFractionDigits: 0,
-                                    })}</span>
+                                <CurrencyAmount value={item.total} />
                                 <span class="ml-1 text-base-content/50"
                                     >{selectedGroup.total > 0
                                         ? Math.round((item.total / selectedGroup.total) * 10000) /
@@ -211,7 +201,9 @@
                             {/if}
                             <div class="flex shrink-0 items-center gap-2">
                                 <span class="text-xs text-base-content/50">{row.percentage}%</span>
-                                <span class="font-medium">{Formatter.currency(row.total)}</span>
+                                <span class="font-medium">
+                                    <CurrencyAmount value={row.total} />
+                                </span>
                             </div>
                         </div>
                         <div class="h-2 w-full overflow-hidden rounded-full bg-base-200">
