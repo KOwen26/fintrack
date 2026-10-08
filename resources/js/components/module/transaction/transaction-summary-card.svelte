@@ -45,15 +45,9 @@
                 </h6>
                 <p
                     class="mt-2 flex items-center gap-1 text-3xl leading-none font-bold tracking-tight lg:mt-1.5">
-                    {#if summary.net !== 0}
-                        <i
-                            class="iconify size-5 {summary.net > 0
-                                ? 'solar--add-linear'
-                                : 'solar--minus-linear'}"></i>
-                    {/if}
                     <CurrencyAmount
                         class="text-3xl leading-none font-bold tracking-tight"
-                        value={Math.abs(summary.net)} />
+                        value={summary.net} />
                 </p>
             </div>
             <div

@@ -25,7 +25,15 @@
         ctaLabel="Create your first account"
         ctaUrl={AccountController.create.url()}
         icon="solar--wallet-bold-duotone"
-        label="No accounts yet" />
+        label="No accounts yet">
+        <!-- {#snippet cta()}
+            <div class="w-full">
+                <Link class="block cursor-pointer" href={AccountController.create.url()}>
+                    <BaseAccountCard variant="create" />
+                </Link>
+            </div>
+        {/snippet} -->
+    </EmptyItemPlaceholder>
 {:else}
     {#if !hideActions}
         <ToggleableGrid class="mb-3" bind:mode>
