@@ -102,6 +102,26 @@ const persistServerTheme = (value: string): void => {
     );
 };
 
+const DEFAULT_STATUS_BAR_COLOR = '#FDFDFC';
+
+export function getCssColor(variableName: string, fallback = '#FDFDFC'): string {
+    if (typeof window === 'undefined') return fallback;
+
+    const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+
+    return value || fallback;
+}
+
+export function setStatusBarTheme(color: string = DEFAULT_STATUS_BAR_COLOR): void {
+    if (typeof window === 'undefined' || !document) return;
+
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+
+    if (meta) {
+        meta.content = color;
+    }
+}
+
 // ──────────────────────────────────────────────
 // Appearance (light / dark / system)
 // ──────────────────────────────────────────────

@@ -7,8 +7,6 @@
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
     import settings from '@wayfinder/routes/settings';
 
-    import Icon from '@assets/images/icon-transparent.png';
-
     import CurrencyAmount from '@components/data/currency-amount.svelte';
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountList from '@components/module/account/account-list.svelte';
@@ -16,6 +14,7 @@
     import CategorySpendingChart from '@components/module/report/category-spending-chart.svelte';
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
     import HeaderContext from '@components/navigation/header-context.svelte';
+    import AppIcon from '@components/ui/app-icon.svelte';
     import Button from '@components/ui/button.svelte';
     import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
     import Separator from '@components/ui/separator.svelte';
@@ -43,7 +42,7 @@
 <HeaderContext>
     <div class="flex w-full items-center justify-between gap-3 md:w-auto">
         <div>
-            <img class="aspect-square size-10" alt="Logo" src={Icon} />
+            <AppIcon />
         </div>
 
         <div>

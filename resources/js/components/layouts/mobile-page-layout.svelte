@@ -2,6 +2,7 @@
     import type { Snippet } from 'svelte';
 
     import { setLayoutProps } from '@inertiajs/svelte';
+    import { getCssColor, setStatusBarTheme } from '@lib/theme-handler.svelte';
 
     import { cn } from '@utilities/shadcn';
 
@@ -58,9 +59,15 @@
     $effect(() => {
         setLayoutProps({ mobileShellClass: variant === 'full' ? undefined : shellClass });
 
+        setStatusBarTheme(getCssColor(variant === 'full' ? '--background' : '--secondary'));
+
         return () => setLayoutProps({ mobileShellClass: undefined });
     });
 </script>
+
+<!-- <svelte:head>
+    <meta name="theme-color" content={getCssColor('--secondary')} />
+</svelte:head> -->
 
 <!-- Start at the viewport, but let the sheet grow with its content so normal page scrolling is preserved. -->
 <div

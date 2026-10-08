@@ -10,7 +10,7 @@
     --popover: var(--card);
     --popover-foreground: var(--foreground);
     --muted: oklch(0.949 0.005 275.4);
-    --muted-foreground: var(--foreground);
+    --muted-foreground: color-mix(in oklab, var(--foreground) 50%, transparent);
 
     /* Brand */
     --primary: oklch(0.779 0.126 173.5);

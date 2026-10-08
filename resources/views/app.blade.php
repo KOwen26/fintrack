@@ -5,10 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-    <meta name="description" content="Fast, effortless personal and household money tracking.">
-    <meta name="theme-color" content="#FDFDFC">
-    <meta name="color-scheme" content="light">
     <meta name="application-name" content="{{ config('app.name') }}">
+    <meta name="description" content="Fast, effortless personal and household money tracking.">
+
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#FDFDFC">
+    {{-- <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FDFDFC">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0A0A0A"> --}}
 
     {{-- iOS standalone app. black-translucent renders under the status bar,
          which is what activates env(safe-area-inset-top) for the mobile
