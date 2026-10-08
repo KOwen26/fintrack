@@ -2,65 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use App\Data\Transaction\TransactionListData;
+use App\Enums\DatePeriodPreset;
 use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
 use App\Models\Account;
 use App\Models\Provider;
+use App\Models\User;
 use App\Services\AccountService;
+use App\Services\SpendingService;
 use App\Services\TransactionService;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AccountController extends Controller
+final class AccountController extends Controller
 {
     public function __construct(
+        #[CurrentUser] private readonly ?User $user,
         private readonly AccountService $accountService,
     ) {}
 
     public function index(Request $request): Response
     {
-        $accounts = $this->accountService->getAccountsByUser(auth()->user());
+        $accounts = $this->accountService->getAccountsByUser($this->user);
 
-        $archivedAccounts = Account::query()
-            ->where('owner_id', auth()->id())
-            ->whereNotNull('archived_at')
-            ->with('provider')
-            ->get();
+        $archivedAccounts = $this->accountService->getArchivedAccountsByUser($this->user);
 
-        return Inertia::render('accounts/index', [
+        return Inertia::render('app/account/index', [
             'accounts' => $accounts,
             'archived_accounts' => $archivedAccounts,
             'summary' => AccountService::summarize($accounts),
         ]);
     }
 
-    public function show(Request $request, Account $account, TransactionService $transactionService): Response
+    public function show(Request $request, Account $account, TransactionService $transactionService, SpendingService $spendingService): Response
     {
         $this->authorize('view', $account);
 
         $account->load(['provider']);
 
-        $transactions = TransactionListData::collect($transactionService->getAccountTransactions($account));
+        $period = DatePeriodPreset::ThisMonth;
 
-        return Inertia::render('accounts/show', [
+        $transactions = $transactionService->getAccountTransactions($account, $period);
+
+        $categorySpending = $spendingService->globalCategorySpending([$account->id], $period);
+
+        return Inertia::render('app/account/show', [
             'account' => $account,
             'transactions' => $transactions,
+            'categorySpending' => $categorySpending,
         ]);
     }
 
     public function create(Request $request): Response
     {
-        return Inertia::render('accounts/create', [
+        return Inertia::render('app/account/create', [
             'providers' => Provider::where('status', 'active')->orderBy('name')->get(),
         ]);
     }
 
     public function store(StoreAccountRequest $request): RedirectResponse
     {
-        $account = $this->accountService->create($request->user(), $request->validated());
+        $account = $this->accountService->create($this->user, $request->validated());
 
         return to_route('accounts.show', $account)->flash('Account created.');
     }
@@ -69,7 +74,7 @@ class AccountController extends Controller
     {
         $this->authorize('update', $account);
 
-        return Inertia::render('accounts/edit', [
+        return Inertia::render('app/account/edit', [
             'account' => $account->load('provider'),
             'providers' => Provider::where('status', 'active')->orderBy('name')->get(),
         ]);
@@ -78,6 +83,7 @@ class AccountController extends Controller
     public function update(UpdateAccountRequest $request, Account $account): RedirectResponse
     {
         $this->authorize('update', $account);
+
         $this->accountService->update($account, $request->validated());
 
         return to_route('accounts.show', $account)->flash('Account updated.');
@@ -86,6 +92,7 @@ class AccountController extends Controller
     public function destroy(Account $account): RedirectResponse
     {
         $this->authorize('delete', $account);
+
         $this->accountService->softDelete($account);
 
         return to_route('accounts.index')->flash('Account deleted.');
@@ -94,6 +101,7 @@ class AccountController extends Controller
     public function archive(Account $account): RedirectResponse
     {
         $this->authorize('archive', $account);
+
         $this->accountService->archive($account);
 
         return to_route('accounts.index')->flash('Account archived.');
@@ -102,6 +110,7 @@ class AccountController extends Controller
     public function restore(Account $account): RedirectResponse
     {
         $this->authorize('archive', $account);
+
         $this->accountService->restore($account);
 
         return to_route('accounts.show', $account)->flash('Account restored.');

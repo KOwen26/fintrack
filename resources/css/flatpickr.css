@@ -1,6 +1,6 @@
 /*
- * Flatpickr theme — maps the calendar onto the app's shadcn design tokens
- * (aliased onto DaisyUI's design tokens below), so light and dark both work.
+ * Flatpickr theme — maps the calendar onto the app's design tokens
+ * (themes/*.css + tokens.css), so light and dark both work.
  *
  * Selectors are prefixed with `body .flatpickr-calendar` to stay one step
  * ahead of flatpickr's base stylesheet (imported by the action wrapper from
@@ -12,35 +12,25 @@
  * base stylesheet.
  */
 
-/* ──────────────────────────────────────────────
- * Token bridge — this file was authored against shadcn variable names.
- * Map them onto DaisyUI's design tokens so both themes resolve correctly.
- * ────────────────────────────────────────────── */
+/* Shadow — mirrors Tailwind's shadow-md (flatpickr's base sheet expects it) */
 :root {
-    /* Surfaces */
-    --popover: var(--color-base-100);
-    --popover-foreground: var(--color-base-content);
-    --muted: var(--color-base-200);
-    --accent: var(--color-base-200);
-
-    /* Text */
-    --foreground: var(--color-base-content);
-    --muted-foreground: color-mix(in oklab, var(--color-base-content) 60%, transparent);
-
-    /* Brand */
-    --primary: var(--color-primary);
-    --primary-foreground: var(--color-primary-content);
-
-    /* Structure */
-    --border: var(--color-base-300);
-    --ring: var(--color-primary);
-    --radius: var(--radius-box);
-
-    /* Shadow — mirrors Tailwind's shadow-md */
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 body .flatpickr-calendar {
+    /* ------------------------------------------------------------------ */
+    /* Token bridge — scoped to the calendar so the deliberate deviations */
+    /* (popover = page ground, muted/accent = card, 0.5rem radius) don't  */
+    /* clobber the app-wide tokens. Everything else inherits from the     */
+    /* active theme in themes/*.css.                                      */
+    /* ------------------------------------------------------------------ */
+    /* --popover: var(--background); */
+    /* --popover-foreground: var(--foreground); */
+    /* --muted: var(--card); */
+    /* --accent: var(--card); */
+    /* --muted-foreground: color-mix(in oklab, var(--foreground) 60%, transparent); */
+    /* --radius: 0.5rem;  */
+
     /* ------------------------------------------------------------------ */
     /* Geometry knobs — single source of truth for the calendar layout.   */
     /* Declared on the calendar root, inherited by every part below.      */
@@ -53,8 +43,8 @@ body .flatpickr-calendar {
     --fp-day-gap: calc(var(--spacing) * 0.5); /* spacing-1 gap each side of a day */
     --fp-calendar-padding: calc(var(--spacing) * 2.5); /* p-2 */
 
-    /* Inputs — radii (the app's radius scale is declared `@theme inline`,
-       which inlines into utilities and emits no variables — derive here) */
+    /* Inputs — radii (derived from the calendar's own --radius above, which
+       keeps the old --radius-box value instead of the app-wide --radius) */
     --fp-radius-day: calc(var(--radius) - 2px);
     --fp-radius-nav: calc(var(--radius) - 4px);
 

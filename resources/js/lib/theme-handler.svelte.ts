@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/svelte';
-import UserThemeController from '@wayfinder/App/Http/Controllers/UserThemeController';
+import ProfileController from '@wayfinder/App/Http/Controllers/Settings/ProfileController';
 
 // ──────────────────────────────────────────────
 // Shared private helpers
@@ -42,7 +42,7 @@ export const THEMES = THEME_OPTIONS.map(({ value }) => value);
 
 export type ThemeName = string;
 
-export const DEFAULT_THEME = 'cobalt';
+export const DEFAULT_THEME = 'electric';
 
 const STORAGE_KEY = 'fintrack-theme';
 
@@ -93,7 +93,7 @@ const setStoredTheme = (value: string): void => {
 
 const persistServerTheme = (value: string): void => {
     router.put(
-        UserThemeController.update.url(),
+        ProfileController.updateTheme.url(),
         { theme: value },
         {
             preserveScroll: true,

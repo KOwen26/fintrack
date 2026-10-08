@@ -3,7 +3,7 @@
 
     import { cn } from '@utilities/shadcn.js';
 
-    import { tvButtonVariants as buttonVariants } from '@components/ui/button.svelte';
+    import { buttonClassVariants as buttonVariants } from '@components/ui/button.svelte';
 
     let {
         ref = $bindable(null),
@@ -14,6 +14,6 @@
 
 <AlertDialogPrimitive.Cancel
     data-slot="alert-dialog-cancel"
-    class={cn(buttonVariants({ variant: 'outline' }), className)}
+    class={cn(buttonVariants({ variant: 'outline', color: 'light' }), className)}
     bind:ref
     {...restProps} />

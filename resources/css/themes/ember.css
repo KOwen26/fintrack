@@ -1,0 +1,41 @@
+/* Theme: ember (light) — values ported 1:1 from colors.css (Option D, section 2.1 shape) */
+:root[data-theme='ember'] {
+    color-scheme: light;
+
+    /* Surfaces */
+    --background: oklch(0.97 0.018 70);
+    --foreground: oklch(0.2 0.02 40);
+    --card: oklch(0.92 0.022 70);
+    --card-foreground: var(--foreground);
+    --popover: var(--card);
+    --popover-foreground: var(--foreground);
+    --muted: oklch(0.86 0.025 70);
+    --muted-foreground: var(--foreground);
+
+    /* Brand */
+    --primary: oklch(0.42 0.12 40);
+    --primary-foreground: oklch(0.95 0.01 40);
+    --secondary: oklch(0.68 0.06 65);
+    --secondary-foreground: oklch(0.2 0.02 40);
+    --accent: oklch(0.74 0.14 90);
+    --accent-foreground: oklch(0.2 0.02 40);
+
+    /* Neutral - first-class token (kept native, not aliased to secondary) */
+    --neutral: oklch(0.2 0.02 40);
+    --neutral-foreground: oklch(0.95 0.01 40);
+
+    /* Status */
+    --success: oklch(0.48 0.08 145);
+    --success-foreground: oklch(0.95 0.01 40);
+    --info: oklch(0.52 0.08 220);
+    --info-foreground: oklch(0.95 0.01 40);
+    --warning: oklch(0.74 0.14 90);
+    --warning-foreground: oklch(0.2 0.02 40);
+    --error: oklch(0.45 0.1 35);
+    --error-foreground: oklch(0.95 0.01 40);
+
+    /* Structure */
+    --border: oklch(0.86 0.025 70);
+    --input: var(--border);
+    --ring: var(--primary);
+}

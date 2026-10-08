@@ -1,0 +1,41 @@
+/* Theme: azure (light) — values ported 1:1 from colors.css (Option D, section 2.1 shape) */
+:root[data-theme='azure'] {
+    color-scheme: light;
+
+    /* Surfaces */
+    --background: oklch(0.991 0.005 211.1);
+    --foreground: oklch(0.141 0.028 247.1);
+    --card: oklch(0.978 0.011 211.1);
+    --card-foreground: var(--foreground);
+    --popover: var(--card);
+    --popover-foreground: var(--foreground);
+    --muted: oklch(0.958 0.016 216.7);
+    --muted-foreground: var(--foreground);
+
+    /* Brand */
+    --primary: oklch(0.665 0.128 227.9);
+    --primary-foreground: oklch(0.141 0.028 247.1);
+    --secondary: oklch(0.191 0.071 258.1);
+    --secondary-foreground: oklch(0.956 0.023 213.6);
+    --accent: oklch(0.885 0.063 216.6);
+    --accent-foreground: oklch(0.141 0.028 247.1);
+
+    /* Neutral - first-class token (kept native, not aliased to secondary) */
+    --neutral: oklch(0.956 0.023 213.6);
+    --neutral-foreground: oklch(0.399 0.1234 253.1);
+
+    /* Status */
+    --success: oklch(0.62 0.12 160);
+    --success-foreground: oklch(0.96 0.01 211);
+    --info: oklch(0.55 0.11 240);
+    --info-foreground: oklch(0.96 0.01 211);
+    --warning: oklch(0.78 0.13 80);
+    --warning-foreground: oklch(0.141 0.028 247.1);
+    --error: oklch(0.55 0.15 28);
+    --error-foreground: oklch(0.96 0.01 211);
+
+    /* Structure */
+    --border: oklch(0.958 0.016 216.7);
+    --input: var(--border);
+    --ring: var(--primary);
+}

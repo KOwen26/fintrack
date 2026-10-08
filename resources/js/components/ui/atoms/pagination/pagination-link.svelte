@@ -3,7 +3,7 @@
 
     import { cn } from '@utilities/shadcn.js';
 
-    import { tvButtonVariants as buttonVariants } from '@components/ui/button.svelte';
+    import { buttonClassVariants as buttonVariants } from '@components/ui/button.svelte';
 
     let {
         ref = $bindable(null),
@@ -19,15 +19,12 @@
         } = $props();
 </script>
 
-{#snippet Fallback()}
-    {page.value}
-{/snippet}
-
 <PaginationPrimitive.Page
     data-slot="pagination-link"
     class={cn(
         buttonVariants({
             variant: isActive ? 'outline' : 'ghost',
+            color: 'light',
             size,
         }),
         className
@@ -38,3 +35,7 @@
     {page}
     bind:ref
     {...restProps} />
+
+{#snippet Fallback()}
+    {page.value}
+{/snippet}

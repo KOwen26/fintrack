@@ -9,8 +9,6 @@
 
 <script lang="ts">
     import FlexRender from '../flex-render.svelte';
-    import AccountSelect from './account-select.svelte';
-    import CategorySelect from './category-select.svelte';
     import CheckboxGroup from './checkbox-group.svelte';
     import Checkbox from './checkbox.svelte';
     import CurrencyInput from './currency-input.svelte';
@@ -109,14 +107,6 @@
                 </RadioGroupItem>
             {/each}
         </RadioGroup>
-    {:else if restProps.type === 'category-select'}
-        {@const inputProps = mapInputProps(restProps)}
-
-        <CategorySelect categories={restProps.categories} bind:value {...inputProps} />
-    {:else if restProps.type === 'account-select'}
-        {@const inputProps = mapInputProps(restProps)}
-
-        <AccountSelect endpoint={restProps.endpoint} bind:value {...inputProps} />
     {:else if restProps.type === 'raw'}
         {@const content = typeof value === 'string' ? value : () => value}
 

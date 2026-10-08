@@ -13,17 +13,17 @@
     let { name = 'password', value = $bindable() }: PasswordInputProps = $props();
 </script>
 
-<div class="input flex w-full items-center overflow-clip">
-    <Input {name} type={passwordToggle ? 'text' : 'password'} bind:value />
+<div class="relative w-full">
+    <Input {name} class="pe-12" type={passwordToggle ? 'text' : 'password'} bind:value />
     <button
-        class="group -mx-3 cursor-pointer border-l border-[var(--input-color)] px-3 py-2.5 hover:bg-base-300/60"
-        aria-label="password"
+        class="absolute inset-y-0 inset-e-0 flex w-12 cursor-pointer items-center justify-center text-muted-foreground hover:text-foreground"
+        aria-label={passwordToggle ? 'Hide password' : 'Show password'}
         onclick={() => (passwordToggle = !passwordToggle)}
         type="button">
         <div class="size-5">
-            <i class="iconify solar--eye-closed-bold-duotone" class:hidden={passwordToggle}> </i>
+            <i class="iconify -scale-x-100 tabler--eye-off" class:hidden={passwordToggle}> </i>
             <i
-                class="iconify solar--eye-bold-duotone"
+                class="iconify tabler--eye"
                 class:block={passwordToggle}
                 class:hidden={!passwordToggle}>
             </i>

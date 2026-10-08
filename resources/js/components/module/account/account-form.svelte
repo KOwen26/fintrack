@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { App } from '@wayfinder/types';
+    import type { Snippet } from 'svelte';
 
     import AccountCard from './account-card.svelte';
 
@@ -17,9 +18,11 @@
         iconForAccountType,
     } from '@schema/account.schema';
 
-    import Card from '@components/ui/card.svelte';
-    import DecorationColorSelector from '@components/ui/forms/decoration-color-selector.svelte';
-    import DecorationIconSelector from '@components/ui/forms/decoration-icon-selector.svelte';
+    import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
+    import DecorationColorSelector from '@components/module/decoration-color-selector.svelte';
+    import DecorationIconSelector from '@components/module/decoration-icon-selector.svelte';
+    import BottomActionBar from '@components/navigation/bottom-action-bar.svelte';
+    import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
     import FieldInput from '@components/ui/forms/field-input.svelte';
     import Field from '@components/ui/forms/field.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';
@@ -29,9 +32,10 @@
         providers: App.Models.Provider[];
         account?: App.Models.Account;
         onCancel?: () => void;
+        children?: Snippet;
     }
 
-    let { providers, account, onCancel }: Props = $props();
+    let { providers, account, onCancel, children }: Props = $props();
 
     const isEdit = $derived(!!account);
 
@@ -77,10 +81,30 @@
     });
 
     const submitLabel = $derived(isEdit ? 'Save Changes' : 'Create Account');
+
+    const formActionProps = $derived({
+        cancelClass: 'flex-auto',
+        submitClass: 'flex-3/5',
+        form,
+        formId: 'account-form',
+        labelCancel: 'Cancel',
+        labelSubmit: submitLabel,
+        onCancel:
+            onCancel ??
+            (() =>
+                router.visit(
+                    isEdit
+                        ? AccountController.show.url({ id: account?.id })
+                        : AccountController.index.url()
+                )),
+    });
 </script>
 
-<div class="space-y-5">
-    <AccountCard account={previewAccount} hideActions hideEdit hideFooter />
+<MobilePageLayout heroClass="flex flex-col justify-center" variant="4/5">
+    {#snippet hero()}
+        <AccountCard class="w-full" account={previewAccount} hideActions hideEdit hideFooter />
+    {/snippet}
+
     <Form
         id="account-form"
         class="space-y-5"
@@ -88,7 +112,7 @@
             ? AccountController.update.form({ account: account.id })
             : AccountController.store.form()}
         {form}>
-        <Card>
+        <ResponsiveCard>
             <Field title="Account Type">
                 <div class="flex gap-1 rounded-md bg-base-300 p-1">
                     {#each accountTypeOptions as opt (opt.value)}
@@ -105,9 +129,9 @@
                     {/each}
                 </div>
             </Field>
-        </Card>
+        </ResponsiveCard>
 
-        <Card>
+        <ResponsiveCard>
             <div class="grid grid-cols-2 gap-5">
                 <Field title="Card Color">
                     <DecorationColorSelector rows={1} bind:value={form.decorations.color} />
@@ -117,9 +141,9 @@
                     <DecorationIconSelector rows={1} bind:value={form.decorations.icon} />
                 </Field>
             </div>
-        </Card>
+        </ResponsiveCard>
 
-        <Card>
+        <ResponsiveCard>
             <div class="space-y-5">
                 <FieldInput
                     {...formSchema.fields.name}
@@ -164,21 +188,16 @@
                         bind:value={form.initial_balance} />
                 {/if}
             </div>
-        </Card>
+        </ResponsiveCard>
 
-        <FormAction
-            cancelClass="flex-auto"
-            submitClass="flex-3/5"
-            {form}
-            formId="account-form"
-            labelCancel="Cancel"
-            labelSubmit={submitLabel}
-            onCancel={onCancel ??
-                (() =>
-                    router.visit(
-                        isEdit
-                            ? AccountController.show.url({ id: account?.id })
-                            : AccountController.index.url()
-                    ))} />
+        <FormAction class="hidden md:flex" {...formActionProps} />
     </Form>
-</div>
+
+    {#if children}
+        {@render children()}
+    {/if}
+</MobilePageLayout>
+
+<BottomActionBar>
+    <FormAction class="w-full" {...formActionProps} />
+</BottomActionBar>

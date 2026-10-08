@@ -3,6 +3,16 @@
     import type { Snippet } from 'svelte';
     import type { HTMLAttributes } from 'svelte/elements';
 
+    import {
+        CardAction,
+        CardContent,
+        CardDescription,
+        CardFooter,
+        CardHeader,
+        CardTitle,
+        Root,
+    } from './atoms/card';
+
     import { cn } from '@utilities/shadcn';
 
     interface Props extends RestProps {
@@ -16,6 +26,9 @@
 
         titleClass?: string;
         title?: string | Snippet;
+
+        descriptionClass?: string;
+        description?: string | Snippet;
 
         footerClass?: string;
         footerProps?: HTMLAttributes<HTMLElement>;
@@ -37,6 +50,9 @@
         titleClass,
         title,
 
+        descriptionClass,
+        description,
+
         footerClass,
         footerProps = {},
         footer,
@@ -48,66 +64,42 @@
     }: Props = $props();
 </script>
 
-<div
-    data-slot="card"
-    class={cn(
-        '@container/card bg-card p-5 text-card-foreground',
-        'flex flex-col gap-5 rounded-md border border-border',
-        _class
-    )}
-    {...wrapperProps}>
-    {#if title || header || headerAction}
-        {@render HeaderSnippet()}
+<Root class={cn('@container/card', _class)} {...wrapperProps}>
+    {#if title || header || headerAction || description}
+        <CardHeader class={headerClass} {...headerProps}>
+            {#if typeof title === 'function'}
+                {@render title()}
+            {:else if title}
+                <CardTitle class={cn('flex items-center gap-2 text-lg', titleClass)}>
+                    {title}
+                </CardTitle>
+            {/if}
+
+            {#if typeof description === 'function'}
+                {@render description()}
+            {:else if description}
+                <CardDescription class={descriptionClass}>
+                    {description}
+                </CardDescription>
+            {/if}
+
+            {@render header?.()}
+
+            {#if headerAction}
+                <CardAction class={headerActionClass}>
+                    {@render headerAction()}
+                </CardAction>
+            {/if}
+        </CardHeader>
     {/if}
-    <div data-slot="card-content" class={cn(contentClass)} {...props}>
+
+    <CardContent class={contentClass} {...props}>
         {@render children?.()}
-    </div>
+    </CardContent>
+
     {#if footer}
-        {@render FooterSnippet()}
+        <CardFooter class={footerClass} {...footerProps}>
+            {@render footer()}
+        </CardFooter>
     {/if}
-</div>
-
-{#snippet HeaderSnippet()}
-    <header
-        data-slot="card-header"
-        class={cn(
-            '@container/card-header flex items-center gap-1.5',
-            // 'grid auto-rows-min grid-rows-[auto_auto]  px-5 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-5',
-            headerClass
-        )}
-        {...headerProps}>
-        {#if typeof title === 'function'}
-            {@render title?.()}
-        {:else}
-            <h2
-                data-slot="card-title"
-                class={cn('card-title leading-none font-semibold', titleClass)}>
-                {title}
-            </h2>
-        {/if}
-
-        {@render header?.()}
-
-        <div
-            data-slot="card-header-action"
-            class={cn(
-                // 'col-start-2 row-span-2 row-start-1 self-start justify-self-end',
-                headerActionClass
-            )}>
-            {@render headerAction?.()}
-        </div>
-    </header>
-{/snippet}
-
-{#snippet FooterSnippet()}
-    <div
-        data-slot="card-footer"
-        class={cn(
-            // 'flex items-center px-5 [.border-t]:pt-5',
-            'card-footer',
-            footerClass
-        )}
-        {...footerProps}>
-        {@render footer?.()}
-    </div>
-{/snippet}
+</Root>

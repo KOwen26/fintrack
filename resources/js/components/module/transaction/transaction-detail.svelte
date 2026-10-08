@@ -2,8 +2,8 @@
     import type { Data } from '@type/type';
 
     import DateTimeHelper from '@utilities/date-time-helper';
-    import Formatter from '@utilities/formatter';
 
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountInfo from '@components/module/account/account-info.svelte';
     import CategoryInfo from '@components/module/category/category-info.svelte';
@@ -49,13 +49,11 @@
     {#snippet hero()}
         <div class="w-full px-5">
             <div class="text-center">
-                <div class="mt-1 flex items-center justify-center gap-1.5">
-                    <span class="text-lg font-medium text-secondary-content/50">Rp</span>
-                    <span
-                        class="leading-none font-medium tracking-tight text-secondary-content tabular-nums {amountClass}">
-                        {Formatter.currency(transaction.amount, true)}
-                    </span>
-                </div>
+                <CurrencyAmount
+                    value={transaction.amount}
+                    class="mt-1 font-medium tracking-tight text-secondary-content tabular-nums {amountClass}"
+                    symbolClass="text-lg text-secondary-content/50"
+                    amountClass="leading-none" />
             </div>
         </div>
     {/snippet}

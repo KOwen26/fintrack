@@ -11,6 +11,7 @@ export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.ts'],
+            assets: ['resources/assets'],
             // ssr: 'resources/js/ssr.ts',
             refresh: true,
         }),

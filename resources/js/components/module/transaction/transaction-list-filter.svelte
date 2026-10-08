@@ -55,7 +55,8 @@
 
     import { cn } from '@utilities/shadcn';
 
-    import DecorationBadge from '@components/ui/decoration-badge.svelte';
+    import DecorationBadge from '@components/module/decoration-badge.svelte';
+    import Button from '@components/ui/button.svelte';
     import DrawerModal from '@components/ui/drawer-modal.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
@@ -443,11 +444,9 @@
         title={sheetTitle}
         bind:open={sheetOpen}>
         {#snippet actionButton()}
-            <button
-                class="btn btn-block rounded-2xl font-bold normal-case btn-primary"
-                onclick={applyFilter}>
+            <Button class="w-full rounded-2xl font-bold normal-case" onclick={applyFilter}>
                 Apply Filters
-            </button>
+            </Button>
         {/snippet}
 
         {#each sheetOptions as option (option.key)}

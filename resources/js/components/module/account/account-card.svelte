@@ -8,9 +8,10 @@
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
     import DateTimeHelper from '@utilities/date-time-helper';
-    import Formatter from '@utilities/formatter';
 
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
     import BaseAccountCard from '@components/module/account/base-account-card.svelte';
+    import Badge from '@components/ui/badge.svelte';
     import Link from '@components/ui/link.svelte';
 
     interface Props extends RestProps {
@@ -116,9 +117,9 @@
         </div>
         <div class="flex-1">
             <div class="flex items-center gap-1.5">
-                <span class="text-sm font-semibold text-current md:text-base">
+                <h6 class="text-sm font-semibold tracking-wide text-current md:text-base">
                     {account.name}
-                </span>
+                </h6>
             </div>
             <div class="flex items-center gap-2 text-xs text-current/70">
                 {#if providerName}
@@ -130,10 +131,14 @@
                 {#if isJoint}
                     <span>Joint</span>
                 {/if}
-                <span
-                    class="rounded-full bg-white/20 px-1.5 py-0.5 text-[9px] font-medium tracking-wider text-current/85 uppercase">
+                <Badge
+                    class="hidden bg-white/20 font-semibold text-current uppercase @xs/account-card:inline-flex"
+                    color="light"
+                    shape="pill"
+                    size="fit"
+                    variant="soft">
                     {typeLabel}
-                </span>
+                </Badge>
             </div>
         </div>
         {@render editButton()}
@@ -154,15 +159,21 @@
     <!-- Balance -->
     <div class="relative z-1">
         <div
-            class="flex items-center gap-1.5 text-sm font-medium tracking-wide text-current/70 uppercase">
+            class={[
+                'flex items-center gap-1.5 text-sm font-medium tracking-wide text-current/80 uppercase',
+                'hidden @xs/account-card:block',
+            ]}>
             Current Balance
         </div>
         <p
-            class="truncate text-2xl font-bold tracking-tight text-nowrap text-current md:text-4xl lg:text-5xl">
+            class={[
+                'truncate font-bold tracking-tight text-nowrap text-current ',
+                'text-xl @xs/account-card:text-2xl @xs/account-card:md:text-4xl @xs/account-card:lg:text-5xl',
+            ]}>
             {#if balanceHidden}
                 ••••••
             {:else}
-                {Formatter.currency(account.current_balance ?? 0)}
+                <CurrencyAmount value={account.current_balance ?? 0} />
             {/if}
         </p>
     </div>
@@ -191,12 +202,12 @@
         <!-- Detail badges row — white background -->
         <div
             class="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-base-300 bg-card px-5 py-3 text-xs">
-            {#if account?.account_number}
+            <!-- {#if account?.account_number}
                 <span class="flex items-center gap-1">
                     <i class="iconify size-4 text-base-content/80 solar--user-id-line-duotone"></i>
                     <span class="text-base-content/80">{account?.account_number}</span>
                 </span>
-            {/if}
+            {/if} -->
             {#if account.created_at}
                 <span class="flex items-center gap-1">
                     <i class="iconify size-4 text-base-content/80 solar--calendar-line-duotone"></i>

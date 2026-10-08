@@ -57,6 +57,12 @@ class Account extends Model
     }
 
     #[Scope]
+    protected function archived(Builder $builder): void
+    {
+        $builder->whereNotNull('archived_at');
+    }
+
+    #[Scope]
     protected function shareable(Builder $builder): void
     {
         $builder->orWhere('access_type', AccountAccessType::Joint);

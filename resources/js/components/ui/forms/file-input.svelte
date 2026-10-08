@@ -8,9 +8,9 @@
 </script>
 
 <script lang="ts">
-    let { files = $bindable(), ...props }: FileInputProps & RestProps = $props();
+    import Input from './input.svelte';
+
+    let { files = $bindable(), class: className, ...props }: FileInputProps & RestProps = $props();
 </script>
 
-<label class="" for="">
-    <input {...props} class="file-input" type="file" bind:files />
-</label>
+<Input {...props} class={className} type="file" bind:files />

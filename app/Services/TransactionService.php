@@ -3,6 +3,10 @@
 namespace App\Services;
 
 use App\Data\Transaction\TransactionData;
+use App\Data\Transaction\TransactionListData;
+use App\Enums\DatePeriodPreset;
+use App\Enums\TransactionFlow;
+use App\Enums\TransactionType;
 use App\Events\TransactionDeleted;
 use App\Events\TransactionSaved;
 use App\Models\Account;
@@ -12,35 +16,42 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-class TransactionService
+final class TransactionService
 {
     /**
      * Global list: one row per transfer unit (the outflow row) plus plain
      * rows and fee rows — inflow rows are hidden.
      */
-    public static function getTransactions(User $user): Collection
+    public static function getTransactions(User $user, DatePeriodPreset $period = DatePeriodPreset::YearOnYear): Collection
     {
-        return Transaction::query()
+        $transactions = Transaction::query()
             ->where('created_by', $user->id)
-            ->whereNot(fn ($query) => $query->where('type', 'transfer')->where('flow', 'inflow'))
+            ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', TransactionFlow::Inflow))
+            ->withinPeriod($period->toPeriod())
             ->with(['account', 'category', 'transfer.transactions.account'])
             ->latest('transaction_date')
             ->get();
+
+        return TransactionListData::collectFromTransactions($transactions);
     }
 
-    public static function getAccountTransactions(Account $account): Collection
+    public static function getAccountTransactions(Account $account, DatePeriodPreset $period = DatePeriodPreset::YearOnYear): Collection
     {
         return Transaction::query()
             ->where('account_id', $account->id)
+            ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', TransactionFlow::Inflow))
+            ->withinPeriod($period->toPeriod())
             ->with(['account', 'category', 'transfer.transactions.account'])
             ->latest('transaction_date')
             ->get();
     }
 
-    public static function getCategoryTransactions(Category $category): Collection
+    public static function getCategoryTransactions(Category $category, DatePeriodPreset $period = DatePeriodPreset::YearOnYear): Collection
     {
         return Transaction::query()
             ->where('category_id', $category->id)
+            ->whereNot('type', TransactionType::Transfer)
+            ->withinPeriod($period->toPeriod())
             ->with(['account', 'category'])
             ->latest('transaction_date')
             ->get();

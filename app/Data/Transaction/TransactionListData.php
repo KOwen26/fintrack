@@ -9,6 +9,7 @@ use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
 use Carbon\CarbonInterface;
+use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -80,5 +81,10 @@ class TransactionListData extends Data
             account: $transaction->relationLoaded('account') ? $transaction->account : null,
             category: $transaction->relationLoaded('category') ? $transaction->category : null,
         );
+    }
+
+    public static function collectFromTransactions(Collection $transactions)
+    {
+        return self::collect($transactions->map(fn (Transaction $transaction): self => self::fromTransaction($transaction)));
     }
 }

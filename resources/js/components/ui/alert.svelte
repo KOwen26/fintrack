@@ -3,15 +3,9 @@
 
     export type AlertVariant = (typeof alertVariants)[number];
 
-    type AlertProps = {
-        ref?: HTMLDivElement | null;
-        color?: ColorVariant;
-        variant?: AlertVariant;
-        title?: string | Snippet;
-        description?: string | Snippet;
-        icon?: Snippet;
-        children?: Snippet;
-    } & Omit<HTMLAttributes<HTMLDivElement>, 'title'>;
+    /** shadcn-style alert base — grid so the optional icon gets its own column. */
+    export const alertClasses =
+        'relative grid w-full grid-cols-[auto_1fr] items-start gap-x-3 gap-y-0.5 rounded-lg border bg-card px-4 py-3 text-sm text-card-foreground shadow-sm [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current';
 </script>
 
 <script lang="ts">
@@ -21,21 +15,15 @@
 
     import { cn } from '@utilities/shadcn.js';
 
-    //     const alertVariants = tv({
-    //     base: 'relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border px-4 py-3 text-sm has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current',
-    //     variants: {
-    //         variant: {
-    //             default: 'bg-card text-card-foreground',
-    //             destructive:
-    //                 'text-destructive bg-card *:data-[slot=alert-description]:text-destructive/90 [&>svg]:text-current',
-    //         },
-    //     },
-    //     defaultVariants: {
-    //         variant: 'default',
-    //     },
-    // });
-
-    // type AlertVariant = VariantProps<typeof alertVariants>['variant'];
+    type AlertProps = {
+        ref?: HTMLDivElement | null;
+        color?: ColorVariant;
+        variant?: AlertVariant;
+        title?: string | Snippet;
+        description?: string | Snippet;
+        icon?: Snippet;
+        children?: Snippet;
+    } & Omit<HTMLAttributes<HTMLDivElement>, 'title'>;
 
     let {
         ref = $bindable(null),
@@ -49,25 +37,54 @@
         ...restProps
     }: AlertProps = $props();
 
-    const colorVariants: Record<ColorVariant, string> = {
-        primary: 'alert-primary',
-        secondary: 'alert-secondary',
-        accent: 'alert-accent',
-        success: 'alert-success',
-        info: 'alert-info',
-        warning: 'alert-warning',
-        error: 'alert-error',
-        light: '',
-        dark: 'alert-neutral',
+    const solidColors: Record<ColorVariant, string> = {
+        primary: 'border-primary bg-primary text-primary-foreground',
+        secondary: 'border-secondary bg-secondary text-secondary-foreground',
+        accent: 'border-accent bg-accent text-accent-foreground',
+        success: 'border-success bg-success text-success-foreground',
+        info: 'border-info bg-info text-info-foreground',
+        warning: 'border-warning bg-warning text-warning-foreground',
+        error: 'border-error bg-error text-error-foreground',
+        light: 'border-base-200 bg-card text-card-foreground',
+        dark: 'border-neutral bg-neutral text-neutral-content',
+    };
+
+    const outlineColors: Record<ColorVariant, string> = {
+        primary: 'border-primary text-primary',
+        secondary: 'border-secondary text-secondary',
+        accent: 'border-accent text-accent',
+        success: 'border-success text-success',
+        info: 'border-info text-info',
+        warning: 'border-warning text-warning',
+        error: 'border-error text-error',
+        light: 'border-base-300 text-base-content',
+        dark: 'border-neutral text-neutral',
+    };
+
+    const softColors: Record<ColorVariant, string> = {
+        primary: 'border-primary/10 bg-primary/10 text-primary',
+        secondary: 'border-secondary/10 bg-secondary/10 text-secondary',
+        accent: 'border-accent/10 bg-accent/10 text-accent',
+        success: 'border-success/10 bg-success/10 text-success',
+        info: 'border-info/10 bg-info/10 text-info',
+        warning: 'border-warning/10 bg-warning/10 text-warning',
+        error: 'border-error/10 bg-error/10 text-error',
+        light: 'border-base-content/10 bg-base-content/10 text-base-content',
+        dark: 'border-neutral/10 bg-neutral/10 text-neutral',
+    };
+
+    const variantColors: Record<AlertVariant, Record<ColorVariant, string>> = {
+        solid: solidColors,
+        outline: outlineColors,
+        'outline-dash': outlineColors,
+        soft: softColors,
     };
 
     const alertClass = $derived(
         cn(
-            'alert gap-y-0.5 rounded-lg border bg-card px-4 py-3 text-sm text-card-foreground shadow-sm has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current',
-            colorVariants[color],
-            variant === 'outline' ? 'alert-outline' : '',
-            variant === 'outline-dash' ? 'alert-dash' : '',
-            variant === 'soft' ? 'alert-soft' : '',
+            alertClasses,
+            variantColors[variant][color],
+            variant === 'outline-dash' ? 'border-dashed' : '',
             _class
         )
     );
@@ -95,7 +112,7 @@
         <div
             data-slot="alert-description"
             class={cn(
-                'text-base-content/80 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed',
+                'grid justify-items-start gap-1 text-sm text-base-content/80 [&_p]:leading-relaxed',
                 icon && 'col-start-2'
             )}>
             {#if typeof description === 'function'}

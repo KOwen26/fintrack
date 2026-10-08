@@ -43,32 +43,35 @@
 
 <!--
     Mobile context bar. A separate design from the desktop header: flat,
-    safe-area aware, mobile page padding, and fully owned by the page context
-    when one is declared.
+    safe-area aware, and mobile page padding. `actions` context augments the
+    shared back/title; `custom` context remains fully page-owned.
 -->
 <header
     data-slot="header-mobile"
     class={cn(
-        'flex min-h-14 items-center gap-2 px-4 pt-[env(safe-area-inset-top)] text-base-content md:hidden',
+        'flex min-h-14 items-center gap-2 px-4 pt-[env(safe-area-inset-top)] md:hidden',
         _class,
         scrolledClass && scrolled && scrolledClass
     )}>
-    {#if headerContext}
+    {#if headerContext?.type === 'custom'}
         <div class="flex min-w-0 flex-1 items-center gap-2">
             {@render headerContext.render()}
         </div>
     {:else}
         {#if backUrl}
-            <Button
-                class="size-10 shrink-0 p-1 btn-sm"
-                color="secondary"
-                href={backUrl}
-                variant="ghost">
+            <Button color="primary" href={backUrl} size="icon" variant="ghost">
                 <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
             </Button>
         {/if}
+
         {#if title}
             <span class="truncate text-xl font-bold">{title}</span>
+        {/if}
+
+        {#if headerContext?.type === 'actions'}
+            <div class="ml-auto flex shrink-0 items-center gap-2">
+                {@render headerContext.render()}
+            </div>
         {/if}
     {/if}
 </header>

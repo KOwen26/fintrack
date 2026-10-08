@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class TransferController extends Controller
+final class TransferController extends Controller
 {
     public function __construct(
         private readonly TransferService $transferService,
@@ -28,7 +28,7 @@ class TransferController extends Controller
     {
         $this->authorize('update', $transfer);
 
-        return Inertia::render('transactions/edit', [
+        return Inertia::render('app/transaction/edit', [
             'accounts' => $this->accountService->getAccountsByUser($this->user),
             'transaction' => TransactionFormData::fromTransfer($transfer),
         ]);

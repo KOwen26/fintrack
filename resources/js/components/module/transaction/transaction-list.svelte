@@ -101,8 +101,10 @@
     import { SvelteMap } from 'svelte/reactivity';
 
     import DateTimeHelper from '@utilities/date-time-helper';
-    import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
+
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
+    import Button from '@components/ui/button.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
 
@@ -110,9 +112,18 @@
         /** Pre-filtered, flat transaction rows — the page owns filtering. */
         transactions: Data.TransactionListData[];
         class?: string;
+        hideTotal?: boolean;
+        hideControl?: boolean;
+        loadMoreAction?: () => void;
     }
 
-    let { transactions, class: _class }: Props = $props();
+    let {
+        transactions,
+        class: _class,
+        hideTotal = false,
+        hideControl = false,
+        loadMoreAction,
+    }: Props = $props();
 
     /* ── Group by date ───────────────────────────────────── */
 
@@ -162,27 +173,24 @@
     const filteredCount = $derived(transactions.length);
 
     /* ── Load more ───────────────────────────────────────── */
-
-    let allLoaded = $state(false);
-
-    function loadMore() {
-        allLoaded = true;
-    }
 </script>
 
 <div class={cn('flex flex-col gap-3', _class)}>
-    <!-- Count header -->
-    <p class="mx-0.5 mt-1 mb-0 text-sm text-base-content/60">
-        {filteredCount}
-        transactions
-    </p>
+    {#if !hideTotal}
+        <!-- Count header -->
+        <p class="mx-0.5 mt-1 mb-0 text-sm text-base-content/60">
+            {filteredCount}
+            transactions
+        </p>
+    {/if}
 
     <div class="flex flex-col gap-2">
         {#each groupedTransactions as group, i (group.date)}
             <Collapsible.Root
                 class="overflow-hidden rounded-lg bg-base-200 shadow-xs"
                 onOpenChange={(open) => dayOpenOverrides.set(group.date, open)}
-                open={dayOpenOverrides.get(group.date) ?? i === 0}>
+                open={dayOpenOverrides.get(group.date) ??
+                    i <= Math.ceil(groupedTransactions.length / 3)}>
                 <!-- Day header (trigger) -->
                 <Collapsible.Trigger
                     class="flex w-full cursor-pointer items-center gap-2 p-3 text-left select-none">
@@ -192,14 +200,14 @@
 
                     <span
                         class={cn(
-                            'ml-auto flex items-center font-mono text-sm font-semibold whitespace-nowrap',
+                            'ml-auto flex items-center text-sm font-semibold whitespace-nowrap',
                             group.net > 0
                                 ? 'text-success'
                                 : group.net < 0
                                   ? 'text-error'
                                   : 'text-base-content'
                         )}>
-                        {Formatter.currency(group.net)}
+                        <CurrencyAmount value={group.net} />
                     </span>
                     <i
                         class={cn(
@@ -222,15 +230,13 @@
         {/each}
     </div>
 
-    <!-- Load more -->
-    {#if !allLoaded}
-        <button
-            class="mx-0 mt-2 mb-0 flex w-full items-center justify-center gap-2 rounded-lg bg-base-200 p-3.5 font-sans text-sm font-semibold text-primary shadow-xs transition-colors duration-150 hover:bg-primary/10"
-            onclick={loadMore}>
-            <i class="iconify size-3.5 solar--alt-arrow-down-line-duotone"></i>
-            Load more
-        </button>
-    {:else}
-        <p class="py-3 text-center text-xs text-base-content/40">All transactions are shown</p>
+    {#if !hideControl}
+        <!-- Load more -->
+        {#if loadMoreAction}
+            <Button class="mt-2 w-full" color="light" onclick={loadMoreAction} variant="soft">
+                <i class="iconify size-3.5 solar--alt-arrow-down-line-duotone"></i>
+                Load more
+            </Button>
+        {/if}
     {/if}
 </div>

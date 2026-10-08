@@ -6,6 +6,13 @@
         value: string;
         label: string;
         disabled?: boolean;
+        /** Optional grouping label. Options sharing this value render under one heading. */
+        group?: string;
+    }
+
+    export interface SelectOptionGroup<T extends SelectOption = SelectOption> {
+        label?: string;
+        items: T[];
     }
 
     /** Context handed to the custom `trigger` snippet. */
@@ -96,6 +103,27 @@
         return resolvedItems?.filter((item) =>
             item.label.toLowerCase().includes(searchValue.toLowerCase())
         );
+    });
+
+    const hasGroupedItems = $derived((resolvedItems ?? []).some((item) => !!item.group));
+
+    const groupedItems = $derived.by<SelectOptionGroup<T>[]>(() => {
+        const groups: SelectOptionGroup<T>[] = [];
+
+        for (const item of filteredItems) {
+            const key = item.group ?? '';
+            const existingGroup = groups.find((group) => (group.label ?? '') === key);
+
+            if (existingGroup) {
+                existingGroup.items.push(item);
+
+                continue;
+            }
+
+            groups.push({ label: item.group, items: [item] });
+        }
+
+        return groups;
     });
 
     const selectedItems = $derived.by<T[]>(() => {
@@ -251,30 +279,69 @@
                 contentProps?.class
             )}>
             <Combobox.Viewport class="scroll-my-1 p-1">
-                {#each filteredItems as item, i (i)}
-                    <Combobox.Item
-                        class="relative flex w-full cursor-default items-center gap-1.5 rounded-md py-1 pr-6 pl-1.5 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground"
-                        disabled={item.disabled}
-                        label={item.label}
-                        value={item.value}>
-                        {#snippet children({ selected })}
-                            {#if option}
-                                {@render option(item)}
-                            {:else}
-                                <span class="truncate">{item.label}</span>
+                {#if hasGroupedItems}
+                    {#each groupedItems as group, groupIndex (group.label ?? `ungrouped-${groupIndex}`)}
+                        <Combobox.Group>
+                            {#if group.label}
+                                <Combobox.GroupHeading
+                                    class="px-2 pt-2 pb-1 text-2xs font-bold tracking-widest text-base-content/40 uppercase">
+                                    {group.label}
+                                </Combobox.GroupHeading>
                             {/if}
-                            {#if selected}
-                                <span
-                                    class="absolute end-2 flex size-3.5 items-center justify-center">
-                                    <i class="iconify size-3.5 solar--unread-outline"></i>
-                                </span>
-                            {/if}
-                        {/snippet}
-                    </Combobox.Item>
+
+                            {#each group.items as item (item.value)}
+                                <Combobox.Item
+                                    class="relative flex w-full cursor-default items-center gap-1.5 rounded-md py-1 pr-6 pl-1.5 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground"
+                                    disabled={item.disabled}
+                                    label={item.label}
+                                    value={item.value}>
+                                    {#snippet children({ selected })}
+                                        {#if option}
+                                            {@render option(item)}
+                                        {:else}
+                                            <span class="truncate">{item.label}</span>
+                                        {/if}
+                                        {#if selected}
+                                            <span
+                                                class="absolute end-2 flex size-3.5 items-center justify-center">
+                                                <i class="iconify size-3.5 solar--unread-outline"
+                                                ></i>
+                                            </span>
+                                        {/if}
+                                    {/snippet}
+                                </Combobox.Item>
+                            {/each}
+                        </Combobox.Group>
+                    {:else}
+                        <span class="block px-1.5 py-1 text-sm text-muted-foreground"
+                            >No results found</span>
+                    {/each}
                 {:else}
-                    <span class="block px-1.5 py-1 text-sm text-muted-foreground"
-                        >No results found</span>
-                {/each}
+                    {#each filteredItems as item, i (i)}
+                        <Combobox.Item
+                            class="relative flex w-full cursor-default items-center gap-1.5 rounded-md py-1 pr-6 pl-1.5 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground"
+                            disabled={item.disabled}
+                            label={item.label}
+                            value={item.value}>
+                            {#snippet children({ selected })}
+                                {#if option}
+                                    {@render option(item)}
+                                {:else}
+                                    <span class="truncate">{item.label}</span>
+                                {/if}
+                                {#if selected}
+                                    <span
+                                        class="absolute end-2 flex size-3.5 items-center justify-center">
+                                        <i class="iconify size-3.5 solar--unread-outline"></i>
+                                    </span>
+                                {/if}
+                            {/snippet}
+                        </Combobox.Item>
+                    {:else}
+                        <span class="block px-1.5 py-1 text-sm text-muted-foreground"
+                            >No results found</span>
+                    {/each}
+                {/if}
             </Combobox.Viewport>
         </Combobox.Content>
     </Combobox.Portal>

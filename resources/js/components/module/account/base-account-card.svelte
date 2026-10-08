@@ -32,6 +32,7 @@
 
     const shellClass = $derived(
         cn(
+            '@container/account-card',
             'overflow-hidden rounded-lg shadow-xs',
             variant === 'create' &&
                 'cursor-pointer border-2 border-dashed border-base-200 bg-card shadow-none transition-colors hover:border-primary/50 hover:bg-primary/5',
@@ -41,7 +42,7 @@
 
     const resolvedBodyClass = $derived(
         cn(
-            'relative min-h-36 md:min-h-40',
+            'relative min-h-24 @xs/account-card:min-h-36 @xs/account-card:md:min-h-40',
             variant === 'skeleton' && 'bg-card',
             variant === 'create' && 'flex items-center justify-center',
             bodyClass

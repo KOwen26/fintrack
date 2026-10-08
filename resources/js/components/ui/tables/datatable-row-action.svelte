@@ -23,6 +23,7 @@
 
     import { twMerge } from 'tailwind-merge';
 
+    import * as DropdownMenu from '@components/ui/atoms/dropdown-menu';
     import Button from '@components/ui/button.svelte';
     import Tooltip from '@components/ui/tooltip.svelte';
 
@@ -53,33 +54,44 @@
                 {@render ActionButton(action)}
             {/each}
 
-            <div class="dropdown dropdown-end">
+            <DropdownMenu.Root>
                 <Tooltip>
-                    {#snippet trigger({ props })}
-                        <Button {...props} class="size-8 p-1" color="secondary" variant="outline">
-                            <i class="iconify solar--menu-dots-bold-duotone"></i>
-                        </Button>
+                    {#snippet trigger({ props: tooltipProps })}
+                        <DropdownMenu.Trigger>
+                            {#snippet child({ props: triggerProps })}
+                                <Button
+                                    {...tooltipProps}
+                                    {...triggerProps}
+                                    class="size-8 p-1"
+                                    color="secondary"
+                                    variant="outline">
+                                    <i class="iconify solar--menu-dots-bold-duotone"></i>
+                                </Button>
+                            {/snippet}
+                        </DropdownMenu.Trigger>
                     {/snippet}
                     Lainnya
                 </Tooltip>
 
-                <ul
-                    class="menu dropdown-content z-50 mt-2 w-40 rounded-box border border-base-300 bg-base-100 p-2 shadow-sm">
+                <DropdownMenu.Content align="end" class="w-40 rounded-lg">
                     {#each actions.slice(2) as action, i (i)}
                         {@const actionIcon =
                             action?.icon ??
                             (action?.type === 'detail'
                                 ? 'solar--info-circle-line-duotone'
                                 : undefined)}
-                        <li>
-                            <Button class="justify-start px-2" color="secondary" variant="ghost">
+                        <DropdownMenu.Item>
+                            <Button
+                                class="w-full justify-start px-2"
+                                color="secondary"
+                                variant="ghost">
                                 <i class={twMerge('iconify', actionIcon)}></i>
                                 {action.label}
                             </Button>
-                        </li>
+                        </DropdownMenu.Item>
                     {/each}
-                </ul>
-            </div>
+                </DropdownMenu.Content>
+            </DropdownMenu.Root>
         {/if}
     </div>
 {/snippet}

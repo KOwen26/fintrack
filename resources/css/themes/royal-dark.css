@@ -1,0 +1,41 @@
+/* Theme: royal-dark (dark) — values ported 1:1 from colors.css (Option D, section 2.1 shape) */
+:root[data-theme='royal-dark'] {
+    color-scheme: dark;
+
+    /* Surfaces */
+    --background: oklch(0.268 0.088 265.5);
+    --foreground: oklch(0.957 0.011 76.4);
+    --card: oklch(0.348 0.091 264.9);
+    --card-foreground: var(--foreground);
+    --popover: var(--card);
+    --popover-foreground: var(--foreground);
+    --muted: oklch(0.424 0.095 264);
+    --muted-foreground: var(--foreground);
+
+    /* Brand */
+    --primary: oklch(0.834 0.077 84.2);
+    --primary-foreground: oklch(0.268 0.088 265.5);
+    --secondary: oklch(0.436 0.079 265.1);
+    --secondary-foreground: oklch(0.957 0.011 76.4);
+    --accent: oklch(0.851 0.02 55);
+    --accent-foreground: oklch(0.268 0.088 265.5);
+
+    /* Neutral - first-class token (kept native, not aliased to secondary) */
+    --neutral: oklch(0.348 0.091 264.9);
+    --neutral-foreground: oklch(0.957 0.011 76.4);
+
+    /* Status */
+    --success: oklch(0.75 0.12 145);
+    --success-foreground: oklch(0.268 0.088 265.5);
+    --info: oklch(0.72 0.1 250);
+    --info-foreground: oklch(0.268 0.088 265.5);
+    --warning: oklch(0.83 0.1 84);
+    --warning-foreground: oklch(0.268 0.088 265.5);
+    --error: oklch(0.62 0.13 30);
+    --error-foreground: oklch(0.268 0.088 265.5);
+
+    /* Structure */
+    --border: oklch(0.424 0.095 264);
+    --input: var(--border);
+    --ring: var(--primary);
+}

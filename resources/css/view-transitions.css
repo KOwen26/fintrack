@@ -1,0 +1,198 @@
+@keyframes view-transition-slide-out-to-left {
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes view-transition-slide-in-from-right {
+    from {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes view-transition-slide-out-to-right {
+    to {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes view-transition-slide-in-from-left {
+    from {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes view-transition-push-under-away {
+    to {
+        transform: translateX(-24%);
+        opacity: 0.55;
+    }
+}
+
+@keyframes view-transition-push-under-return {
+    from {
+        transform: translateX(-24%);
+        opacity: 0.55;
+    }
+}
+
+@keyframes view-transition-fade-out {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes view-transition-fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes view-transition-zoom-out {
+    to {
+        transform: scale(0.96);
+        opacity: 0;
+    }
+}
+
+@keyframes view-transition-zoom-in {
+    from {
+        transform: scale(1.04);
+        opacity: 0;
+    }
+}
+
+html[data-view-transition-direction='forward']::view-transition-old(root) {
+    animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both view-transition-slide-out-to-left;
+}
+
+html[data-view-transition-direction='forward']::view-transition-new(root) {
+    animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both view-transition-slide-in-from-right;
+}
+
+html[data-view-transition-direction='back']::view-transition-old(root) {
+    animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both view-transition-slide-out-to-right;
+}
+
+html[data-view-transition-direction='back']::view-transition-new(root) {
+    animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both view-transition-slide-in-from-left;
+}
+
+/* Push style: the new page navigates over the old page while the old page recedes. */
+html[data-view-transition-style='push'][data-view-transition-direction='forward']::view-transition-old(
+        root
+    ) {
+    animation: 320ms cubic-bezier(0.32, 0.72, 0, 1) both view-transition-push-under-away;
+    z-index: 0;
+}
+
+html[data-view-transition-style='push'][data-view-transition-direction='forward']::view-transition-new(
+        root
+    ) {
+    animation: 320ms cubic-bezier(0.32, 0.72, 0, 1) both view-transition-slide-in-from-right;
+    box-shadow: -24px 0 48px rgb(0 0 0 / 18%);
+    z-index: 1;
+}
+
+html[data-view-transition-style='push'][data-view-transition-direction='back']::view-transition-old(
+        root
+    ) {
+    animation: 320ms cubic-bezier(0.32, 0.72, 0, 1) both view-transition-slide-out-to-right;
+    box-shadow: -24px 0 48px rgb(0 0 0 / 18%);
+    z-index: 1;
+}
+
+html[data-view-transition-style='push'][data-view-transition-direction='back']::view-transition-new(
+        root
+    ) {
+    animation: 320ms cubic-bezier(0.32, 0.72, 0, 1) both view-transition-push-under-return;
+    z-index: 0;
+}
+
+/* Overlay style: the dashboard remains stationary while settings acts as a layer. */
+html[data-view-transition-style='overlay'][data-view-transition-direction='forward']::view-transition-old(
+        root
+    ) {
+    animation: none;
+    z-index: 0;
+}
+
+html[data-view-transition-style='overlay'][data-view-transition-direction='forward']::view-transition-new(
+        root
+    ) {
+    animation: 400ms cubic-bezier(0.32, 0.72, 0, 1) both view-transition-slide-in-from-right;
+    box-shadow: -24px 0 48px rgb(0 0 0 / 18%);
+    z-index: 1;
+}
+
+html[data-view-transition-style='overlay'][data-view-transition-direction='back']::view-transition-old(
+        root
+    ) {
+    animation: 400ms cubic-bezier(0.32, 0.72, 0, 1) both view-transition-slide-out-to-right;
+    box-shadow: -24px 0 48px rgb(0 0 0 / 18%);
+    z-index: 1;
+}
+
+html[data-view-transition-style='overlay'][data-view-transition-direction='back']::view-transition-new(
+        root
+    ) {
+    animation: none;
+    z-index: 0;
+}
+
+/* Fade style: a calm crossfade for sibling or lower-emphasis navigation. */
+html[data-view-transition-style='fade'][data-view-transition-direction='forward']::view-transition-old(
+        root
+    ) {
+    animation: 220ms cubic-bezier(0.4, 0, 0.2, 1) both view-transition-fade-out;
+}
+
+html[data-view-transition-style='fade'][data-view-transition-direction='forward']::view-transition-new(
+        root
+    ) {
+    animation: 220ms cubic-bezier(0.4, 0, 0.2, 1) both view-transition-fade-in;
+}
+
+html[data-view-transition-style='fade'][data-view-transition-direction='back']::view-transition-old(
+        root
+    ) {
+    animation: 220ms cubic-bezier(0.4, 0, 0.2, 1) both view-transition-fade-out;
+}
+
+html[data-view-transition-style='fade'][data-view-transition-direction='back']::view-transition-new(
+        root
+    ) {
+    animation: 220ms cubic-bezier(0.4, 0, 0.2, 1) both view-transition-fade-in;
+}
+
+/* Zoom style: a subtle depth-based transition. */
+html[data-view-transition-style='zoom'][data-view-transition-direction='forward']::view-transition-old(
+        root
+    ) {
+    animation: 280ms cubic-bezier(0.32, 0.72, 0, 1) both view-transition-zoom-out;
+}
+
+html[data-view-transition-style='zoom'][data-view-transition-direction='forward']::view-transition-new(
+        root
+    ) {
+    animation: 280ms cubic-bezier(0.32, 0.72, 0, 1) both view-transition-zoom-in;
+}
+
+html[data-view-transition-style='zoom'][data-view-transition-direction='back']::view-transition-old(
+        root
+    ) {
+    animation: 280ms cubic-bezier(0.32, 0.72, 0, 1) both view-transition-zoom-in;
+}
+
+html[data-view-transition-style='zoom'][data-view-transition-direction='back']::view-transition-new(
+        root
+    ) {
+    animation: 280ms cubic-bezier(0.32, 0.72, 0, 1) both view-transition-zoom-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html[data-view-transition-direction]::view-transition-old(root),
+    html[data-view-transition-direction]::view-transition-new(root) {
+        animation: none;
+    }
+}

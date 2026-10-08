@@ -1,0 +1,40 @@
+:root[data-theme='cobalt'] {
+    color-scheme: light;
+
+    /* Surfaces */
+    --background: oklch(0.98 0.008 80);
+    --foreground: oklch(0.18 0.02 268);
+    --card: oklch(0.93 0.012 80);
+    --card-foreground: var(--foreground);
+    --popover: var(--card);
+    --popover-foreground: var(--foreground);
+    --muted: oklch(0.87 0.015 80);
+    --muted-foreground: var(--foreground);
+
+    /* Brand */
+    --primary: oklch(0.38 0.12 268);
+    --primary-foreground: oklch(0.95 0.005 268);
+    --secondary: oklch(0.62 0.06 255);
+    --secondary-foreground: oklch(0.18 0.02 268);
+    --accent: oklch(0.72 0.16 78);
+    --accent-foreground: oklch(0.18 0.02 268);
+
+    /* Neutral - first-class token (kept native, not aliased to secondary) */
+    --neutral: oklch(0.18 0.02 268);
+    --neutral-foreground: oklch(0.95 0.005 268);
+
+    /* Status */
+    --success: oklch(0.52 0.12 162);
+    --success-foreground: oklch(0.95 0.005 268);
+    --info: oklch(0.55 0.12 230);
+    --info-foreground: oklch(0.95 0.005 268);
+    --warning: oklch(0.72 0.16 78);
+    --warning-foreground: oklch(0.18 0.02 268);
+    --error: oklch(0.55 0.12 28);
+    --error-foreground: oklch(0.95 0.005 268);
+
+    /* Structure */
+    --border: oklch(0.87 0.015 80);
+    --input: var(--border);
+    --ring: var(--primary);
+}

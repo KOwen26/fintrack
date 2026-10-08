@@ -1,6 +1,10 @@
 # CSS Architecture Proposal D — Drop DaisyUI, Full shadcn
 
-> **Status:** Proposal — not implemented.
+> **Status:** Proposal — **incremental execution in progress** (see §1.5).
+> **Updated 2026-10-06:** Component purge + token layer complete — DaisyUI is
+> component-CSS-only; removal (§6 step 7) is pending, owner-executed.
+> **Updated 2026-10-05:** Forms, Badge, and Card families complete; inventories below carry
+> per-item migration status. Pending counts are from the 2026-09-30 baseline scan.
 > **Siblings:** `2026-09-29-css-config-option-a-daisyui-first.md`,
 > `2026-09-29-css-config-option-b-shadcn-first.md`,
 > `2026-09-30-css-config-option-c-app-first.md`. Shared baseline: §1 of Proposal A.
@@ -22,10 +26,10 @@ disguised as one:**
     and exactly one component with no shadcn equivalent (Dock)**.
 
 ```
-1,012 daisy-dependent class occurrences
+1,012 daisy-dependent class occurrences (2026-09-30 baseline)
 ├─ 783 color utilities (bg-primary, text-base-content…)  → survive via tokens.css ✅
-├─  76 contained in ui/ wrappers                          → rewrite ~10 wrappers, no call sites
-└─ 128 direct component classes (125 prod, 3 dev)         → the real migration list
+├─  76 contained in ui/ wrappers                          → ✅ all wrapper families done (input, badge, alert, button — 10-05..10-06)
+└─ 128 direct component classes (125 prod, 3 dev)         → ✅ 125 prod done (10-06); 3 dev-gallery stragglers remain (§1.5)
 ```
 
 ---
@@ -76,15 +80,15 @@ depend only on the base vars, not on the plugin — same story as B/C step "dele
 
 | Wrapper | Daisy classes inside | Rewrite |
 |---|---|---|
-| `ui/button.svelte` | `btn` + 10 colors + `btn-outline/ghost/soft/link` | **Mostly deletion** — the full shadcn `tv()` variants already coexist in the file; extend with `size="xs/icon"` support |
-| `ui/badge.svelte` | `badge` + 10 colors + `badge-soft/outline/dash` | port to `tv()` |
-| `ui/alert.svelte` | `alert` + `alert-info/success/warning/error/soft/outline/dash` | port to `tv()`; see §5 bug note |
-| Input family | `input` ×9, `textarea`, `radio`, `toggle`, `file-input` | keep shadcn utility styling, drop the daisy class strings |
-| Modal wrappers | `modal` ×8, `btn-square` ×2 | existing dialog/alert-dialog pattern |
-| Drawer wrappers | `drawer-content` ×2, `drawer-overlay` | port the styles into the vaul wrapper |
+| `ui/button.svelte` | `btn` + 10 colors + `btn-outline/ghost/soft/link` | ✅ **DONE (10-06)** — single `buttonClassVariants` tv via **CSS-var indirection** (5 variant templates reference `--btn-c`/`--btn-c-fg`; 9 colors define them — no color×variant enumeration; `light` keeps 5 compounds); sizes `sm/default/lg/icon/icon-sm`, default `h-10`; `--color-dark` link bug fixed; the 11 atom consumers migrated to the same config with `color="light"` |
+| `ui/badge.svelte` | `badge` + 10 colors + `badge-soft/outline/dash` | ✅ **DONE (10-05)** — utility color maps + `size` prop (`sm/default/lg`) |
+| `ui/alert.svelte` | `alert` + `alert-info/success/warning/error/soft/outline/dash` | ✅ **DONE (10-05)** — utility maps + grid base; no-op variants fixed (§5) |
+| Input family | `input` ×9, `textarea`, `radio`, `toggle`, `file-input` | ✅ **DONE (10-05)** — `inputClasses`/`inputGroupClasses` exports, responsive `min-h-12 md:min-h-10` rhythm |
+| Modal wrappers | `modal` ×8, `btn-square` ×2 | ✅ **done** — bits-ui Dialog + atoms/alert-dialog, pure; the `btn-square` close button belongs to the Button pass |
+| Drawer wrappers | `drawer-content` ×2, `drawer-overlay` | ✅ **done** — atoms/drawer, pure utilities |
 | Menu wrappers | `dropdown-content` ×2, `menu`/`dropdown`/`dropdown-end` ×2 each | existing bits-ui dropdown-menu |
-| Misc | `tooltip-content`, `carousel-item`, `card-title` ×3, `skeleton`, `rounded-box` ×2 | port or confirm wrapper utilities already cover |
-| Spinner | `loading`, `loading-sm`, `loading-spinner` | `Loader2` icon + `animate-spin` (standard shadcn pattern) |
+| Misc | `tooltip-content`, `carousel-item`, ~~`card-title` ×3~~, `skeleton`, `rounded-box` ×2 | tooltip/carousel/skeleton ✅ done; `rounded-box` ×2 remain (bottom-nav, datatable-row-action) |
+| Spinner | `loading`, `loading-sm`, `loading-spinner` | ✅ **DONE (10-05)** — iconify spinner + `animate-spin` |
 
 No page or module changes — this is the payoff of the wrapper discipline.
 
@@ -92,41 +96,121 @@ No page or module changes — this is the payoff of the wrapper discipline.
 
 The complete replacement list, by descending count:
 
-| Daisy class (direct) | Count | Replace with | Status |
+| Daisy class (direct) | Count | Replace with | Migration status |
 |---|---|---|---|
-| `btn-sm` | 18 | `<Button size="sm">` | ✅ mechanical |
-| `btn-circle` | 13 | `<Button class="size-8 rounded-full p-0">` or new `size="icon"` | ✅ mechanical |
-| `btn-xs` | 12 | `<Button size="xs">` (add size to tv config) | ✅ mechanical |
-| `card` | 11 | `<Card>` — already pure utilities | ✅ mechanical |
-| `card-title` | 7 | `<CardTitle>` / `CardHeader` | ✅ mechanical |
-| `card-actions` | 7 | `<CardFooter>` or right-aligned flex in header action | ✅ mechanical |
-| `card-body` | 7 | `<CardContent>` | ✅ mechanical |
-| `skeleton` | 5 | `ui/skeleton.svelte` | ✅ exists |
-| `btn` | 4 | `<Button>` | ✅ |
-| `avatar` | 4 | shadcn Avatar — small gap (~30 lines) | ⚠️ add |
-| `badge` | 3 | `ui/badge.svelte` | ✅ |
-| `input` | 3 | `ui/input.svelte` | ✅ |
-| `modal` | 2 | existing dialog/alert-dialog wrappers | ✅ |
-| `btn-square` | 2 | `<Button class="size-8 p-0">` | ✅ |
-| `badge-neutral` | 2 | `ui/badge.svelte color="dark"` | ✅ |
-| `btn-primary` | 2 | `<Button color="primary">` | ✅ |
-| `badge-sm` | 2 | `ui/badge.svelte` size support | ✅ |
-| `btn-active` | 2 | `ui/toggle-group` (exists) | ✅ |
-| `btn-wide` | 2 | `<Button class="w-full max-w-64">` | ✅ |
-| `hero` | 2 | flex utilities div | trivial |
-| `input-sm` | 2 | `ui/input.svelte` size variant | ✅ |
-| `dropdown`, `dropdown-end`, `menu`, `menu-title` | 1 each | `ui/dropdown-menu` (dashboard-header) | ✅ |
-| `divider` | 1 | separator utilities / `ui/separator` | ✅ |
-| `btn-ghost`, `btn-neutral`, `btn-block` | 1 each | Button props | ✅ |
-| `join` | 1 | `ui/toggle-group` (toggleable-grid) | ✅ |
-| `table`, `table-sm` | 1 each | `ui/table` (reports/trend) | ✅ |
-| `rounded-box` | 1 | `rounded-lg` (dev page only) | trivial |
-| **`dock`, `dock-sm`, `dock-active`, `dock-label`** | 1 each | **no shadcn equivalent — hand-roll** | ❌ **the one real build** |
+| `btn-sm` | 18 | `<Button size="sm">` | ⏳ pending — mechanical |
+| `btn-circle` | 13 | `<Button class="size-8 rounded-full p-0">` or new `size="icon"` | ⏳ pending — mechanical |
+| `btn-xs` | 12 | `<Button size="xs">` (add size to tv config) | ⏳ pending — mechanical |
+| `card` | 11 | `<Card>` — composes `atoms/card` | ✅ **done (10-05)** |
+| `card-title` | 7 | `<CardTitle>` / `CardHeader` | ✅ **done (10-05)** |
+| `card-actions` | 7 | `<CardFooter>` or right-aligned flex in header action | ✅ **done (10-05)** |
+| `card-body` | 7 | `<CardContent>` | ✅ **done (10-05)** |
+| `skeleton` | 5 | `ui/skeleton.svelte` | ✅ done — component in use |
+| `btn` | 4 | `<Button>` | ⏳ pending |
+| `avatar` | 4 | shadcn Avatar | ✅ done — already migrated |
+| `badge` | 3 | `ui/badge.svelte` | ✅ **done (10-05)** |
+| `input` | 3 | `ui/input.svelte` | ✅ **done (10-05)** |
+| `modal` | 2 | existing dialog/alert-dialog wrappers | ✅ done — bits-ui, pure |
+| `btn-square` | 2 | `<Button class="size-8 p-0">` | ⏳ pending |
+| `badge-neutral` | 2 | `ui/badge.svelte color="dark"` | ✅ **done (10-05)** |
+| `btn-primary` | 2 | `<Button color="primary">` | ⏳ pending |
+| `badge-sm` | 2 | `ui/badge.svelte size="sm"` | ✅ **done (10-05)** |
+| `btn-active` | 2 | `ui/toggle-group` (exists) | ⏳ pending |
+| `btn-wide` | 2 | `<Button class="w-full max-w-64">` | ⏳ pending |
+| `hero` | 2 | flex utilities div | ✅ done — already migrated |
+| `input-sm` | 2 | `ui/input.svelte` | ✅ **done (10-05)** |
+| `dropdown`, `dropdown-end`, `menu`, `menu-title` | 1 each | `ui/dropdown-menu` (dashboard-header) | ⏳ pending |
+| `divider` | 1 | separator utilities / `ui/separator` | ⏳ pending |
+| `btn-ghost`, `btn-neutral`, `btn-block` | 1 each | Button props | ⏳ pending |
+| `join` | 1 | `ui/toggle-group` (toggleable-grid) | ⏳ pending |
+| `table`, `table-sm` | 1 each | `ui/table` (reports/trend) | ✅ done — already migrated |
+| `rounded-box` | 1 | `rounded-lg` | ⏳ pending — 2 left (bottom-nav, datatable-row-action) |
+| **`dock`, `dock-sm`, `dock-active`, `dock-label`** | 1 each | in-house `ui/dock.svelte` | ✅ done — hand-rolled with variant/position maps |
 
 **Dev-only (188 occurrences, 7 files)**: `pages/dev/design-system/color.svelte` (59),
 `dev/examples/dashboard.svelte` (58), `dev/color.svelte` (36), `design-system/accounts.svelte`
 (17), `layouts/form/design.svelte` — mostly a DaisyUI color-token swatch gallery; rewrite
 against the new token names or delete the stale pages.
+
+---
+
+## 1.5 Migration progress (updated 2026-10-05)
+
+Executing in small bits, family by family.
+
+### ✅ Complete
+
+| Family | Scope | What shipped |
+|---|---|---|
+| **Forms** (`ui/forms/**`) | `input` ×9, `textarea`, `radio`, `toggle`, `file-input`, `loading-*` spinner, `masked/password/phone/currency` inputs, `account/category/date` selects, svelecte CSS vars | `input.svelte` exports `inputClasses` / `fileInputClasses` / `inputGroupClasses`; single responsive rhythm `min-h-12 md:min-h-10` · `px-3` · `text-base md:text-sm`; groups consume `inputGroupClasses` (with `items-center`); password → overlay-button pattern; `--sv-*` vars use `--color-border` |
+| **Badge** | `ui/badge.svelte` + all direct usages (`security.svelte` ×2, `account-badge`) | color×variant utility maps (solid/outline/dash/soft); `size` prop `sm/default/lg` — default preserves the daisy-md metrics the app ships; `account-badge` passes decoration colors through Svelte `--props`; zero daisy badge classes remain |
+| **Card** | `ui/card.svelte` now composes `atoms/card/*`; 6 raw cards in `profile.svelte`/`security.svelte` migrated | route-3 consolidation — composite is sugar over the atoms; atoms `border-neutral-500` bug fixed → `border-border`; new `description`/`descriptionClass` props; shadcn padding model (`py-5` container + `px-6` sections); dashboard's 5 redundant `class="p-5"` removed (would double-pad); `card-title`/`card-footer` classes eliminated |
+| **Alert** | `ui/alert.svelte` (10-05) | Badge pattern: color×variant utility maps; **fixes the no-op variants bug** — `primary/secondary/accent/neutral` were never DaisyUI classes, now they're real; grid base `grid-cols-[auto_1fr]` (iconify `<i>`-friendly, unlike the placeholder's svg-only collapse trick) |
+| **Modals** | already migrated outside this log | bits-ui Dialog (`ui/modals/modal.svelte`) + atoms/alert-dialog (`alert-modal` and its wrappers) — pure utilities; only a `btn-square` on the close button remains, which belongs to the Button pass |
+| **Button** | `ui/button.svelte` + 20 call sites + 11 atoms (10-06) | consolidated engine: `buttonClassVariants` tv with `variant`/`color`/`size` dimensions — variant templates use `bg-(--btn-c)` var-shorthand utilities, color entries set the vars via `[--btn-c:var(--color-primary)]` arbitrary properties (all literal, Tailwind-scannable — runtime loop-generation would break scanning); `SubmitButton` gains `size` passthrough; all `btn-*` direct usages → `size` props; `transaction-list-filter`'s raw `btn btn-block btn-primary` → `<Button>`; atoms (alert-dialog ×2, pagination ×3, calendar ×6) migrated to the same config with `color="light"`; shadcn `destructive`/`secondary` variants dropped (`color="error"/"secondary"` covers) |
+
+**Verified already-migrated during the 10-05 audit** (missed by the baseline scan review):
+**Dock** (in-house `ui/dock.svelte` with variant/position utility maps — the hand-roll is
+done), **hero**, **skeleton** (`ui/skeleton.svelte` in use), **avatar**, **table**,
+**drawer-content/overlay**, **tooltip-content**, **carousel-item**. No daisy classes found
+for any of these in class-string context.
+
+Verified zero via class-context greps: `card*`, `badge*`, the forms input family, and
+`var(--input-color)`. Remaining `'input'`/`'textarea'` grep hits are FormGenerator type
+strings and flatpickr DOM queries — not classes.
+
+**Also shipped during migration:**
+
+- **`--input-color` latent breakage fixed** — the DaisyUI-internal var was used by
+  password/phone/currency/account-select and svelecte's `--sv-*` vars; all now resolve
+  `--color-border`, so these survive the plugin removal.
+- **`account-select` / `category-select` removed from the FormGenerator vocabulary**
+  (`field-input` + `form-helper`) — domain selects compose directly, as `transaction-form`
+  always did. Their trigger styling comes from `inputGroupClasses`.
+- flatpickr's `altInputClass` concern (§5) is resolved — `date-input` passes `inputClasses`.
+
+### ⏳ Remaining (verified 10-06 — much shorter than the baseline)
+
+1. ~~dashboard-header.svelte~~ — the raw `dropdown`/`menu` popover markup was removed
+   by the owner (10-06); the profile trigger stays menu-less for now.
+2. ~~datatable-row-action + datatable-v8-row-action~~ ✅ done (10-06) — overflow menus
+   migrated to `ui/atoms/dropdown-menu` (Tooltip-wrapped Trigger via the bits-ui
+   `child` snippet); `menu dropdown-content rounded-box` gone.
+3. ~~toggleable-grid~~ ✅ done (10-06) — the active-state regression is fixed: dead
+   `join`/`btn-active` → bordered flex group with `bg-base-content/10 text-primary`
+   active state + `size="icon-sm"`; ~~bottom-nav `rounded-box`~~ ✅ → `rounded-lg`.
+4. ~~Dev pages~~ ✅ done (10-06) — `pages/dev/design-system/color.svelte` is now the
+   **token harness**: a daisy ↔ shadcn vocabulary parity grid (literal-class pairs with
+   live computed readouts) that must render identical values before the flip (via the
+   `shadcn.css` adapter) and after it (via the §2.2 compatibility block); the last
+   `rounded-box` is gone. `pages/dev/color.svelte` stays as the Button/Badge matrix +
+   ramp-wall viewer; its ramp tiles get pruned when the ramp wall dies (steps 2/7).
+5. ~~Token layer (B or C shape per §2)~~ ✅ done (10-06, Wave C) — production JS has
+   zero DaisyUI component classes, and the token layer is live:
+   - `resources/css/themes/` — 11 palettes ported 1:1 from `colors.css` into the §2.1
+     shape (raw `--background`… vars, `color-scheme` per light/dark). **Specificity,
+     not import order, picks the winner:** cobalt is the plain `:root` fallback
+     (0,1,0, the pre-boot default), every active theme uses `:root[data-theme='x']`
+     (0,2,0) and always overrides it. (The first cut used bare `[data-theme]` +
+     order-dependent fallback; a late-imported `:root` silently overrode 8 themes —
+     caught from a user report 10-06 and resolved with the compound selectors.)
+   - `resources/css/tokens.css` — shadcn + daisy-vocab registrations via plain `@theme`
+     (real `:root` vars keep the ~40 runtime `var(--color-*)` consumers alive); neutral
+     first-class; ramps as a transitional inline block; `@layer base` consolidated.
+   - `app.css` — §2.4 wiring; `@plugin 'daisyui' { themes: false; }` = component-CSS
+     only. Compiled output verified: 0 daisy-injected theme vars, all 11 theme blocks
+     present, compat vars emitted, daisy + shadcn utilities resolve.
+   - `flatpickr.css` — token bridge scoped to the calendar (no global `:root`
+     overrides); keeps its deliberate deviations (popover = page ground, muted/accent =
+     card, 0.5rem radius).
+   - `app.blade.php` — first-paint boot script (cookie `fintrack-theme` → `data-theme`),
+     replacing DaisyUI's `--default`. Appearance (`.dark`) is deliberately NOT mirrored:
+     `initializeAppearance()` is disabled in `app.ts`, so the runtime never manages
+     `.dark`, and pre-paint system-dark detection would activate `dark:` variants the
+     app never expects (caught while debugging, 10-06).
+   - **Owner finishes:** delete the plugin line + `daisyui.css`/`colors.css`/
+     `shadcn.css`, `npm rm daisyui` (step 7), then the 11-theme visual pass (step 8)
+     using the design-system color harness.
 
 ---
 
@@ -147,7 +231,7 @@ Theme files are identical to B/C — D only changes `tokens.css`, `app.css`, and
     --foreground: oklch(30.1% 0 23.7);
     --card: oklch(97% 0.003 265.4);
     --card-foreground: var(--foreground);
-    --popover: var(--background);
+    --popover: var(--card);
     --popover-foreground: var(--foreground);
 
     --primary: oklch(77.9% 0.126 173.5);
@@ -254,8 +338,8 @@ explicitly temporary:
     --color-primary-content: var(--primary-foreground);
     --color-secondary-content: var(--secondary-foreground);
     --color-accent-content: var(--accent-foreground);
-    --color-neutral: var(--secondary);            /* 6 remaining text-neutral uses */
-    --color-neutral-content: var(--secondary-foreground);
+    --color-neutral: var(--neutral);              /* first-class, not aliased (as built) */
+    --color-neutral-content: var(--neutral-foreground);
     --color-success-content: var(--success-foreground);
     --color-info-content: var(--info-foreground);
     --color-warning-content: var(--warning-foreground);
@@ -284,6 +368,28 @@ explicitly temporary:
 Note `bg-primary`, `text-error`, `text-success-foreground` etc. resolve from the **main**
 block already — the compatibility block only carries what pure shadcn doesn't name:
 `base-*`, `*-content` pairs, `neutral`, `rounded-box`.
+
+**As built (2026-10-06), four deviations from the preview above — all parity-driven:**
+
+1. **Plain `@theme`, not `@theme inline`** for the main block. The codebase has ~40 raw
+   `var(--color-*)` runtime consumers (chart libs, svelecte `--sv-*`, toaster, progress
+   bar, inline styles) and `inline` emits no `:root` variables — plain `@theme` keeps
+   them alive. Verified in compiled output: `--color-base-100: var(--background)` etc.
+   are emitted; utilities resolve through them.
+2. **`neutral` is first-class** (`--neutral` in every theme), not aliased to `secondary`.
+   Far more than 6 uses depend on it (alert/badge/button `dark` variants, sidebar avatar,
+   settings menu) and royal/mint neutral ≠ secondary — aliasing would visibly shift them.
+3. **`popover` maps to `var(--card)`** (= old base-200), matching the previous
+   `shadcn.css` adapter rather than `background`, so popovers/toasts don't shift.
+4. **The shade ramps moved into `tokens.css` as a transitional `@theme inline` block**
+   (values now reference the raw vars) instead of being deleted — table atoms and the
+   dev ramp viewer still use them; they die with the opacity-modifier migration.
+5. **`--destructive` is not a theme var.** shadcn's destructive ≡ the app's error is a
+   *vocabulary synonym*, not a palette decision, so `tokens.css` maps
+   `--color-destructive: var(--error)` directly (same place the old `shadcn.css`
+   adapter mapped it). Rule of thumb: themes carry palette values + structural
+   relations shadcn expects themes to own (`popover`→card, `input`→border, `ring`→
+   primary); every cross-vocabulary synonym lives in `tokens.css`.
 
 ### 2.3 `tokens.css` — end state (compat block deleted)
 
@@ -336,21 +442,17 @@ directly with no bridge.
 
 ## 3. The hand-roll list
 
-1. **Dock** (`components/navigation/bottom-nav.svelte`) — DaisyUI 5.7's Dock (the mobile
-   bottom nav) has no shadcn counterpart. One focused component of utility classes
-   (~0.5–1 day): fixed bottom bar, safe-area inset, active-item magnification. This is the
-   only genuinely new UI code D requires.
-2. **Avatar** — 4 direct usages; add the standard shadcn Avatar (~30 lines) if not already
-   present in `ui/`.
-3. **Button interaction polish** — DaisyUI's `.btn` ships active-state translate,
-   touch-action, disabled styling for free. The existing `tvButtonVariants` base already
-   covers disabled/focus/ring; add the active translate + `touch-action: manipulation`.
+1. ~~**Dock**~~ — ✅ done: in-house `ui/dock.svelte` (utility maps for variants and
+   positions); `bottom-nav.svelte` consumes it.
+2. ~~**Avatar**~~ — ✅ done: already migrated during earlier passes.
+3. ~~**Button interaction polish**~~ — ✅ done (10-06): `buttonClasses` base carries
+   `cursor-pointer select-none touch-manipulation active:translate-y-px`.
 
 ## 4. Hotspots (where the direct work concentrates)
 
 | File(s) | Occurrences | What's there |
 |---|---|---|
-| `settings/security.svelte` + `settings/profile.svelte` | 28 + 27 | raw card anatomy + badge + btn-sm |
+| ~~`settings/security.svelte` + `settings/profile.svelte`~~ | 28 + 27 | ✅ fully migrated — Card + Badge + description props; only `class="btn-sm"` on `<Button>` calls remains, for the button pass |
 | `mobile-transaction-form` / `transfer-form` / `transaction-form` / `transaction-detail` | 23–25 each | modal, btn-square, input, card |
 | `pages/reports/*` (5 files) | ~70 total | `btn-circle`/`btn-xs`/`btn-sm` icon buttons + one raw table |
 | `dashboard-header.svelte` | 13 | raw dropdown + menu + divider |
@@ -359,31 +461,36 @@ directly with no bridge.
 
 ## 5. Incidental findings (true regardless of A/B/C/D)
 
-- **Existing bug:** `ui/alert.svelte` maps `alert-accent`, `alert-neutral`, `alert-primary`,
-  `alert-secondary` — **none exist in DaisyUI 5.7** (only info/success/warning/error/
-  soft/outline/dash). Four silent no-op color variants today.
-- flatpickr injects `input` via `altInputClass: "form-control input"` in
-  `date-input.svelte` — handle when rewriting the input wrapper.
+- ~~**Existing bug:** `ui/alert.svelte` no-op color variants~~ — ✅ resolved (10-05): the
+  utility maps make `primary/secondary/accent/neutral` real colors (they were never
+  DaisyUI classes, so they silently did nothing before).
+- ~~`--color-dark` link-variant bug in `button.svelte`~~ — ✅ resolved (10-06): link hovers
+  are now `hover:text-{color}/80` utilities; the undefined-var color-mix is gone.
+- ~~flatpickr injects `input` via `altInputClass`~~ — ✅ resolved: `date-input` passes
+  `inputClasses`, so the engine-injected class is ours.
+- ~~`--input-color` DaisyUI-internal var~~ — ✅ resolved during the forms pass: password/
+  phone/currency/account-select + svelecte `--sv-*` vars now use `--color-border`.
 - **No dynamic daisy class construction** (`btn-${…}`) anywhere — the entire migration is
   grep-safe.
 - 96 shadcn-style semantic class patterns (`select-trigger`, `dropdown-menu-*`,
   `table-row`, `alert-dialog-*`, `drawer-header`, …) are already pure and untouched.
-- `ui/card.svelte`, `atoms/card`, `ui/checkbox.svelte`, `ui/tabs.svelte` contain **zero**
-  daisy classes — the migration pattern already exists in-repo.
+- `ui/card.svelte` (composing `atoms/card`), `ui/checkbox.svelte`, `ui/tabs.svelte`,
+  `ui/badge.svelte`, and the forms family contain **zero** daisy classes — the migration
+  pattern is proven in-repo.
 
 ## 6. Migration steps (safe order)
 
-| # | Step | Risk |
-|---|---|---|
-| 1 | Execute **B or C's token layer first** (themes + tokens.css) — D consumes it | per B/C |
-| 2 | Add the daisy-vocab utility registrations to `tokens.css` (§1 Bucket 1) + `rounded-box` | low |
-| 3 | Rewrite the `ui/` wrappers (§1 Bucket 2), including the tv `size` variants; add Avatar; fix the alert no-op variants | medium |
-| 4 | Hand-roll the Dock replacement; parity-test against current bottom-nav | medium |
-| 5 | Replace direct usage by hotspot order: settings pages → transaction forms → reports → navigation → misc singles | medium |
-| 6 | Rewrite or delete the dev color-gallery pages | low |
-| 7 | Remove `@plugin 'daisyui'`, delete `daisyui.css`/`themes.css` plugin blocks, `npm rm daisyui` | low |
-| 8 | Full visual pass: all 11 themes × key screens (settings, reports, transaction create/detail, mobile nav) | — |
-| 9 | (Ongoing) migrate `text-base-content` → `text-foreground` etc. on touch; eventually delete the daisy-vocab registrations | opportunistic |
+| # | Step | Risk | Status |
+|---|---|---|---|
+| 1 | Execute **B or C's token layer first** (themes + tokens.css) — D consumes it | per B/C | ✅ done (10-06) — `themes/*.css` ported 1:1 from `colors.css`; first-paint boot script in `app.blade.php` |
+| 2 | Add the daisy-vocab utility registrations to `tokens.css` (§1 Bucket 1) + `rounded-box` | low | ✅ done (10-06) — incl. first-class `neutral` and ported ramps (§2.2 as-built notes) |
+| 3 | Rewrite the `ui/` wrappers (§1 Bucket 2), incl. tv `size` variants; add Avatar; fix alert no-ops | medium | ✅ essentially complete — all wrapper families done; only daisy `dropdown/menu` markup in dashboard-header + datatable row-actions remains (step 5) |
+| 4 | Hand-roll the Dock replacement; parity-test against current bottom-nav | medium | ✅ done — in-house `ui/dock.svelte` |
+| 5 | Replace direct usage by hotspot order: settings pages → transaction forms → reports → navigation → misc singles | medium | ✅ essentially complete (10-06) — button call sites, datatable row-actions ×2, toggleable-grid, bottom-nav `rounded-box` all done; dashboard-header's raw menu removed by the owner; only dev galleries remain (step 6) |
+| 6 | Rewrite or delete the dev color-gallery pages | low | ✅ done (10-06) — design-system/color.svelte upgraded to the token harness (daisy↔shadcn parity grid + live readouts); dev/color.svelte kept as component matrix & ramp-wall viewer until the ramp wall is deleted |
+| 7 | Remove `@plugin 'daisyui'`, delete `daisyui.css`/`themes.css` plugin blocks, `npm rm daisyui` | low | ⏳ pending — owner-executed; only the `@plugin 'daisyui' { themes: false; }` line, the three dead files (`daisyui.css`, `colors.css`, `shadcn.css`), and `npm rm daisyui` remain |
+| 8 | Full visual pass: all 11 themes × key screens (settings, reports, transaction create/detail, mobile nav) | — | ⏳ pending — start from the design-system color harness (parity grid + live readouts), then key screens |
+| 9 | (Ongoing) migrate `text-base-content` → `text-foreground` etc. on touch; eventually delete the daisy-vocab registrations | opportunistic | ◐ ongoing — new code still adds `base-*` utilities (e.g. card descriptions use `text-base-content/70`) |
 
 **Effort estimate:** token layer (B/C scope) + ~1–2 days wrappers + ~2–4 days direct
 swaps + ~1 day Dock ≈ **about a week of focused work**.

@@ -1,0 +1,41 @@
+/* Theme: verdant (light) — values ported 1:1 from colors.css (Option D, section 2.1 shape) */
+:root[data-theme='verdant'] {
+    color-scheme: light;
+
+    /* Surfaces */
+    --background: oklch(0.98 0.012 85);
+    --foreground: oklch(0.18 0.02 160);
+    --card: oklch(0.94 0.018 85);
+    --card-foreground: var(--foreground);
+    --popover: var(--card);
+    --popover-foreground: var(--foreground);
+    --muted: oklch(0.88 0.022 85);
+    --muted-foreground: var(--foreground);
+
+    /* Brand */
+    --primary: oklch(0.42 0.11 160);
+    --primary-foreground: oklch(0.95 0.01 160);
+    --secondary: oklch(0.62 0.07 175);
+    --secondary-foreground: oklch(0.18 0.02 160);
+    --accent: oklch(0.72 0.14 85);
+    --accent-foreground: oklch(0.18 0.02 160);
+
+    /* Neutral - first-class token (kept native, not aliased to secondary) */
+    --neutral: oklch(0.18 0.02 160);
+    --neutral-foreground: oklch(0.95 0.01 160);
+
+    /* Status */
+    --success: oklch(0.55 0.12 150);
+    --success-foreground: oklch(0.95 0.01 160);
+    --info: oklch(0.55 0.1 210);
+    --info-foreground: oklch(0.95 0.01 160);
+    --warning: oklch(0.72 0.14 85);
+    --warning-foreground: oklch(0.18 0.02 160);
+    --error: oklch(0.55 0.12 30);
+    --error-foreground: oklch(0.95 0.01 160);
+
+    /* Structure */
+    --border: oklch(0.88 0.022 85);
+    --input: var(--border);
+    --ring: var(--primary);
+}

@@ -6,7 +6,7 @@
 
     import StringHelper from '@utilities/string-helper';
 
-    import DecorationBadge from '@components/ui/decoration-badge.svelte';
+    import DecorationBadge from '@components/module/decoration-badge.svelte';
 
     interface Props {
         category: App.Models.Category;

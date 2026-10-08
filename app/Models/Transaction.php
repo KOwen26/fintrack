@@ -4,9 +4,12 @@ namespace App\Models;
 
 use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
+use App\Objects\DatePeriod;
 use App\Observers\TransactionObserver;
 use Database\Factories\TransactionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -49,5 +52,11 @@ class Transaction extends Model
     public function transfer(): BelongsTo
     {
         return $this->belongsTo(Transfer::class);
+    }
+
+    #[Scope]
+    protected function withinPeriod(Builder $query, DatePeriod $period): Builder
+    {
+        return $query->whereBetween('transaction_date', $period->toRange());
     }
 }

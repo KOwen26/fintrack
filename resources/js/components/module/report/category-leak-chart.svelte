@@ -3,6 +3,8 @@
 
     import { Arc, Chart, Pie, Tooltip } from 'layerchart';
 
+    import Formatter from '@utilities/formatter';
+
     import { ChartContainer, ChartTooltip } from '@components/ui/atoms/chart';
 
     interface CategoryItem {
@@ -20,14 +22,6 @@
     const chartConfig = $derived<ChartConfig>(
         Object.fromEntries(categories.map((c) => [c.name, { label: c.name, color: c.color }]))
     );
-
-    function formatIDR(value: number): string {
-        return value.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            maximumFractionDigits: 0,
-        });
-    }
 </script>
 
 {#if categories.length === 0}
@@ -60,7 +54,9 @@
                     <span class="truncate">{cat.name}</span>
                 </div>
                 <div class="ml-4 shrink-0 text-right">
-                    <span class="font-mono font-medium">{formatIDR(cat.total)}</span>
+                    <span class="font-mono font-medium">
+                        {Formatter.currency(cat.total, true)}
+                    </span>
                     <span class="ml-1 text-base-content/50">{cat.percentage}%</span>
                 </div>
             </li>
