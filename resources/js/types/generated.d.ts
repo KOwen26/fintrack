@@ -2,7 +2,7 @@ export type CategoryData = {
     id: string;
     name: string;
     cashflow: App.Enums.Cashflow;
-    decorations: App.Objects.Decoration;
+    decorations: Decoration;
     group: CategoryGroupData;
 };
 
@@ -10,7 +10,7 @@ export type CategoryGroupData = {
     id: string;
     name: string;
     cashflow: App.Enums.Cashflow;
-    decorations: App.Objects.Decoration;
+    decorations: Decoration;
 };
 
 export type CategorySpendingItemData = {
@@ -67,6 +67,11 @@ export type DataTablePayloadData = {
     current_page: number | null;
     sort: Array<any> | null;
     filters: Array<any> | null;
+};
+
+export type Decoration = {
+    readonly icon: string | null;
+    readonly color: string | null;
 };
 
 export type LengthAwarePaginator<TKey, TValue> = {

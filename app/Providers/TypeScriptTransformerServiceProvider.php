@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Helpers\TypeScript\AliasFlatModuleWriter;
 use Spatie\LaravelTypeScriptTransformer\LaravelData\LaravelDataTypeScriptTransformerExtension;
+use Spatie\LaravelTypeScriptTransformer\Transformers\LaravelAttributedClassTransformer;
 use Spatie\LaravelTypeScriptTransformer\TypeScriptTransformerApplicationServiceProvider;
 use Spatie\TypeScriptTransformer\Formatters\PrettierFormatter;
 use Spatie\TypeScriptTransformer\References\ClassStringReference;
@@ -27,6 +28,11 @@ class TypeScriptTransformerServiceProvider extends TypeScriptTransformerApplicat
         $config
             ->transformDirectories(app_path())
             ->extension(new LaravelDataTypeScriptTransformerExtension)
+
+            // The Data extension only registers DataClassTransformer — without
+            // this, #[TypeScript]-attributed non-Data classes (e.g. Decoration)
+            // are emitted as untransformed dotted references.
+            ->transformer(new LaravelAttributedClassTransformer)
 
             // Already Defaults
             // ->replaceType(DateTime::class, new TypeScriptString)
