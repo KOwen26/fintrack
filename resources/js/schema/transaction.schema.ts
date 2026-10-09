@@ -9,7 +9,7 @@ export type TransactionFormData = {
     transaction_date: string;
     description: string;
     account_id: number;
-    category_id?: number;
+    category_id?: string;
     destination_account_id?: number;
     fee_amount?: number | null;
 };

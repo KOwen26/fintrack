@@ -7,10 +7,6 @@
         ComboboxTriggerContext,
         SelectOption,
     } from '@components/ui/forms/combobox.svelte';
-    import type { DecorationData } from '@type/generated';
-
-    import { inputGroupClasses } from '../../ui/forms/input.svelte';
-    import ScrollArea from '../../ui/scroll-area.svelte';
 
     import { getDecorationColor } from '@data/decoration-colors';
     import { getDecorationIcon } from '@data/decoration-icons';
@@ -23,23 +19,33 @@
     import DecorationBadge from '@components/module/decoration-badge.svelte';
     import Collapsible from '@components/ui/collapsible.svelte';
     import Combobox from '@components/ui/forms/combobox.svelte';
+    import { inputGroupClasses } from '@components/ui/forms/input.svelte';
     import Modal from '@components/ui/modals/modal.svelte';
     import Popover from '@components/ui/popover.svelte';
+    import ScrollArea from '@components/ui/scroll-area.svelte';
 
-    /** Permissive node shape — accepts full models, lightweight `{ id, name, children }`, and `{ options }` groups. */
+    /** Structural shape — mirrors the backend Decoration value object without coupling to generated types. */
+    interface Decoration {
+        icon?: string | null;
+        color?: string | null;
+    }
+
+    type Cashflow = 'inflow' | 'outflow';
+
+    /** Permissive row shape — grouped catalog rows from the shared props. */
     interface CategoryOption {
-        id: number;
+        id: string;
         name: string;
-        decorations?: DecorationData;
+        decorations?: Decoration;
         options?: CategoryOption[];
-        children?: CategoryOption[];
     }
 
     type ListLayout = 'list' | 'grid-2' | 'icon';
 
     interface Props {
-        value?: string | number;
-        categories?: CategoryOption[];
+        value?: string;
+        /** Restricts the shared catalog to one money direction (income vs expense forms). */
+        cashflow?: Cashflow;
         placeholder?: string;
         variant?: 'inline' | 'popover' | 'modal' | 'combobox';
         clearable?: boolean;
@@ -57,7 +63,7 @@
 
     let {
         value = $bindable(),
-        categories = [],
+        cashflow = undefined,
         placeholder = 'Select Category',
         variant = 'combobox',
         clearable = true,
@@ -69,7 +75,7 @@
     }: Props = $props();
 
     interface CategoryNode {
-        id: number;
+        id: string;
         name: string;
         visual: DecorationBadgeItem;
         children: CategoryNode[];
@@ -91,7 +97,7 @@
 
     // ── Node visuals: decoration icon/color win, initials are the fallback ──
     function nodeVisual(
-        decorations: DecorationData | undefined,
+        decorations: Decoration | undefined,
         name: string | undefined
     ): DecorationBadgeItem {
         const icon = getDecorationIcon(decorations?.icon)?.value;
@@ -119,41 +125,32 @@
             id: group.id,
             name: group.name,
             visual: nodeVisual(group.decorations, group.name),
-            children: (group.options ?? group.children ?? []).map(toNode),
+            children: (group.options ?? []).map(toNode),
         }));
     }
 
     /**
-     * Grouped tree. Preference: a grouped `categories` prop (options/children
-     * arrays), then the shared `static.groupedCategories`, then the flat prop
-     * rendered as ungrouped rows.
+     * Grouped tree from the shared per-cashflow buckets (`static.categories`:
+     * `grouped_inflow` / `grouped_outflow`), or an explicit grouped prop.
      */
     function computeGroups(): CategoryNode[] {
-        const prop = categories?.length ? categories : undefined;
-        const shared = (page.props?.static?.groupedCategories ?? []) as CategoryOption[];
+        const shared = (page.props?.static?.categories ?? {}) as Record<string, CategoryOption[]>;
+        const source = cashflow
+            ? (shared[`grouped_${cashflow}`] ?? [])
+            : Object.values(shared).flat();
 
-        if (prop?.some((item) => Array.isArray(item.options) || Array.isArray(item.children))) {
-            return toGroups(prop);
-        }
-
-        if (shared.length) {
-            return toGroups(shared);
-        }
-
-        return (prop ?? []).map(toNode);
+        return toGroups(source);
     }
 
     const groups = $derived(computeGroups());
 
     const selected = $derived.by(() => {
-        const id = Number(value);
-
-        if (!id) return undefined;
+        if (!value) return undefined;
 
         for (const group of groups) {
-            if (group.id === id) return group;
+            if (group.id === value) return group;
 
-            const child = group.children.find((node) => node.id === id);
+            const child = group.children.find((node) => node.id === value);
 
             if (child) return child;
         }
@@ -164,7 +161,7 @@
     const comboboxOptions = $derived(
         groups.flatMap((group) =>
             group.children.map((child) => ({
-                value: String(child.id),
+                value: child.id,
                 label: `${group.name} ${child.name}`,
                 category: child,
                 group: group.name,
@@ -184,8 +181,8 @@
     });
 
     /** All groups start collapsed; the group holding the current selection starts expanded. */
-    function buildInitialExpanded(): Record<number, boolean> {
-        const initial: Record<number, boolean> = {};
+    function buildInitialExpanded(): Record<string, boolean> {
+        const initial: Record<string, boolean> = {};
 
         for (const group of computeGroups()) {
             initial[group.id] = false;
@@ -207,10 +204,10 @@
     }
 
     let open = $state(false);
-    let expanded = $state<Record<number, boolean>>(buildInitialExpanded());
+    let expanded = $state<Record<string, boolean>>(buildInitialExpanded());
 
     function isSelected(node: CategoryNode): boolean {
-        return Number(value) === node.id;
+        return value === node.id;
     }
 
     /** Toggle semantics, mirroring decoration-color-selector's aria-pressed swatches. Inline only. */
@@ -231,16 +228,16 @@
         open = false;
     }
 
-    function findComboboxCategory(val: string | number | undefined): CategoryNode | undefined {
+    function findComboboxCategory(val: string | undefined): CategoryNode | undefined {
         if (val === undefined || val === '') {
             return undefined;
         }
 
-        return groups.flatMap((group) => group.children).find((child) => child.id === Number(val));
+        return groups.flatMap((group) => group.children).find((child) => child.id === val);
     }
 
     function getComboboxValue(): string {
-        return selected ? String(selected.id) : '';
+        return selected?.id ?? '';
     }
 
     /** Clearing resolves to `undefined`, matching the optional category id shape. */

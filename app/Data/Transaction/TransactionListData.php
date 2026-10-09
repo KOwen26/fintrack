@@ -2,8 +2,8 @@
 
 namespace App\Data\Transaction;
 
+use App\Enums\Cashflow;
 use App\Enums\Category;
-use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Helpers\TypeScript\Attributes\TypeScriptModel;
 use App\Models\Account;
@@ -21,7 +21,7 @@ class TransactionListData extends Data
 
         public TransactionType $type,
 
-        public TransactionFlow $flow,
+        public Cashflow $flow,
 
         public float $amount,
 

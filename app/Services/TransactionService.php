@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransactionListData;
+use App\Enums\Cashflow;
 use App\Enums\Category;
 use App\Enums\DatePeriodPreset;
-use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Events\TransactionDeleted;
 use App\Events\TransactionSaved;
@@ -26,7 +26,7 @@ final class TransactionService
     {
         $transactions = Transaction::query()
             ->where('created_by', $user->id)
-            ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', TransactionFlow::Inflow))
+            ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', Cashflow::Inflow))
             ->withinPeriod($period->toPeriod())
             ->with(['account', 'transfer.transactions.account'])
             ->latest('transaction_date')
@@ -39,7 +39,7 @@ final class TransactionService
     {
         return Transaction::query()
             ->where('account_id', $account->id)
-            ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', TransactionFlow::Inflow))
+            ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', Cashflow::Inflow))
             ->withinPeriod($period->toPeriod())
             ->with(['account', 'transfer.transactions.account'])
             ->latest('transaction_date')
@@ -50,7 +50,7 @@ final class TransactionService
     {
         return Transaction::query()
             ->where('category_id', $category)
-            ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', TransactionFlow::Inflow))
+            ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', Cashflow::Inflow))
             ->withinPeriod($period->toPeriod())
             ->with(['account', 'transfer.transactions.account'])
             ->latest('transaction_date')

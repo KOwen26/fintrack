@@ -2,9 +2,9 @@
 
 namespace App\Data\Category;
 
-use App\Data\DecorationData;
+use App\Enums\Cashflow;
 use App\Enums\CategoryGroup;
-use App\Enums\CategoryType;
+use App\Objects\Decoration;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -15,8 +15,8 @@ class CategoryGroupData extends Data
     public function __construct(
         public string $id,
         public string $name,
-        public DecorationData $decorations,
-        public CategoryType $type,
+        public Cashflow $cashflow,
+        public Decoration $decorations,
     ) {}
 
     public static function fromEnum(CategoryGroup $group): self
@@ -24,8 +24,8 @@ class CategoryGroupData extends Data
         return new self(
             id: $group->value,
             name: $group->label(),
+            cashflow: $group->flow(),
             decorations: $group->decorations(),
-            type: $group->type(),
         );
     }
 }

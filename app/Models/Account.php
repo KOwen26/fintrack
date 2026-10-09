@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Data\DecorationData;
 use App\Enums\AccountAccessType;
 use App\Enums\AccountType;
+use App\Objects\Decoration;
 use Database\Factories\AccountFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Account extends Model
+final class Account extends Model
 {
     /** @use HasFactory<AccountFactory> */
     use HasFactory, SoftDeletes;
@@ -28,8 +28,8 @@ class Account extends Model
             'access_type' => AccountAccessType::class,
             'current_balance' => 'integer',
             'initial_balance' => 'integer',
+            'decorations' => Decoration::class,
             'archived_at' => 'datetime',
-            'decorations' => DecorationData::class,
         ];
     }
 

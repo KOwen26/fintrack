@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-use App\Data\DecorationData;
+use App\Objects\Decoration;
 
 enum CategoryGroup: string
 {
@@ -35,26 +35,26 @@ enum CategoryGroup: string
         };
     }
 
-    public function decorations(): DecorationData
+    public function decorations(): Decoration
     {
         return match ($this) {
-            self::Income => new DecorationData(icon: 'round-arrow-down', color: 'green-700'),
-            self::Finance => new DecorationData(icon: 'hand-money', color: 'green-700'),
-            self::FoodAndDrinks => new DecorationData(icon: 'plate', color: 'red-700'),
-            self::Utilities => new DecorationData(icon: 'lightning', color: 'amber-600'),
-            self::ServiceAndHousing => new DecorationData(icon: 'house', color: 'yellow-600'),
-            self::Shopping => new DecorationData(icon: 'bag', color: 'sky-600'),
-            self::EntertainmentAndLeisure => new DecorationData(icon: 'gamepad', color: 'cyan-600'),
-            self::Transport => new DecorationData(icon: 'wheel-angle', color: 'slate-900'),
-            self::HealthAndWellness => new DecorationData(icon: 'heart-pulse', color: 'rose-700'),
-            self::Education => new DecorationData(icon: 'square-academic-cap', color: 'lime-700'),
-            self::Socials => new DecorationData(icon: 'heart', color: 'violet-700'),
+            self::Income => new Decoration(icon: 'round-arrow-down', color: 'green-700'),
+            self::Finance => new Decoration(icon: 'hand-money', color: 'green-700'),
+            self::FoodAndDrinks => new Decoration(icon: 'plate', color: 'red-700'),
+            self::Utilities => new Decoration(icon: 'lightning', color: 'amber-600'),
+            self::ServiceAndHousing => new Decoration(icon: 'house', color: 'yellow-600'),
+            self::Shopping => new Decoration(icon: 'bag', color: 'sky-600'),
+            self::EntertainmentAndLeisure => new Decoration(icon: 'gamepad', color: 'cyan-600'),
+            self::Transport => new Decoration(icon: 'wheel-angle', color: 'slate-900'),
+            self::HealthAndWellness => new Decoration(icon: 'heart-pulse', color: 'rose-700'),
+            self::Education => new Decoration(icon: 'square-academic-cap', color: 'lime-700'),
+            self::Socials => new Decoration(icon: 'heart', color: 'violet-700'),
         };
     }
 
-    public function type(): CategoryType
+    public function flow(): Cashflow
     {
-        return $this === self::Income ? CategoryType::Input : CategoryType::Output;
+        return $this === self::Income ? Cashflow::Inflow : Cashflow::Outflow;
     }
 
     /** The bookable categories in this group, in display order. */

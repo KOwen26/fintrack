@@ -2,8 +2,8 @@
 
 use App\Data\Transaction\TransactionListData;
 use App\Data\Transaction\TransferData;
+use App\Enums\Cashflow;
 use App\Enums\Category;
-use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Transaction;
@@ -81,8 +81,8 @@ it('creates a transfer unit with member rows via POST /transfers', function (): 
     $rows = $transfer->transactions()->get();
     expect($rows)->toHaveCount(2);
 
-    $outflow = $rows->first(fn ($row): bool => $row->flow === TransactionFlow::Outflow && $row->type === TransactionType::Transfer);
-    $inflow = $rows->first(fn ($row): bool => $row->flow === TransactionFlow::Inflow && $row->type === TransactionType::Transfer);
+    $outflow = $rows->first(fn ($row): bool => $row->flow === Cashflow::Outflow && $row->type === TransactionType::Transfer);
+    $inflow = $rows->first(fn ($row): bool => $row->flow === Cashflow::Inflow && $row->type === TransactionType::Transfer);
 
     expect($outflow->account_id)->toBe($sourceAccount->id)
         ->and($inflow->account_id)->toBe($destAccount->id)
@@ -135,7 +135,7 @@ it('rejects direct unit-member edits with 422 on PUT /transactions', function ()
         amount: 250_000,
         transaction_date: now()->toDateString(),
     ));
-    $outflow = $transfer->transactions()->get()->first(fn ($row): bool => $row->flow === TransactionFlow::Outflow);
+    $outflow = $transfer->transactions()->get()->first(fn ($row): bool => $row->flow === Cashflow::Outflow);
 
     $this->actingAs($user)->put(route('transactions.update', $outflow), [
         'account_id' => $sourceAccount->id,
@@ -186,7 +186,7 @@ it('soft-deletes the whole unit (aggregate, member rows, fee) when any member is
     ])->assertRedirect();
 
     $transfer = Transfer::first();
-    $inflow = $transfer->transactions()->get()->first(fn ($row): bool => $row->flow === TransactionFlow::Inflow);
+    $inflow = $transfer->transactions()->get()->first(fn ($row): bool => $row->flow === Cashflow::Inflow);
 
     $this->actingAs($user)->delete(route('transactions.destroy', $inflow))->assertRedirect();
 
@@ -224,8 +224,8 @@ it('resolves destination_account_id for both sides of a transfer unit', function
     ));
     $rows = $transfer->transactions()->get();
 
-    $outflow = $rows->first(fn ($row): bool => $row->flow === TransactionFlow::Outflow);
-    $inflow = $rows->first(fn ($row): bool => $row->flow === TransactionFlow::Inflow);
+    $outflow = $rows->first(fn ($row): bool => $row->flow === Cashflow::Outflow);
+    $inflow = $rows->first(fn ($row): bool => $row->flow === Cashflow::Inflow);
 
     expect(TransactionListData::fromTransaction($outflow)->destination_account_id)->toBe($destAccount->id)
         ->and(TransactionListData::fromTransaction($inflow)->destination_account_id)->toBe($sourceAccount->id);

@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-use App\Data\DecorationData;
+use App\Objects\Decoration;
 
 /**
  * The preset category catalog. Backed by string slugs; presentation
@@ -89,6 +89,15 @@ enum Category: string
     case Gifts = 'gifts';
     case CharityAndDonations = 'charity_and_donations';
 
+    /** Case values users may book — everything except the system-only opening balance. */
+    public static function bookable(): array
+    {
+        return array_values(array_map(
+            fn (self $category): string => $category->value,
+            array_filter(self::cases(), fn (self $category): bool => $category !== self::InitialBalance),
+        ));
+    }
+
     public function label(): string
     {
         return match ($this) {
@@ -148,68 +157,6 @@ enum Category: string
             self::FamilyAndFriends => 'Family & Friends',
             self::Gifts => 'Gifts',
             self::CharityAndDonations => 'Charity & Donations',
-        };
-    }
-
-    public function decorations(): DecorationData
-    {
-        return match ($this) {
-            self::Salary => new DecorationData(icon: 'case', color: 'green-700'),
-            self::Freelance => new DecorationData(icon: 'laptop', color: 'green-700'),
-            self::BusinessRevenue => new DecorationData(icon: 'shop', color: 'green-700'),
-            self::GrantsAndStipends => new DecorationData(icon: 'hand-shake', color: 'green-500'),
-            self::InvestmentReturns => new DecorationData(icon: 'course-up', color: 'green-400'),
-            self::Dividends => new DecorationData(icon: 'course-up', color: 'green-400'),
-            self::OtherIncome => new DecorationData(icon: 'add-circle', color: 'green-200'),
-            self::InitialBalance => new DecorationData(icon: 'course-up', color: 'green-200'),
-            self::AdminFees => new DecorationData(icon: 'wallet', color: 'green-700'),
-            self::Taxes => new DecorationData(icon: 'wallet', color: 'green-700'),
-            self::Interest => new DecorationData(icon: 'wallet', color: 'green-600'),
-            self::Insurance => new DecorationData(icon: 'shield-check', color: 'green-500'),
-            self::DiningOut => new DecorationData(icon: 'donut', color: 'red-700'),
-            self::SnacksAndDrinks => new DecorationData(icon: 'cup-hot', color: 'red-600'),
-            self::CoffeeAndDesserts => new DecorationData(icon: 'mug', color: 'red-600'),
-            self::FoodTakeouts => new DecorationData(icon: 'donut', color: 'red-500'),
-            self::BuffetFineDining => new DecorationData(icon: 'chef-hat', color: 'red-400'),
-            self::Electricity => new DecorationData(icon: 'lightning', color: 'amber-600'),
-            self::Water => new DecorationData(icon: 'waterdrop', color: 'amber-500'),
-            self::GasAndCooking => new DecorationData(icon: 'flame', color: 'amber-500'),
-            self::Internet => new DecorationData(icon: 'wi-fi-high', color: 'amber-400'),
-            self::MobileAndPrepaid => new DecorationData(icon: 'smartphone', color: 'amber-400'),
-            self::Rent => new DecorationData(icon: 'key', color: 'yellow-600'),
-            self::HomeMaintenance => new DecorationData(icon: 'settings-minimalistic', color: 'yellow-500'),
-            self::CleaningServices => new DecorationData(icon: 'broom', color: 'yellow-400'),
-            self::PropertyServices => new DecorationData(icon: 'buildings', color: 'yellow-400'),
-            self::Groceries => new DecorationData(icon: 'cart-large', color: 'sky-600'),
-            self::Clothing => new DecorationData(icon: 'bag-2', color: 'sky-500'),
-            self::BeautyAndGrooming => new DecorationData(icon: 'scissors', color: 'sky-500'),
-            self::Electronics => new DecorationData(icon: 'smartphone', color: 'sky-400'),
-            self::HouseholdItems => new DecorationData(icon: 'lamp', color: 'sky-400'),
-            self::Hobbies => new DecorationData(icon: 'paint-brush', color: 'cyan-600'),
-            self::Sports => new DecorationData(icon: 'basketball', color: 'cyan-500'),
-            self::Games => new DecorationData(icon: 'gamepad', color: 'cyan-500'),
-            self::CinemaAndShows => new DecorationData(icon: 'tv', color: 'cyan-400'),
-            self::Streaming => new DecorationData(icon: 'tv', color: 'cyan-400'),
-            self::TravelAndTourism => new DecorationData(icon: 'plane', color: 'cyan-300'),
-            self::FestivalsEvents => new DecorationData(icon: 'confetti', color: 'cyan-300'),
-            self::Fuel => new DecorationData(icon: 'fuel', color: 'slate-900'),
-            self::PublicTransport => new DecorationData(icon: 'bus', color: 'slate-800'),
-            self::RideHailingTaxis => new DecorationData(icon: 'scooter', color: 'slate-800'),
-            self::BusTrains => new DecorationData(icon: 'tram', color: 'slate-700'),
-            self::FlightsFerries => new DecorationData(icon: 'plane', color: 'slate-700'),
-            self::TravelServices => new DecorationData(icon: 'suitcase', color: 'slate-600'),
-            self::Medicine => new DecorationData(icon: 'pill', color: 'rose-400'),
-            self::DoctorVisits => new DecorationData(icon: 'stethoscope', color: 'rose-300'),
-            self::TraditionalTherapy => new DecorationData(icon: 'leaf', color: 'rose-500'),
-            self::FitnessAndGyms => new DecorationData(icon: 'dumbbell-large', color: 'rose-600'),
-            self::FamilyCare => new DecorationData(icon: 'users-group-two-rounded', color: 'rose-700'),
-            self::Tuition => new DecorationData(icon: 'book', color: 'lime-700'),
-            self::UniversitySchoolFees => new DecorationData(icon: 'diploma', color: 'lime-600'),
-            self::BooksAndStationery => new DecorationData(icon: 'library', color: 'lime-500'),
-            self::CoursesAndWorkshops => new DecorationData(icon: 'server-square', color: 'lime-400'),
-            self::FamilyAndFriends => new DecorationData(icon: 'users-group-two-rounded', color: 'violet-700'),
-            self::Gifts => new DecorationData(icon: 'gift', color: 'violet-600'),
-            self::CharityAndDonations => new DecorationData(icon: 'hand-heart', color: 'violet-500'),
         };
     }
 
@@ -284,31 +231,65 @@ enum Category: string
         };
     }
 
-    public function isFixedCost(): bool
+    public function decorations(): Decoration
     {
         return match ($this) {
-            self::Salary,
-            self::InitialBalance,
-            self::Insurance,
-            self::Electricity,
-            self::Water,
-            self::Internet,
-            self::Rent,
-            self::Fuel,
-            self::PublicTransport,
-            self::FitnessAndGyms,
-            self::Tuition,
-            self::UniversitySchoolFees => true,
-            default => false,
+            self::Salary => new Decoration(icon: 'case', color: 'green-700'),
+            self::Freelance => new Decoration(icon: 'laptop', color: 'green-700'),
+            self::BusinessRevenue => new Decoration(icon: 'shop', color: 'green-700'),
+            self::GrantsAndStipends => new Decoration(icon: 'hand-shake', color: 'green-500'),
+            self::InvestmentReturns => new Decoration(icon: 'course-up', color: 'green-400'),
+            self::Dividends => new Decoration(icon: 'course-up', color: 'green-400'),
+            self::OtherIncome => new Decoration(icon: 'add-circle', color: 'green-200'),
+            self::InitialBalance => new Decoration(icon: 'course-up', color: 'green-200'),
+            self::AdminFees => new Decoration(icon: 'wallet', color: 'green-700'),
+            self::Taxes => new Decoration(icon: 'wallet', color: 'green-700'),
+            self::Interest => new Decoration(icon: 'wallet', color: 'green-600'),
+            self::Insurance => new Decoration(icon: 'shield-check', color: 'green-500'),
+            self::DiningOut => new Decoration(icon: 'donut', color: 'red-700'),
+            self::SnacksAndDrinks => new Decoration(icon: 'cup-hot', color: 'red-600'),
+            self::CoffeeAndDesserts => new Decoration(icon: 'mug', color: 'red-600'),
+            self::FoodTakeouts => new Decoration(icon: 'donut', color: 'red-500'),
+            self::BuffetFineDining => new Decoration(icon: 'chef-hat', color: 'red-400'),
+            self::Electricity => new Decoration(icon: 'lightning', color: 'amber-600'),
+            self::Water => new Decoration(icon: 'waterdrop', color: 'amber-500'),
+            self::GasAndCooking => new Decoration(icon: 'flame', color: 'amber-500'),
+            self::Internet => new Decoration(icon: 'wi-fi-high', color: 'amber-400'),
+            self::MobileAndPrepaid => new Decoration(icon: 'smartphone', color: 'amber-400'),
+            self::Rent => new Decoration(icon: 'key', color: 'yellow-600'),
+            self::HomeMaintenance => new Decoration(icon: 'settings-minimalistic', color: 'yellow-500'),
+            self::CleaningServices => new Decoration(icon: 'broom', color: 'yellow-400'),
+            self::PropertyServices => new Decoration(icon: 'buildings', color: 'yellow-400'),
+            self::Groceries => new Decoration(icon: 'cart-large', color: 'sky-600'),
+            self::Clothing => new Decoration(icon: 'bag-2', color: 'sky-500'),
+            self::BeautyAndGrooming => new Decoration(icon: 'scissors', color: 'sky-500'),
+            self::Electronics => new Decoration(icon: 'smartphone', color: 'sky-400'),
+            self::HouseholdItems => new Decoration(icon: 'lamp', color: 'sky-400'),
+            self::Hobbies => new Decoration(icon: 'paint-brush', color: 'cyan-600'),
+            self::Sports => new Decoration(icon: 'basketball', color: 'cyan-500'),
+            self::Games => new Decoration(icon: 'gamepad', color: 'cyan-500'),
+            self::CinemaAndShows => new Decoration(icon: 'tv', color: 'cyan-400'),
+            self::Streaming => new Decoration(icon: 'tv', color: 'cyan-400'),
+            self::TravelAndTourism => new Decoration(icon: 'plane', color: 'cyan-300'),
+            self::FestivalsEvents => new Decoration(icon: 'confetti', color: 'cyan-300'),
+            self::Fuel => new Decoration(icon: 'fuel', color: 'slate-900'),
+            self::PublicTransport => new Decoration(icon: 'bus', color: 'slate-800'),
+            self::RideHailingTaxis => new Decoration(icon: 'scooter', color: 'slate-800'),
+            self::BusTrains => new Decoration(icon: 'tram', color: 'slate-700'),
+            self::FlightsFerries => new Decoration(icon: 'plane', color: 'slate-700'),
+            self::TravelServices => new Decoration(icon: 'suitcase', color: 'slate-600'),
+            self::Medicine => new Decoration(icon: 'pill', color: 'rose-400'),
+            self::DoctorVisits => new Decoration(icon: 'stethoscope', color: 'rose-300'),
+            self::TraditionalTherapy => new Decoration(icon: 'leaf', color: 'rose-500'),
+            self::FitnessAndGyms => new Decoration(icon: 'dumbbell-large', color: 'rose-600'),
+            self::FamilyCare => new Decoration(icon: 'users-group-two-rounded', color: 'rose-700'),
+            self::Tuition => new Decoration(icon: 'book', color: 'lime-700'),
+            self::UniversitySchoolFees => new Decoration(icon: 'diploma', color: 'lime-600'),
+            self::BooksAndStationery => new Decoration(icon: 'library', color: 'lime-500'),
+            self::CoursesAndWorkshops => new Decoration(icon: 'server-square', color: 'lime-400'),
+            self::FamilyAndFriends => new Decoration(icon: 'users-group-two-rounded', color: 'violet-700'),
+            self::Gifts => new Decoration(icon: 'gift', color: 'violet-600'),
+            self::CharityAndDonations => new Decoration(icon: 'hand-heart', color: 'violet-500'),
         };
-    }
-
-    /** Case values users may book — everything except the system-only opening balance. */
-    public static function bookable(): array
-    {
-        return array_values(array_map(
-            fn (self $category): string => $category->value,
-            array_filter(self::cases(), fn (self $category): bool => $category !== self::InitialBalance),
-        ));
     }
 }

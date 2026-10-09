@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\Cashflow;
 use App\Enums\Category;
-use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Transaction;
@@ -25,7 +25,7 @@ class TransactionFactory extends Factory
             'created_by' => User::factory(),
             'amount' => fake()->randomFloat(2, 1_000_000, 10_000_000),
             'type' => TransactionType::Expense,
-            'flow' => TransactionFlow::Outflow,
+            'flow' => Cashflow::Outflow,
             'transfer_id' => null,
             'transaction_date' => fake()->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
             'description' => fake()->optional(0.6)->sentence(),
@@ -36,7 +36,7 @@ class TransactionFactory extends Factory
     {
         return $this->state([
             'type' => TransactionType::Income,
-            'flow' => TransactionFlow::Inflow,
+            'flow' => Cashflow::Inflow,
         ]);
     }
 
@@ -44,7 +44,7 @@ class TransactionFactory extends Factory
     {
         return $this->state([
             'type' => TransactionType::Expense,
-            'flow' => TransactionFlow::Outflow,
+            'flow' => Cashflow::Outflow,
         ]);
     }
 
@@ -53,7 +53,7 @@ class TransactionFactory extends Factory
     {
         return $this->state([
             'type' => TransactionType::Transfer,
-            'flow' => TransactionFlow::Outflow,
+            'flow' => Cashflow::Outflow,
             'transfer_id' => $transfer instanceof Transfer ? $transfer->id : $transfer,
             'category_id' => null,
         ]);
@@ -64,7 +64,7 @@ class TransactionFactory extends Factory
     {
         return $this->state([
             'type' => TransactionType::Transfer,
-            'flow' => TransactionFlow::Inflow,
+            'flow' => Cashflow::Inflow,
             'transfer_id' => $transfer instanceof Transfer ? $transfer->id : $transfer,
             'category_id' => null,
         ]);
@@ -75,7 +75,7 @@ class TransactionFactory extends Factory
     {
         return $this->state([
             'type' => TransactionType::Expense,
-            'flow' => TransactionFlow::Outflow,
+            'flow' => Cashflow::Outflow,
             'transfer_id' => $transfer instanceof Transfer ? $transfer->id : $transfer,
             'category_id' => Category::AdminFees,
         ]);
@@ -94,7 +94,7 @@ class TransactionFactory extends Factory
     {
         return $this->state([
             'type' => TransactionType::Income,
-            'flow' => TransactionFlow::Inflow,
+            'flow' => Cashflow::Inflow,
             'category_id' => CategoryService::initialBalanceCategoryId(),
             'description' => 'Initial balance',
         ]);

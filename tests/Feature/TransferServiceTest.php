@@ -2,8 +2,8 @@
 
 use App\Data\Transaction\TransactionListData;
 use App\Data\Transaction\TransferData;
+use App\Enums\Cashflow;
 use App\Enums\Category;
-use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Transaction;
@@ -46,8 +46,8 @@ it('creates a transfer unit with an aggregate, source/destination rows, and an o
     $rows = $transfer->transactions()->get();
     expect($rows)->toHaveCount(3);
 
-    $sourceRow = $rows->first(fn ($row): bool => $row->type === TransactionType::Transfer && $row->flow === TransactionFlow::Outflow);
-    $destinationRow = $rows->first(fn ($row): bool => $row->type === TransactionType::Transfer && $row->flow === TransactionFlow::Inflow);
+    $sourceRow = $rows->first(fn ($row): bool => $row->type === TransactionType::Transfer && $row->flow === Cashflow::Outflow);
+    $destinationRow = $rows->first(fn ($row): bool => $row->type === TransactionType::Transfer && $row->flow === Cashflow::Inflow);
     $feeRow = $rows->first(fn ($row): bool => $row->type === TransactionType::Expense);
 
     expect($sourceRow->account_id)->toBe($source->id)
@@ -104,8 +104,8 @@ it('folds destination_account_id from both movement rows but not the fee', funct
     $transfer = resolve(TransferService::class)->create($user, unitData($source, $destination, 1_000.0));
 
     $rows = $transfer->transactions()->get();
-    $sourceRow = $rows->first(fn ($row): bool => $row->type === TransactionType::Transfer && $row->flow === TransactionFlow::Outflow);
-    $destinationRow = $rows->first(fn ($row): bool => $row->type === TransactionType::Transfer && $row->flow === TransactionFlow::Inflow);
+    $sourceRow = $rows->first(fn ($row): bool => $row->type === TransactionType::Transfer && $row->flow === Cashflow::Outflow);
+    $destinationRow = $rows->first(fn ($row): bool => $row->type === TransactionType::Transfer && $row->flow === Cashflow::Inflow);
     $feeRow = $rows->firstWhere('type', TransactionType::Expense);
 
     expect(TransactionListData::fromTransaction($sourceRow)->destination_account_id)->toBe($destination->id)
@@ -119,6 +119,6 @@ it('hides inflow rows from the global list but shows fee and outflow rows', func
 
     $global = TransactionService::getTransactions($user);
 
-    expect($global->where('flow', TransactionFlow::Inflow))->toHaveCount(0)
+    expect($global->where('flow', Cashflow::Inflow))->toHaveCount(0)
         ->and($global)->toHaveCount(2); // outflow row + fee row
 });

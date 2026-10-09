@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use App\Enums\AccountType;
+use App\Enums\Cashflow;
 use App\Enums\Category;
 use App\Enums\CategoryGroup;
-use App\Enums\CategoryType;
 use App\Models\Account;
 use App\Models\Provider;
 use App\Models\Transaction;
@@ -57,7 +57,7 @@ final class DummyDataSeeder extends Seeder
             ->values();
 
         $expenseCategories = collect(Category::cases())
-            ->reject(fn (Category $category): bool => $category->group()->type() === CategoryType::Input)
+            ->reject(fn (Category $category): bool => $category->group()->flow() === Cashflow::Inflow)
             ->values();
 
         for ($index = 0; $index < $users; $index++) {

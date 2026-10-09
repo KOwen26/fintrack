@@ -62,10 +62,17 @@ class HandleInertiaRequests extends Middleware
                 'current_route_name' => fn () => $method === 'GET' ? $request->route()->getName() : null,
                 'previous_route_name' => fn () => $method === 'GET' ? Route::getPreviousName() : null,
             ],
-            'static' => [
-                'accounts' => fn (): Collection => $authed ? AccountService::getAccountsByUser($request->user()) : collect(),
-                'categories' => fn (): Collection => $authed ? CategoryService::getCategories() : collect(),
-                'groupedCategories' => fn (): Collection => $authed ? CategoryService::getGroupedCategories() : collect(),
+            'static' => $authed ? [
+                'accounts' => fn (): Collection => AccountService::getAccountsByUser($request->user()),
+                'categories' => fn (): array => [
+                    'inflow' => CategoryService::getInflowCategories()->all(),
+                    'outflow' => CategoryService::getOutflowCategories()->all(),
+                    'grouped_inflow' => CategoryService::getGroupedInflowCategories()->all(),
+                    'grouped_outflow' => CategoryService::getGroupedOutflowCategories()->all(),
+                ],
+            ] : [
+                'accounts' => [],
+                'categories' => ['inflow' => [], 'outflow' => [], 'grouped_inflow' => [], 'grouped_outflow' => []],
             ],
         ]);
     }

@@ -1,8 +1,8 @@
 <?php
 
-use App\Data\DecorationData;
 use App\Models\Account;
 use App\Models\Provider;
+use App\Objects\Decoration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -10,7 +10,7 @@ uses(RefreshDatabase::class);
 it('assigns random active decorations to accounts by default', function (): void {
     $account = Account::factory()->create();
 
-    expect($account->decorations)->toBeInstanceOf(DecorationData::class)
+    expect($account->decorations)->toBeInstanceOf(Decoration::class)
         ->and($account->decorations->icon)->toBeString()
         ->and($account->decorations->color)->toBeString();
 });
@@ -18,7 +18,7 @@ it('assigns random active decorations to accounts by default', function (): void
 it('assigns random active decorations to providers by default', function (): void {
     $provider = Provider::factory()->create();
 
-    expect($provider->decorations)->toBeInstanceOf(DecorationData::class)
+    expect($provider->decorations)->toBeInstanceOf(Decoration::class)
         ->and($provider->decorations->icon)->toBeString()
         ->and($provider->decorations->color)->toBeString();
 });
@@ -38,7 +38,7 @@ it('reads persisted null decorations back as null', function (): void {
 });
 
 it('accepts null icon and color in decoration data', function (): void {
-    $decorations = DecorationData::from(['icon' => null, 'color' => null]);
+    $decorations = Decoration::fromArray(['icon' => null, 'color' => null]);
 
     expect($decorations->icon)->toBeNull()
         ->and($decorations->color)->toBeNull();

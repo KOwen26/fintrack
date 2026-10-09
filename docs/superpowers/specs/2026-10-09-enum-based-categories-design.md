@@ -5,7 +5,7 @@ Status: Draft — pending review
 
 ## Problem
 
-Categories are the only enumerable domain concept in this codebase stored as database rows. Every comparable concept (`AccountType`, `TransactionType`, `TransactionFlow`, `ProviderStatus`…) is a string column backed by a PHP enum with Wayfinder-generated constants. The DB catalog produces recurring friction:
+Categories are the only enumerable domain concept in this codebase stored as database rows. Every comparable concept (`AccountType`, `TransactionType`, `Cashflow`, `ProviderStatus`…) is a string column backed by a PHP enum with Wayfinder-generated constants. The DB catalog produces recurring friction:
 
 1. **System booking resolves categories by magic name.** Transfer fees look up a row named `'Admin Fees'`; opening balances look up `'Initial Balance'`. Both can silently fail (rename/deletion → uncategorized booking). The `fixed` flag that should prevent this has no enforcement — there are no mutation endpoints at all.
 2. **Every test that books opening balances must seed `CategorySeeder`** (five `beforeEach` lines added in the initial-balance change).
@@ -126,11 +126,13 @@ public function group(): CategoryGroup
 }
 ```
 
-`decorations()` wraps the child entry's `icon_slug`/`color_slug` in `DecorationData` — the same shape the old `decorations` column cast to, shared with accounts and providers. `isFixedCost()` mirrors the `fixed` flag. Case declaration order replaces the `order` decimal — `Category::cases()` IS the display order, both for cases within a group and groups themselves.
+`decorations()` wraps the child entry's `icon_slug`/`color_slug` in `DecorationData` — the same shape the old `decorations` column cast to, shared with accounts and providers. Case declaration order replaces the `order` decimal — `Category::cases()` IS the display order, both for cases within a group and groups themselves.
+
+The seeder's `fixed` flag was **not carried** — no code ever consumed it (its only prospective consumer, a fixed-vs-variable report, exists only as fragments in the pre-existing-broken `ReportTest`). Reintroduce per-case data when that report is actually built.
 
 **System cases pinned by this spec:** `Category::AdminFees = 'admin_fees'` (transfer fees) and `Category::InitialBalance = 'initial_balance'` (opening balances). `InitialBalance` remains the only non-bookable case (users may legitimately book `AdminFees` expenses themselves).
 
-## `CategoryGroup` and `CategoryType`
+## `CategoryGroup` and `Cashflow`
 
 `app/Enums/CategoryGroup.php` — backed string, one case per current parent group, in display order:
 
@@ -154,11 +156,11 @@ enum CategoryGroup: string
 Each carries `label()` and `decorations()` (transcribed from the group entries — e.g. `Income` → `round-arrow-down` / `green-700`, `Transport` → `wheel-angle` / `slate-900`) plus:
 
 ```php
-public function type(): CategoryType   // Income => input, everything else => output
+public function flow(): Cashflow   // Income => inflow, everything else => outflow
 public function children(): array      // Category::cases() filtered by group, declaration order
 ```
 
-`CategoryType` (input/output) **stays** — it is already a Wayfinder-exported enum and remains the income/expense axis for groups and the seeder. `CategoryGroup::Income->type() === CategoryType::Input` replaces the seeder's `'type' => 'input'` column semantics.
+`CategoryType` (input/output) is **deleted** — it duplicated the money-direction axis. `Cashflow` (renamed from `TransactionFlow` for entity-neutral naming, since it now types transactions *and* category groups) is the single direction axis. `CategoryGroup::Income->flow() === Cashflow::Inflow` replaces the seeder's `'type' => 'input'` column semantics.
 
 ## Storage & migration
 
@@ -199,9 +201,8 @@ class CategoryData extends Data
     public function __construct(
         public string $id,             // enum value — the row's identity (name kept from the old table)
         public string $name,
-        public DecorationData $decorations,
-        public CategoryType $type,     // derived from the group
-        public bool $is_fixed_cost,
+        public Cashflow $cashflow,     // derived from the group
+        public Decoration $decorations,
         public CategoryGroupData $group,
     ) {}
 
@@ -215,8 +216,8 @@ class CategoryGroupData extends Data
     public function __construct(
         public string $id,
         public string $name,
-        public DecorationData $decorations,
-        public CategoryType $type,
+        public Decoration $decorations,
+        public Cashflow $cashflow,
     ) {}
 
     public static function fromEnum(CategoryGroup $group): self { … }
@@ -225,14 +226,15 @@ class CategoryGroupData extends Data
 
 (The enum's metadata method stays `label()` — a `name()` method would sit confusingly next to the native `UnitEnum::$name` property, which holds the *case* name like `AdminFees`. The DTO maps it to `name`, matching the old column.)
 
-**`CategoryService` survives as the catalog provider** — its internals switch from DB queries to the enum, its call sites stay:
+**`CategoryService` survives as the catalog provider** — the full previous method surface persists, every one re-implemented on the enum (DB queries gone):
 
 ```php
-CategoryService::getCategories(): Collection<CategoryData>            // flat, bookable (excludes InitialBalance)
-CategoryService::getGroupedCategories(): Collection<array{ … }>      // group rows with `options` children, today's shape
+CategoryService::getGroupedInflowCategories(): Collection<array{ … }>   // [Income group row]
+CategoryService::getGroupedOutflowCategories(): Collection<array{ … }>  // the ten non-Income group rows
+// + flat variants: getBookableCategories/getCategories/getInflowCategories/getOutflowCategories
 ```
 
-`getBookableCategories()` keeps its role (the future preferences layer extends only this method); `initialBalanceCategoryId()` is deleted (superseded by the `Category::InitialBalance` constant).
+Each group row carries `id`/`name`/`cashflow`/`decorations` plus `options` (bookable `CategoryData` children; `InitialBalance` excluded). Deleted: `initialBalanceCategoryId()` only (superseded by the `Category::InitialBalance` constant).
 
 **Example — the targeted data shapes.** A single category row, as the DTO now materializes it:
 
@@ -241,44 +243,50 @@ CategoryData::fromEnum(Category::AdminFees)->toArray();
 // [
 //     'id'            => 'admin_fees',
 //     'name'          => 'Admin Fees',
+//     'cashflow'      => 'outflow',
 //     'decorations'   => ['icon' => 'wallet', 'color' => 'green-700'],
-//     'type'          => 'output',
-//     'is_fixed_cost' => false,
 //     'group'         => [
 //         'id'          => 'finance',
 //         'name'        => 'Finance',
+//         'cashflow'    => 'outflow',
 //         'decorations' => ['icon' => 'hand-money', 'color' => 'green-700'],
-//         'type'        => 'output',
 //     ],
 // ]
 ```
 
-And the grouped catalog exactly as `static.groupedCategories` ships it to the frontend (excerpt — `Income` and `Finance` groups; compare today's `getGroupedCategories` shape: identical field names, `type` added):
+And the grouped catalog exactly as each `static.categories` bucket ships it to the frontend (excerpt — the `Income` bucket under `grouped_inflow`, the `Finance` group from `grouped_outflow`; field names match today's shape, `type`/`cashflow` added):
+
+And the grouped catalog exactly as each `static.categories` bucket ships it to the frontend (excerpt — the `Income` bucket under `grouped_inflow`, the `Finance` group from `grouped_outflow`; field names match today's shape, `cashflow` added):
 
 ```php
-CategoryService::getGroupedCategories();
+CategoryService::getGroupedInflowCategories();
 // [
 //     [
 //         'id'          => 'income',
 //         'name'        => 'Income',
-//         'type'        => 'input',
+//         'cashflow'    => 'inflow',
 //         'decorations' => ['icon' => 'round-arrow-down', 'color' => 'green-700'],
 //         'options'     => [
-//             ['id' => 'salary', 'name' => 'Salary', 'decorations' => ['icon' => 'case', 'color' => 'green-700'], 'type' => 'input', 'is_fixed_cost' => true],
-//             ['id' => 'freelance', 'name' => 'Freelance', 'decorations' => ['icon' => 'laptop', 'color' => 'green-700'], 'type' => 'input', 'is_fixed_cost' => false],
+//             ['id' => 'salary', 'name' => 'Salary', 'cashflow' => 'inflow', 'decorations' => ['icon' => 'case', 'color' => 'green-700']],
+//             ['id' => 'freelance', 'name' => 'Freelance', 'cashflow' => 'inflow', 'decorations' => ['icon' => 'laptop', 'color' => 'green-700']],
 //             // …
 //         ],
 //     ],
+// ]
+
+CategoryService::getGroupedOutflowCategories();
+// [
 //     [
-//         'id'      => 'finance',
-//         'name'    => 'Finance',
-//         // …
-//         'options' => [
-//             ['id' => 'admin_fees', 'name' => 'Admin Fees', 'decorations' => ['icon' => 'wallet', 'color' => 'green-700'], 'type' => 'output', 'is_fixed_cost' => false],
+//         'id'          => 'finance',
+//         'name'        => 'Finance',
+//         'cashflow'    => 'outflow',
+//         'decorations' => ['icon' => 'hand-money', 'color' => 'green-700'],
+//         'options'     => [
+//             ['id' => 'admin_fees', 'name' => 'Admin Fees', 'cashflow' => 'outflow', 'decorations' => ['icon' => 'wallet', 'color' => 'green-700']],
 //             // …
 //         ],
 //     ],
-//     // … remaining groups in declaration order …
+//     // … remaining outflow groups in declaration order …
 // ]
 ```
 
@@ -286,13 +294,13 @@ CategoryService::getGroupedCategories();
 
 ## Shared props & frontend
 
-- **`HandleInertiaRequests`** (backend, in scope): `static.categories` and `static.groupedCategories` keep flowing from `CategoryService`, now returning `CategoryData`/grouped DTOs instead of model rows — the JSON shape matches today's (flat list + grouped-with-options, same `id`-keyed identity), with `type` added alongside the unchanged `decorations` object.
+- **`HandleInertiaRequests`** (backend, in scope): `static.categories` is the keyed per-cashflow map — `grouped_inflow` / `grouped_outflow`, each a grouped, flow-filtered catalog from `CategoryService`. The old flat `groupedCategories` prop is deleted (fully redundant: the union of both buckets is the same catalog).
 - **Frontend (out of scope)**: component updates — the exhaustive `resources/js/data/categories.ts` map, `category-select`/`category-info` value shape, `transaction-list`/`-item`/`-filter` lookups, `transaction.schema.ts` — are deferred follow-up work. Wayfinder regeneration updates the generated types (`App.Enums.Category` union, DTO shapes, `App.Models.Category` removal); until the components adapt there will be TS errors, which is acceptable pre-launch. The frontend dead code (`category-badge.svelte`, `category-form.svelte`, `category.schema.ts`) is left for that follow-up as well.
 
 ## Seeder, factories, tests
 
 - **`CategorySeeder`**: deleted, and its call removed from `DatabaseSeeder` (which keeps `ProviderSeeder` + `DummyDataSeeder`).
-- **`DummyDataSeeder`**: replaces its `Category` model pick lists with `Category::cases()` — bookable pool = all cases except `InitialBalance`; income pool = cases whose `group()->type()` is `Input`; expense pool = the `Output` side. Coverage logic (`coveredIncomeIds`) keyed by string values.
+- **`DummyDataSeeder`**: replaces its `Category` model pick lists with `Category::cases()` — bookable pool = all cases except `InitialBalance`; income pool = cases whose `group()->flow()` is `Inflow`; expense pool = the `Outflow` side. Coverage logic (`coveredIncomeIds`) keyed by string values.
 - **`TransactionFactory`**: default `category_id => Category::factory()` becomes a random bookable case.
 - **`AccountFactory` hook / `syncInitialBalance`**: no seeding dependency anymore — **all five `beforeEach` seeder lines added by the initial-balance change are removed**, along with the `CategorySeeder` imports.
 - **Tests referencing `Category::factory()`** (transaction-related suites) follow the factory default; the summarize/summarize-shape tests are unaffected. `InitialBalanceCategoryTest` does not exist (dropped earlier); `InitialBalanceGuardTest`'s "other category" lookup becomes any case except `InitialBalance`.
@@ -307,8 +315,8 @@ Not applicable as a migration concern — the app is not live and data is dispos
 - **All frontend/TS adaptation** — deferred follow-up; Wayfinder regen carries the generated types.
 - Per-user preferences layer (hide presets / custom categories) — future; enabled by the string column and the single server-side bookable-list resolver.
 - User-created categories and any category CRUD endpoints.
-- Enforcing "income transactions pick input-group categories" (not enforced today either).
-- Budgets / `is_fixed_cost` consumers (the flag is carried as `isFixedCost()` for that future).
+- Enforcing "income transactions pick inflow-group categories" (not enforced today either).
+- Budgets / fixed-vs-variable reporting (the seeder's `fixed` flag was dropped with the table — reintroduce per-case data alongside the report that consumes it).
 
 - **`SpendingService`** — see its own section: the aggregate groups by `t.category_id` (name unchanged), DTO ids become string enum values.
 
@@ -316,6 +324,6 @@ Not applicable as a migration concern — the app is not live and data is dispos
 
 1. Enum named `Category`, groups in `CategoryGroup`; the transaction column **keeps the name `category_id`** (type-only change int → string).
 2. Dead backend surfaces deleted outright (controller, route, `getCategoryTransactions`) rather than adapted — they are unreachable today. Frontend dead code is deferred with the rest of the frontend work.
-3. `CategoryType` kept as the group's income/expense axis rather than inlined as booleans.
+3. `Cashflow` (renamed from `TransactionFlow` for entity-neutral naming) is the group's income/expense axis; `CategoryType` was deleted rather than kept as a duplicate enum.
 4. `order` decimals are not carried — declaration order is the order.
 5. `CategoryData`/`CategoryGroupData` keep the `id` field name (holding the string enum value), expose presentation metadata as the same `decorations` object the old table cast to (`DecorationData`), and carry `type` (derived from the group for categories) — so frontend consumers keep their field names.

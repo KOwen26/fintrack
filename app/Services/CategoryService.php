@@ -3,39 +3,80 @@
 namespace App\Services;
 
 use App\Data\Category\CategoryData;
+use App\Enums\Cashflow;
 use App\Enums\Category;
 use App\Enums\CategoryGroup;
 use Illuminate\Support\Collection;
 
-class CategoryService
+final class CategoryService
 {
-    /** Flat bookable catalog — the transaction form's selectable options. */
+    /** Alias of getBookableCategories — the flat catalog under its original name. */
     public static function getCategories(): Collection
     {
-        return self::getBookableCategories();
+        return self::toData(collect(Category::cases())
+            ->reject(fn (Category $category): bool => $category === Category::InitialBalance));
     }
 
-    /** Grouped catalog rows with their child options, in display order. */
+    /** Flat inflow half of the bookable catalog. */
+    public static function getInflowCategories(): Collection
+    {
+        return self::toData(self::casesForFlow(Cashflow::Inflow));
+    }
+
+    /** Flat outflow half of the bookable catalog. */
+    public static function getOutflowCategories(): Collection
+    {
+        return self::toData(self::casesForFlow(Cashflow::Outflow));
+    }
+
+    /** Group rows for every group, in display order. */
     public static function getGroupedCategories(): Collection
     {
+        return self::groupRows(collect(CategoryGroup::cases()));
+    }
+
+    /** Group rows for the inflow side (the Income group). */
+    public static function getGroupedInflowCategories(): Collection
+    {
+        return self::groupRows(self::groupsForFlow(Cashflow::Inflow));
+    }
+
+    /** Group rows for the outflow side (every non-Income group). */
+    public static function getGroupedOutflowCategories(): Collection
+    {
+        return self::groupRows(self::groupsForFlow(Cashflow::Outflow));
+    }
+
+    private static function casesForFlow(Cashflow $cashflow): Collection
+    {
+        return collect(Category::cases())
+            ->filter(fn (Category $category): bool => $category->group()->flow() === $cashflow)
+            ->reject(fn (Category $category): bool => $category === Category::InitialBalance);
+    }
+
+    private static function groupsForFlow(Cashflow $cashflow): Collection
+    {
         return collect(CategoryGroup::cases())
-            ->map(fn (CategoryGroup $group): array => [
-                'id' => $group->value,
-                'name' => $group->label(),
-                'type' => $group->type()->value,
-                'decorations' => $group->decorations(),
-                'options' => collect($group->children())
-                    ->map(fn (Category $category): CategoryData => CategoryData::fromEnum($category))
-                    ->all(),
-            ])
+            ->filter(fn (CategoryGroup $group): bool => $group->flow() === $cashflow);
+    }
+
+    private static function toData(Collection $categories): Collection
+    {
+        return $categories
+            ->map(fn (Category $category): CategoryData => CategoryData::fromEnum($category))
             ->values();
     }
 
-    /** Flat bookable catalog — everything except the system-only opening balance. */
-    public static function getBookableCategories(): Collection
+    private static function groupRows(Collection $groups): Collection
     {
-        return collect(Category::bookable())
-            ->map(fn (string $value): CategoryData => CategoryData::fromEnum(Category::from($value)))
+        return $groups
+            ->map(fn (CategoryGroup $group): array => [
+                'id' => $group->value,
+                'name' => $group->label(),
+                'cashflow' => $group->flow()->value,
+                'decorations' => $group->decorations(),
+                'options' => self::toData(collect($group->children())),
+            ])
             ->values();
     }
 }

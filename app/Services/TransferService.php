@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransferData;
+use App\Enums\Cashflow;
 use App\Enums\Category;
-use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Events\TransactionDeleted;
 use App\Models\Account;
@@ -99,7 +99,7 @@ class TransferService
             amount: $data->amount,
             transaction_date: $data->transaction_date,
             description: $data->description,
-            flow: TransactionFlow::Outflow,
+            flow: Cashflow::Outflow,
             transfer_id: $transfer->id,
         ));
 
@@ -109,7 +109,7 @@ class TransferService
             amount: $data->amount,
             transaction_date: $data->transaction_date,
             description: $data->description,
-            flow: TransactionFlow::Inflow,
+            flow: Cashflow::Inflow,
             transfer_id: $transfer->id,
         ));
 
@@ -121,7 +121,7 @@ class TransferService
                 transaction_date: $data->transaction_date,
                 category_id: Category::AdminFees,
                 description: 'Transfer fee',
-                flow: TransactionFlow::Outflow,
+                flow: Cashflow::Outflow,
                 transfer_id: $transfer->id,
             ));
         }

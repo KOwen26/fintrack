@@ -12,7 +12,6 @@ use App\Http\Requests\SaveTransactionRequest;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\AccountService;
-use App\Services\CategoryService;
 use App\Services\TransactionService;
 use App\Services\TransferService;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -60,7 +59,6 @@ final class TransactionController extends Controller
         return Inertia::render('app/transaction/create', [
             'initialType' => $request->query('type', TransactionType::Expense),
             'transaction' => TransactionFormData::defaultExpense(),
-            'categories' => CategoryService::getBookableCategories(),
             'accounts' => $accounts,
         ]);
     }
@@ -81,7 +79,6 @@ final class TransactionController extends Controller
 
         return Inertia::render('app/transaction/edit', [
             'accounts' => $accounts,
-            'categories' => CategoryService::getBookableCategories(),
             'transaction' => TransactionFormData::fromTransaction($transaction),
         ]);
     }

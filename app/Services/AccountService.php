@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Data\DecorationData;
 use App\Data\Transaction\TransactionData;
 use App\Enums\AccountType;
 use App\Enums\Category;
@@ -10,6 +9,7 @@ use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Objects\Decoration;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -169,7 +169,7 @@ final readonly class AccountService
     private function normalizeDecorations(array $data): array
     {
         if (isset($data['decorations'])) {
-            $data['decorations'] = DecorationData::from($data['decorations'])->toArray();
+            $data['decorations'] = Decoration::fromArray($data['decorations'])->toArray();
         }
 
         return $data;

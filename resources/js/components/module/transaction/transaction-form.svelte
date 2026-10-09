@@ -33,7 +33,6 @@
         /** Server-folded form payload — covers seeded creates and both edit shapes. */
         transaction: Data.TransactionFormData;
         accounts: App.Models.Account[];
-        categories: App.Models.Category[];
         /** Query-prefilled type for creates; edits always retain the server payload. */
         initialType?: App.Enums.TransactionType;
         /** Quick amounts rendered as chips under the hero input. */
@@ -43,7 +42,6 @@
     let {
         transaction,
         accounts,
-        categories,
         initialType = 'expense',
         amountPresets = DEFAULT_AMOUNT_PRESETS,
     }: Props = $props();
@@ -305,7 +303,10 @@
                     error={form.errors.category_id}
                     required
                     title="Category">
-                    <CategorySelect {categories} required bind:value={form.category_id} />
+                    <CategorySelect
+                        cashflow={activeType === TransactionType.Income ? 'inflow' : 'outflow'}
+                        required
+                        bind:value={form.category_id} />
                 </Field>
             {/if}
 

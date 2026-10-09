@@ -2,8 +2,8 @@
 
 namespace App\Data\Transaction;
 
+use App\Enums\Cashflow;
 use App\Enums\Category;
-use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Helpers\TypeScript\Attributes\TypeScriptModel;
 use App\Models\Account;
@@ -26,7 +26,7 @@ class TransactionDetailData extends Data
 
         public TransactionType $type,
 
-        public TransactionFlow $flow,
+        public Cashflow $flow,
 
         public ?int $transfer_id,
 
@@ -62,7 +62,7 @@ class TransactionDetailData extends Data
         $counterpart = null;
 
         if ($transfer !== null && $transaction->type === TransactionType::Transfer) {
-            $counterpart = $transaction->flow === TransactionFlow::Outflow
+            $counterpart = $transaction->flow === Cashflow::Outflow
                 ? $transfer->destinationTransaction
                 : $transfer->sourceTransaction;
         }

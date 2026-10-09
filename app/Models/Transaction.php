@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\Cashflow;
 use App\Enums\Category;
-use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Objects\DatePeriod;
 use App\Observers\TransactionObserver;
@@ -29,7 +29,7 @@ final class Transaction extends Model
         return [
             'category_id' => Category::class,
             'type' => TransactionType::class,
-            'flow' => TransactionFlow::class,
+            'flow' => Cashflow::class,
             'amount' => 'integer',
             'transaction_date' => 'datetime',
         ];
