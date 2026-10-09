@@ -1,17 +1,17 @@
 <?php
 
-use Pest\Mixins\Expectation;
 use App\Data\Transaction\TransactionListData;
 use App\Data\Transaction\TransferData;
+use App\Enums\Category;
 use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\TransactionService;
 use App\Services\TransferService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Pest\Mixins\Expectation;
 
 uses(RefreshDatabase::class);
 
@@ -38,8 +38,6 @@ function unitData(Account $source, Account $destination, ?float $fee = null): Tr
 
 it('creates a transfer unit with an aggregate, source/destination rows, and an optional fee row', function (): void {
     [$user, $source, $destination] = createTransferAccounts();
-    $parent = Category::factory()->create();
-    Category::factory()->create(['name' => 'Admin Fees', 'parent_id' => $parent->id]);
 
     $transfer = resolve(TransferService::class)->create($user, unitData($source, $destination, 6_500.0));
 
@@ -56,16 +54,7 @@ it('creates a transfer unit with an aggregate, source/destination rows, and an o
         ->and($destinationRow->account_id)->toBe($destination->id)
         ->and($feeRow->account_id)->toBe($source->id)
         ->and((float) $feeRow->amount)->toEqual(6_500.0)
-        ->and($feeRow->category)->not->toBeNull();
-});
-
-it('books the fee row as uncategorized when no Admin Fees category exists', function (): void {
-    [$user, $source, $destination] = createTransferAccounts();
-
-    $transfer = resolve(TransferService::class)->create($user, unitData($source, $destination, 6_500.0));
-
-    $feeRow = $transfer->transactions()->get()->firstWhere('type', TransactionType::Expense);
-    expect($feeRow->category_id)->toBeNull();
+        ->and($feeRow->category_id)->toBe(Category::AdminFees);
 });
 
 it('recreates member rows and keeps the transfer id stable on unit edit', function (): void {

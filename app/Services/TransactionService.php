@@ -4,13 +4,13 @@ namespace App\Services;
 
 use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransactionListData;
+use App\Enums\Category;
 use App\Enums\DatePeriodPreset;
 use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Events\TransactionDeleted;
 use App\Events\TransactionSaved;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -28,7 +28,7 @@ final class TransactionService
             ->where('created_by', $user->id)
             ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', TransactionFlow::Inflow))
             ->withinPeriod($period->toPeriod())
-            ->with(['account', 'category', 'transfer.transactions.account'])
+            ->with(['account', 'transfer.transactions.account'])
             ->latest('transaction_date')
             ->get();
 
@@ -41,7 +41,7 @@ final class TransactionService
             ->where('account_id', $account->id)
             ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', TransactionFlow::Inflow))
             ->withinPeriod($period->toPeriod())
-            ->with(['account', 'category', 'transfer.transactions.account'])
+            ->with(['account', 'transfer.transactions.account'])
             ->latest('transaction_date')
             ->get();
     }
@@ -49,10 +49,10 @@ final class TransactionService
     public static function getCategoryTransactions(Category $category, DatePeriodPreset $period = DatePeriodPreset::YearOnYear): Collection
     {
         return Transaction::query()
-            ->where('category_id', $category->id)
-            ->whereNot('type', TransactionType::Transfer)
+            ->where('category_id', $category)
+            ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', TransactionFlow::Inflow))
             ->withinPeriod($period->toPeriod())
-            ->with(['account', 'category'])
+            ->with(['account', 'transfer.transactions.account'])
             ->latest('transaction_date')
             ->get();
     }

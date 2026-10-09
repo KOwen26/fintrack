@@ -4,12 +4,9 @@ use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\BalanceService;
-use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
-
-beforeEach(fn () => $this->seed(CategorySeeder::class));
 
 function setupBalanceAccount(float $initialBalance = 0): array
 {

@@ -2,6 +2,7 @@
 
 namespace App\Data\Transaction;
 
+use App\Enums\Category;
 use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use Spatie\LaravelData\Data;
@@ -26,7 +27,7 @@ class TransactionData extends Data
         public string $transaction_date,
 
         /** Income/expense always carry one (form-enforced). */
-        public ?int $category_id = null,
+        public ?Category $category_id = null,
 
         public ?string $description = null,
 

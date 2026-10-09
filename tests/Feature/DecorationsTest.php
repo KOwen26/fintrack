@@ -2,7 +2,6 @@
 
 use App\Data\DecorationData;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\Provider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -24,21 +23,11 @@ it('assigns random active decorations to providers by default', function (): voi
         ->and($provider->decorations->color)->toBeString();
 });
 
-it('assigns random active decorations to categories by default', function (): void {
-    $category = Category::factory()->create();
-
-    expect($category->decorations)->toBeInstanceOf(DecorationData::class)
-        ->and($category->decorations->icon)->toBeString()
-        ->and($category->decorations->color)->toBeString();
-});
-
 it('allows nullable decorations via the withoutDecorations state', function (): void {
     $account = Account::factory()->withoutDecorations()->create();
-    $category = Category::factory()->withoutDecorations()->create();
     $provider = Provider::factory()->withoutDecorations()->create();
 
     expect($account->decorations)->toBeNull()
-        ->and($category->decorations)->toBeNull()
         ->and($provider->decorations)->toBeNull();
 });
 

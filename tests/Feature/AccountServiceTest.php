@@ -5,12 +5,9 @@ use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\AccountService;
-use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
-
-beforeEach(fn () => $this->seed(CategorySeeder::class));
 
 it('summarizes total, available and investment balances across account types', function (): void {
     $user = User::factory()->create();

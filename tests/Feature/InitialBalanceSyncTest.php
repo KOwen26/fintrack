@@ -1,22 +1,19 @@
 <?php
 
+use App\Enums\Category;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\AccountService;
-use App\Services\CategoryService;
-use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
-
-beforeEach(fn () => $this->seed(CategorySeeder::class));
 
 function openingRow(Account $account): ?Transaction
 {
     return Transaction::query()
         ->where('account_id', $account->id)
-        ->where('category_id', CategoryService::initialBalanceCategoryId())
+        ->where('category_id', Category::InitialBalance)
         ->first();
 }
 
@@ -77,7 +74,7 @@ it('keeps exactly one live row through a zero-X-zero-X cycle', function (): void
 
     expect(Transaction::withTrashed()
         ->where('account_id', $account->id)
-        ->where('category_id', CategoryService::initialBalanceCategoryId())
+        ->where('category_id', Category::InitialBalance)
         ->count())->toBe(2)
         ->and(openingRow($account))->not->toBeNull()
         ->and((float) $account->fresh()->current_balance)->toBe(450_000.0);

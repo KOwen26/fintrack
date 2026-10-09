@@ -2,6 +2,7 @@
 
 namespace App\Data\Transaction;
 
+use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Models\Transaction;
 use App\Models\Transfer;
@@ -36,7 +37,7 @@ class TransactionFormData extends Data
 
         public ?int $destination_account_id,
 
-        public ?int $category_id,
+        public ?Category $category_id,
 
         public ?float $fee_amount,
 

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Data\DecorationData;
 use App\Data\Transaction\TransactionData;
 use App\Enums\AccountType;
+use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Transaction;
@@ -114,11 +115,10 @@ final readonly class AccountService
     public function syncInitialBalance(Account $account): void
     {
         $amount = (float) $account->initial_balance;
-        $categoryId = CategoryService::initialBalanceCategoryId();
 
         $row = Transaction::query()
             ->where('account_id', $account->id)
-            ->where('category_id', $categoryId)
+            ->where('category_id', Category::InitialBalance)
             ->first();
 
         if ($amount <= 0) {
@@ -134,7 +134,7 @@ final readonly class AccountService
             type: TransactionType::Income,
             amount: $amount,
             transaction_date: ($row?->transaction_date ?? $account->created_at)->toDateString(),
-            category_id: $categoryId,
+            category_id: Category::InitialBalance,
             description: 'Initial balance',
         );
 

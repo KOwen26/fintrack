@@ -3,9 +3,10 @@
 namespace Database\Seeders;
 
 use App\Enums\AccountType;
+use App\Enums\Category;
+use App\Enums\CategoryGroup;
 use App\Enums\CategoryType;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\Provider;
 use App\Models\Transaction;
 use App\Models\Transfer;
@@ -50,14 +51,14 @@ final class DummyDataSeeder extends Seeder
     ): void {
         $userNames ??= ['Alice Johnson', 'Bob Smith'];
 
-        // Child categories only — parents are groupings, not bookable.
-        $incomeCategories = Category::whereNotNull('parent_id')
-            ->where('type', CategoryType::Input->value)
-            ->get();
+        // Bookable preset categories only — the system-only opening balance is excluded.
+        $incomeCategories = collect(CategoryGroup::Income->children())
+            ->reject(fn (Category $category): bool => $category === Category::InitialBalance)
+            ->values();
 
-        $expenseCategories = Category::whereNotNull('parent_id')
-            ->where('type', CategoryType::Output->value)
-            ->get();
+        $expenseCategories = collect(Category::cases())
+            ->reject(fn (Category $category): bool => $category->group()->type() === CategoryType::Input)
+            ->values();
 
         for ($index = 0; $index < $users; $index++) {
             $name = $userNames[$index] ?? fake()->name();
@@ -154,7 +155,7 @@ final class DummyDataSeeder extends Seeder
             ->income()
             ->sequence(fn (Sequence $seq): array => [
                 'account_id' => $accountIds[array_rand($accountIds)],
-                'category_id' => $incomePickList[$seq->index % $incomePickList->count()]->id,
+                'category_id' => $incomePickList[$seq->index % $incomePickList->count()]->value,
                 'created_by' => $user->id,
                 'amount' => random_int(10, 500) * 1000,
                 'transaction_date' => $this->randomDateInMonth($year, $month),
@@ -167,7 +168,7 @@ final class DummyDataSeeder extends Seeder
             ->expense()
             ->sequence(fn (Sequence $seq): array => [
                 'account_id' => $accountIds[array_rand($accountIds)],
-                'category_id' => $expensePickList[$seq->index % $expensePickList->count()]->id,
+                'category_id' => $expensePickList[$seq->index % $expensePickList->count()]->value,
                 'created_by' => $user->id,
                 'amount' => random_int(10, 500) * 1000,
                 'transaction_date' => $this->randomDateInMonth($year, $month),
@@ -248,7 +249,7 @@ final class DummyDataSeeder extends Seeder
      * category appears before repeats), then random filler.
      *
      * @param  Collection<int, Category>  $allCategories
-     * @param  Collection<int, int>  $coveredIds
+     * @param  Collection<int, string>  $coveredIds
      *
      * @return Collection<int, Category>
      */
@@ -258,7 +259,7 @@ final class DummyDataSeeder extends Seeder
             return collect();
         }
 
-        $uncovered = $allCategories->reject(fn (Category $cat): bool => $coveredIds->contains($cat->id));
+        $uncovered = $allCategories->reject(fn (Category $category): bool => $coveredIds->contains($category->value));
 
         /** @var Collection<int, Category> $pickList */
         $pickList = $uncovered->shuffle()
@@ -266,7 +267,7 @@ final class DummyDataSeeder extends Seeder
             ->take($count);
 
         $coveredIds->push(
-            ...$pickList->intersectByKeys($uncovered)->pluck('id'),
+            ...$pickList->filter(fn (Category $category): bool => $uncovered->contains($category))->pluck('value'),
         );
 
         return $pickList;

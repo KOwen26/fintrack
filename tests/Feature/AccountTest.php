@@ -4,12 +4,9 @@ use App\Enums\AccountAccessType;
 use App\Enums\AccountType;
 use App\Models\Account;
 use App\Models\User;
-use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
-
-beforeEach(fn () => $this->seed(CategorySeeder::class));
 
 it('lists all accounts for any authenticated user', function (): void {
     $user = User::factory()->create();

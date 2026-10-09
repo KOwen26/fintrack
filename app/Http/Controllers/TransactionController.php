@@ -6,6 +6,7 @@ use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransactionDetailData;
 use App\Data\Transaction\TransactionFormData;
 use App\Data\Transaction\TransactionListData;
+use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Http\Requests\SaveTransactionRequest;
 use App\Models\Transaction;
@@ -72,7 +73,7 @@ final class TransactionController extends Controller
             return to_route('transfers.edit', $transaction->transfer_id);
         }
 
-        if ($transaction->category_id === CategoryService::initialBalanceCategoryId()) {
+        if ($transaction->category_id === Category::InitialBalance) {
             return to_route('accounts.edit', $transaction->account_id);
         }
 
@@ -101,7 +102,7 @@ final class TransactionController extends Controller
         abort_unless($transaction->transfer_id === null, 422, 'Transfer unit members must be edited via their transfer.');
 
         abort_if(
-            $transaction->category_id === CategoryService::initialBalanceCategoryId(),
+            $transaction->category_id === Category::InitialBalance,
             422,
             'Initial balance must be changed via the account.'
         );
@@ -119,7 +120,7 @@ final class TransactionController extends Controller
             $this->transferService->deleteUnit($transaction);
         } else {
             abort_if(
-                $transaction->category_id === CategoryService::initialBalanceCategoryId(),
+                $transaction->category_id === Category::InitialBalance,
                 422,
                 'Initial balance must be changed via the account.'
             );

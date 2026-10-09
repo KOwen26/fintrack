@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Enums\Category;
 use App\Enums\TransactionFlow;
 use App\Enums\TransactionType;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use App\Models\User;
@@ -21,7 +21,7 @@ class TransactionFactory extends Factory
     {
         return [
             'account_id' => Account::factory(),
-            'category_id' => Category::factory(),
+            'category_id' => fake()->randomElement(Category::bookable()),
             'created_by' => User::factory(),
             'amount' => fake()->randomFloat(2, 1_000_000, 10_000_000),
             'type' => TransactionType::Expense,
@@ -70,20 +70,23 @@ class TransactionFactory extends Factory
         ]);
     }
 
-    /** Fee member row of a transfer unit — an expense on the source account. */
+    /** Fee member row of a transfer unit — an expense on the source account, always Admin Fees. */
     public function transferFee(Transfer | int $transfer): static
     {
         return $this->state([
             'type' => TransactionType::Expense,
             'flow' => TransactionFlow::Outflow,
             'transfer_id' => $transfer instanceof Transfer ? $transfer->id : $transfer,
-            'category_id' => null,
+            'category_id' => Category::AdminFees,
         ]);
     }
 
-    public function forCategory(int $categoryId): static
+    /** Point the row at a preset category — enum case or raw value. */
+    public function forCategory(string | Category $category): static
     {
-        return $this->state(['category_id' => $categoryId]);
+        return $this->state([
+            'category_id' => $category instanceof Category ? $category : Category::from($category),
+        ]);
     }
 
     /** Account opening balance row — an income row in the Initial Balance category. */
