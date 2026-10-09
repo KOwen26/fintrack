@@ -103,7 +103,13 @@ final class DummyDataSeeder extends Seeder
 
         $this->command?->info("Seeded user: {$name} <{$email}>");
 
-        $accountIds = $this->seedAccounts($user, Provider::query()->get(), $accountsPerUserMin, $accountsPerUserMax);
+        $accountIds = $this->seedAccounts(
+            $user,
+            Provider::query()->get(),
+            $accountsPerUserMin,
+            $accountsPerUserMax,
+            Date::now()->startOfMonth()->subMonths($months - 1),
+        );
 
         for ($monthOffset = $months - 1; $monthOffset >= 0; $monthOffset--) {
             $date = Date::now()->startOfMonth()->subMonths($monthOffset);
@@ -268,10 +274,11 @@ final class DummyDataSeeder extends Seeder
 
     /**
      * @param  Collection<int, Provider>  $providers
+     * @param  CarbonInterface  $openedAt  Start of the seeded activity window — accounts "open" shortly before it.
      *
      * @return list<int>
      */
-    private function seedAccounts(User $user, Collection $providers, int $min, int $max): array
+    private function seedAccounts(User $user, Collection $providers, int $min, int $max, CarbonInterface $openedAt): array
     {
         $accounts = collect();
 
@@ -279,6 +286,8 @@ final class DummyDataSeeder extends Seeder
             $factory = Account::factory()->state([
                 'type' => collect(AccountType::cases())->random(),
                 'owner_id' => $user->id,
+                'initial_balance' => fake()->boolean(80) ? random_int(1, 50) * 100_000 : 0,
+                'created_at' => $openedAt->copy()->subDays(random_int(1, 14)),
             ]);
 
             if ($providers->isNotEmpty() && fake()->boolean(60)) {

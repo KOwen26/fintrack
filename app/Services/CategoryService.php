@@ -8,9 +8,29 @@ use Illuminate\Support\Collection;
 
 class CategoryService
 {
+    /**
+     * The dedicated bookkeeping category for account opening balances.
+     * Find-only — presence is guaranteed by CategorySeeder; never creates.
+     */
+    public static function initialBalanceCategoryId(): ?int
+    {
+        return Category::query()
+            ->whereNotNull('parent_id')
+            ->where('name', 'Initial Balance')
+            ->value('id');
+    }
+
     public static function getCategories(): Collection
     {
         return Category::query()->levelChildren()->get();
+    }
+
+    /** Child categories selectable in the transaction form — excludes the Initial Balance bookkeeping category. */
+    public static function getBookableCategories(): Collection
+    {
+        return self::getCategories()
+            ->reject(fn (Category $category): bool => $category->id === self::initialBalanceCategoryId())
+            ->values();
     }
 
     public static function getGroupedCategories(): Collection

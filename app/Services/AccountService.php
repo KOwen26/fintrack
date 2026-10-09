@@ -3,13 +3,19 @@
 namespace App\Services;
 
 use App\Data\DecorationData;
+use App\Data\Transaction\TransactionData;
 use App\Enums\AccountType;
+use App\Enums\TransactionType;
 use App\Models\Account;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
-final class AccountService
+final readonly class AccountService
 {
+    public function __construct(private TransactionService $transactionService) {}
+
     public static function getAccountsByUser(User $user): Collection
     {
         return Account::query()
@@ -76,14 +82,69 @@ final class AccountService
 
     public function create(User $user, array $data): Account
     {
-        return Account::create([...$this->normalizeDecorations($data), 'owner_id' => $user->id]);
+        return DB::transaction(function () use ($user, $data): Account {
+            $account = Account::create([...$this->normalizeDecorations($data), 'owner_id' => $user->id]);
+
+            if ((float) $account->initial_balance > 0) {
+                $this->syncInitialBalance($account);
+            }
+
+            return $account;
+        });
     }
 
     public function update(Account $account, array $data): Account
     {
-        $account->update($this->normalizeDecorations($data));
+        return DB::transaction(function () use ($account, $data): Account {
+            $account->update($this->normalizeDecorations($data));
 
-        return $account->fresh();
+            if ($account->wasChanged('initial_balance')) {
+                $this->syncInitialBalance($account);
+            }
+
+            return $account->fresh();
+        });
+    }
+
+    /**
+     * Ensure exactly one live opening row matches the account's display
+     * initial_balance. All row mechanics delegate to TransactionService —
+     * this method only decides create / update-in-place / soft-delete.
+     */
+    public function syncInitialBalance(Account $account): void
+    {
+        $amount = (float) $account->initial_balance;
+        $categoryId = CategoryService::initialBalanceCategoryId();
+
+        $row = Transaction::query()
+            ->where('account_id', $account->id)
+            ->where('category_id', $categoryId)
+            ->first();
+
+        if ($amount <= 0) {
+            if ($row !== null) {
+                $this->transactionService->softDelete($row);
+            }
+
+            return;
+        }
+
+        $data = new TransactionData(
+            account_id: $account->id,
+            type: TransactionType::Income,
+            amount: $amount,
+            transaction_date: ($row?->transaction_date ?? $account->created_at)->toDateString(),
+            category_id: $categoryId,
+            description: 'Initial balance',
+        );
+
+        if ($row === null) {
+            $this->transactionService->create($account->owner, $data);
+
+            return;
+        }
+
+        $this->transactionService->update($row, $data);
     }
 
     public function archive(Account $account): Account

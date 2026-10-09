@@ -7,6 +7,7 @@ use App\Enums\AccountType;
 use App\Models\Account;
 use App\Models\Provider;
 use App\Models\User;
+use App\Services\AccountService;
 use Database\Factories\Concerns\HasDecorations;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -16,6 +17,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class AccountFactory extends Factory
 {
     use HasDecorations;
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Account $account): void {
+            if ((float) $account->initial_balance > 0) {
+                resolve(AccountService::class)->syncInitialBalance($account);
+            }
+        });
+    }
 
     public function definition(): array
     {

@@ -21,6 +21,7 @@ class CategorySeeder extends Seeder
                 ['name' => 'Investment Returns', 'icon_slug' => 'course-up', 'color_slug' => 'green-400', 'fixed' => false],
                 ['name' => 'Dividends', 'icon_slug' => 'course-up', 'color_slug' => 'green-400', 'fixed' => false],
                 ['name' => 'Other Income', 'icon_slug' => 'add-circle', 'color_slug' => 'green-200', 'fixed' => false],
+                ['name' => 'Initial Balance', 'icon_slug' => 'course-up', 'color_slug' => 'green-200', 'fixed' => true],
             ],
         ],
         // Finance - Green

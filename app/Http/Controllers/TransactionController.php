@@ -59,7 +59,7 @@ final class TransactionController extends Controller
         return Inertia::render('app/transaction/create', [
             'initialType' => $request->query('type', TransactionType::Expense),
             'transaction' => TransactionFormData::defaultExpense(),
-            'categories' => CategoryService::getCategories(),
+            'categories' => CategoryService::getBookableCategories(),
             'accounts' => $accounts,
         ]);
     }
@@ -72,11 +72,15 @@ final class TransactionController extends Controller
             return to_route('transfers.edit', $transaction->transfer_id);
         }
 
+        if ($transaction->category_id === CategoryService::initialBalanceCategoryId()) {
+            return to_route('accounts.edit', $transaction->account_id);
+        }
+
         $accounts = $this->accountService->getAccountsByUser($this->user);
 
         return Inertia::render('app/transaction/edit', [
             'accounts' => $accounts,
-            'categories' => CategoryService::getCategories(),
+            'categories' => CategoryService::getBookableCategories(),
             'transaction' => TransactionFormData::fromTransaction($transaction),
         ]);
     }
@@ -96,6 +100,12 @@ final class TransactionController extends Controller
 
         abort_unless($transaction->transfer_id === null, 422, 'Transfer unit members must be edited via their transfer.');
 
+        abort_if(
+            $transaction->category_id === CategoryService::initialBalanceCategoryId(),
+            422,
+            'Initial balance must be changed via the account.'
+        );
+
         $this->transactionService->update($transaction, TransactionData::from($request->validated()));
 
         return to_route('transactions.index')->flash('Transaction updated.');
@@ -108,6 +118,12 @@ final class TransactionController extends Controller
         if ($transaction->transfer_id !== null) {
             $this->transferService->deleteUnit($transaction);
         } else {
+            abort_if(
+                $transaction->category_id === CategoryService::initialBalanceCategoryId(),
+                422,
+                'Initial balance must be changed via the account.'
+            );
+
             $this->transactionService->softDelete($transaction);
         }
 

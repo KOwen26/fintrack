@@ -4,9 +4,12 @@ use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\BalanceService;
+use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
+
+beforeEach(fn () => $this->seed(CategorySeeder::class));
 
 function setupBalanceAccount(float $initialBalance = 0): array
 {
@@ -19,7 +22,7 @@ function setupBalanceAccount(float $initialBalance = 0): array
     return [$user, $account];
 }
 
-it('returns initial_balance when there are no transactions', function (): void {
+it('returns the opening row amount when there are no other transactions', function (): void {
     [, $account] = setupBalanceAccount(1_000_000);
     $service = new BalanceService;
 
@@ -98,4 +101,13 @@ it('excludes soft-deleted transactions from balance', function (): void {
     $service = new BalanceService;
 
     expect((float) $service->forAccount($account))->toBe(1_000_000.0);
+});
+
+it('ignores accounts.initial_balance when no opening row exists', function (): void {
+    [$user, $account] = setupBalanceAccount(0);
+    $account->updateQuietly(['initial_balance' => 1_000_000]);
+
+    $service = new BalanceService;
+
+    expect((float) $service->forAccount($account))->toBe(0.0);
 });

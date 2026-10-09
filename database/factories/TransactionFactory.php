@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use App\Models\User;
+use App\Services\CategoryService;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -83,5 +84,16 @@ class TransactionFactory extends Factory
     public function forCategory(int $categoryId): static
     {
         return $this->state(['category_id' => $categoryId]);
+    }
+
+    /** Account opening balance row — an income row in the Initial Balance category. */
+    public function initialBalance(): static
+    {
+        return $this->state([
+            'type' => TransactionType::Income,
+            'flow' => TransactionFlow::Inflow,
+            'category_id' => CategoryService::initialBalanceCategoryId(),
+            'description' => 'Initial balance',
+        ]);
     }
 }
