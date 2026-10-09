@@ -29,7 +29,8 @@ class Account extends Model
         return [
             'type' => AccountType::class,
             'access_type' => AccountAccessType::class,
-            'initial_balance' => 'decimal:2',
+            'current_balance' => 'integer',
+            'initial_balance' => 'integer',
             'archived_at' => 'datetime',
             'decorations' => DecorationData::class,
         ];

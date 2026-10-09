@@ -13,12 +13,23 @@ class UpdateAccountRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'initial_balance' => $this->integer('initial_balance', 0),
+        ]);
+    }
+
     public function rules(): array
     {
         return [
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'string', Rule::enum(AccountType::class)],
             'provider_id' => ['nullable', 'integer', 'exists:providers,id'],
+            'initial_balance' => ['nullable', 'numeric', 'min:0'],
             'decorations' => ['nullable', 'array'],
             'decorations.icon' => ['required_with:decorations', 'string', 'max:100'],
             'decorations.color' => ['required_with:decorations', 'string', 'max:100'],

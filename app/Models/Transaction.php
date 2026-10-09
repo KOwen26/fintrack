@@ -28,7 +28,7 @@ class Transaction extends Model
         return [
             'type' => TransactionType::class,
             'flow' => TransactionFlow::class,
-            'amount' => 'decimal:0',
+            'amount' => 'integer',
             'transaction_date' => 'datetime',
         ];
     }
