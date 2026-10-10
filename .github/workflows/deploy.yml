@@ -1,0 +1,116 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main] # primary trigger — deploy assets on every push to main
+    tags: ['v*'] # deploy on version tags, e.g. v1.2.3
+  workflow_dispatch: # manual run — use the branch selector to build 'develop' too
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false # queue runs, never run two deploys at once
+
+env:
+  APP_DIR: ${{ vars.APP_DIR }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5' # must match your server's PHP version
+          coverage: none
+
+      # Full install — Wayfinder is a dev dependency and is needed to generate types
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend assets
+        run: pnpm run build # wayfinder:generate && vite build
+
+      # The only artifact the server needs — PHP code arrives via the server's own git pull
+      - name: Package built assets
+        run: tar -czf build-assets.tar.gz -C public/build .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-assets
+          path: build-assets.tar.gz
+          retention-days: 3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-assets
+
+      - name: Upload assets to server
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: build-assets.tar.gz
+          target: /tmp/fintrack-deploy/
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+
+            # ── PHP & Composer binaries (Hostinger shared hosting) ─────────
+            # Shell aliases don't expand in non-interactive SSH, so `php` is pinned via PATH instead. Verify the folder: ls /opt/alt | grep php
+            export PATH="/opt/alt/php85/usr/bin:$PATH" # `php` → PHP 8.5
+
+            cd ${{ env.APP_DIR }}
+            php artisan down
+            trap 'php artisan up' EXIT # bring the site back up even if a later step fails
+
+            # ── 1. Pull latest code from the built branch ──────────────────
+            # Branch builds use the triggered/selected branch; tag builds fall back to main
+            BRANCH=${{ github.ref_type == 'branch' && github.ref_name || 'main' }}
+            echo "Deploying branch: $BRANCH"
+            git fetch origin "$BRANCH"
+            git checkout -B "$BRANCH" "origin/$BRANCH"
+
+            # ── 2. Composer update ─────────────────────────────────────────
+            composer update --no-interaction --prefer-dist --no-progress
+
+            # ── 3. Migrate ─────────────────────────────────────────────────
+            php artisan optimize:clear
+            php artisan migrate --force
+
+            # ── 4. Replace build assets ────────────────────────────────────
+            rm -rf public/build
+            mkdir -p public/build
+            tar -xzf /tmp/fintrack-deploy/build-assets.tar.gz -C public/build
+            rm -f /tmp/fintrack-deploy/build-assets.tar.gz
+
+            php artisan optimize
+            php artisan up

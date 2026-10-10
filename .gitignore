@@ -22,7 +22,8 @@ yarn-error.log
 /.nova
 /.vscode
 /.cursor
-/.github
+/.github/*
+!/.github/workflows
 /.zed
 /.qwen
 /.claude
