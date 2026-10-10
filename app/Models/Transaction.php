@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\TransactionFlow;
+use App\Enums\Cashflow;
+use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Objects\DatePeriod;
 use App\Observers\TransactionObserver;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[ObservedBy([TransactionObserver::class])]
-class Transaction extends Model
+final class Transaction extends Model
 {
     /** @use HasFactory<TransactionFactory> */
     use HasFactory, SoftDeletes;
@@ -26,9 +27,10 @@ class Transaction extends Model
     protected function casts(): array
     {
         return [
+            'category_id' => Category::class,
             'type' => TransactionType::class,
-            'flow' => TransactionFlow::class,
-            'amount' => 'decimal:0',
+            'flow' => Cashflow::class,
+            'amount' => 'integer',
             'transaction_date' => 'datetime',
         ];
     }
@@ -36,11 +38,6 @@ class Transaction extends Model
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
-    }
-
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
     }
 
     public function creator(): BelongsTo

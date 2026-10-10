@@ -2,6 +2,7 @@
 
 use App\Enums\AccountType;
 use App\Models\Account;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Services\AccountService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -10,6 +11,13 @@ uses(RefreshDatabase::class);
 
 it('summarizes total, available and investment balances across account types', function (): void {
     $user = User::factory()->create();
+
+    $card = Account::factory()->creditCard()->create(['owner_id' => $user->id]);
+    Transaction::factory()->expense()->create([
+        'account_id' => $card->id,
+        'created_by' => $user->id,
+        'amount' => 750_000,
+    ]);
 
     $accounts = collect([
         Account::factory()->create(['owner_id' => $user->id, 'initial_balance' => 1_000_000]),
@@ -28,15 +36,12 @@ it('summarizes total, available and investment balances across account types', f
             'type' => AccountType::Investment,
             'initial_balance' => 4_850_000,
         ]),
-        Account::factory()->creditCard()->create([
-            'owner_id' => $user->id,
-            'initial_balance' => -500_000,
-        ]),
+        $card,
     ]);
 
     $summary = AccountService::summarize($accounts);
 
-    expect($summary['total_balance'])->toBe(5_850_000.0)
+    expect($summary['total_balance'])->toBe(5_600_000.0)
         ->and($summary['available_balance'])->toBe(1_500_000.0)
         ->and($summary['investment_balance'])->toBe(4_850_000.0)
         ->and($summary['total_accounts'])->toBe(5);
@@ -45,14 +50,14 @@ it('summarizes total, available and investment balances across account types', f
 it('keeps credit card debt out of available and investment balances', function (): void {
     $user = User::factory()->create();
 
-    $accounts = collect([
-        Account::factory()->creditCard()->create([
-            'owner_id' => $user->id,
-            'initial_balance' => -750_000,
-        ]),
+    $card = Account::factory()->creditCard()->create(['owner_id' => $user->id]);
+    Transaction::factory()->expense()->create([
+        'account_id' => $card->id,
+        'created_by' => $user->id,
+        'amount' => 750_000,
     ]);
 
-    $summary = AccountService::summarize($accounts);
+    $summary = AccountService::summarize(collect([$card]));
 
     expect($summary['total_balance'])->toBe(-750_000.0)
         ->and($summary['available_balance'])->toBe(0.0)

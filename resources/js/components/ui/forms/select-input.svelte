@@ -34,13 +34,13 @@
         class: className,
     }: SelectInputProps = $props();
 
-    const selectedLabel = $derived(options.find((o) => String(o.value) === String(value))?.label);
+    const selectedLabel = $derived(options?.find((o) => String(o.value) === String(value))?.label);
 </script>
 
 {#if loading}
     <Skeleton class="h-8 w-full {className ?? ''}" />
 {:else}
-    <Select type="single" bind:value {name} {disabled} {required}>
+    <Select {name} {disabled} {required} type="single" bind:value>
         <SelectTrigger class="w-full {className ?? ''}" aria-invalid={invalid}>
             {#if selectedLabel}
                 {selectedLabel}
@@ -50,7 +50,7 @@
         </SelectTrigger>
         <SelectContent>
             {#each options as opt (opt.value)}
-                <SelectItem value={String(opt.value)} disabled={opt.disabled}>
+                <SelectItem disabled={opt.disabled} value={String(opt.value)}>
                     {opt.label}
                 </SelectItem>
             {/each}

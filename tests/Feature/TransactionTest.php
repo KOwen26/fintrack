@@ -2,10 +2,10 @@
 
 use App\Data\Transaction\TransactionListData;
 use App\Data\Transaction\TransferData;
-use App\Enums\TransactionFlow;
+use App\Enums\Cashflow;
+use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use App\Models\User;
@@ -35,14 +35,13 @@ it('lists transactions for the authenticated user', function (): void {
 
 it('stores an income transaction', function (): void {
     [$user, $account] = createAccountForUser();
-    $category = Category::factory()->create();
 
     $this->actingAs($user)->post(route('transactions.store'), [
         'account_id' => $account->id,
         'type' => TransactionType::Income->value,
         'amount' => 5_000_000,
         'transaction_date' => now()->toDateString(),
-        'category_id' => $category->id,
+        'category_id' => 'salary',
         'description' => 'Salary',
     ])->assertRedirect(route('transactions.index'));
 
@@ -51,14 +50,13 @@ it('stores an income transaction', function (): void {
 
 it('stores an expense transaction', function (): void {
     [$user, $account] = createAccountForUser();
-    $category = Category::factory()->create();
 
     $this->actingAs($user)->post(route('transactions.store'), [
         'account_id' => $account->id,
         'type' => TransactionType::Expense->value,
         'amount' => 150_000,
         'transaction_date' => now()->toDateString(),
-        'category_id' => $category->id,
+        'category_id' => 'groceries',
         'description' => 'Groceries',
     ])->assertRedirect();
 
@@ -83,8 +81,8 @@ it('creates a transfer unit with member rows via POST /transfers', function (): 
     $rows = $transfer->transactions()->get();
     expect($rows)->toHaveCount(2);
 
-    $outflow = $rows->first(fn ($row): bool => $row->flow === TransactionFlow::Outflow && $row->type === TransactionType::Transfer);
-    $inflow = $rows->first(fn ($row): bool => $row->flow === TransactionFlow::Inflow && $row->type === TransactionType::Transfer);
+    $outflow = $rows->first(fn ($row): bool => $row->flow === Cashflow::Outflow && $row->type === TransactionType::Transfer);
+    $inflow = $rows->first(fn ($row): bool => $row->flow === Cashflow::Inflow && $row->type === TransactionType::Transfer);
 
     expect($outflow->account_id)->toBe($sourceAccount->id)
         ->and($inflow->account_id)->toBe($destAccount->id)
@@ -95,9 +93,6 @@ it('creates a transfer unit with member rows via POST /transfers', function (): 
 it('books a transfer fee row in the Admin Fees category via POST /transfers', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
-
-    $parent = Category::factory()->create(['name' => 'Finance']);
-    $adminFees = Category::factory()->create(['name' => 'Admin Fees', 'parent_id' => $parent->id]);
 
     $this->actingAs($user)->post(route('transfers.store'), [
         'account_id' => $sourceAccount->id,
@@ -112,26 +107,10 @@ it('books a transfer fee row in the Admin Fees category via POST /transfers', fu
 
     expect($feeRow)->not->toBeNull()
         ->and($feeRow->account_id)->toBe($sourceAccount->id)
-        ->and($feeRow->category_id)->toBe($adminFees->id)
+        ->and($feeRow->category_id)->toBe(Category::AdminFees)
         ->and($feeRow->description)->toBe('Transfer fee')
         ->and((float) $feeRow->amount)->toEqual(6_500.0)
         ->and((float) $transfer->fee_amount)->toEqual(6_500.0);
-});
-
-it('books a transfer fee as uncategorized when no Admin Fees category exists', function (): void {
-    [$user, $sourceAccount] = createAccountForUser();
-    $destAccount = Account::factory()->create(['owner_id' => $user->id]);
-
-    $this->actingAs($user)->post(route('transfers.store'), [
-        'account_id' => $sourceAccount->id,
-        'destination_account_id' => $destAccount->id,
-        'amount' => 500_000,
-        'transaction_date' => now()->toDateString(),
-        'fee_amount' => 6_500,
-    ])->assertRedirect();
-
-    $feeRow = Transfer::first()->transactions()->get()->firstWhere('type', TransactionType::Expense);
-    expect($feeRow->category_id)->toBeNull();
 });
 
 it('rejects the legacy transfer pseudo-type on POST /transactions', function (): void {
@@ -142,7 +121,7 @@ it('rejects the legacy transfer pseudo-type on POST /transactions', function ():
         'type' => 'transfer',
         'amount' => 1_000,
         'transaction_date' => now()->toDateString(),
-        'category_id' => Category::factory()->create()->id,
+        'category_id' => 'groceries',
     ])->assertInvalid('type');
 });
 
@@ -156,14 +135,14 @@ it('rejects direct unit-member edits with 422 on PUT /transactions', function ()
         amount: 250_000,
         transaction_date: now()->toDateString(),
     ));
-    $outflow = $transfer->transactions()->get()->first(fn ($row): bool => $row->flow === TransactionFlow::Outflow);
+    $outflow = $transfer->transactions()->get()->first(fn ($row): bool => $row->flow === Cashflow::Outflow);
 
     $this->actingAs($user)->put(route('transactions.update', $outflow), [
         'account_id' => $sourceAccount->id,
         'type' => 'expense',
         'amount' => 250_000,
         'transaction_date' => now()->toDateString(),
-        'category_id' => Category::factory()->create()->id,
+        'category_id' => 'groceries',
     ])->assertStatus(422);
 });
 
@@ -207,7 +186,7 @@ it('soft-deletes the whole unit (aggregate, member rows, fee) when any member is
     ])->assertRedirect();
 
     $transfer = Transfer::first();
-    $inflow = $transfer->transactions()->get()->first(fn ($row): bool => $row->flow === TransactionFlow::Inflow);
+    $inflow = $transfer->transactions()->get()->first(fn ($row): bool => $row->flow === Cashflow::Inflow);
 
     $this->actingAs($user)->delete(route('transactions.destroy', $inflow))->assertRedirect();
 
@@ -245,8 +224,8 @@ it('resolves destination_account_id for both sides of a transfer unit', function
     ));
     $rows = $transfer->transactions()->get();
 
-    $outflow = $rows->first(fn ($row): bool => $row->flow === TransactionFlow::Outflow);
-    $inflow = $rows->first(fn ($row): bool => $row->flow === TransactionFlow::Inflow);
+    $outflow = $rows->first(fn ($row): bool => $row->flow === Cashflow::Outflow);
+    $inflow = $rows->first(fn ($row): bool => $row->flow === Cashflow::Inflow);
 
     expect(TransactionListData::fromTransaction($outflow)->destination_account_id)->toBe($destAccount->id)
         ->and(TransactionListData::fromTransaction($inflow)->destination_account_id)->toBe($sourceAccount->id);

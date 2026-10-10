@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AccountController;
-use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StatisticController;
 use App\Http\Controllers\TransactionController;
@@ -14,9 +13,6 @@ Route::get('/', fn () => to_route('auth.login'));
 
 Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function (): void {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    // Categories
-    Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
 
     // Accounts
     Route::prefix('accounts')->name('accounts.')->group(function (): void {

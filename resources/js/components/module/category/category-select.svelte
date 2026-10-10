@@ -1,16 +1,10 @@
 <script lang="ts">
-    import type {
-        DecorationBadgeItem,
-        DecorationBadgeSize,
-    } from '@components/module/decoration-badge.svelte';
+    import type { DecorationBadgeSize } from '@components/module/decoration-badge.svelte';
     import type {
         ComboboxTriggerContext,
         SelectOption,
     } from '@components/ui/forms/combobox.svelte';
-    import type { DecorationData } from '@type/generated';
-
-    import { inputGroupClasses } from '../../ui/forms/input.svelte';
-    import ScrollArea from '../../ui/scroll-area.svelte';
+    import type { Decoration } from '@type/generated';
 
     import { getDecorationColor } from '@data/decoration-colors';
     import { getDecorationIcon } from '@data/decoration-icons';
@@ -23,23 +17,29 @@
     import DecorationBadge from '@components/module/decoration-badge.svelte';
     import Collapsible from '@components/ui/collapsible.svelte';
     import Combobox from '@components/ui/forms/combobox.svelte';
+    import { inputGroupClasses } from '@components/ui/forms/input.svelte';
     import Modal from '@components/ui/modals/modal.svelte';
     import Popover from '@components/ui/popover.svelte';
+    import ScrollArea from '@components/ui/scroll-area.svelte';
 
-    /** Permissive node shape — accepts full models, lightweight `{ id, name, children }`, and `{ options }` groups. */
+    type Cashflow = 'inflow' | 'outflow';
+
+    /** Grouped catalog row — straight from `static.categories` / the backend shape. */
     interface CategoryOption {
-        id: number;
+        id: string;
         name: string;
-        decorations?: DecorationData;
+        decorations?: Decoration;
         options?: CategoryOption[];
-        children?: CategoryOption[];
     }
+
+    type GroupNode = CategoryOption & { children: CategoryOption[] };
 
     type ListLayout = 'list' | 'grid-2' | 'icon';
 
     interface Props {
-        value?: string | number;
-        categories?: CategoryOption[];
+        value?: string;
+        /** Restricts the shared catalog to one money direction (income vs expense forms). */
+        cashflow?: Cashflow;
         placeholder?: string;
         variant?: 'inline' | 'popover' | 'modal' | 'combobox';
         clearable?: boolean;
@@ -57,7 +57,7 @@
 
     let {
         value = $bindable(),
-        categories = [],
+        cashflow = undefined,
         placeholder = 'Select Category',
         variant = 'combobox',
         clearable = true,
@@ -68,15 +68,9 @@
         required = false,
     }: Props = $props();
 
-    interface CategoryNode {
-        id: number;
-        name: string;
-        visual: DecorationBadgeItem;
-        children: CategoryNode[];
-    }
-
     interface CategoryComboboxOption extends SelectOption {
-        category: CategoryNode;
+        category: CategoryOption;
+        group: string;
     }
 
     const triggerClass = cn(
@@ -89,88 +83,64 @@
         icon: 'grid grid-cols-4 gap-1',
     };
 
-    // ── Node visuals: decoration icon/color win, initials are the fallback ──
-    function nodeVisual(
-        decorations: DecorationData | undefined,
-        name: string | undefined
-    ): DecorationBadgeItem {
-        const icon = getDecorationIcon(decorations?.icon)?.value;
-        const hex = getDecorationColor(decorations?.color)?.hex;
-
-        return {
-            icon,
-            text: icon ? undefined : StringHelper.getInitials(name),
-            background: hex ? `${hex}20` : undefined,
-            color: hex ?? undefined,
-        };
-    }
-
-    function toNode(raw: CategoryOption): CategoryNode {
-        return {
-            id: raw.id,
-            name: raw.name,
-            visual: nodeVisual(raw.decorations, raw.name),
-            children: [],
-        };
-    }
-
-    function toGroups(source: CategoryOption[]): CategoryNode[] {
+    function toGroups(source: CategoryOption[]): GroupNode[] {
         return source.map((group) => ({
-            id: group.id,
-            name: group.name,
-            visual: nodeVisual(group.decorations, group.name),
-            children: (group.options ?? group.children ?? []).map(toNode),
+            ...group,
+            children: group.options ?? [],
         }));
     }
 
-    /**
-     * Grouped tree. Preference: a grouped `categories` prop (options/children
-     * arrays), then the shared `static.groupedCategories`, then the flat prop
-     * rendered as ungrouped rows.
-     */
-    function computeGroups(): CategoryNode[] {
-        const prop = categories?.length ? categories : undefined;
-        const shared = (page.props?.static?.groupedCategories ?? []) as CategoryOption[];
+    const groups = $derived.by(() => {
+        const shared = (page.props?.static?.categories ?? {}) as Record<string, CategoryOption[]>;
 
-        if (prop?.some((item) => Array.isArray(item.options) || Array.isArray(item.children))) {
-            return toGroups(prop);
-        }
-
-        if (shared.length) {
-            return toGroups(shared);
-        }
-
-        return (prop ?? []).map(toNode);
-    }
-
-    const groups = $derived(computeGroups());
-
-    const selected = $derived.by(() => {
-        const id = Number(value);
-
-        if (!id) return undefined;
-
-        for (const group of groups) {
-            if (group.id === id) return group;
-
-            const child = group.children.find((node) => node.id === id);
-
-            if (child) return child;
-        }
-
-        return undefined;
+        return toGroups(
+            cashflow ? (shared[`grouped_${cashflow}`] ?? []) : Object.values(shared).flat()
+        );
     });
 
-    const comboboxOptions = $derived(
-        groups.flatMap((group) =>
-            group.children.map((child) => ({
-                value: String(child.id),
-                label: `${group.name} ${child.name}`,
-                category: child,
-                group: group.name,
-            }))
-        )
+    /** Flat child list with its owning group — one traversal for selection, combobox and reveal. */
+    const flat = $derived(
+        groups.flatMap((group) => group.children.map((child) => ({ child, group })))
     );
+
+    const selectedEntry = $derived(flat.find(({ child }) => child.id === value));
+    const selected = $derived(selectedEntry?.child);
+
+    const comboboxOptions = $derived(
+        flat.map(({ child, group }) => ({
+            value: child.id,
+            label: `${group.name} ${child.name}`,
+            category: child,
+            group: group.name,
+        }))
+    );
+
+    function getComboboxValue(): string {
+        return selected?.id ?? '';
+    }
+
+    /** Clearing resolves to `undefined`, matching the optional category id shape. */
+    function setComboboxValue(next: string): void {
+        value = flat.some(({ child }) => child.id === next) ? next : undefined;
+    }
+
+    function isSelected(child: CategoryOption): boolean {
+        return value === child.id;
+    }
+
+    function pick(child: CategoryOption): void {
+        if (disabled) return;
+
+        if (variant === 'inline') {
+            // Toggle semantics, mirroring decoration-color-selector's aria-pressed swatches.
+            value = isSelected(child) ? undefined : child.id;
+
+            return;
+        }
+
+        value = child.id;
+        open = false;
+    }
 
     let comboboxInputRef = $state<HTMLInputElement | null>(null);
     let comboboxOpen = $state(false);
@@ -183,101 +153,38 @@
         }
     });
 
-    /** All groups start collapsed; the group holding the current selection starts expanded. */
-    function buildInitialExpanded(): Record<number, boolean> {
-        const initial: Record<number, boolean> = {};
+    let open = $state(false);
+    let expanded = $state<Record<string, boolean>>(buildInitialExpanded());
 
-        for (const group of computeGroups()) {
+    /** All groups start collapsed; the group holding the current selection starts expanded. */
+    function buildInitialExpanded(): Record<string, boolean> {
+        const initial: Record<string, boolean> = {};
+
+        for (const group of groups) {
             initial[group.id] = false;
         }
 
-        if (selected) {
-            const root = computeGroups().find(
-                (group) =>
-                    group.id === selected.id ||
-                    group.children.some((child) => child.id === selected.id)
-            );
-
-            if (root) {
-                initial[root.id] = true;
-            }
+        if (selectedEntry) {
+            initial[selectedEntry.group.id] = true;
         }
 
         return initial;
     }
 
-    let open = $state(false);
-    let expanded = $state<Record<number, boolean>>(buildInitialExpanded());
-
-    function isSelected(node: CategoryNode): boolean {
-        return Number(value) === node.id;
-    }
-
-    /** Toggle semantics, mirroring decoration-color-selector's aria-pressed swatches. Inline only. */
-    function toggleSelect(node: CategoryNode): void {
-        if (disabled) return;
-
-        value = isSelected(node) ? undefined : node.id;
-    }
-
-    function pick(node: CategoryNode): void {
-        if (variant === 'inline') {
-            toggleSelect(node);
-
-            return;
-        }
-
-        value = node.id;
-        open = false;
-    }
-
-    function findComboboxCategory(val: string | number | undefined): CategoryNode | undefined {
-        if (val === undefined || val === '') {
-            return undefined;
-        }
-
-        return groups.flatMap((group) => group.children).find((child) => child.id === Number(val));
-    }
-
-    function getComboboxValue(): string {
-        return selected ? String(selected.id) : '';
-    }
-
-    /** Clearing resolves to `undefined`, matching the optional category id shape. */
-    function setComboboxValue(next: string): void {
-        value = findComboboxCategory(next)?.id ?? undefined;
-    }
-
     function revealSelectedGroup(): void {
-        if (!selected) return;
-
-        const root = groups.find(
-            (group) =>
-                group.id === selected.id || group.children.some((child) => child.id === selected.id)
-        );
-
-        if (root) {
-            expanded[root.id] = true;
+        if (selectedEntry) {
+            expanded[selectedEntry.group.id] = true;
         }
-    }
-
-    function openContainer(): void {
-        if (disabled) return;
-
-        open = true;
-        revealSelectedGroup();
     }
 
     function toggleContainer(): void {
         if (disabled) return;
 
-        if (open) {
-            open = false;
-
-            return;
+        if (!open) {
+            revealSelectedGroup();
         }
 
-        openContainer();
+        open = !open;
     }
 
     function handleOpenChange(next: boolean): void {
@@ -324,7 +231,7 @@
             aria-expanded={open}
             aria-haspopup={variant === 'modal' ? 'dialog' : undefined}
             {disabled}
-            onclick={variant === 'modal' ? openContainer : toggleContainer}
+            onclick={toggleContainer}
             type="button">
             {@render triggerContent()}
         </button>
@@ -343,7 +250,7 @@
 <!-- Trigger row content, shared by all variants. -->
 {#snippet triggerContent()}
     {#if selected}
-        {@render chip(selected.visual, true)}
+        {@render chip(selected.decorations, selected.name, true)}
         <span class="truncate text-sm font-medium">{selected.name}</span>
     {:else}
         <span class="truncate text-sm text-base-content/35">{placeholder}</span>
@@ -355,7 +262,7 @@
 
 {#snippet comboboxOption({ category }: CategoryComboboxOption)}
     <div class="flex w-full min-w-0 items-center gap-2.5 pr-5">
-        {@render chip(category.visual)}
+        {@render chip(category.decorations, category.name)}
         <span class="truncate text-sm font-medium">{category.name}</span>
     </div>
 {/snippet}
@@ -379,7 +286,7 @@
         {#if category}
             <span
                 class="pointer-events-none absolute top-1/2 left-2.5 z-10 flex -translate-y-1/2 items-center">
-                {@render chip(category.visual)}
+                {@render chip(category.decorations, category.name)}
             </span>
         {/if}
 
@@ -424,7 +331,7 @@
                         <div
                             class="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left hover:bg-base-content/5"
                             aria-expanded={expanded[group.id]}>
-                            {@render chip(group.visual, false)}
+                            {@render chip(group.decorations, group.name, false)}
                             <span class="truncate text-sm font-semibold">{group.name}</span>
                             <i
                                 class="ml-auto iconify size-4 shrink-0 text-base-content transition-transform duration-200 solar--alt-arrow-down-linear"
@@ -433,31 +340,12 @@
                     {/snippet}
 
                     {#snippet content()}
-                        <div
-                            class={cn(
-                                'py-0.5',
-                                optionVariant === 'list' &&
-                                    'ml-6 space-y-0.5 border-l border-base-content/10 pl-2',
-                                optionVariant !== 'list' && gridCols[optionVariant]
-                            )}>
-                            {#each group.children as child (child.id)}
-                                {@render childRow(child)}
-                            {/each}
-                        </div>
+                        {@render groupChildren(group)}
                     {/snippet}
                 </Collapsible>
             {:else}
                 {@render groupLabel(group.name)}
-
-                <div
-                    class={cn(
-                        optionVariant === 'list' && 'space-y-0.5',
-                        optionVariant !== 'list' && gridCols[optionVariant]
-                    )}>
-                    {#each group.children as child (child.id)}
-                        {@render childRow(child)}
-                    {/each}
-                </div>
+                {@render groupChildren(group)}
             {/if}
         {/each}
 
@@ -467,64 +355,75 @@
     </ScrollArea>
 {/snippet}
 
+{#snippet groupChildren(group: GroupNode)}
+    <div
+        class={cn(
+            'py-0.5',
+            optionVariant === 'list' &&
+                groupVariant === 'collapsible' &&
+                'ml-6 space-y-0.5 border-l border-base-content/10 pl-2',
+            optionVariant !== 'list' && gridCols[optionVariant]
+        )}>
+        {#each group.children as child (child.id)}
+            {@render childRow(child)}
+        {/each}
+    </div>
+{/snippet}
+
 {#snippet groupLabel(name: string)}
     <p class="px-2 pt-2 pb-1 text-2xs font-bold tracking-widest text-base-content/40 uppercase">
         {name}
     </p>
 {/snippet}
 
-{#snippet childRow(child: CategoryNode)}
-    {#if optionVariant === 'icon'}
-        <!-- Tile: chip on top, text below -->
-        <button
+{#snippet childRow(child: CategoryOption)}
+    {@const active = isSelected(child)}
+    <button
+        class={cn(
+            'flex w-full transition hover:bg-base-content/5 disabled:opacity-50',
+            optionVariant === 'icon'
+                ? 'flex-col items-center gap-1.5 rounded-xl px-2 py-2.5 text-center'
+                : 'min-w-0 items-center gap-2.5 rounded-lg px-2 py-1.5 text-left',
+            active && 'bg-primary/10'
+        )}
+        aria-pressed={active}
+        {disabled}
+        onclick={() => pick(child)}
+        type="button">
+        {@render chip(
+            child.decorations,
+            child.name,
+            active,
+            optionVariant === 'icon' ? 'md' : 'sm'
+        )}
+        <span
             class={cn(
-                'flex w-full flex-col items-center gap-1.5 rounded-xl px-2 py-2.5 text-center transition hover:bg-base-content/5 disabled:opacity-50',
-                isSelected(child) && 'bg-primary/10'
-            )}
-            aria-pressed={isSelected(child)}
-            {disabled}
-            onclick={() => pick(child)}
-            type="button">
-            {@render chip(child.visual, isSelected(child), 'md')}
-            <span
-                class={cn(
-                    'line-clamp-2 w-full text-xs leading-tight',
-                    isSelected(child) && 'text-primary'
-                )}>
-                {child.name}
-            </span>
-        </button>
-    {:else}
-        <!-- Row: chip + text side by side (list & grid-2) -->
-        <button
-            class={cn(
-                'flex w-full min-w-0 items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition hover:bg-base-content/5 disabled:opacity-50',
-                isSelected(child) && 'bg-primary/10'
-            )}
-            aria-pressed={isSelected(child)}
-            {disabled}
-            onclick={() => pick(child)}
-            type="button">
-            {@render chip(child.visual, isSelected(child))}
-            <span class={cn('truncate text-sm', isSelected(child) && 'text-primary')}>
-                {child.name}
-            </span>
-        </button>
-    {/if}
+                optionVariant === 'icon'
+                    ? 'line-clamp-2 w-full text-xs leading-tight'
+                    : 'truncate text-sm',
+                active && 'text-primary'
+            )}>
+            {child.name}
+        </span>
+    </button>
 {/snippet}
 
+<!-- Chip: resolves decoration slugs to icon/hex, falls back to name initials. -->
 {#snippet chip(
-    visual: DecorationBadgeItem,
+    decorations: Decoration | undefined,
+    name: string | undefined,
     active: boolean = false,
     size: DecorationBadgeSize = 'sm'
 )}
+    {@const icon = getDecorationIcon(decorations?.icon)?.value}
+    {@const hex = getDecorationColor(decorations?.color)?.hex}
     <DecorationBadge
         class={cn(active && 'ring ring-primary ring-offset-2')}
-        background={visual.background}
-        color={visual.color}
-        icon={visual.icon}
+        background={hex ? `${hex}20` : undefined}
+        color={hex ?? undefined}
+        {icon}
         {size}
-        text={visual.text} />
+        text={icon ? undefined : StringHelper.getInitials(name)} />
 {/snippet}
 
 <style>

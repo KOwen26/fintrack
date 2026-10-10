@@ -30,10 +30,12 @@ final class AccountController extends Controller
 
         $archivedAccounts = $this->accountService->getArchivedAccountsByUser($this->user);
 
+        $summary = $this->accountService->summarize($accounts);
+
         return Inertia::render('app/account/index', [
+            'summary' => $summary,
             'accounts' => $accounts,
             'archived_accounts' => $archivedAccounts,
-            'summary' => AccountService::summarize($accounts),
         ]);
     }
 

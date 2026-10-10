@@ -10,16 +10,14 @@
     let {
         initialType = 'expense',
         transaction,
-        categories,
         accounts,
     }: {
         initialType: App.Enums.TransactionType;
         transaction: Data.TransactionFormData;
-        categories: Models.Category[];
         accounts: Models.Account[];
     } = $props();
 
     setLayoutProps({ title: 'Add New Transaction', backUrl: TransactionController.index.url() });
 </script>
 
-<TransactionForm {accounts} {categories} {initialType} {transaction} />
+<TransactionForm {accounts} {initialType} {transaction} />

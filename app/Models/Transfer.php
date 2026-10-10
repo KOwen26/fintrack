@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\TransactionFlow;
+use App\Enums\Cashflow;
 use App\Enums\TransactionType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Transfer extends Model
+final class Transfer extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -42,7 +42,7 @@ class Transfer extends Model
     {
         return $this->hasOne(Transaction::class)
             ->where('type', TransactionType::Transfer->value)
-            ->where('flow', TransactionFlow::Outflow->value);
+            ->where('flow', Cashflow::Outflow->value);
     }
 
     /** The (transfer, inflow) row booked on the destination account. */
@@ -50,7 +50,7 @@ class Transfer extends Model
     {
         return $this->hasOne(Transaction::class)
             ->where('type', TransactionType::Transfer->value)
-            ->where('flow', TransactionFlow::Inflow->value);
+            ->where('flow', Cashflow::Inflow->value);
     }
 
     /** The (expense, outflow) fee row — may not exist. */

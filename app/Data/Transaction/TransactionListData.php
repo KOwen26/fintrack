@@ -2,11 +2,11 @@
 
 namespace App\Data\Transaction;
 
-use App\Enums\TransactionFlow;
+use App\Enums\Cashflow;
+use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Helpers\TypeScript\Attributes\TypeScriptModel;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\Transaction;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
@@ -21,7 +21,7 @@ class TransactionListData extends Data
 
         public TransactionType $type,
 
-        public TransactionFlow $flow,
+        public Cashflow $flow,
 
         public float $amount,
 
@@ -29,7 +29,7 @@ class TransactionListData extends Data
 
         public CarbonInterface $transaction_date,
 
-        public ?int $category_id,
+        public ?Category $category_id,
 
         public int $account_id,
 
@@ -42,9 +42,6 @@ class TransactionListData extends Data
 
         #[TypeScriptModel(Account::class)]
         public ?Account $account,
-
-        #[TypeScriptModel(Category::class)]
-        public ?Category $category,
     ) {}
 
     /**
@@ -79,7 +76,6 @@ class TransactionListData extends Data
             destination_account_id: $counterpart?->account_id,
             related_transaction: $counterpart,
             account: $transaction->relationLoaded('account') ? $transaction->account : null,
-            category: $transaction->relationLoaded('category') ? $transaction->category : null,
         );
     }
 

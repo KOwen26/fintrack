@@ -21,7 +21,7 @@
     import PhoneInput from './phone-input.svelte';
     import RadioGroupItem from './radio-group-item.svelte';
     import RadioGroup from './radio-group.svelte';
-    import Select from './select.svelte';
+    import Select from './select-input.svelte';
     import Switch from './switch.svelte';
     import Textarea from './textarea.svelte';
 
@@ -83,7 +83,7 @@
     {:else if restProps.type === 'select'}
         {@const inputProps = mapInputProps(restProps)}
 
-        <Select items={restProps.options} bind:value {...inputProps} />
+        <Select options={restProps.options} bind:value {...inputProps} />
     {:else if restProps.type === 'switch'}
         {@const inputProps = mapInputProps(restProps)}
 

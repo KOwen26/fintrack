@@ -1,208 +1,115 @@
 <?php
 
 use App\Data\Report\CategorySpendingItemData;
+use App\Enums\Category;
 use App\Services\SpendingService;
+
+function spendingItem(string $categoryId, string $group, float $total, float $percentage): CategorySpendingItemData
+{
+    $category = Category::from($categoryId);
+
+    return new CategorySpendingItemData(
+        category_id: $category->value,
+        group: $group,
+        name: $category->label(),
+        color: $category->decorations()->color,
+        icon: $category->decorations()->icon,
+        total: $total,
+        percentage: $percentage,
+    );
+}
 
 it('returns empty array for no items', function (): void {
     $service = new SpendingService;
 
-    $result = $service->groupByParent([], 1000);
+    $result = $service->groupByCategoryGroup([], 1000);
 
     expect($result)->toBe([]);
 });
 
-it('groups a single top-level category without children', function (): void {
+it('groups a single category under its group without extra nesting', function (): void {
     $service = new SpendingService;
 
-    $items = [
-        new CategorySpendingItemData(
-            name: 'Food',
-            color: '#ff0000',
-            icon: 'ph--fork-knife',
-            total: 500.0,
-            percentage: 50.0,
-            categoryId: 1,
-            parentId: null,
-            parentName: null,
-        ),
-    ];
+    $items = [spendingItem('dining_out', 'food_and_drinks', 500.0, 50.0)];
 
-    $result = $service->groupByParent($items, 1000);
+    $result = $service->groupByCategoryGroup($items, 1000);
 
     expect($result)->toHaveCount(1);
     expect($result[0])
-        ->categoryId->toBe(1)
-        ->name->toBe('Food')
+        ->group_id->toBe('food_and_drinks')
+        ->name->toBe('Food & Drinks')
         ->total->toBe(500.0)
         ->percentage->toBe(50.0)
-        ->children->toBe([]);
+        ->children->toHaveCount(1);
+
+    expect($result[0]->children[0])
+        ->category_id->toBe('dining_out')
+        ->total->toBe(500.0);
 });
 
-it('merges parent with its child into one group', function (): void {
+it('merges sibling categories into one group', function (): void {
     $service = new SpendingService;
 
     $items = [
-        new CategorySpendingItemData(
-            name: 'Transport',
-            color: '#00ff00',
-            icon: 'ph--car',
-            total: 300.0,
-            percentage: 30.0,
-            categoryId: 1,
-            parentId: null,
-            parentName: null,
-        ),
-        new CategorySpendingItemData(
-            name: 'Gas',
-            color: '#0000ff',
-            icon: 'ph--gas-pump',
-            total: 150.0,
-            percentage: 15.0,
-            categoryId: 2,
-            parentId: 1,
-            parentName: 'Transport',
-        ),
+        spendingItem('fuel', 'transport', 300.0, 30.0),
+        spendingItem('public_transport', 'transport', 150.0, 15.0),
     ];
 
-    $result = $service->groupByParent($items, 1000);
+    $result = $service->groupByCategoryGroup($items, 1000);
 
     expect($result)->toHaveCount(1);
     expect($result[0])
-        ->categoryId->toBe(1)
+        ->group_id->toBe('transport')
         ->name->toBe('Transport')
         ->total->toBe(450.0)
         ->percentage->toBe(45.0);
 
-    // Child percentage should now be relative to parent subtotal (450)
-    expect($result[0]->children)->toHaveCount(1);
+    // Child percentages are relative to the group subtotal (450)
+    expect($result[0]->children)->toHaveCount(2);
     expect($result[0]->children[0])
-        ->categoryId->toBe(2)
-        ->name->toBe('Gas')
-        ->total->toBe(150.0)
+        ->category_id->toBe('fuel')
+        ->percentage->toBe(66.67);
+    expect($result[0]->children[1])
+        ->category_id->toBe('public_transport')
         ->percentage->toBe(33.33);
 });
 
-it('synthesises parent group from children when parent has no direct spending', function (): void {
+it('handles multiple groups sorted by total descending', function (): void {
     $service = new SpendingService;
 
     $items = [
-        new CategorySpendingItemData(
-            name: 'Restaurant',
-            color: '#ff00ff',
-            icon: 'ph--utensils',
-            total: 200.0,
-            percentage: 20.0,
-            categoryId: 3,
-            parentId: 2,
-            parentName: 'Food & Drink',
-        ),
-        new CategorySpendingItemData(
-            name: 'Coffee',
-            color: '#ffff00',
-            icon: 'ph--coffee',
-            total: 50.0,
-            percentage: 5.0,
-            categoryId: 4,
-            parentId: 2,
-            parentName: 'Food & Drink',
-        ),
+        spendingItem('fuel', 'transport', 300.0, 30.0),
+        spendingItem('groceries', 'shopping', 500.0, 50.0),
     ];
 
-    $result = $service->groupByParent($items, 1000);
-
-    expect($result)->toHaveCount(1);
-    expect($result[0])
-        ->categoryId->toBe(2)
-        ->name->toBe('Food & Drink')
-        ->total->toBe(250.0)
-        ->percentage->toBe(25.0);
-
-    // Uses first child's color/icon as fallback
-    expect($result[0]->color)->toBe('#ff00ff');
-    expect($result[0]->icon)->toBe('ph--utensils');
-    expect($result[0]->children)->toHaveCount(2);
-});
-
-it('handles multiple parent groups sorted by total descending', function (): void {
-    $service = new SpendingService;
-
-    $items = [
-        new CategorySpendingItemData(
-            name: 'Transport',
-            color: '#00ff00',
-            icon: 'ph--car',
-            total: 100.0,
-            percentage: 10.0,
-            categoryId: 1,
-            parentId: null,
-            parentName: null,
-        ),
-        new CategorySpendingItemData(
-            name: 'Food',
-            color: '#ff0000',
-            icon: 'ph--fork-knife',
-            total: 500.0,
-            percentage: 50.0,
-            categoryId: 2,
-            parentId: null,
-            parentName: null,
-        ),
-    ];
-
-    $result = $service->groupByParent($items, 1000);
+    $result = $service->groupByCategoryGroup($items, 1000);
 
     expect($result)->toHaveCount(2);
-    // Food should come first (higher total)
-    expect($result[0]->name)->toBe('Food');
-    expect($result[1]->name)->toBe('Transport');
+    // Shopping comes first (higher total)
+    expect($result[0]->group_id)->toBe('shopping');
+    expect($result[1]->group_id)->toBe('transport');
     expect($result[0]->total)->toBe(500.0);
-    expect($result[1]->total)->toBe(100.0);
+    expect($result[1]->total)->toBe(300.0);
 });
 
-it('recalculates child percentages relative to parent subtotal', function (): void {
+it('recalculates children percentages relative to the group subtotal', function (): void {
     $service = new SpendingService;
 
     $items = [
-        new CategorySpendingItemData(
-            name: 'Transport',
-            color: '#00ff00',
-            icon: 'ph--car',
-            total: 300.0,
-            percentage: 30.0,
-            categoryId: 1,
-            parentId: null,
-            parentName: null,
-        ),
-        new CategorySpendingItemData(
-            name: 'Gas',
-            color: '#0000ff',
-            icon: 'ph--gas-pump',
-            total: 100.0,
-            percentage: 10.0,
-            categoryId: 2,
-            parentId: 1,
-            parentName: 'Transport',
-        ),
-        new CategorySpendingItemData(
-            name: 'Toll',
-            color: '#ff00ff',
-            icon: 'ph--road',
-            total: 100.0,
-            percentage: 10.0,
-            categoryId: 3,
-            parentId: 1,
-            parentName: 'Transport',
-        ),
+        spendingItem('fuel', 'transport', 300.0, 30.0),
+        spendingItem('public_transport', 'transport', 100.0, 10.0),
+        spendingItem('bus_trains', 'transport', 100.0, 10.0),
     ];
 
-    $result = $service->groupByParent($items, 1000);
+    $result = $service->groupByCategoryGroup($items, 1000);
 
     expect($result)->toHaveCount(1);
     expect($result[0]->total)->toBe(500.0);
 
-    expect($result[0]->children)->toHaveCount(2);
-    // Gas: 100 / 500 = 20%
-    expect($result[0]->children[0]->percentage)->toBe(20.0);
-    // Toll: 100 / 500 = 20%
+    expect($result[0]->children)->toHaveCount(3);
+    // 300 / 500 = 60%
+    expect($result[0]->children[0]->percentage)->toBe(60.0);
+    // 100 / 500 = 20%
     expect($result[0]->children[1]->percentage)->toBe(20.0);
+    expect($result[0]->children[2]->percentage)->toBe(20.0);
 });

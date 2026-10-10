@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum TransactionFlow: string
+enum Cashflow: string
 {
     case Inflow = 'inflow';
     case Outflow = 'outflow';

@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Enums\TransactionFlow;
+use App\Enums\Cashflow;
 use App\Models\Account;
 use App\Models\Transaction;
 
@@ -14,7 +14,7 @@ class TransactionObserver
      */
     private static function directionMultiplier(Transaction $transaction): int
     {
-        return $transaction->flow === TransactionFlow::Inflow ? 1 : -1;
+        return $transaction->flow === Cashflow::Inflow ? 1 : -1;
     }
 
     /**

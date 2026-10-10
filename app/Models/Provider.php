@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use App\Data\DecorationData;
 use App\Enums\ProviderStatus;
 use App\Enums\ProviderType;
+use App\Objects\Decoration;
 use Database\Factories\ProviderFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Provider extends Model
+final class Provider extends Model
 {
     /** @use HasFactory<ProviderFactory> */
     use HasFactory;
@@ -19,8 +19,8 @@ class Provider extends Model
     {
         return [
             'type' => ProviderType::class,
+            'decorations' => Decoration::class,
             'status' => ProviderStatus::class,
-            'decorations' => DecorationData::class,
         ];
     }
 

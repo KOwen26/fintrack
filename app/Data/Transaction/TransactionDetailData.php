@@ -2,11 +2,11 @@
 
 namespace App\Data\Transaction;
 
-use App\Enums\TransactionFlow;
+use App\Enums\Cashflow;
+use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Helpers\TypeScript\Attributes\TypeScriptModel;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\Transaction;
 use Carbon\CarbonInterface;
 use Spatie\LaravelData\Data;
@@ -26,7 +26,7 @@ class TransactionDetailData extends Data
 
         public TransactionType $type,
 
-        public TransactionFlow $flow,
+        public Cashflow $flow,
 
         public ?int $transfer_id,
 
@@ -40,23 +40,19 @@ class TransactionDetailData extends Data
 
         public ?int $destination_account_id,
 
-        public ?int $category_id,
+        public ?Category $category_id,
 
         #[TypeScriptModel(Account::class)]
         public ?Account $account,
 
         #[TypeScriptModel(Account::class)]
         public ?Account $destination_account,
-
-        #[TypeScriptModel(Category::class)]
-        public ?Category $category,
     ) {}
 
     public static function fromTransaction(Transaction $transaction): self
     {
         $transaction->loadMissing([
             'account',
-            'category.parent',
             'transfer.sourceTransaction.account',
             'transfer.destinationTransaction.account',
         ]);
@@ -66,7 +62,7 @@ class TransactionDetailData extends Data
         $counterpart = null;
 
         if ($transfer !== null && $transaction->type === TransactionType::Transfer) {
-            $counterpart = $transaction->flow === TransactionFlow::Outflow
+            $counterpart = $transaction->flow === Cashflow::Outflow
                 ? $transfer->destinationTransaction
                 : $transfer->sourceTransaction;
         }
@@ -84,7 +80,6 @@ class TransactionDetailData extends Data
             category_id: $transaction->category_id,
             account: $transaction->relationLoaded('account') ? $transaction->account : null,
             destination_account: $counterpart?->account,
-            category: $transaction->relationLoaded('category') ? $transaction->category : null,
         );
     }
 }

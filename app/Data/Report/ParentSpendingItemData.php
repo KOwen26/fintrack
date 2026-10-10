@@ -7,7 +7,7 @@ use Spatie\LaravelData\Data;
 class ParentSpendingItemData extends Data
 {
     public function __construct(
-        public int $categoryId,
+        public string $group_id,
         public string $name,
         public string $color,
         public string $icon,

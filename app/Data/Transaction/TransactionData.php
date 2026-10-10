@@ -2,7 +2,8 @@
 
 namespace App\Data\Transaction;
 
-use App\Enums\TransactionFlow;
+use App\Enums\Cashflow;
+use App\Enums\Category;
 use App\Enums\TransactionType;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -26,20 +27,20 @@ class TransactionData extends Data
         public string $transaction_date,
 
         /** Income/expense always carry one (form-enforced). */
-        public ?int $category_id = null,
+        public ?Category $category_id = null,
 
         public ?string $description = null,
 
         /** Service-internal only — derived from type, never client-sent. */
-        public ?TransactionFlow $flow = null,
+        public ?Cashflow $flow = null,
 
         /** Service-internal only — set for unit member rows, never client-sent. */
         public ?int $transfer_id = null,
     ) {}
 
-    public function derivedFlow(): TransactionFlow
+    public function derivedFlow(): Cashflow
     {
         return $this->flow
-            ?? ($this->type === TransactionType::Income ? TransactionFlow::Inflow : TransactionFlow::Outflow);
+            ?? ($this->type === TransactionType::Income ? Cashflow::Inflow : Cashflow::Outflow);
     }
 }

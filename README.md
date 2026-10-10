@@ -21,7 +21,7 @@ A user owns multiple financial accounts, each optionally linked to a provider (i
 - **Types** (`AccountType`): `debit_account`, `credit_card`, `cash_wallet`, `e_wallet`, `investment`.
 - **Access** (`AccountAccessType`): `personal` or `joint`. Viewing is allowed for the owner or anyone when the account is joint; mutating (update, delete, restore, archive) is owner-only.
 - **Lifecycle**: soft deletes plus a separate `archived_at` timestamp — archiving is user-facing and distinct from deletion; lists exclude archived accounts.
-- **Balance is dual-tracked**: `current_balance` is denormalized and observer-maintained: account creation copies `initial_balance`; editing `initial_balance` applies the delta; every transaction create/update/delete/restore applies `±amount` by flow direction. On-demand truth is recomputed by `BalanceService` as `initial_balance + Σ inflows − Σ outflows` (SQL aggregate, cached per account — past data indefinitely, current month briefly).
+- **Balance is dual-tracked**: `current_balance` is denormalized and observer-maintained by every transaction create/update/delete/restore (`±amount` by flow). On-demand truth is recomputed by `BalanceService` as `Σ inflows − Σ outflows` — the account's opening balance is itself an Income transaction row (Initial Balance category), making it visible in history. `accounts.initial_balance` is a display copy kept in lockstep by `AccountService`.
 - **Portfolio summary**: total balance; "available" balance counts only debit + cash + e-wallet accounts (credit cards excluded); investment balance; oldest-account age.
 
 ### Transaction

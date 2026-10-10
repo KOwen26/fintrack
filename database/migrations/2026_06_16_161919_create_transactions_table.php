@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('account_id')->constrained('accounts')->cascadeOnDelete();
-            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
+            $table->string('category_id')->nullable();
             $table->foreignId('transfer_id')->nullable()->constrained('transfers')->cascadeOnDelete();
             $table->decimal('amount', 15, 2);
             $table->string('type');

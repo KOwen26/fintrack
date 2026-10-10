@@ -4,11 +4,11 @@ namespace App\Services;
 
 use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransferData;
-use App\Enums\TransactionFlow;
+use App\Enums\Cashflow;
+use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Events\TransactionDeleted;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use App\Models\User;
@@ -99,7 +99,7 @@ class TransferService
             amount: $data->amount,
             transaction_date: $data->transaction_date,
             description: $data->description,
-            flow: TransactionFlow::Outflow,
+            flow: Cashflow::Outflow,
             transfer_id: $transfer->id,
         ));
 
@@ -109,7 +109,7 @@ class TransferService
             amount: $data->amount,
             transaction_date: $data->transaction_date,
             description: $data->description,
-            flow: TransactionFlow::Inflow,
+            flow: Cashflow::Inflow,
             transfer_id: $transfer->id,
         ));
 
@@ -119,24 +119,11 @@ class TransferService
                 type: TransactionType::Expense,
                 amount: $data->fee_amount,
                 transaction_date: $data->transaction_date,
-                category_id: $this->resolveTransferFeeCategory(),
+                category_id: Category::AdminFees,
                 description: 'Transfer fee',
-                flow: TransactionFlow::Outflow,
+                flow: Cashflow::Outflow,
                 transfer_id: $transfer->id,
             ));
         }
-    }
-
-    /**
-     * Resolve the Admin Fees child category for booking transfer fees.
-     * Returns null when it does not exist — the fee then books as uncategorized.
-     */
-    private function resolveTransferFeeCategory(): ?int
-    {
-        return Category::query()
-            ->where('name', 'Admin Fees')
-            ->levelChildren()
-            ->first()
-            ?->id;
     }
 }

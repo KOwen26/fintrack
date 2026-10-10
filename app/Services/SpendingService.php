@@ -6,14 +6,17 @@ use App\Data\Report\CategorySpendingItemData;
 use App\Data\Report\CategorySpendingReportData;
 use App\Data\Report\ChildSpendingItemData;
 use App\Data\Report\ParentSpendingItemData;
+use App\Enums\CategoryGroup;
 use App\Enums\DatePeriodPreset;
 use App\Enums\TransactionType;
-use Illuminate\Support\Facades\DB;
+use App\Models\Transaction;
 
 final class SpendingService
 {
     /**
      * Aggregate category spending across multiple accounts for a given period.
+     * SQL sums per category; the enum supplies presentation metadata and the
+     * group rollup folds in PHP.
      */
     public function globalCategorySpending(array $accountIds, DatePeriodPreset $periodPreset): CategorySpendingReportData
     {
@@ -26,53 +29,40 @@ final class SpendingService
         $from = $period->startDate();
         $to = $period->endDate();
 
-        $periodTotal = (float) DB::table('transactions')
+        $periodTotal = (float) Transaction::query()
             ->whereIn('account_id', $accountIds)
             ->where('type', TransactionType::Expense->value)
             ->whereBetween('transaction_date', [$from, $to])
-            ->whereNull('deleted_at')
             ->sum('amount');
 
         if ($periodTotal <= 0) {
             return CategorySpendingReportData::emptyForPeriod($period);
         }
 
-        $rows = DB::table('transactions as t')
-            ->join('categories as c', 'c.id', '=', 't.category_id')
-            ->leftJoin('categories as parent', 'c.parent_id', '=', 'parent.id')
-            ->selectRaw("
-                c.id AS category_id,
-                c.name,
-                JSON_UNQUOTE(JSON_EXTRACT(c.decorations, '$.color')) AS color,
-                JSON_UNQUOTE(JSON_EXTRACT(c.decorations, '$.icon')) AS icon,
-                c.parent_id,
-                parent.name AS parent_name,
-                SUM(t.amount) AS total,
-                ROUND(SUM(t.amount) / ? * 100, 2) AS percentage
-            ", [$periodTotal])
-            ->whereIn('t.account_id', $accountIds)
-            ->where('t.type', TransactionType::Expense->value)
-            ->whereBetween('t.transaction_date', [$from, $to])
-            ->whereNull('t.deleted_at')
-            ->groupBy('t.category_id', 'c.id', 'c.name', 'color', 'icon', 'c.parent_id', 'parent.name')
+        $rows = Transaction::query()
+            ->whereIn('account_id', $accountIds)
+            ->where('type', TransactionType::Expense->value)
+            ->whereBetween('transaction_date', [$from, $to])
+            ->selectRaw('category_id, SUM(amount) AS total, ROUND(SUM(amount) / ? * 100, 2) AS percentage', [$periodTotal])
+            ->groupBy('category_id')
             ->orderByDesc('total')
             ->get();
 
-        $items = $rows->map(fn (object $r): CategorySpendingItemData => new CategorySpendingItemData(
-            name: $r->name,
-            color: $r->color,
-            icon: $r->icon,
-            total: (float) $r->total,
-            percentage: (float) $r->percentage,
-            categoryId: (int) $r->category_id,
-            parentId: $r->parent_id ? (int) $r->parent_id : null,
-            parentName: $r->parent_name ?? null,
-        ))->all();
+        // Rows are hydrated Transaction models — category_id is already the
+        // enum via the model cast; no raw-value resolution needed.
+        $items = $rows
+            ->filter(fn (Transaction $r): bool => $r->category_id !== null)
+            ->map(fn (Transaction $r): CategorySpendingItemData => CategorySpendingItemData::fromEnum(
+                $r->category_id,
+                total: (float) $r->total,
+                percentage: (float) $r->percentage,
+            ))
+            ->all();
 
-        $parentGroups = $this->groupByParent($items, $periodTotal);
+        $groups = $this->groupByCategoryGroup($items, $periodTotal);
 
         return new CategorySpendingReportData(
-            categories: $parentGroups,
+            categories: $groups,
             period_total: $periodTotal,
             from: $from,
             to: $to,
@@ -80,112 +70,65 @@ final class SpendingService
     }
 
     /**
-     * Transform flat category spending items into parent-grouped structure.
+     * Roll flat category spending items up into their category groups.
      *
      * @param  CategorySpendingItemData[]  $items
      *
      * @return ParentSpendingItemData[]
      */
-    public function groupByParent(array $items, float $periodTotal): array
+    public function groupByCategoryGroup(array $items, float $periodTotal): array
     {
-        // Separate into parent rows (top-level categories) and child rows
-        $parentRows = [];
-        $childRows = [];
+        $grouped = [];
 
         foreach ($items as $item) {
-            if ($item->parentId === null) {
-                $parentRows[] = $item;
-            } else {
-                $childRows[] = $item;
-            }
-        }
-
-        // Index parent rows by their own category ID
-        $parentMap = [];
-        foreach ($parentRows as $parent) {
-            $parentMap[$parent->categoryId] = $parent;
-        }
-
-        // Group child rows by their parent_id
-        $childMap = [];
-        foreach ($childRows as $child) {
-            $childMap[$child->parentId][] = $child;
+            $grouped[$item->group][] = $item;
         }
 
         $result = [];
 
-        // Case 1: Parents that have direct spending (anchor row exists)
-        foreach ($parentMap as $parentId => $parent) {
-            $children = $childMap[$parentId] ?? [];
-
-            $childrenTotal = array_sum(array_map(fn (CategorySpendingItemData $c): float => $c->total, $children));
-            $groupTotal = $parent->total + $childrenTotal;
-            $groupPercentage = $periodTotal > 0
-                ? round($groupTotal / $periodTotal * 100, 2)
-                : 0;
-
-            $childItems = $this->buildChildren($children, $groupTotal);
+        foreach ($grouped as $groupValue => $children) {
+            $group = CategoryGroup::from($groupValue);
+            $groupTotal = array_sum(array_map(
+                fn (CategorySpendingItemData $c): float => $c->total,
+                $children,
+            ));
 
             $result[] = new ParentSpendingItemData(
-                categoryId: $parentId,
-                name: $parent->name,
-                color: $parent->color,
-                icon: $parent->icon,
+                group_id: $group->value,
+                name: $group->label(),
+                color: $group->decorations()->color,
+                icon: $group->decorations()->icon,
                 total: $groupTotal,
-                percentage: $groupPercentage,
-                children: $childItems,
+                percentage: $periodTotal > 0
+                    ? round($groupTotal / $periodTotal * 100, 2)
+                    : 0,
+                children: $this->buildChildren($children, $groupTotal),
             );
         }
 
-        // Case 2: Children whose parent has no direct spending (synthesized parent)
-        foreach ($childMap as $parentId => $children) {
-            if (isset($parentMap[$parentId])) {
-                continue; // Already handled above
-            }
-
-            $firstChild = $children[0];
-            $childrenTotal = array_sum(array_map(fn (CategorySpendingItemData $c): float => $c->total, $children));
-            $groupPercentage = $periodTotal > 0
-                ? round($childrenTotal / $periodTotal * 100, 2)
-                : 0;
-
-            $childItems = $this->buildChildren($children, $childrenTotal);
-
-            $result[] = new ParentSpendingItemData(
-                categoryId: $parentId,
-                name: $firstChild->parentName ?? $firstChild->name,
-                color: $firstChild->color,
-                icon: $firstChild->icon,
-                total: $childrenTotal,
-                percentage: $groupPercentage,
-                children: $childItems,
-            );
-        }
-
-        // Sort by total descending
         usort($result, fn (ParentSpendingItemData $a, ParentSpendingItemData $b): int => $b->total <=> $a->total);
 
         return $result;
     }
 
     /**
-     * Build ChildSpendingItemData array, recalculating percentages relative to parent subtotal.
+     * Build ChildSpendingItemData array, recalculating percentages relative to the group subtotal.
      *
      * @param  CategorySpendingItemData[]  $children
      *
      * @return ChildSpendingItemData[]
      */
-    private function buildChildren(array $children, float $parentSubtotal): array
+    private function buildChildren(array $children, float $groupSubtotal): array
     {
         return array_map(
             fn (CategorySpendingItemData $c): ChildSpendingItemData => new ChildSpendingItemData(
-                categoryId: $c->categoryId,
+                category_id: $c->category_id,
                 name: $c->name,
                 color: $c->color,
                 icon: $c->icon,
                 total: $c->total,
-                percentage: $parentSubtotal > 0
-                    ? round($c->total / $parentSubtotal * 100, 2)
+                percentage: $groupSubtotal > 0
+                    ? round($c->total / $groupSubtotal * 100, 2)
                     : 0,
             ),
             $children,

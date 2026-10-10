@@ -181,12 +181,10 @@
                     error={form.errors.provider_id}
                     bind:value={form.provider_id} />
 
-                {#if !isEdit}
-                    <FieldInput
-                        {...formSchema.fields.initial_balance}
-                        error={form.errors.initial_balance}
-                        bind:value={form.initial_balance} />
-                {/if}
+                <FieldInput
+                    {...formSchema.fields.initial_balance}
+                    error={form.errors.initial_balance}
+                    bind:value={form.initial_balance} />
             </div>
         </ResponsiveCard>
 

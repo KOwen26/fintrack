@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use App\Data\DecorationData;
 use App\Enums\AccountAccessType;
 use App\Enums\AccountType;
-use App\Observers\AccountObserver;
+use App\Objects\Decoration;
 use Database\Factories\AccountFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,8 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[ObservedBy([AccountObserver::class])]
-class Account extends Model
+final class Account extends Model
 {
     /** @use HasFactory<AccountFactory> */
     use HasFactory, SoftDeletes;
@@ -29,9 +26,10 @@ class Account extends Model
         return [
             'type' => AccountType::class,
             'access_type' => AccountAccessType::class,
-            'initial_balance' => 'decimal:2',
+            'current_balance' => 'integer',
+            'initial_balance' => 'integer',
+            'decorations' => Decoration::class,
             'archived_at' => 'datetime',
-            'decorations' => DecorationData::class,
         ];
     }
 

@@ -182,11 +182,11 @@
     {#if !hideActions && quickActions.length > 0}
         <div
             style="scrollbar-width: none; -ms-overflow-style: none;"
-            class="relative z-1 -mx-5 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0">
+            class="relative z-1 overflow-x-auto pb-1">
             <div class="flex gap-2 md:flex-wrap">
                 {#each quickActions as action (action.label)}
                     <button
-                        class="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg bg-white/15 px-3.5 py-2 text-sm font-medium text-current/90 transition-colors hover:bg-white/25 md:shrink"
+                        class="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg bg-white/15 px-3.5 py-2 text-sm font-medium text-current transition-colors hover:bg-white/25 md:shrink"
                         type="button">
                         <i class="iconify size-4 {action.icon}"></i>
                         {action.label}
@@ -204,14 +204,14 @@
             class="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-base-300 bg-card px-5 py-3 text-xs">
             <!-- {#if account?.account_number}
                 <span class="flex items-center gap-1">
-                    <i class="iconify size-4 text-base-content/80 solar--user-id-line-duotone"></i>
-                    <span class="text-base-content/80">{account?.account_number}</span>
+                    <i class="iconify size-4 text-foreground/70 solar--user-id-line-duotone"></i>
+                    <span class="text-foreground/70">{account?.account_number}</span>
                 </span>
             {/if} -->
             {#if account.created_at}
                 <span class="flex items-center gap-1">
-                    <i class="iconify size-4 text-base-content/80 solar--calendar-line-duotone"></i>
-                    <span class="text-base-content/80"
+                    <i class="iconify size-4 text-foreground/70 solar--calendar-line-duotone"></i>
+                    <span class="text-foreground/70"
                         >Since {DateTimeHelper.format(account.created_at, 'date')}</span>
                 </span>
             {/if}

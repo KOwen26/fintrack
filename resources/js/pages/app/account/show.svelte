@@ -95,8 +95,8 @@
     });
 
     const members = $derived([
-        { name: 'John Doe', email: 'john@example.com', role: 'Owner' },
-        { name: 'Jane Smith', email: 'jane@example.com', role: 'Member' },
+        // { name: 'John Doe', email: 'john@example.com', role: 'Owner' },
+        // { name: 'Jane Smith', email: 'jane@example.com', role: 'Member' },
     ]);
 </script>
 
