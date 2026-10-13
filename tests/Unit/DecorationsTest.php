@@ -3,9 +3,6 @@
 use App\Models\Account;
 use App\Models\Provider;
 use App\Objects\Decoration;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
 
 it('assigns random active decorations to accounts by default', function (): void {
     $account = Account::factory()->create();

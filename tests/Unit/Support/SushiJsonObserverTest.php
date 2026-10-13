@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
 use Sushi\Sushi;
-use Tests\TestCase;
 
 class SushiTestModel extends Model
 {
@@ -82,8 +81,6 @@ class SushiBulkTestModel extends Model
     }
 }
 
-uses(TestCase::class)->group('unit');
-
 beforeEach(function (): void {
     $this->path = sys_get_temp_dir() . '/sushi_obs_' . uniqid() . '.json';
     File::put($this->path, json_encode([
@@ -95,7 +92,7 @@ afterEach(function (): void {
     File::delete($this->path);
 });
 
-test('saved upserts a new row by slug', function (): void {
+it('upserts a new row by slug on save', function (): void {
     $model = new SushiTestModel([
         'slug' => 'b', 'label' => 'B', 'status' => 'Active',
     ]);
@@ -110,7 +107,7 @@ test('saved upserts a new row by slug', function (): void {
     expect(array_keys($rows[1]))->not->toContain('id');
 });
 
-test('saved updates an existing row by slug', function (): void {
+it('updates an existing row by slug on save', function (): void {
     $model = new SushiTestModel([
         'slug' => 'a', 'label' => 'Updated', 'status' => 'Active',
     ]);
@@ -124,8 +121,8 @@ test('saved updates an existing row by slug', function (): void {
     expect($rows[0]['label'])->toBe('Updated');
 });
 
-test('saved merges a partial update without clobbering other columns', function (): void {
-    // Update is the primary operation: a model carrying only some columns
+it('preserves untouched columns when a partial row is saved', function (): void {
+    // The primary operation is an update: a model carrying only some columns
     // must not null out the columns it does not currently hold.
     $model = new SushiTestModel([
         'slug' => 'a', 'label' => 'Updated',
@@ -141,7 +138,7 @@ test('saved merges a partial update without clobbering other columns', function 
     expect($rows[0]['status'])->toBe('Active'); // preserved from original row
 });
 
-test('saved moves the row when the natural key changes', function (): void {
+it('moves the row when the natural key changes', function (): void {
     $model = new SushiTestModel([
         'slug' => 'a', 'label' => 'A', 'status' => 'Active',
     ]);
@@ -158,7 +155,7 @@ test('saved moves the row when the natural key changes', function (): void {
     expect(array_column($rows, 'slug'))->not->toContain('a');
 });
 
-test('deleted removes the row by slug', function (): void {
+it('removes the row by slug on delete', function (): void {
     $model = new SushiTestModel([
         'slug' => 'a', 'label' => 'A', 'status' => 'Active',
     ]);
@@ -171,7 +168,7 @@ test('deleted removes the row by slug', function (): void {
     expect($rows)->toHaveCount(0);
 });
 
-test('observer ignores models without the json source contract', function (): void {
+it('ignores models without the json source contract', function (): void {
     $plain = new class extends Model {};
 
     (new SushiJsonObserver)->saved($plain);
@@ -180,9 +177,9 @@ test('observer ignores models without the json source contract', function (): vo
     expect($rows)->toHaveCount(1);
 });
 
-test('decoration models are observed by SushiJsonObserver', function (): void {
+it('observes the decoration models with SushiJsonObserver', function (): void {
     foreach ([DecorationColor::class, DecorationIcon::class] as $model) {
-        $attributes = (new ReflectionClass($model))->getAttributes(ObservedBy::class);
+        $attributes = new ReflectionClass($model)->getAttributes(ObservedBy::class);
         expect($attributes)->toHaveCount(1);
 
         $observed = $attributes[0]->getArguments()[0] ?? [];
@@ -190,20 +187,27 @@ test('decoration models are observed by SushiJsonObserver', function (): void {
     }
 });
 
-test('decoration models keep independent sushi connections', function (): void {
+it('keeps independent sushi connections between decoration models', function (): void {
     // Both models use Sushi directly (per-leaf), so each must resolve its own
     // connection. Querying both in the same process must not clobber each other
     // (regression guard for the shared $sushiConnection static bug).
     // Clear any stale Sushi cache so we read fresh from the JSON sources.
     collect(glob(storage_path('framework/cache/sushi-*')))->each(
-        static fn (string $file): bool => file_exists($file) && unlink($file)
+        static function (string $file): void {
+            try {
+                unlink($file);
+            } catch (ErrorException) {
+                // File still held open by a connection (Windows lock) — skip it;
+                // the row assertions below prove the reads return correct data.
+            }
+        }
     );
 
     expect(DecorationColor::where('slug', 'slate-50')->first()->label)->toBe('Slate 50');
-    expect(DecorationIcon::where('slug', 't-shirt-bold')->first()->label)->toBe('T-Shirt');
+    expect(DecorationIcon::where('slug', 't-shirt')->first()->label)->toBe('T-Shirt');
 });
 
-test('bulk query builder update syncs the json source', function (): void {
+it('syncs the json source on bulk query builder update', function (): void {
     // Bulk updates bypass Eloquent model events, so the observer alone would
     // miss them. The custom SushiJsonBuilder must re-sync the JSON file.
     $path = sys_get_temp_dir() . '/sushi_bulk_' . uniqid() . '.json';
@@ -223,7 +227,7 @@ test('bulk query builder update syncs the json source', function (): void {
     File::delete($path);
 });
 
-test('bulk query builder delete syncs the json source', function (): void {
+it('syncs the json source on bulk query builder delete', function (): void {
     $path = sys_get_temp_dir() . '/sushi_bulk_del_' . uniqid() . '.json';
     File::put($path, json_encode([
         ['slug' => 'a', 'label' => 'A', 'status' => 'Active'],

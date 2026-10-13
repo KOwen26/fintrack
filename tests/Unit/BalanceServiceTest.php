@@ -4,9 +4,6 @@ use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\BalanceService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
 
 function setupBalanceAccount(float $initialBalance = 0): array
 {

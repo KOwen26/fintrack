@@ -10,10 +10,6 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Services\TransactionService;
 use App\Services\TransferService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Pest\Mixins\Expectation;
-
-uses(RefreshDatabase::class);
 
 function createTransferAccounts(): array
 {
@@ -80,7 +76,7 @@ it('recreates member rows and keeps the transfer id stable on unit edit', functi
     $liveRows = $edited->transactions()->get();
     expect($liveRows)->toHaveCount(2);
 
-    $liveRows->each(fn ($row): Expectation => expect($originalRowIds->notContains($row->id))->toBeTrue());
+    $liveRows->each(fn ($row) => expect($originalRowIds)->not->toContain($row->id));
     expect(Transaction::withTrashed()->where('transfer_id', $edited->id)->count())->toBe(4);
 });
 

@@ -2,8 +2,8 @@
 
 use App\Models\User;
 
-describe('Password Confirmation', function () {
-    it('renders the confirm password page', function () {
+describe('Password Confirmation', function (): void {
+    it('renders the confirm password page', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -12,26 +12,26 @@ describe('Password Confirmation', function () {
             ->assertInertia(fn ($page) => $page->component('auth/confirm-password'));
     });
 
-    it('confirms password with the correct current password', function () {
+    it('confirms password with the correct current password', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
-            ->post('/confirm-password', ['password' => 'password'])
+            ->post(route('auth.password.confirm'), ['password' => 'password'])
             ->assertRedirect();
 
         $this->assertCredentials(['email' => $user->email, 'password' => 'password']);
     });
 
-    it('rejects confirmation with a wrong password', function () {
+    it('rejects confirmation with a wrong password', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
-            ->post('/confirm-password', ['password' => 'wrong-password'])
+            ->post(route('auth.password.confirm'), ['password' => 'wrong-password'])
             ->assertSessionHasErrors('password');
     });
 
-    it('redirects guests to login', function () {
+    it('redirects guests to login', function (): void {
         $this->get(route('auth.password.confirm'))
-            ->assertRedirect(route('auth.login'));
+            ->assertRedirectToRoute('auth.login');
     });
 });

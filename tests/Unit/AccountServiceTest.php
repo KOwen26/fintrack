@@ -5,9 +5,6 @@ use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\AccountService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
 
 it('summarizes total, available and investment balances across account types', function (): void {
     $user = User::factory()->create();
@@ -19,7 +16,7 @@ it('summarizes total, available and investment balances across account types', f
         'amount' => 750_000,
     ]);
 
-    $accounts = collect([
+    $accountIds = collect([
         Account::factory()->create(['owner_id' => $user->id, 'initial_balance' => 1_000_000]),
         Account::factory()->create([
             'owner_id' => $user->id,
@@ -37,7 +34,11 @@ it('summarizes total, available and investment balances across account types', f
             'initial_balance' => 4_850_000,
         ]),
         $card,
-    ]);
+    ])->pluck('id');
+
+    // current_balance is maintained in the DB by observers and the opening-row
+    // sync — the in-memory factory models never see it, so re-query.
+    $accounts = Account::query()->whereKey($accountIds)->get();
 
     $summary = AccountService::summarize($accounts);
 
@@ -57,7 +58,7 @@ it('keeps credit card debt out of available and investment balances', function (
         'amount' => 750_000,
     ]);
 
-    $summary = AccountService::summarize(collect([$card]));
+    $summary = AccountService::summarize(collect([$card->fresh()]));
 
     expect($summary['total_balance'])->toBe(-750_000.0)
         ->and($summary['available_balance'])->toBe(0.0)

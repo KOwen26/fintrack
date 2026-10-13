@@ -4,9 +4,6 @@ use App\Enums\Category;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
 
 function guardUser(): array
 {
@@ -40,7 +37,7 @@ it('redirects the edit page of an opening row to the account edit page', functio
     [$user, $account] = guardUser();
 
     $this->actingAs($user)->get(route('transactions.edit', openingRowOf($account)))
-        ->assertRedirect(route('accounts.edit', $account));
+        ->assertRedirectToRoute('accounts.edit', ['account' => $account]);
 });
 
 it('rejects updating an opening row via the transactions endpoint', function (): void {
@@ -53,7 +50,7 @@ it('rejects updating an opening row via the transactions endpoint', function ():
         'amount' => 100_000,
         'transaction_date' => now()->toDateString(),
         'category_id' => 'salary',
-    ])->assertStatus(422);
+    ])->assertUnprocessable();
 });
 
 it('rejects deleting an opening row via the transactions endpoint', function (): void {
@@ -61,7 +58,7 @@ it('rejects deleting an opening row via the transactions endpoint', function ():
     $row = openingRowOf($account);
 
     $this->actingAs($user)->delete(route('transactions.destroy', $row))
-        ->assertStatus(422);
+        ->assertUnprocessable();
 
     expect($row->fresh())->not->toBeNull()
         ->and((float) $account->fresh()->current_balance)->toBe(500_000.0);

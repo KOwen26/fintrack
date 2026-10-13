@@ -11,14 +11,23 @@ Write tests as Pest `it('...', function (): void {})` closures — never class-b
 PHPUnit tests. Group related cases with `describe()` blocks; use `->with([...])`
 datasets for enumerations of inputs.
 
-## Global RefreshDatabase on sqlite memory
+## Global LazilyRefreshDatabase on sqlite memory
 
 Glob: `tests/**`
 
-Rely on the global `RefreshDatabase` binding in `tests/Pest.php` (applied to `Feature`
-and `Browser`); don't add per-file `uses()` or manual DB cleanup. Tests run against
-sqlite `:memory:` per `phpunit.xml` — do not assume MySQL-specific behavior. `tests/Unit`
-stays DB-free (pure logic).
+Rely on the global `LazilyRefreshDatabase` binding in `tests/Pest.php` (applied to
+`Feature`, `Unit`, and `Browser`); don't add per-file `uses()` or manual DB cleanup.
+Tests run against sqlite `:memory:` per `phpunit.xml` — do not assume MySQL-specific
+behavior.
+
+## Feature dir is HTTP-only
+
+Glob: `tests/**`
+
+`tests/Feature` holds only HTTP interaction tests — requests via `actingAs`/`get`/`post`/
+`put`/`patch`/`delete` with response assertions. Service, model, observer, and DTO logic
+(including tests that touch the database through factories) lives in `tests/Unit`, with
+subdirectories mirroring the class under test where it helps (e.g. `Unit/Enum/`).
 
 ## Factories with named states
 

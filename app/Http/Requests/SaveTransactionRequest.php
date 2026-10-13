@@ -26,7 +26,7 @@ class SaveTransactionRequest extends FormRequest
             'type' => ['required', 'string', Rule::in([TransactionType::Income->value, TransactionType::Expense->value])],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'transaction_date' => ['required', 'date', 'before_or_equal:today'],
-            'category_id' => ['required', Rule::enum(Category::class)->unless(Category::InitialBalance)],
+            'category_id' => ['required', Rule::enum(Category::class)->except(Category::InitialBalance)],
             'description' => ['nullable', 'string', 'max:500'],
             'destination_account_id' => ['prohibited'],
             'fee_amount' => ['prohibited'],

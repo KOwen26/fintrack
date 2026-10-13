@@ -26,8 +26,7 @@ final class SpendingService
             return CategorySpendingReportData::emptyForPeriod($period);
         }
 
-        $from = $period->startDate();
-        $to = $period->endDate();
+        [$from, $to] = $period->toRange();
 
         $periodTotal = (float) Transaction::query()
             ->whereIn('account_id', $accountIds)

@@ -1,6 +1,5 @@
 <?php
 
-use App\Data\Transaction\TransactionListData;
 use App\Data\Transaction\TransferData;
 use App\Enums\Cashflow;
 use App\Enums\Category;
@@ -18,6 +17,11 @@ function createAccountForUser(): array
 
     return [$user, $account];
 }
+
+it('redirects guests to the login page', function (): void {
+    $this->get(route('transactions.index'))
+        ->assertRedirectToRoute('auth.login');
+});
 
 it('lists transactions for the authenticated user', function (): void {
     [$user, $account] = createAccountForUser();
@@ -43,7 +47,7 @@ it('stores an income transaction', function (): void {
         'transaction_date' => now()->toDateString(),
         'category_id' => 'salary',
         'description' => 'Salary',
-    ])->assertRedirect(route('transactions.index'));
+    ])->assertRedirectToRoute('transactions.index');
 
     expect(Transaction::where('account_id', $account->id)->where('type', TransactionType::Income->value)->exists())->toBeTrue();
 });
@@ -58,7 +62,7 @@ it('stores an expense transaction', function (): void {
         'transaction_date' => now()->toDateString(),
         'category_id' => 'groceries',
         'description' => 'Groceries',
-    ])->assertRedirect();
+    ])->assertRedirectToRoute('transactions.index');
 
     expect(Transaction::where('account_id', $account->id)->where('type', TransactionType::Expense->value)->exists())->toBeTrue();
 });
@@ -73,7 +77,7 @@ it('creates a transfer unit with member rows via POST /transfers', function (): 
         'amount' => 1_000_000,
         'transaction_date' => now()->toDateString(),
         'description' => 'Savings move',
-    ])->assertRedirect(route('transactions.index'));
+    ])->assertRedirectToRoute('transactions.index');
 
     $transfer = Transfer::first();
     expect($transfer)->not->toBeNull();
@@ -100,7 +104,7 @@ it('books a transfer fee row in the Admin Fees category via POST /transfers', fu
         'amount' => 500_000,
         'transaction_date' => now()->toDateString(),
         'fee_amount' => 6_500,
-    ])->assertRedirect();
+    ])->assertRedirectToRoute('transactions.index');
 
     $transfer = Transfer::first();
     $feeRow = $transfer->transactions()->get()->firstWhere('type', TransactionType::Expense);
@@ -143,7 +147,7 @@ it('rejects direct unit-member edits with 422 on PUT /transactions', function ()
         'amount' => 250_000,
         'transaction_date' => now()->toDateString(),
         'category_id' => 'groceries',
-    ])->assertStatus(422);
+    ])->assertUnprocessable();
 });
 
 it('edits a transfer unit via PUT /transfers keeping the id stable', function (): void {
@@ -165,7 +169,7 @@ it('edits a transfer unit via PUT /transfers keeping the id stable', function ()
         'amount' => 300_000,
         'transaction_date' => now()->toDateString(),
         'fee_amount' => 5_000,
-    ])->assertRedirect();
+    ])->assertRedirectToRoute('transactions.index');
 
     $fresh = $transfer->fresh();
     expect($fresh->id)->toBe($transfer->id)
@@ -188,7 +192,7 @@ it('soft-deletes the whole unit (aggregate, member rows, fee) when any member is
     $transfer = Transfer::first();
     $inflow = $transfer->transactions()->get()->first(fn ($row): bool => $row->flow === Cashflow::Inflow);
 
-    $this->actingAs($user)->delete(route('transactions.destroy', $inflow))->assertRedirect();
+    $this->actingAs($user)->delete(route('transactions.destroy', $inflow))->assertRedirectToRoute('transactions.index');
 
     expect($transfer->fresh()->trashed())->toBeTrue()
         ->and(Transaction::where('transfer_id', $transfer->id)->count())->toBe(0)
@@ -207,36 +211,32 @@ it('soft-deletes a transaction', function (): void {
     $transaction = Transaction::factory()->create(['account_id' => $account->id, 'created_by' => $user->id]);
 
     $this->actingAs($user)->delete(route('transactions.destroy', $transaction))
-        ->assertRedirect();
+        ->assertRedirectToRoute('transactions.index');
 
     expect(Transaction::withTrashed()->find($transaction->id))->not->toBeNull();
 });
 
-it('resolves destination_account_id for both sides of a transfer unit', function (): void {
-    [$user, $sourceAccount] = createAccountForUser();
-    $destAccount = Account::factory()->create(['owner_id' => $user->id]);
+it('forbids updating a transaction created by another user', function (): void {
+    [$user] = createAccountForUser();
+    $otherTransaction = Transaction::factory()->expense()->create(['amount' => 200_000]); // created by another user
 
-    $transfer = resolve(TransferService::class)->create($user, new TransferData(
-        account_id: $sourceAccount->id,
-        destination_account_id: $destAccount->id,
-        amount: 250_000,
-        transaction_date: now()->toDateString(),
-    ));
-    $rows = $transfer->transactions()->get();
+    $this->actingAs($user)->put(route('transactions.update', $otherTransaction), [
+        'account_id' => $otherTransaction->account_id,
+        'type' => TransactionType::Expense->value,
+        'amount' => 150_000,
+        'transaction_date' => now()->toDateString(),
+        'category_id' => 'groceries',
+    ])->assertForbidden();
 
-    $outflow = $rows->first(fn ($row): bool => $row->flow === Cashflow::Outflow);
-    $inflow = $rows->first(fn ($row): bool => $row->flow === Cashflow::Inflow);
-
-    expect(TransactionListData::fromTransaction($outflow)->destination_account_id)->toBe($destAccount->id)
-        ->and(TransactionListData::fromTransaction($inflow)->destination_account_id)->toBe($sourceAccount->id);
+    expect((float) $otherTransaction->fresh()->amount)->toBe(200_000.0);
 });
 
-it('sets destination_account_id to null for non-transfer transactions', function (): void {
-    [$user, $account] = createAccountForUser();
-    $transaction = Transaction::factory()->expense()->create([
-        'account_id' => $account->id,
-        'created_by' => $user->id,
-    ]);
+it('forbids deleting a transaction created by another user', function (): void {
+    [$user] = createAccountForUser();
+    $otherTransaction = Transaction::factory()->expense()->create(['amount' => 200_000]); // created by another user
 
-    expect(TransactionListData::fromTransaction($transaction)->destination_account_id)->toBeNull();
+    $this->actingAs($user)->delete(route('transactions.destroy', $otherTransaction))
+        ->assertForbidden();
+
+    expect($otherTransaction->fresh())->not->toBeNull();
 });

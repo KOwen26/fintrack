@@ -4,11 +4,13 @@ use App\Enums\AccountAccessType;
 use App\Enums\AccountType;
 use App\Models\Account;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class);
+it('redirects guests to the login page', function (): void {
+    $this->get(route('accounts.index'))
+        ->assertRedirectToRoute('auth.login');
+});
 
-it('lists all accounts for any authenticated user', function (): void {
+it('lists only the accounts owned by the authenticated user', function (): void {
     $user = User::factory()->create();
     Account::factory()->create(['owner_id' => $user->id]);
     Account::factory()->create(); // owned by a different user
@@ -16,15 +18,15 @@ it('lists all accounts for any authenticated user', function (): void {
     $this->actingAs($user)->get(route('accounts.index'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->component('accounts/index')
-            ->has('accounts', 2)
+            ->component('app/account/index')
+            ->has('accounts', 1)
         );
 });
 
-it('stores a new account', function (): void {
+it('stores a new account and redirects to its page', function (): void {
     $user = User::factory()->create();
 
-    $this->actingAs($user)->post(route('accounts.store'), [
+    $response = $this->actingAs($user)->post(route('accounts.store'), [
         'name' => 'BCA Savings',
         'type' => AccountType::DebitAccount->value,
         'access_type' => AccountAccessType::Personal->value,
@@ -34,22 +36,41 @@ it('stores a new account', function (): void {
             'icon' => 'wallet-bold',
             'color' => 'green-500',
         ],
-    ])->assertRedirect();
+    ]);
 
-    $account = Account::where('name', 'BCA Savings')->first();
+    $account = Account::query()->where('name', 'BCA Savings')->first();
     expect($account)->not->toBeNull();
     expect($account->decorations)->toMatchArray([
         'icon' => 'wallet-bold',
         'color' => 'green-500',
     ]);
+
+    $response->assertRedirectToRoute('accounts.show', ['account' => $account]);
 });
 
-it('allows any user to view any account', function (): void {
+it('shows the account page for its owner', function (): void {
     $user = User::factory()->create();
-    $otherAccount = Account::factory()->create(); // different owner
+    $account = Account::factory()->create(['owner_id' => $user->id]);
+
+    $this->actingAs($user)->get(route('accounts.show', $account))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('app/account/show'));
+});
+
+it('shows a joint account to any authenticated user', function (): void {
+    $user = User::factory()->create();
+    $jointAccount = Account::factory()->joint()->create();
+
+    $this->actingAs($user)->get(route('accounts.show', $jointAccount))
+        ->assertOk();
+});
+
+it('forbids viewing a personal account owned by another user', function (): void {
+    $user = User::factory()->create();
+    $otherAccount = Account::factory()->create(); // different owner, personal
 
     $this->actingAs($user)->get(route('accounts.show', $otherAccount))
-        ->assertOk();
+        ->assertForbidden();
 });
 
 it('prevents non-owner from editing an account', function (): void {
@@ -65,9 +86,19 @@ it('archives an account', function (): void {
     $account = Account::factory()->create(['owner_id' => $user->id]);
 
     $this->actingAs($user)->post(route('accounts.archive', $account))
-        ->assertRedirect(route('accounts.index'));
+        ->assertRedirectToRoute('accounts.index');
 
     expect($account->fresh()->archived_at)->not->toBeNull();
+});
+
+it('forbids archiving an account owned by another user', function (): void {
+    $user = User::factory()->create();
+    $otherAccount = Account::factory()->create(); // different owner
+
+    $this->actingAs($user)->post(route('accounts.archive', $otherAccount))
+        ->assertForbidden();
+
+    expect($otherAccount->fresh()->archived_at)->toBeNull();
 });
 
 it('soft-deletes an account', function (): void {
@@ -75,8 +106,18 @@ it('soft-deletes an account', function (): void {
     $account = Account::factory()->create(['owner_id' => $user->id]);
 
     $this->actingAs($user)->delete(route('accounts.destroy', $account))
-        ->assertRedirect(route('accounts.index'));
+        ->assertRedirectToRoute('accounts.index');
 
     expect(Account::find($account->id))->toBeNull();
     expect(Account::withTrashed()->find($account->id))->not->toBeNull();
+});
+
+it('forbids deleting an account owned by another user', function (): void {
+    $user = User::factory()->create();
+    $otherAccount = Account::factory()->create(); // different owner
+
+    $this->actingAs($user)->delete(route('accounts.destroy', $otherAccount))
+        ->assertForbidden();
+
+    expect($otherAccount->fresh()->deleted_at)->toBeNull();
 });

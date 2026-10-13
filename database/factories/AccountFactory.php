@@ -48,6 +48,13 @@ class AccountFactory extends Factory
         ]);
     }
 
+    public function joint(): static
+    {
+        return $this->state([
+            'access_type' => AccountAccessType::Joint,
+        ]);
+    }
+
     public function archived(): static
     {
         return $this->state(['archived_at' => now()]);

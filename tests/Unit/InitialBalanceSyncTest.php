@@ -5,9 +5,6 @@ use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\AccountService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
 
 function openingRow(Account $account): ?Transaction
 {
