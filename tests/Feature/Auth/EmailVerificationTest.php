@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 
 describe('Email Verification', function (): void {
-    it('renders the email verification page for unverified users', function (): void {
+    test('renders the email verification page for unverified users', function (): void {
         $user = User::factory()->unverified()->create();
 
         $this->actingAs($user)
@@ -15,7 +15,7 @@ describe('Email Verification', function (): void {
             ->assertInertia(fn ($page) => $page->component('auth/verify-email'));
     });
 
-    it('redirects already-verified users away from verification notice', function (): void {
+    test('redirects already-verified users away from verification notice', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -23,7 +23,7 @@ describe('Email Verification', function (): void {
             ->assertRedirectToRoute('dashboard');
     });
 
-    it('sends a verification email notification', function (): void {
+    test('sends a verification email notification', function (): void {
         Notification::fake();
         $user = User::factory()->unverified()->create();
 
@@ -34,7 +34,7 @@ describe('Email Verification', function (): void {
         Notification::assertSentTo($user, VerifyEmail::class);
     });
 
-    it('does not resend verification if already verified', function (): void {
+    test('does not resend verification if already verified', function (): void {
         Notification::fake();
         $user = User::factory()->create();
 
@@ -45,7 +45,7 @@ describe('Email Verification', function (): void {
         Notification::assertNotSentTo($user, VerifyEmail::class);
     });
 
-    it('verifies email with a valid signed URL', function (): void {
+    test('verifies email with a valid signed URL', function (): void {
         $user = User::factory()->unverified()->create();
 
         $verificationUrl = URL::temporarySignedRoute(
@@ -61,7 +61,7 @@ describe('Email Verification', function (): void {
         expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
     });
 
-    it('does not verify email with an invalid hash', function (): void {
+    test('does not verify email with an invalid hash', function (): void {
         $user = User::factory()->unverified()->create();
 
         $verificationUrl = URL::temporarySignedRoute(
@@ -77,7 +77,7 @@ describe('Email Verification', function (): void {
         expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
     });
 
-    it('redirects guests to login from protected routes when unverified', function (): void {
+    test('redirects guests to login from protected routes when unverified', function (): void {
         $this->get(route('dashboard'))
             ->assertRedirectToRoute('auth.login');
     });

@@ -17,19 +17,19 @@ function registrationPayload(array $overrides = []): array
 }
 
 describe('Registration', function (): void {
-    it('renders the register page for guests', function (): void {
+    test('renders the register page for guests', function (): void {
         $this->get(route('auth.register'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('auth/register'));
     });
 
-    it('redirects authenticated users away from register page', function (): void {
+    test('redirects authenticated users away from register page', function (): void {
         $this->actingAs(User::factory()->create())
             ->get(route('auth.register'))
             ->assertRedirectToRoute('dashboard');
     });
 
-    it('registers a new user with valid data', function (): void {
+    test('registers a new user with valid data', function (): void {
         Event::fake(Registered::class);
 
         $this->post(route('auth.register'), registrationPayload())
@@ -42,7 +42,7 @@ describe('Registration', function (): void {
         Event::assertDispatched(Registered::class);
     });
 
-    it('authenticates the user after registration', function (): void {
+    test('authenticates the user after registration', function (): void {
         Notification::fake();
 
         $this->post(route('auth.register'), registrationPayload([
@@ -58,29 +58,29 @@ describe('Registration', function (): void {
         $this->get(route('dashboard'))->assertRedirectToRoute('auth.verification.notice');
     });
 
-    it('requires name', function (): void {
+    test('requires name', function (): void {
         $this->post(route('auth.register'), registrationPayload(['name' => '']))
             ->assertSessionHasErrors('name');
     });
 
-    it('requires a valid email', function (): void {
+    test('requires a valid email', function (): void {
         $this->post(route('auth.register'), registrationPayload(['email' => 'not-an-email']))
             ->assertSessionHasErrors('email');
     });
 
-    it('requires a unique email', function (): void {
+    test('requires a unique email', function (): void {
         User::factory()->create(['email' => 'taken@example.com']);
 
         $this->post(route('auth.register'), registrationPayload(['email' => 'taken@example.com']))
             ->assertSessionHasErrors('email');
     });
 
-    it('requires password confirmation to match', function (): void {
+    test('requires password confirmation to match', function (): void {
         $this->post(route('auth.register'), registrationPayload(['password_confirmation' => 'DifferentPass1!']))
             ->assertSessionHasErrors('password');
     });
 
-    it('requires a password', function (): void {
+    test('requires a password', function (): void {
         $this->post(route('auth.register'), registrationPayload([
             'password' => '',
             'password_confirmation' => '',

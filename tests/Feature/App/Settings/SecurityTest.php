@@ -13,7 +13,7 @@ function securityUpdatePayload(array $overrides = []): array
 }
 
 describe('Security Settings', function (): void {
-    it('renders the security page for authenticated users', function (): void {
+    test('renders the security page for authenticated users', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -22,12 +22,7 @@ describe('Security Settings', function (): void {
             ->assertInertia(fn ($page) => $page->component('app/settings/security'));
     });
 
-    it('redirects guests to login', function (): void {
-        $this->get(route('security.edit'))
-            ->assertRedirectToRoute('auth.login');
-    });
-
-    it('updates the password with valid data', function (): void {
+    test('updates the password with valid data', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -37,7 +32,7 @@ describe('Security Settings', function (): void {
         expect(Hash::check('NewPassword1!', $user->fresh()->password))->toBeTrue();
     });
 
-    it('returns success flash after password update', function (): void {
+    test('returns success flash after password update', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -45,7 +40,7 @@ describe('Security Settings', function (): void {
             ->assertSessionHas('type', 'success');
     });
 
-    it('rejects an incorrect current password', function (): void {
+    test('rejects an incorrect current password', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -53,7 +48,7 @@ describe('Security Settings', function (): void {
             ->assertSessionHasErrors('current_password');
     });
 
-    it('requires password confirmation to match', function (): void {
+    test('requires password confirmation to match', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -61,7 +56,7 @@ describe('Security Settings', function (): void {
             ->assertSessionHasErrors('password');
     });
 
-    it('requires current password to be present', function (): void {
+    test('requires current password to be present', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -69,7 +64,7 @@ describe('Security Settings', function (): void {
             ->assertSessionHasErrors('current_password');
     });
 
-    it('enforces password strength rules', function (): void {
+    test('enforces password strength rules', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)

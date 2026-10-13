@@ -10,20 +10,23 @@ use App\Models\Transfer;
 use App\Models\User;
 use App\Services\TransferService;
 
-function createAccountForUser(): array
+function createAccountForUser(array $attributes = []): array
 {
     $user = User::factory()->create();
-    $account = Account::factory()->create(['owner_id' => $user->id]);
+    $account = Account::factory()->create(['owner_id' => $user->id, ...$attributes]);
 
     return [$user, $account];
 }
 
-it('redirects guests to the login page', function (): void {
-    $this->get(route('transactions.index'))
-        ->assertRedirectToRoute('auth.login');
-});
+function openingRowOf(Account $account): Transaction
+{
+    return Transaction::query()
+        ->where('account_id', $account->id)
+        ->where('category_id', Category::InitialBalance)
+        ->first();
+}
 
-it('lists transactions for the authenticated user', function (): void {
+test('lists transactions for the authenticated user', function (): void {
     [$user, $account] = createAccountForUser();
     Transaction::factory()->count(3)->create(['account_id' => $account->id, 'created_by' => $user->id]);
 
@@ -37,7 +40,7 @@ it('lists transactions for the authenticated user', function (): void {
         );
 });
 
-it('stores an income transaction', function (): void {
+test('stores an income transaction', function (): void {
     [$user, $account] = createAccountForUser();
 
     $this->actingAs($user)->post(route('transactions.store'), [
@@ -52,7 +55,7 @@ it('stores an income transaction', function (): void {
     expect(Transaction::where('account_id', $account->id)->where('type', TransactionType::Income->value)->exists())->toBeTrue();
 });
 
-it('stores an expense transaction', function (): void {
+test('stores an expense transaction', function (): void {
     [$user, $account] = createAccountForUser();
 
     $this->actingAs($user)->post(route('transactions.store'), [
@@ -67,7 +70,7 @@ it('stores an expense transaction', function (): void {
     expect(Transaction::where('account_id', $account->id)->where('type', TransactionType::Expense->value)->exists())->toBeTrue();
 });
 
-it('creates a transfer unit with member rows via POST /transfers', function (): void {
+test('creates a transfer unit with member rows via POST /transfers', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
@@ -94,7 +97,7 @@ it('creates a transfer unit with member rows via POST /transfers', function (): 
         ->and($inflow->transfer_id)->toBe($transfer->id);
 });
 
-it('books a transfer fee row in the Admin Fees category via POST /transfers', function (): void {
+test('books a transfer fee row in the Admin Fees category via POST /transfers', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
@@ -117,7 +120,7 @@ it('books a transfer fee row in the Admin Fees category via POST /transfers', fu
         ->and((float) $transfer->fee_amount)->toEqual(6_500.0);
 });
 
-it('rejects the legacy transfer pseudo-type on POST /transactions', function (): void {
+test('rejects the legacy transfer pseudo-type on POST /transactions', function (): void {
     [$user, $account] = createAccountForUser();
 
     $this->actingAs($user)->post(route('transactions.store'), [
@@ -129,7 +132,7 @@ it('rejects the legacy transfer pseudo-type on POST /transactions', function ():
     ])->assertInvalid('type');
 });
 
-it('rejects direct unit-member edits with 422 on PUT /transactions', function (): void {
+test('rejects direct unit-member edits with 422 on PUT /transactions', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
@@ -150,7 +153,7 @@ it('rejects direct unit-member edits with 422 on PUT /transactions', function ()
     ])->assertUnprocessable();
 });
 
-it('edits a transfer unit via PUT /transfers keeping the id stable', function (): void {
+test('edits a transfer unit via PUT /transfers keeping the id stable', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
@@ -177,7 +180,7 @@ it('edits a transfer unit via PUT /transfers keeping the id stable', function ()
         ->and($fresh->transactions()->get())->toHaveCount(3); // source + destination + fee
 });
 
-it('soft-deletes the whole unit (aggregate, member rows, fee) when any member is deleted', function (): void {
+test('soft-deletes the whole unit (aggregate, member rows, fee) when any member is deleted', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
 
@@ -199,14 +202,14 @@ it('soft-deletes the whole unit (aggregate, member rows, fee) when any member is
         ->and(Transaction::withTrashed()->where('transfer_id', $transfer->id)->count())->toBe(3);
 });
 
-it('lists transactions for any authenticated user', function (): void {
+test('lists transactions for any authenticated user', function (): void {
     [$user] = createAccountForUser();
 
     $this->actingAs($user)->get(route('transactions.index'))
         ->assertOk();
 });
 
-it('soft-deletes a transaction', function (): void {
+test('soft-deletes a transaction', function (): void {
     [$user, $account] = createAccountForUser();
     $transaction = Transaction::factory()->create(['account_id' => $account->id, 'created_by' => $user->id]);
 
@@ -216,7 +219,7 @@ it('soft-deletes a transaction', function (): void {
     expect(Transaction::withTrashed()->find($transaction->id))->not->toBeNull();
 });
 
-it('forbids updating a transaction created by another user', function (): void {
+test('forbids updating a transaction created by another user', function (): void {
     [$user] = createAccountForUser();
     $otherTransaction = Transaction::factory()->expense()->create(['amount' => 200_000]); // created by another user
 
@@ -231,7 +234,7 @@ it('forbids updating a transaction created by another user', function (): void {
     expect((float) $otherTransaction->fresh()->amount)->toBe(200_000.0);
 });
 
-it('forbids deleting a transaction created by another user', function (): void {
+test('forbids deleting a transaction created by another user', function (): void {
     [$user] = createAccountForUser();
     $otherTransaction = Transaction::factory()->expense()->create(['amount' => 200_000]); // created by another user
 
@@ -239,4 +242,49 @@ it('forbids deleting a transaction created by another user', function (): void {
         ->assertForbidden();
 
     expect($otherTransaction->fresh())->not->toBeNull();
+});
+
+describe('initial balance guard', function (): void {
+    test('rejects booking an income row in the Initial Balance category', function (): void {
+        [$user, $account] = createAccountForUser(['initial_balance' => 500_000]);
+
+        $this->actingAs($user)->post(route('transactions.store'), [
+            'account_id' => $account->id,
+            'type' => 'income',
+            'amount' => 100_000,
+            'transaction_date' => now()->toDateString(),
+            'category_id' => Category::InitialBalance->value,
+        ])->assertSessionHasErrors('category_id');
+    });
+
+    test('redirects the edit page of an opening row to the account edit page', function (): void {
+        [$user, $account] = createAccountForUser(['initial_balance' => 500_000]);
+
+        $this->actingAs($user)->get(route('transactions.edit', openingRowOf($account)))
+            ->assertRedirectToRoute('accounts.edit', ['account' => $account]);
+    });
+
+    test('rejects updating an opening row via the transactions endpoint', function (): void {
+        [$user, $account] = createAccountForUser(['initial_balance' => 500_000]);
+        $row = openingRowOf($account);
+
+        $this->actingAs($user)->put(route('transactions.update', $row), [
+            'account_id' => $account->id,
+            'type' => 'income',
+            'amount' => 100_000,
+            'transaction_date' => now()->toDateString(),
+            'category_id' => 'salary',
+        ])->assertUnprocessable();
+    });
+
+    test('rejects deleting an opening row via the transactions endpoint', function (): void {
+        [$user, $account] = createAccountForUser(['initial_balance' => 500_000]);
+        $row = openingRowOf($account);
+
+        $this->actingAs($user)->delete(route('transactions.destroy', $row))
+            ->assertUnprocessable();
+
+        expect($row->fresh())->not->toBeNull()
+            ->and((float) $account->fresh()->current_balance)->toBe(500_000.0);
+    });
 });

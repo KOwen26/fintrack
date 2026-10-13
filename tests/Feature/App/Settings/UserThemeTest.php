@@ -2,7 +2,7 @@
 
 use App\Models\User;
 
-it('updates the user theme preference', function (): void {
+test('updates the user theme preference', function (): void {
     $user = User::factory()->create();
 
     $this->actingAs($user)->put(route('settings.theme.update'), ['theme' => 'dark'])
@@ -11,7 +11,7 @@ it('updates the user theme preference', function (): void {
     expect($user->fresh()->theme_preference)->toBe('dark');
 });
 
-it('clears theme preference when changed', function (): void {
+test('clears theme preference when changed', function (): void {
     $user = User::factory()->create(['theme_preference' => 'dark']);
 
     $this->actingAs($user)->put(route('settings.theme.update'), ['theme' => 'light'])
@@ -20,7 +20,7 @@ it('clears theme preference when changed', function (): void {
     expect($user->fresh()->theme_preference)->toBe('light');
 });
 
-it('rejects invalid theme values that exceed max length', function (): void {
+test('rejects invalid theme values that exceed max length', function (): void {
     $user = User::factory()->create();
 
     $this->actingAs($user)->put(route('settings.theme.update'), ['theme' => str_repeat('a', 51)])

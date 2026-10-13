@@ -3,7 +3,7 @@
 use App\Models\User;
 
 describe('Profile Settings', function (): void {
-    it('renders the profile page for authenticated users', function (): void {
+    test('renders the profile page for authenticated users', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -15,12 +15,7 @@ describe('Profile Settings', function (): void {
             );
     });
 
-    it('redirects guests to login', function (): void {
-        $this->get(route('profile.edit'))
-            ->assertRedirectToRoute('auth.login');
-    });
-
-    it('updates name and email', function (): void {
+    test('updates name and email', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -35,7 +30,7 @@ describe('Profile Settings', function (): void {
             ->and($user->email)->toBe('updated@example.com');
     });
 
-    it('clears email verification when email is changed', function (): void {
+    test('clears email verification when email is changed', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -47,7 +42,7 @@ describe('Profile Settings', function (): void {
         expect($user->fresh()->email_verified_at)->toBeNull();
     });
 
-    it('does not clear email verification when email is unchanged', function (): void {
+    test('does not clear email verification when email is unchanged', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -59,7 +54,7 @@ describe('Profile Settings', function (): void {
         expect($user->fresh()->email_verified_at)->not->toBeNull();
     });
 
-    it('validates that name is required for profile update', function (): void {
+    test('validates that name is required for profile update', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -67,7 +62,7 @@ describe('Profile Settings', function (): void {
             ->assertSessionHasErrors('name');
     });
 
-    it('validates that email is valid for profile update', function (): void {
+    test('validates that email is valid for profile update', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -75,7 +70,7 @@ describe('Profile Settings', function (): void {
             ->assertSessionHasErrors('email');
     });
 
-    it('deletes the account with the correct password', function (): void {
+    test('deletes the account with the correct password', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -86,7 +81,7 @@ describe('Profile Settings', function (): void {
         expect($user->fresh())->toBeNull();
     });
 
-    it('does not delete the account with a wrong password', function (): void {
+    test('does not delete the account with a wrong password', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)

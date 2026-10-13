@@ -10,6 +10,11 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
 use Sushi\Sushi;
+use Tests\TestCase;
+
+// Plain PHPUnit binding under tests/Unit — opt in: File facade, storage_path(),
+// and the Sushi connections all need the booted container.
+uses(TestCase::class);
 
 class SushiTestModel extends Model
 {

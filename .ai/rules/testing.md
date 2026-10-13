@@ -7,27 +7,40 @@ hand-enforced.
 
 Glob: `tests/**`
 
-Write tests as Pest `it('...', function (): void {})` closures — never class-based
-PHPUnit tests. Group related cases with `describe()` blocks; use `->with([...])`
+Write tests as Pest closures — never class-based PHPUnit tests. `tests/Feature`
+uses `test('...', function (): void {})` declarations; `tests/Unit` and
+`tests/Integration` use `it('...', function (): void {})`. Keep one style per
+file. Group related cases with `describe()` blocks; use `->with([...])`
 datasets for enumerations of inputs.
 
 ## Global LazilyRefreshDatabase on sqlite memory
 
 Glob: `tests/**`
 
-Rely on the global `LazilyRefreshDatabase` binding in `tests/Pest.php` (applied to
-`Feature`, `Unit`, and `Browser`); don't add per-file `uses()` or manual DB cleanup.
-Tests run against sqlite `:memory:` per `phpunit.xml` — do not assume MySQL-specific
-behavior.
+Rely on the global binding in `tests/Pest.php` — `Tests\TestCase` plus
+`LazilyRefreshDatabase`, applied to `Feature`, `Integration`, and `Browser`; don't add
+per-file `uses()` or manual DB cleanup there. Tests run against sqlite `:memory:` per
+`phpunit.xml` — do not assume MySQL-specific behavior.
 
-## Feature dir is HTTP-only
+## Test taxonomy: Unit / Feature / Integration
 
 Glob: `tests/**`
 
-`tests/Feature` holds only HTTP interaction tests — requests via `actingAs`/`get`/`post`/
-`put`/`patch`/`delete` with response assertions. Service, model, observer, and DTO logic
-(including tests that touch the database through factories) lives in `tests/Unit`, with
-subdirectories mirroring the class under test where it helps (e.g. `Unit/Enum/`).
+Three buckets, named by how the test enters the system (not by an isolation gradient —
+a Feature test also boots the app; the directories name the entry point):
+
+- `tests/Unit` — pure logic: enums, value objects, support traits. No booted app, no DB.
+  Opt in per-file with `uses(TestCase::class)` only when a framework helper is
+  unavoidable (e.g. `travelTo()` in `Unit/Objects/DatePeriodTest.php`, the facades in
+  `Unit/Support/SushiJsonObserverTest.php`); `Unit/Support/` groups infrastructural
+  tests that don't mirror a single `app/` class.
+- `tests/Feature` — user-visible behavior through HTTP: `actingAs` requests with
+  response, redirect, session, and Inertia assertions. `Feature/Auth` owns the
+  authentication surface and the guest/login wiring check (exactly one test — guests
+  are never re-tested per route); `Feature/App` holds the authenticated surface, where
+  every test acts as a logged-in user.
+- `tests/Integration` — booted app with DB, entered by direct class invocation;
+  subdirectories mirror `app/` (`Services/`, `Observers/`, `Models/`).
 
 ## Factories with named states
 

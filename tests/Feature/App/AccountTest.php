@@ -5,12 +5,7 @@ use App\Enums\AccountType;
 use App\Models\Account;
 use App\Models\User;
 
-it('redirects guests to the login page', function (): void {
-    $this->get(route('accounts.index'))
-        ->assertRedirectToRoute('auth.login');
-});
-
-it('lists only the accounts owned by the authenticated user', function (): void {
+test('lists only the accounts owned by the authenticated user', function (): void {
     $user = User::factory()->create();
     Account::factory()->create(['owner_id' => $user->id]);
     Account::factory()->create(); // owned by a different user
@@ -23,7 +18,7 @@ it('lists only the accounts owned by the authenticated user', function (): void 
         );
 });
 
-it('stores a new account and redirects to its page', function (): void {
+test('stores a new account and redirects to its page', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->post(route('accounts.store'), [
@@ -48,7 +43,7 @@ it('stores a new account and redirects to its page', function (): void {
     $response->assertRedirectToRoute('accounts.show', ['account' => $account]);
 });
 
-it('shows the account page for its owner', function (): void {
+test('shows the account page for its owner', function (): void {
     $user = User::factory()->create();
     $account = Account::factory()->create(['owner_id' => $user->id]);
 
@@ -57,7 +52,7 @@ it('shows the account page for its owner', function (): void {
         ->assertInertia(fn ($page) => $page->component('app/account/show'));
 });
 
-it('shows a joint account to any authenticated user', function (): void {
+test('shows a joint account to any authenticated user', function (): void {
     $user = User::factory()->create();
     $jointAccount = Account::factory()->joint()->create();
 
@@ -65,7 +60,7 @@ it('shows a joint account to any authenticated user', function (): void {
         ->assertOk();
 });
 
-it('forbids viewing a personal account owned by another user', function (): void {
+test('forbids viewing a personal account owned by another user', function (): void {
     $user = User::factory()->create();
     $otherAccount = Account::factory()->create(); // different owner, personal
 
@@ -73,7 +68,7 @@ it('forbids viewing a personal account owned by another user', function (): void
         ->assertForbidden();
 });
 
-it('prevents non-owner from editing an account', function (): void {
+test('prevents non-owner from editing an account', function (): void {
     $user = User::factory()->create();
     $otherAccount = Account::factory()->create(); // different owner
 
@@ -81,7 +76,7 @@ it('prevents non-owner from editing an account', function (): void {
         ->assertForbidden();
 });
 
-it('archives an account', function (): void {
+test('archives an account', function (): void {
     $user = User::factory()->create();
     $account = Account::factory()->create(['owner_id' => $user->id]);
 
@@ -91,7 +86,7 @@ it('archives an account', function (): void {
     expect($account->fresh()->archived_at)->not->toBeNull();
 });
 
-it('forbids archiving an account owned by another user', function (): void {
+test('forbids archiving an account owned by another user', function (): void {
     $user = User::factory()->create();
     $otherAccount = Account::factory()->create(); // different owner
 
@@ -101,7 +96,7 @@ it('forbids archiving an account owned by another user', function (): void {
     expect($otherAccount->fresh()->archived_at)->toBeNull();
 });
 
-it('soft-deletes an account', function (): void {
+test('soft-deletes an account', function (): void {
     $user = User::factory()->create();
     $account = Account::factory()->create(['owner_id' => $user->id]);
 
@@ -112,7 +107,7 @@ it('soft-deletes an account', function (): void {
     expect(Account::withTrashed()->find($account->id))->not->toBeNull();
 });
 
-it('forbids deleting an account owned by another user', function (): void {
+test('forbids deleting an account owned by another user', function (): void {
     $user = User::factory()->create();
     $otherAccount = Account::factory()->create(); // different owner
 

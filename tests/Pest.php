@@ -16,7 +16,7 @@ use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(LazilyRefreshDatabase::class)
-    ->in('Feature', 'Unit', 'Browser');
+    ->in('Feature', 'Integration', 'Browser');
 
 pest()->browser()->timeout(5000);
 

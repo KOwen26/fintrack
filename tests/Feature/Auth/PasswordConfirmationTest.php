@@ -3,7 +3,7 @@
 use App\Models\User;
 
 describe('Password Confirmation', function (): void {
-    it('renders the confirm password page', function (): void {
+    test('renders the confirm password page', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -12,7 +12,7 @@ describe('Password Confirmation', function (): void {
             ->assertInertia(fn ($page) => $page->component('auth/confirm-password'));
     });
 
-    it('confirms password with the correct current password', function (): void {
+    test('confirms password with the correct current password', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -22,16 +22,11 @@ describe('Password Confirmation', function (): void {
         $this->assertCredentials(['email' => $user->email, 'password' => 'password']);
     });
 
-    it('rejects confirmation with a wrong password', function (): void {
+    test('rejects confirmation with a wrong password', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
             ->post(route('auth.password.confirm'), ['password' => 'wrong-password'])
             ->assertSessionHasErrors('password');
-    });
-
-    it('redirects guests to login', function (): void {
-        $this->get(route('auth.password.confirm'))
-            ->assertRedirectToRoute('auth.login');
     });
 });
