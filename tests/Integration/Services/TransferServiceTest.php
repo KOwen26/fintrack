@@ -10,7 +10,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Services\TransactionService;
 use App\Services\TransferService;
-use Pest\Mixins\Expectation;
+use Pest\Expectation;
 
 function createTransferAccounts(): array
 {

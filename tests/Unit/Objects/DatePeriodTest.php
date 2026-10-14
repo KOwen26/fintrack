@@ -2,7 +2,6 @@
 
 use App\Objects\DatePeriod;
 use Carbon\CarbonImmutable;
-use InvalidArgumentException;
 use Tests\TestCase;
 
 // Plain PHPUnit binding under tests/Unit — opt in for travelTo().

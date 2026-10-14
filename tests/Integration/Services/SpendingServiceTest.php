@@ -86,7 +86,7 @@ describe('globalCategorySpending', function (): void {
         expect($report->categories)->toHaveCount(1)
             ->and($report->categories[0])->group_id->toBe('transport')->name->toBe('Transport')->total->toBe(450_000.0)
             ->and($report->categories[0]->children)->toHaveCount(2)
-            ->toMatchArray([0 => 300_000.0, 1 => 150_000.0]);
+            ->and(array_column($report->categories[0]->children, 'total'))->toBe([300_000.0, 150_000.0]);
     });
 
     it('orders groups by total descending', function (): void {
@@ -152,7 +152,7 @@ describe('groupByCategoryGroup', function (): void {
 
         // Child percentages are relative to the group subtotal (450)
         expect($result[0]->children)->toHaveCount(2);
-        expect($result[0]->children)->toMatchArray([0 => 66.67, 1 => 33.33]);
+        expect(array_column($result[0]->children, 'percentage'))->toBe([66.67, 33.33]);
     });
 
     it('handles multiple groups sorted by total descending', function (): void {
