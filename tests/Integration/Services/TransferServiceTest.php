@@ -10,6 +10,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Services\TransactionService;
 use App\Services\TransferService;
+use Pest\Mixins\Expectation;
 
 function createTransferAccounts(): array
 {
@@ -76,7 +77,7 @@ it('recreates member rows and keeps the transfer id stable on unit edit', functi
     $liveRows = $edited->transactions()->get();
     expect($liveRows)->toHaveCount(2);
 
-    $liveRows->each(fn ($row) => expect($originalRowIds)->not->toContain($row->id));
+    $liveRows->each(fn ($row): Expectation => expect($originalRowIds)->not->toContain($row->id));
     expect(Transaction::withTrashed()->where('transfer_id', $edited->id)->count())->toBe(4);
 });
 
@@ -115,6 +116,6 @@ it('hides inflow rows from the global list but shows fee and outflow rows', func
 
     $global = TransactionService::getTransactions($user);
 
-    expect($global->where('flow', Cashflow::Inflow))->toHaveCount(0)
+    expect($global->where('flow', Cashflow::Inflow))->toBeEmpty()
         ->and($global)->toHaveCount(2); // outflow row + fee row
 });

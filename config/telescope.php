@@ -1,7 +1,6 @@
 <?php
 
 use Laravel\Telescope\Http\Middleware\Authorize;
-use Laravel\Telescope\Watchers;
 use Laravel\Telescope\Watchers\BatchWatcher;
 use Laravel\Telescope\Watchers\CacheWatcher;
 use Laravel\Telescope\Watchers\ClientRequestWatcher;

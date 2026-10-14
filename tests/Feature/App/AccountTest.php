@@ -34,11 +34,11 @@ test('stores a new account and redirects to its page', function (): void {
     ]);
 
     $account = Account::query()->where('name', 'BCA Savings')->first();
-    expect($account)->not->toBeNull();
-    expect($account->decorations)->toMatchArray([
-        'icon' => 'wallet-bold',
-        'color' => 'green-500',
-    ]);
+    expect($account)->not->toBeNull()
+        ->and($account->decorations)->toMatchArray([
+            'icon' => 'wallet-bold',
+            'color' => 'green-500',
+        ]);
 
     $response->assertRedirectToRoute('accounts.show', ['account' => $account]);
 });
@@ -103,8 +103,8 @@ test('soft-deletes an account', function (): void {
     $this->actingAs($user)->delete(route('accounts.destroy', $account))
         ->assertRedirectToRoute('accounts.index');
 
-    expect(Account::find($account->id))->toBeNull();
-    expect(Account::withTrashed()->find($account->id))->not->toBeNull();
+    expect(Account::find($account->id))->toBeNull()
+        ->and(Account::withTrashed()->find($account->id))->not->toBeNull();
 });
 
 test('forbids deleting an account owned by another user', function (): void {

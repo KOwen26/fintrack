@@ -36,8 +36,8 @@ describe('Registration', function (): void {
             ->assertRedirectToRoute('dashboard');
 
         $user = User::query()->where('email', 'john@example.com')->first();
-        expect($user)->not->toBeNull();
-        expect($user?->name)->toBe('John Doe');
+        expect($user)->not->toBeNull()
+            ->and($user?->name)->toBe('John Doe');
 
         Event::assertDispatched(Registered::class);
     });

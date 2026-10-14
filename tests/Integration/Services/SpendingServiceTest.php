@@ -45,17 +45,9 @@ describe('globalCategorySpending', function (): void {
             DatePeriodPreset::ThisMonth,
         );
 
-        expect($report->categories)->toHaveCount(1);
-        expect($report->categories[0])
-            ->group_id->toBe('shopping')
-            ->name->toBe('Shopping')
-            ->total->toBe(200_000.0)
-            ->children->toHaveCount(1);
-
-        expect($report->categories[0]->children[0])
-            ->category_id->toBe('groceries')
-            ->name->toBe('Groceries')
-            ->total->toBe(200_000.0);
+        expect($report->categories)->toHaveCount(1)
+            ->and($report->categories[0])->group_id->toBe('shopping')->name->toBe('Shopping')->total->toBe(200_000.0)->children->toHaveCount(1)
+            ->and($report->categories[0]->children[0])->category_id->toBe('groceries')->name->toBe('Groceries')->total->toBe(200_000.0);
     });
 
     it('returns an empty report when no accounts are given', function (): void {
@@ -66,7 +58,7 @@ describe('globalCategorySpending', function (): void {
             DatePeriodPreset::ThisMonth,
         );
 
-        expect($report->categories)->toBe([])
+        expect($report->categories)->toBeEmpty()
             ->and($report->period_total)->toBe(0.0);
     });
 
@@ -91,19 +83,10 @@ describe('globalCategorySpending', function (): void {
             DatePeriodPreset::ThisMonth,
         );
 
-        expect($report->categories)->toHaveCount(1);
-        expect($report->categories[0])
-            ->group_id->toBe('transport')
-            ->name->toBe('Transport')
-            ->total->toBe(450_000.0);
-
-        expect($report->categories[0]->children)->toHaveCount(2);
-        expect($report->categories[0]->children[0])
-            ->category_id->toBe('fuel')
-            ->total->toBe(300_000.0);
-        expect($report->categories[0]->children[1])
-            ->category_id->toBe('public_transport')
-            ->total->toBe(150_000.0);
+        expect($report->categories)->toHaveCount(1)
+            ->and($report->categories[0])->group_id->toBe('transport')->name->toBe('Transport')->total->toBe(450_000.0)
+            ->and($report->categories[0]->children)->toHaveCount(2)
+            ->toMatchArray([0 => 300_000.0, 1 => 150_000.0]);
     });
 
     it('orders groups by total descending', function (): void {
@@ -127,9 +110,9 @@ describe('globalCategorySpending', function (): void {
             DatePeriodPreset::ThisMonth,
         );
 
-        expect($report->categories)->toHaveCount(2);
-        expect($report->categories[0]->group_id)->toBe('transport');
-        expect($report->categories[1]->group_id)->toBe('shopping');
+        expect($report->categories)->toHaveCount(2)
+            ->and($report->categories[0]->group_id)->toBe('transport')
+            ->and($report->categories[1]->group_id)->toBe('shopping');
     });
 });
 
@@ -139,7 +122,7 @@ describe('groupByCategoryGroup', function (): void {
 
         $result = $service->groupByCategoryGroup([], 1000);
 
-        expect($result)->toBe([]);
+        expect($result)->toBeEmpty();
     });
 
     it('groups a single category under its group without extra nesting', function (): void {
@@ -149,17 +132,9 @@ describe('groupByCategoryGroup', function (): void {
 
         $result = $service->groupByCategoryGroup($items, 1000);
 
-        expect($result)->toHaveCount(1);
-        expect($result[0])
-            ->group_id->toBe('food_and_drinks')
-            ->name->toBe('Food & Drinks')
-            ->total->toBe(500.0)
-            ->percentage->toBe(50.0)
-            ->children->toHaveCount(1);
-
-        expect($result[0]->children[0])
-            ->category_id->toBe('dining_out')
-            ->total->toBe(500.0);
+        expect($result)->toHaveCount(1)
+            ->and($result[0])->group_id->toBe('food_and_drinks')->name->toBe('Food & Drinks')->total->toBe(500.0)->percentage->toBe(50.0)->children->toHaveCount(1)
+            ->and($result[0]->children[0])->category_id->toBe('dining_out')->total->toBe(500.0);
     });
 
     it('merges sibling categories into one group', function (): void {
@@ -172,21 +147,12 @@ describe('groupByCategoryGroup', function (): void {
 
         $result = $service->groupByCategoryGroup($items, 1000);
 
-        expect($result)->toHaveCount(1);
-        expect($result[0])
-            ->group_id->toBe('transport')
-            ->name->toBe('Transport')
-            ->total->toBe(450.0)
-            ->percentage->toBe(45.0);
+        expect($result)->toHaveCount(1)
+            ->and($result[0])->group_id->toBe('transport')->name->toBe('Transport')->total->toBe(450.0)->percentage->toBe(45.0);
 
         // Child percentages are relative to the group subtotal (450)
         expect($result[0]->children)->toHaveCount(2);
-        expect($result[0]->children[0])
-            ->category_id->toBe('fuel')
-            ->percentage->toBe(66.67);
-        expect($result[0]->children[1])
-            ->category_id->toBe('public_transport')
-            ->percentage->toBe(33.33);
+        expect($result[0]->children)->toMatchArray([0 => 66.67, 1 => 33.33]);
     });
 
     it('handles multiple groups sorted by total descending', function (): void {
@@ -202,9 +168,9 @@ describe('groupByCategoryGroup', function (): void {
         expect($result)->toHaveCount(2);
         // Shopping comes first (higher total)
         expect($result[0]->group_id)->toBe('shopping');
-        expect($result[1]->group_id)->toBe('transport');
-        expect($result[0]->total)->toBe(500.0);
-        expect($result[1]->total)->toBe(300.0);
+        expect($result[1]->group_id)->toBe('transport')
+            ->and($result[0]->total)->toBe(500.0)
+            ->and($result[1]->total)->toBe(300.0);
     });
 
     it('recalculates children percentages relative to the group subtotal', function (): void {
@@ -218,10 +184,9 @@ describe('groupByCategoryGroup', function (): void {
 
         $result = $service->groupByCategoryGroup($items, 1000);
 
-        expect($result)->toHaveCount(1);
-        expect($result[0]->total)->toBe(500.0);
-
-        expect($result[0]->children)->toHaveCount(3);
+        expect($result)->toHaveCount(1)
+            ->and($result[0]->total)->toBe(500.0)
+            ->and($result[0]->children)->toHaveCount(3);
         // 300 / 500 = 60%
         expect($result[0]->children[0]->percentage)->toBe(60.0);
         // 100 / 500 = 20%

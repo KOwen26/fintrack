@@ -6,7 +6,7 @@ use InvalidArgumentException;
 use Tests\TestCase;
 
 // Plain PHPUnit binding under tests/Unit — opt in for travelTo().
-uses(TestCase::class);
+pest()->extend(TestCase::class);
 
 it('caps the period at today when no end is given', function (): void {
     $this->travelTo(CarbonImmutable::parse('2026-10-13 14:00'));

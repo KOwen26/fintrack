@@ -60,8 +60,8 @@ describe('created', function (): void {
             'flow' => 'inflow',
         ]);
 
-        expect($source->fresh()->current_balance)->toEqual(-200_000.0);
-        expect($dest->fresh()->current_balance)->toEqual(200_000.0);
+        expect($source->fresh()->current_balance)->toEqual(-200_000.0)
+            ->and($dest->fresh()->current_balance)->toEqual(200_000.0);
     });
 });
 
@@ -129,8 +129,8 @@ describe('updated', function (): void {
 
         $transaction->update(['account_id' => $dest->id]);
 
-        expect($source->fresh()->current_balance)->toEqual(0.0);
-        expect($dest->fresh()->current_balance)->toEqual(-250_000.0);
+        expect($source->fresh()->current_balance)->toEqual(0.0)
+            ->and($dest->fresh()->current_balance)->toEqual(-250_000.0);
     });
 });
 

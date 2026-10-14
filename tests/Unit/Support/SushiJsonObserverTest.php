@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 // Plain PHPUnit binding under tests/Unit — opt in: File facade, storage_path(),
 // and the Sushi connections all need the booted container.
-uses(TestCase::class);
+pest()->extend(TestCase::class);
 
 class SushiTestModel extends Model
 {
@@ -107,9 +107,9 @@ it('upserts a new row by slug on save', function (): void {
     (new SushiJsonObserver)->saved($model);
 
     $rows = json_decode(File::get($this->path), true);
-    expect($rows)->toHaveCount(2);
-    expect($rows[1])->toBe(['slug' => 'b', 'label' => 'B', 'status' => 'Active']);
-    expect(array_keys($rows[1]))->not->toContain('id');
+    expect($rows)->toHaveCount(2)
+        ->and($rows[1])->toBe(['slug' => 'b', 'label' => 'B', 'status' => 'Active'])
+        ->and(array_keys($rows[1]))->not->toContain('id');
 });
 
 it('updates an existing row by slug on save', function (): void {
@@ -122,8 +122,8 @@ it('updates an existing row by slug on save', function (): void {
     (new SushiJsonObserver)->saved($model);
 
     $rows = json_decode(File::get($this->path), true);
-    expect($rows)->toHaveCount(1);
-    expect($rows[0]['label'])->toBe('Updated');
+    expect($rows)->toHaveCount(1)
+        ->and($rows[0]['label'])->toBe('Updated');
 });
 
 it('preserves untouched columns when a partial row is saved', function (): void {
@@ -138,9 +138,9 @@ it('preserves untouched columns when a partial row is saved', function (): void 
     (new SushiJsonObserver)->saved($model);
 
     $rows = json_decode(File::get($this->path), true);
-    expect($rows)->toHaveCount(1);
-    expect($rows[0]['label'])->toBe('Updated');
-    expect($rows[0]['status'])->toBe('Active'); // preserved from original row
+    expect($rows)->toHaveCount(1)
+        ->and($rows[0]['label'])->toBe('Updated')
+        ->and($rows[0]['status'])->toBe('Active'); // preserved from original row
 });
 
 it('moves the row when the natural key changes', function (): void {
@@ -155,9 +155,9 @@ it('moves the row when the natural key changes', function (): void {
     (new SushiJsonObserver)->saved($model);
 
     $rows = json_decode(File::get($this->path), true);
-    expect($rows)->toHaveCount(1);
-    expect($rows[0]['slug'])->toBe('b');
-    expect(array_column($rows, 'slug'))->not->toContain('a');
+    expect($rows)->toHaveCount(1)
+        ->and($rows[0]['slug'])->toBe('b')
+        ->and(array_column($rows, 'slug'))->not->toContain('a');
 });
 
 it('removes the row by slug on delete', function (): void {
@@ -170,7 +170,7 @@ it('removes the row by slug on delete', function (): void {
     (new SushiJsonObserver)->deleted($model);
 
     $rows = json_decode(File::get($this->path), true);
-    expect($rows)->toHaveCount(0);
+    expect($rows)->toBeEmpty();
 });
 
 it('ignores models without the json source contract', function (): void {
@@ -208,8 +208,8 @@ it('keeps independent sushi connections between decoration models', function ():
         }
     );
 
-    expect(DecorationColor::where('slug', 'slate-50')->first()->label)->toBe('Slate 50');
-    expect(DecorationIcon::where('slug', 't-shirt')->first()->label)->toBe('T-Shirt');
+    expect(DecorationColor::where('slug', 'slate-50')->first()->label)->toBe('Slate 50')
+        ->and(DecorationIcon::where('slug', 't-shirt')->first()->label)->toBe('T-Shirt');
 });
 
 it('syncs the json source on bulk query builder update', function (): void {
@@ -226,8 +226,8 @@ it('syncs the json source on bulk query builder update', function (): void {
     SushiBulkTestModel::where('slug', 'a')->update(['label' => 'A-UPDATED']);
 
     $rows = json_decode(File::get($path), true);
-    expect($rows[0]['label'])->toBe('A-UPDATED');
-    expect($rows[1]['label'])->toBe('B');
+    expect($rows[0]['label'])->toBe('A-UPDATED')
+        ->and($rows[1]['label'])->toBe('B');
 
     File::delete($path);
 });
@@ -244,8 +244,8 @@ it('syncs the json source on bulk query builder delete', function (): void {
     SushiBulkTestModel::where('slug', 'a')->delete();
 
     $rows = json_decode(File::get($path), true);
-    expect($rows)->toHaveCount(1);
-    expect(array_column($rows, 'slug'))->toBe(['b']);
+    expect($rows)->toHaveCount(1)
+        ->and(array_column($rows, 'slug'))->toBe(['b']);
 
     File::delete($path);
 });
