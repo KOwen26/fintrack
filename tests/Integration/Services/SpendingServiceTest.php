@@ -233,7 +233,13 @@ describe('monthlyFlow', function (): void {
             ->and($report->data[0]->net)->toBe(300_000.0)
             ->and($report->data[1]->income)->toBe(0.0)
             ->and($report->data[1]->expense)->toBe(100_000.0)
-            ->and($report->data[1]->net)->toBe(-100_000.0);
+            ->and($report->data[1]->net)->toBe(-100_000.0)
+            ->and($report->total_income)->toBe(500_000.0)
+            ->and($report->total_expense)->toBe(300_000.0)
+            ->and($report->total_net)->toBe(200_000.0)
+            ->and($report->max_abs_net)->toBe(300_000.0)
+            ->and($report->max_income)->toBe(500_000.0)
+            ->and($report->max_expense)->toBe(200_000.0);
     });
 
     it('scopes to the own accounts and excludes transfers', function (): void {
@@ -284,6 +290,9 @@ describe('monthlyFlow', function (): void {
 
         expect($report->data)->toBeEmpty()
             ->and($report->from->isSameDay(now()->startOfMonth()))->toBeTrue()
-            ->and($report->to->isSameDay(now()->endOfMonth()))->toBeTrue();
+            ->and($report->to->isSameDay(now()->endOfMonth()))->toBeTrue()
+            ->and($report->total_income)->toBe(0.0)
+            ->and($report->total_net)->toBe(0.0)
+            ->and($report->max_abs_net)->toBe(0.0);
     });
 });

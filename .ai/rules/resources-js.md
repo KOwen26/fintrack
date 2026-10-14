@@ -78,3 +78,6 @@ All sidebar/bottom-nav/settings menus and their breadcrumbs derive from the decl
 
 ## Mobile is a separate render path via IsMobile + mobile component family
 Mobile UI is a distinct render path, not just responsive utilities: branch on new IsMobile() (lib/is-mobile.svelte.ts) and use the mobile family (bottom-nav, dock, mobile-page-layout, bottom-action-bar); the dashboard sidebar shell is desktop-only.
+
+## Check lib/ and utilities/ before creating local JS helpers
+Before writing a component- or page-local helper function, check resources/js/lib/ and resources/js/utilities/ for an existing one and import it (e.g. Formatter, DateTimeHelper, MaskingHelper, url-handler). If a new helper is genuinely reusable, add it there instead of declaring it locally. Local functions are for component-specific presentation logic only.

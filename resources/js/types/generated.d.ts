@@ -94,8 +94,14 @@ export type LengthAwarePaginator<TKey, TValue> = {
 export type LengthAwarePaginatorInterface<TKey, TValue> = LengthAwarePaginator<TKey, TValue>;
 export type MonthlyFlowReportData = {
     data: DailyFlow[];
-    from: string;
-    to: string;
+    readonly from: string;
+    readonly to: string;
+    readonly total_income: number;
+    readonly total_expense: number;
+    readonly total_net: number;
+    readonly max_abs_net: number;
+    readonly max_income: number;
+    readonly max_expense: number;
 };
 export type PaginatedDataCollection<TKey, TValue> = LengthAwarePaginator<TKey, TValue>;
 export type ParentSpendingItemData = {

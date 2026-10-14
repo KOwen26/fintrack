@@ -1,4 +1,20 @@
+import { parse, startOfDay } from 'date-fns';
+
 export default class DateTimeHelper {
+    /**
+     * Local-midnight Date from a `Y-m-d` string — zone-free by construction.
+     *
+     * The wire carries calendar days, but consumers needing native Dates (and
+     * any getDay/getDate math) must pin "midnight" to the *viewer's* midnight:
+     * date-only strings parse as UTC and offset-carrying strings convert, both
+     * shifting the date for browsers west of the serialization zone.
+     * `startOfDay` is not optional — bare `parse` inherits the reference
+     * date's time-of-day.
+     */
+    static parseLocalDay(day: string): Date {
+        return startOfDay(parse(day, 'yyyy-MM-dd', new Date()));
+    }
+
     /**
      * @param value - Date, ISO string, or timestamp
      * @param preset - Format preset:

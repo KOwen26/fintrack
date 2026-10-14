@@ -1,12 +1,14 @@
 <script lang="ts">
     import type { MonthlyFlowReportData } from '@type/generated';
 
-    import { Chart, Tooltip } from 'layerchart';
+    import { endOfMonth } from 'date-fns';
+    import { Chart } from 'layerchart';
 
+    import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
 
     import MonthlyCalendarGrid from '@components/module/statistics/monthly-calendar-grid.svelte';
-    import { ChartContainer } from '@components/ui/atoms/chart';
+    import { ChartContainer, ChartTooltip } from '@components/ui/atoms/chart';
     import { Tabs, TabsList, TabsTrigger } from '@components/ui/atoms/tabs';
 
     interface DayDatum {
@@ -84,22 +86,23 @@
         return 0;
     }
 
-    // Month window from the server's period (`from` is start-of-month, DATE_ATOM).
-    const monthStart = $derived(new Date(`${monthlyFlow.from.slice(0, 10)}T00:00:00`));
-    const monthEnd = $derived(new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0));
+    // Month window from the server's period (`from` is start-of-month, Y-m-d).
+    const monthStart = $derived(DateTimeHelper.parseLocalDay(monthlyFlow.from));
+    const monthEnd = $derived(endOfMonth(monthStart));
 
     const chartData = $derived(
         monthlyFlow.data.map((d): DayDatum => ({
-            date: new Date(`${d.date}T00:00:00`),
+            date: DateTimeHelper.parseLocalDay(d.date),
             income: d.income,
             expense: d.expense,
             net: d.net,
         }))
     );
 
-    const maxAbsNet = $derived(Math.max(0, ...chartData.map((d) => Math.abs(d.net))));
-    const maxIncome = $derived(Math.max(0, ...chartData.map((d) => d.income)));
-    const maxExpense = $derived(Math.max(0, ...chartData.map((d) => d.expense)));
+    // Scale anchors come from the report — the server already aggregated them.
+    const maxAbsNet = $derived(monthlyFlow.max_abs_net);
+    const maxIncome = $derived(monthlyFlow.max_income);
+    const maxExpense = $derived(monthlyFlow.max_expense);
 
     function fillFor(cell: CalendarCell): CalendarFill {
         const d = cell.data;
@@ -163,23 +166,19 @@
         <Chart class="relative" data={chartData} x="date">
             <MonthlyCalendarGrid {fillFor} {labelFor} {monthEnd} {monthStart} {onDayClick} />
 
-            <Tooltip.Root>
-                {#snippet children({ data })}
-                    <Tooltip.Header format="day" value={data.date} />
+            <ChartTooltip>
+                {#snippet tooltipContent(data, ui)}
+                    {@render ui.label(DateTimeHelper.format(data.date, 'date'))}
 
                     {#if 'net' in data}
-                        <Tooltip.List>
-                            <Tooltip.Item
-                                label="Income"
-                                value={Formatter.currency(data.income, true)} />
-                            <Tooltip.Item
-                                label="Expense"
-                                value={Formatter.currency(data.expense, true)} />
-                            <Tooltip.Item label="Net" value={Formatter.currency(data.net, true)} />
-                        </Tooltip.List>
+                        <div class="grid gap-1.5">
+                            {@render ui.row('Income', Formatter.currency(data.income, true))}
+                            {@render ui.row('Expense', Formatter.currency(data.expense, true))}
+                            {@render ui.row('Net', Formatter.currency(data.net, true))}
+                        </div>
                     {/if}
                 {/snippet}
-            </Tooltip.Root>
+            </ChartTooltip>
 
             <div class="absolute bottom-5 w-full">
                 {#if monthlyFlow.data.length === 0}

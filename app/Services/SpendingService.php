@@ -106,18 +106,34 @@ final class SpendingService
             $buckets[$row->day][$row->type->value] += (float) $row->total;
         }
 
+        $flows = [];
+        $totalIncome = 0.0;
+        $totalExpense = 0.0;
+        $maxAbsNet = 0.0;
+        $maxIncome = 0.0;
+        $maxExpense = 0.0;
+
+        foreach ($buckets as $day => $bucket) {
+            $flow = new DailyFlow(Date::parse($day), $bucket['income'], $bucket['expense']);
+
+            $flows[] = $flow;
+            $totalIncome += $flow->income;
+            $totalExpense += $flow->expense;
+            $maxAbsNet = max($maxAbsNet, abs($flow->net));
+            $maxIncome = max($maxIncome, $flow->income);
+            $maxExpense = max($maxExpense, $flow->expense);
+        }
+
         return new MonthlyFlowReportData(
-            data: array_map(
-                fn (string $day, array $bucket): DailyFlow => new DailyFlow(
-                    Date::parse($day),
-                    $bucket['income'],
-                    $bucket['expense'],
-                ),
-                array_keys($buckets),
-                $buckets,
-            ),
+            data: $flows,
             from: $period->start,
             to: $period->end,
+            total_income: $totalIncome,
+            total_expense: $totalExpense,
+            total_net: $totalIncome - $totalExpense,
+            max_abs_net: $maxAbsNet,
+            max_income: $maxIncome,
+            max_expense: $maxExpense,
         );
     }
 
