@@ -78,7 +78,7 @@
     <div class="relative flex basis-full items-center justify-center">
         {#if fabVariant === 'button'}
             <div
-                class="absolute -top-1 size-12 -translate-y-1/2 rounded-lg bg-primary p-2 text-primary-content">
+                class="absolute -top-1 size-12 -translate-y-1/2 rounded-lg bg-primary p-2 text-primary-foreground">
                 <Link
                     class="flex size-8 items-center justify-center"
                     aria-label="Add"
@@ -89,26 +89,7 @@
         {:else}
             <div
                 class="absolute -top-1 size-12 -translate-y-1/2 rounded-lg bg-base-100 p-2 text-primary outline-4 outline-primary">
-                <Popover
-                    class="w-auto min-w-0 rounded-2xl border-base-content/10 bg-base-100 p-2 "
-                    align="center"
-                    side="top"
-                    sideOffset={12}
-                    bind:open={fabOpen}>
-                    {#snippet trigger()}
-                        <i
-                            class={cn(
-                                'iconify size-8 transition-transform duration-200 tabler--plus',
-                                fabOpen && 'rotate-45'
-                            )}></i>
-                    {/snippet}
-
-                    <div class="grid grid-cols-3 gap-1" aria-label="Quick actions" role="group">
-                        {#each fabQuickActions as action (action.type)}
-                            {@render fabAction(action)}
-                        {/each}
-                    </div>
-                </Popover>
+                {@render popoverFab()}
             </div>
         {/if}
     </div>
@@ -117,6 +98,29 @@
 
     {@render dockItem(dashboardMenu.menus.accounts)}
 </Dock>
+
+{#snippet popoverFab()}
+    <Popover
+        class="w-auto min-w-0 rounded-2xl border-base-content/10 bg-base-100 p-2 "
+        align="center"
+        side="top"
+        sideOffset={12}
+        bind:open={fabOpen}>
+        {#snippet trigger()}
+            <i
+                class={cn(
+                    'iconify size-8 transition-transform duration-200 tabler--plus',
+                    fabOpen && 'rotate-45'
+                )}></i>
+        {/snippet}
+
+        <div class="grid grid-cols-3 gap-1" aria-label="Quick actions" role="group">
+            {#each fabQuickActions as action (action.type)}
+                {@render fabAction(action)}
+            {/each}
+        </div>
+    </Popover>
+{/snippet}
 
 {#snippet dockItem({ name, url, icon }: Menu)}
     {let isActive = $derived(activeChecks(url))}

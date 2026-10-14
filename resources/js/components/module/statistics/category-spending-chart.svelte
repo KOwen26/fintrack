@@ -134,47 +134,20 @@
 
         {#if view === 'parent'}
             {#if categories.length > 0}
-                <ul class="space-y-2">
+                <ul class="space-y-0.5 text-sm">
                     {#each categories as group, i (i)}
-                        <li class="flex items-center justify-between text-sm">
-                            <button
-                                class="flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-left hover:opacity-80"
-                                onclick={() => drillDown(group)}>
-                                <span
-                                    style="background-color: {getDecorationColor(group.color)
-                                        ?.oklch ?? group.color}"
-                                    class="inline-block size-2.5 shrink-0 rounded-sm"></span>
-                                <span class="truncate">{group.name}</span>
-                            </button>
-                            <div class="ml-4 shrink-0 text-right">
-                                <span class="font-semibold tracking-wide"
-                                    ><CurrencyAmount value={group.total} /></span>
-                                <!-- <span class="ml-1 text-base-content/50">{group.percentage}%</span> -->
-                            </div>
+                        <li class="flex">
+                            {@render listContent(group, () => drillDown(group))}
                         </li>
                     {/each}
                 </ul>
             {/if}
         {:else if selectedGroup}
             {#if selectedGroup.children.length > 0}
-                <ul class="space-y-2">
+                <ul class="space-y-0.5 text-sm">
                     {#each selectedGroup.children as item, i (i)}
-                        <li class="flex items-center justify-between text-sm">
-                            <div class="flex min-w-0 items-center gap-2">
-                                <span
-                                    style="background-color: {getDecorationColor(item.color)
-                                        ?.oklch ?? item.color}"
-                                    class="inline-block size-2.5 shrink-0 rounded-xs"></span>
-                                <span class="truncate">{item.name}</span>
-                            </div>
-                            <div class="ml-4 shrink-0 text-right">
-                                <CurrencyAmount value={item.total} />
-                                <span class="ml-1 text-base-content/50"
-                                    >{selectedGroup.total > 0
-                                        ? Math.round((item.total / selectedGroup.total) * 10000) /
-                                          100
-                                        : 0}%</span>
-                            </div>
+                        <li class="flex">
+                            {@render listContent(item)}
                         </li>
                     {/each}
                 </ul>
@@ -222,3 +195,27 @@
         {/if}
     {/if}
 </div>
+
+{#snippet listContent(spendingItem, onclick?: () => void)}
+    {@const isButton = typeof onclick === 'function' && onclick}
+
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <svelte:element
+        this={isButton ? 'button' : 'div'}
+        class={[
+            '-mx-2.5 flex min-w-0 flex-1 items-center gap-2 rounded-md px-2.5 py-2 text-left hover:bg-popover',
+            '[&_button]:cursor-pointer',
+        ]}
+        onclick={isButton ? onclick : undefined}>
+        <span
+            style:background={getDecorationColor(spendingItem.color)?.oklch}
+            class="inline-block size-3 shrink-0 rounded-sm"></span>
+        <span class="grow truncate">{spendingItem.name}</span>
+
+        <div class="space-x-1 text-right">
+            <CurrencyAmount class="font-semibold" value={spendingItem.total} />
+
+            <!-- <span class="text-foreground/70">{spendingItem?.percentage}%</span> -->
+        </div>
+    </svelte:element>
+{/snippet}

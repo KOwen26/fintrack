@@ -14,7 +14,7 @@
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountCard from '@components/module/account/account-card.svelte';
-    import CategorySpendingChart from '@components/module/report/category-spending-chart.svelte';
+    import CategorySpendingChart from '@components/module/statistics/category-spending-chart.svelte';
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
     import HeaderContext from '@components/navigation/header-context.svelte';
     import Button from '@components/ui/button.svelte';

@@ -117,13 +117,14 @@
         </div>
         <div class="flex-1">
             <div class="flex items-center gap-1.5">
-                <h6 class="text-sm font-semibold tracking-wide text-current md:text-base">
+                <h6
+                    class="text-sm leading-tight font-semibold tracking-wide text-current md:text-base">
                     {account.name}
                 </h6>
             </div>
             <div class="flex items-center gap-2 text-xs text-current/70">
                 {#if providerName}
-                    <span>{providerName}</span>
+                    <span class="hidden @xs/account-card:inline-flex">{providerName}</span>
                 {/if}
                 {#if providerName && isJoint}
                     <span>•</span>

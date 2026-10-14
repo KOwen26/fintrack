@@ -117,6 +117,21 @@ test('prevents non-owner from editing an account', function (): void {
         ->assertForbidden();
 });
 
+test('forbids updating an account owned by another user', function (): void {
+    $user = User::factory()->create();
+    $otherAccount = Account::factory()->create(['name' => 'Their Savings']); // different owner
+
+    $this->actingAs($user)->put(route('accounts.update', $otherAccount), [
+        'name' => 'Hijacked Name',
+        'type' => AccountType::DebitAccount->value,
+        'provider_id' => null,
+        'initial_balance' => 0,
+        'decorations' => ['icon' => 'wallet-bold', 'color' => 'green-500'],
+    ])->assertForbidden();
+
+    expect($otherAccount->fresh()->name)->toBe('Their Savings');
+});
+
 test('archives an account', function (): void {
     $user = User::factory()->create();
     $account = Account::factory()->create(['owner_id' => $user->id]);

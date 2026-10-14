@@ -303,6 +303,29 @@ test('forbids editing a transfer created by another user', function (): void {
         ->assertForbidden();
 });
 
+test('forbids updating a transfer created by another user', function (): void {
+    [$user] = createAccountForUser();
+    $otherUser = User::factory()->create();
+    $source = Account::factory()->create(['owner_id' => $otherUser->id]);
+    $destination = Account::factory()->create(['owner_id' => $otherUser->id]);
+
+    $transfer = resolve(TransferService::class)->create($otherUser, new TransferData(
+        account_id: $source->id,
+        destination_account_id: $destination->id,
+        amount: 250_000,
+        transaction_date: now()->toDateString(),
+    ));
+
+    $this->actingAs($user)->put(route('transfers.update', $transfer), [
+        'account_id' => $source->id,
+        'destination_account_id' => $destination->id,
+        'amount' => 999_999,
+        'transaction_date' => now()->toDateString(),
+    ])->assertForbidden();
+
+    expect((float) $transfer->fresh()->amount)->toBe(250_000.0);
+});
+
 test('redirects a transfer member edit to the transfer edit page', function (): void {
     [$user, $sourceAccount] = createAccountForUser();
     $destAccount = Account::factory()->create(['owner_id' => $user->id]);
