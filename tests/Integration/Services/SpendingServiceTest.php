@@ -5,8 +5,11 @@ use App\Enums\Category;
 use App\Enums\DatePeriodPreset;
 use App\Models\Account;
 use App\Models\Transaction;
+use App\Models\Transfer;
 use App\Models\User;
+use App\Objects\DailyFlow;
 use App\Services\SpendingService;
+use Carbon\CarbonImmutable;
 
 function createAccountWithOwner(): Account
 {
@@ -192,5 +195,95 @@ describe('groupByCategoryGroup', function (): void {
         // 100 / 500 = 20%
         expect($result[0]->children[1]->percentage)->toBe(20.0);
         expect($result[0]->children[2]->percentage)->toBe(20.0);
+    });
+});
+
+describe('monthlyFlow', function (): void {
+    it('aggregates same-day income and expense into one flow with net', function (): void {
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['owner_id' => $user->id]);
+
+        Transaction::factory()->income()->create([
+            'account_id' => $account->id,
+            'amount' => 500_000,
+            'transaction_date' => now()->startOfMonth()->addDays(2)->format('Y-m-d'),
+        ]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 200_000,
+            'transaction_date' => now()->startOfMonth()->addDays(2)->format('Y-m-d'),
+        ]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 100_000,
+            'transaction_date' => now()->startOfMonth()->addDays(5)->format('Y-m-d'),
+        ]);
+
+        $service = new SpendingService;
+        $report = $service->monthlyFlow($user, DatePeriodPreset::ThisMonth);
+
+        expect($report->data)->toHaveCount(2)
+            ->and($report->data[0])->toBeInstanceOf(DailyFlow::class)
+            ->and($report->data[0]->date)->toBeInstanceOf(CarbonImmutable::class)
+            ->and($report->data[0]->date->toDateString())->toBe(now()->startOfMonth()->addDays(2)->toDateString())
+            ->and($report->data[0]->income)->toBe(500_000.0)
+            ->and($report->data[0]->expense)->toBe(200_000.0)
+            ->and($report->data[0]->net)->toBe(300_000.0)
+            ->and($report->data[1]->income)->toBe(0.0)
+            ->and($report->data[1]->expense)->toBe(100_000.0)
+            ->and($report->data[1]->net)->toBe(-100_000.0);
+    });
+
+    it('scopes to the own accounts and excludes transfers', function (): void {
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['owner_id' => $user->id]);
+        $transfer = Transfer::factory()->create();
+
+        Transaction::factory()->transferOutflow($transfer)->create([
+            'account_id' => $account->id,
+            'amount' => 750_000,
+            'transaction_date' => now()->format('Y-m-d'),
+        ]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => Account::factory()->create()->id,
+            'amount' => 300_000,
+            'transaction_date' => now()->format('Y-m-d'),
+        ]);
+
+        $service = new SpendingService;
+        $report = $service->monthlyFlow($user, DatePeriodPreset::ThisMonth);
+
+        expect($report->data)->toBeEmpty();
+    });
+
+    it('ignores transactions outside the period window', function (): void {
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['owner_id' => $user->id]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 250_000,
+            'transaction_date' => now()->startOfMonth()->subDays(3)->format('Y-m-d'),
+        ]);
+
+        $service = new SpendingService;
+        $report = $service->monthlyFlow($user, DatePeriodPreset::ThisMonth);
+
+        expect($report->data)->toBeEmpty()
+            ->and($report->from->toDateString())->toBe(now()->startOfMonth()->toDateString());
+    });
+
+    it('returns an empty report for a user without accounts', function (): void {
+        $user = User::factory()->create();
+
+        $service = new SpendingService;
+        $report = $service->monthlyFlow($user, DatePeriodPreset::ThisMonth);
+
+        expect($report->data)->toBeEmpty()
+            ->and($report->from->isSameDay(now()->startOfMonth()))->toBeTrue()
+            ->and($report->to->isSameDay(now()->endOfMonth()))->toBeTrue();
     });
 });

@@ -5,11 +5,15 @@ namespace App\Services;
 use App\Data\Report\CategorySpendingItemData;
 use App\Data\Report\CategorySpendingReportData;
 use App\Data\Report\ChildSpendingItemData;
+use App\Data\Report\MonthlyFlowReportData;
 use App\Data\Report\ParentSpendingItemData;
 use App\Enums\CategoryGroup;
 use App\Enums\DatePeriodPreset;
 use App\Enums\TransactionType;
 use App\Models\Transaction;
+use App\Models\User;
+use App\Objects\DailyFlow;
+use Illuminate\Support\Facades\Date;
 
 final class SpendingService
 {
@@ -65,6 +69,55 @@ final class SpendingService
             period_total: $periodTotal,
             from: $from,
             to: $to,
+        );
+    }
+
+    /**
+     * Aggregate per-day income and expense across all of a user's accounts
+     * for a period. SQL groups by day and type; the pivot into one
+     * DailyFlow value object per activity day happens in PHP, with the net
+     * derived inside the object. Days without activity are omitted — the
+     * frontend calendar grid synthesizes them.
+     */
+    public function monthlyFlow(User $user, DatePeriodPreset $periodPreset): MonthlyFlowReportData
+    {
+        $period = $periodPreset->toPeriod();
+
+        $accountIds = AccountService::getAccountsByUser($user)->pluck('id')->all();
+
+        if ($accountIds === []) {
+            return MonthlyFlowReportData::emptyForPeriod($period);
+        }
+
+        $rows = Transaction::query()
+            ->whereIn('account_id', $accountIds)
+            ->whereIn('type', [TransactionType::Income->value, TransactionType::Expense->value])
+            ->withinPeriod($period)
+            ->selectRaw('DATE(transaction_date) AS day, type, SUM(amount) AS total')
+            ->groupBy('day', 'type')
+            ->orderBy('day')
+            ->get();
+
+        /** @var array<string, array{income: float, expense: float}> $buckets */
+        $buckets = [];
+
+        foreach ($rows as $row) {
+            $buckets[$row->day] ??= ['income' => 0.0, 'expense' => 0.0];
+            $buckets[$row->day][$row->type->value] += (float) $row->total;
+        }
+
+        return new MonthlyFlowReportData(
+            data: array_map(
+                fn (string $day, array $bucket): DailyFlow => new DailyFlow(
+                    Date::parse($day),
+                    $bucket['income'],
+                    $bucket['expense'],
+                ),
+                array_keys($buckets),
+                $buckets,
+            ),
+            from: $period->start,
+            to: $period->end,
         );
     }
 
