@@ -6,10 +6,11 @@
 
     import { getPayloadConfigFromPayload, useChart } from './chart-utils.js';
 
-    import { Tooltip as TooltipPrimitive } from 'layerchart';
+    import { getChartContext, Tooltip as TooltipPrimitive } from 'layerchart';
 
     import { cn } from '@utilities/shadcn.js';
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function defaultFormatter(value: any, _payload: TooltipPayload[]) {
         return `${value}`;
     }
@@ -37,6 +38,7 @@
         hideIndicator?: boolean;
         labelClassName?: string;
         labelFormatter?:
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             ((value: any, payload: TooltipPayload[]) => string | number | Snippet) | null;
         formatter?: Snippet<
             [
@@ -52,46 +54,54 @@
     } = $props();
 
     const chart = useChart();
-    const tooltipCtx = getTooltipContext();
+    const chartCtx = getChartContext();
+
+    // Filter to series with defined values (important for item-based charts like Pie/Arc
+    // where only the hovered item has a value)
+    const visibleSeries = $derived(
+        chartCtx.tooltip.series.filter((s: TooltipPayload) => s.value !== undefined)
+    );
 
     const formattedLabel = $derived.by(() => {
-        if (hideLabel || !tooltipCtx.payload?.length) return null;
+        if (hideLabel || !visibleSeries?.length) return null;
 
-        const [item] = tooltipCtx.payload;
-        const key = labelKey ?? item?.label ?? item?.name ?? 'value';
+        const [item] = visibleSeries;
+        const tooltipData = chartCtx.tooltip.data;
 
-        const itemConfig = getPayloadConfigFromPayload(chart.config, item, key);
+        // Get the x-axis label value from the raw tooltip data (e.g. a Date or month string)
+        const dataLabel = tooltipData != null ? chartCtx.x(tooltipData) : undefined;
 
-        const value =
-            !labelKey && typeof label === 'string'
-                ? (chart.config[label as keyof typeof chart.config]?.label ?? label)
-                : (itemConfig?.label ?? item.label);
+        const key = labelKey ?? item?.label ?? item?.key ?? 'value';
+        const itemConfig = getPayloadConfigFromPayload(
+            chart.config,
+            item,
+            key,
+            tooltipData as Record<string, unknown> | null
+        );
+
+        let value: unknown;
+        if (!labelKey && typeof label === 'string') {
+            value = chart.config[label as keyof typeof chart.config]?.label ?? label;
+        } else if (labelKey) {
+            value = itemConfig?.label ?? dataLabel;
+        } else {
+            value = dataLabel;
+        }
 
         if (value === undefined) return null;
         if (!labelFormatter) return value;
 
-        return labelFormatter(value, tooltipCtx.payload);
+        return labelFormatter(value, visibleSeries);
     });
 
-    const nestLabel = $derived(tooltipCtx.payload.length === 1 && indicator !== 'dot');
+    const nestLabel = $derived(visibleSeries.length === 1 && indicator !== 'dot');
 </script>
-
-{#snippet TooltipLabel()}
-    {#if formattedLabel}
-        <div class={cn('font-medium', labelClassName)}>
-            {#if typeof formattedLabel === 'function'}
-                {@render formattedLabel()}
-            {:else}
-                {formattedLabel}
-            {/if}
-        </div>
-    {/if}
-{/snippet}
 
 <TooltipPrimitive.Root variant="none">
     <div
+        bind:this={ref}
         class={cn(
-            'grid min-w-[9rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl',
+            'grid min-w-32 items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl',
             className
         )}
         {...restProps}>
@@ -99,22 +109,27 @@
             {@render TooltipLabel()}
         {/if}
         <div class="grid gap-1.5">
-            {#each tooltipCtx.payload as item, i (item.key + i)}
-                {@const key = `${nameKey || item.key || item.name || 'value'}`}
-                {@const itemConfig = getPayloadConfigFromPayload(chart.config, item, key)}
-                {@const indicatorColor = color || item.payload?.color || item.color}
+            {#each visibleSeries as item, i (item.key + i)}
+                {@const key = `${nameKey || item.key || item.label || 'value'}`}
+                {@const itemConfig = getPayloadConfigFromPayload(
+                    chart.config,
+                    item,
+                    key,
+                    chartCtx.tooltip.data
+                )}
+                {@const indicatorColor = color || item.config?.color || item.color}
                 <div
                     class={cn(
-                        'flex w-full flex-wrap items-stretch gap-2 [&>svg]:size-2.5 [&>svg]:text-muted-foreground',
+                        'flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground',
                         indicator === 'dot' && 'items-center'
                     )}>
-                    {#if formatter && item.value !== undefined && item.name}
+                    {#if formatter && item.value !== undefined && item.label}
                         {@render formatter({
                             value: item.value,
-                            name: item.name,
+                            name: item.label,
                             item,
                             index: i,
-                            payload: tooltipCtx.payload,
+                            payload: visibleSeries,
                         })}
                     {:else}
                         {#if itemConfig?.icon}
@@ -125,7 +140,7 @@
                                 class={cn(
                                     'shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)',
                                     {
-                                        'size-2.5': indicator === 'dot',
+                                        'h-2.5 w-2.5': indicator === 'dot',
                                         'h-full w-1': indicator === 'line',
                                         'w-0 border-[1.5px] border-dashed bg-transparent':
                                             indicator === 'dashed',
@@ -144,7 +159,7 @@
                                     {@render TooltipLabel()}
                                 {/if}
                                 <span class="text-muted-foreground">
-                                    {itemConfig?.label || item.name}
+                                    {itemConfig?.label || item.label}
                                 </span>
                             </div>
                             {#if item.value !== undefined}
@@ -159,3 +174,15 @@
         </div>
     </div>
 </TooltipPrimitive.Root>
+
+{#snippet TooltipLabel()}
+    {#if formattedLabel}
+        <div class={cn('font-medium', labelClassName)}>
+            {#if typeof formattedLabel === 'function'}
+                {@render formattedLabel()}
+            {:else}
+                {formattedLabel}
+            {/if}
+        </div>
+    {/if}
+{/snippet}

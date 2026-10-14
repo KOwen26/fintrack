@@ -1,13 +1,4 @@
 <script lang="ts">
-    /**
-     * Calendar grid for the monthly flow chart. Owns LayerChart's Month mark
-     * and derives the cell size from the Chart's own measured container width
-     * (the same reactive signal Month uses for monthsPerRow) — so the grid
-     * fills the available width without a second ResizeObserver. Repositions
-     * LayerChart's Sunday-first columns to Monday-first (matching
-     * DatePeriodPreset's week semantics) and adds the weekday header row Month
-     * does not render.
-     */
     import { getChartContext, Layer, Month } from 'layerchart';
 
     import { cn } from '@utilities/shadcn';
@@ -29,7 +20,7 @@
     }: {
         monthStart: Date;
         monthEnd: Date;
-        fillFor: (cell: CalendarCell) => string;
+        fillFor: (cell: CalendarCell) => { fill: string; text: string };
         labelFor?: (cell: CalendarCell) => string | null;
         onDayClick?: (date: Date) => void;
     } = $props();
@@ -47,12 +38,6 @@
     // rows are recomputed from the Monday-week slot instead of borrowed.
     /** Blank cells before day 1 when the week starts on Monday. */
     const leading = $derived((monthStart.getDay() + 6) % 7);
-
-    // Text scales with the cells so proportions hold at any container width.
-    const weekdaySize = $derived(Math.max(9, Math.round(cellSize * 0.2)));
-    const dayNumberSize = $derived(Math.max(10, Math.round(cellSize * 0.28)));
-    const cornerNumberSize = $derived(Math.max(8, Math.round(cellSize * 0.2)));
-    const amountSize = $derived(Math.max(9, Math.round(cellSize * 0.26)));
 </script>
 
 <Layer>
@@ -60,8 +45,7 @@
         {#snippet children({ cells })}
             {#each WEEKDAYS as label, i (label)}
                 <text
-                    style="font-size: {weekdaySize}px"
-                    class="fill-muted-foreground/70 font-medium uppercase"
+                    class="fill-muted-foreground text-sm font-medium uppercase"
                     dominant-baseline="middle"
                     text-anchor="middle"
                     x={i * cellSize + cellSize / 2}
@@ -74,11 +58,14 @@
                 {@const slot = leading + cell.date.getDate() - 1}
                 {@const x = (slot % 7) * cellSize}
                 {@const y = Math.floor(slot / 7) * cellSize + cellSize}
+                {@const fill = fillFor(cell)}
 
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                 <rect
                     class={cn(onDayClick && 'cursor-pointer')}
                     aria-label={cell.date.toDateString()}
-                    fill={fillFor(cell)}
+                    fill={fill.fill}
                     height={cellSize - 2}
                     onclick={onDayClick ? () => onDayClick(cell.date) : undefined}
                     onpointerleave={() => chart.tooltip?.hide()}
@@ -94,9 +81,10 @@
                 {#if label}
                     <!-- day number small in the corner, amount centered below -->
                     <text
-                        style="font-size: {cornerNumberSize}px"
-                        class="pointer-events-none fill-foreground/60 font-medium tabular-nums select-none"
+                        style:fill={fill.text}
+                        class="pointer-events-none text-xs font-medium tabular-nums select-none"
                         dominant-baseline="middle"
+                        opacity="0.75"
                         text-anchor="start"
                         x={x + cellSize * 0.16}
                         y={y + cellSize * 0.28}>
@@ -104,8 +92,8 @@
                     </text>
 
                     <text
-                        style="font-size: {amountSize}px"
-                        class="pointer-events-none fill-foreground/80 font-semibold tabular-nums select-none"
+                        style:fill={fill.text}
+                        class="pointer-events-none text-xs font-semibold tabular-nums select-none"
                         dominant-baseline="middle"
                         text-anchor="middle"
                         x={x + cellSize / 2}
@@ -114,8 +102,8 @@
                     </text>
                 {:else}
                     <text
-                        style="font-size: {dayNumberSize}px"
-                        class="pointer-events-none fill-foreground/70 font-medium tabular-nums select-none"
+                        style:fill={fill.text}
+                        class="pointer-events-none text-sm font-medium tabular-nums select-none"
                         dominant-baseline="middle"
                         text-anchor="middle"
                         x={x + cellSize / 2}
@@ -127,3 +115,29 @@
         {/snippet}
     </Month>
 </Layer>
+
+<style>
+    /* Calendar fill/text steps — CSS-owned so themes or instances can override
+       any step without touching JS. Each polarity owns its tint ramp; the top
+       step is the full status token with its companion foreground ink. */
+    :global(:root) {
+        --calendar-income-tint-1: color-mix(in oklab, var(--success) 25%, var(--card));
+        --calendar-income-tint-2: color-mix(in oklab, var(--success) 50%, var(--card));
+        --calendar-income-tint-3: color-mix(in oklab, var(--success) 75%, var(--card));
+        --calendar-income-full: var(--success);
+
+        --calendar-expense-tint-1: color-mix(in oklab, var(--error) 25%, var(--card));
+        --calendar-expense-tint-2: color-mix(in oklab, var(--error) 50%, var(--card));
+        --calendar-expense-tint-3: color-mix(in oklab, var(--error) 75%, var(--card));
+        --calendar-expense-full: var(--error);
+
+        --calendar-none: var(--muted);
+
+        --calendar-text-1: var(--foreground);
+        --calendar-text-2: var(--foreground);
+        --calendar-text-3: var(--foreground);
+        --calendar-income-text-full: var(--success-foreground);
+        --calendar-expense-text-full: var(--error-foreground);
+        --calendar-none-text: color-mix(in oklab, var(--foreground) 55%, transparent);
+    }
+</style>

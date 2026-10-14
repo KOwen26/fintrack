@@ -36,19 +36,36 @@
         emptyMessage?: string;
     } = $props();
 
-    let mode: Mode = $state('net');
+    let mode = $state<Mode>('net');
 
-    // Intensity steps: the success/error tokens mixed onto the card surface,
-    // lightest tint for small days up to the full token for the month's max.
-    const STEP_MIX = [25, 50, 75, 100];
-
-    function tokenMix(token: string, pct: number): string {
-        return `color-mix(in oklab, var(${token}) ${pct}%, var(--card))`;
+    interface CalendarFill {
+        /** Cell background — SVG fill / CSS background. */
+        fill: string;
+        /** Ink for the day number + amount on top of that fill. */
+        text: string;
     }
 
-    const incomeFills = STEP_MIX.map((pct) => tokenMix('--success', pct));
-    const expenseFills = STEP_MIX.map((pct) => tokenMix('--error', pct));
-    const noActivityFill = 'var(--muted)';
+    // Step fills as var references — the --calendar-* vars (defined in the
+    // grid's <style>) own the colors; override them per theme or instance.
+    // Index = intensity step (0–3), lightest tint up to the full token.
+    const incomeFills: CalendarFill[] = [
+        { fill: 'var(--calendar-income-tint-1)', text: 'var(--calendar-text-1)' },
+        { fill: 'var(--calendar-income-tint-2)', text: 'var(--calendar-text-2)' },
+        { fill: 'var(--calendar-income-tint-3)', text: 'var(--calendar-text-3)' },
+        { fill: 'var(--calendar-income-full)', text: 'var(--calendar-income-text-full)' },
+    ];
+
+    const expenseFills: CalendarFill[] = [
+        { fill: 'var(--calendar-expense-tint-1)', text: 'var(--calendar-text-1)' },
+        { fill: 'var(--calendar-expense-tint-2)', text: 'var(--calendar-text-2)' },
+        { fill: 'var(--calendar-expense-tint-3)', text: 'var(--calendar-text-3)' },
+        { fill: 'var(--calendar-expense-full)', text: 'var(--calendar-expense-text-full)' },
+    ];
+
+    const noActivityFill: CalendarFill = {
+        fill: 'var(--calendar-none)',
+        text: 'var(--calendar-none-text)',
+    };
 
     /**
      * √-compressed step (0–3) relative to the month's max. Square-root scaling
@@ -84,7 +101,7 @@
     const maxIncome = $derived(Math.max(0, ...chartData.map((d) => d.income)));
     const maxExpense = $derived(Math.max(0, ...chartData.map((d) => d.expense)));
 
-    function fillFor(cell: CalendarCell): string {
+    function fillFor(cell: CalendarCell): CalendarFill {
         const d = cell.data;
 
         if (!('net' in d)) return noActivityFill;
@@ -127,20 +144,23 @@
 </script>
 
 <div class="w-full">
-    <div class="mb-3 flex justify-center">
-        <Tabs onValueChange={(v: string) => (mode = v as Mode)} value={mode}>
+    <div class="mb-3 flex justify-between">
+        <div>
+            <!-- TODO MONTH PREV NEXT -->
+        </div>
+
+        <Tabs onValueChange={(v) => (mode = v)} value={mode}>
             <TabsList>
-                <TabsTrigger value="net">Net</TabsTrigger>
-                <TabsTrigger value="income">Income</TabsTrigger>
-                <TabsTrigger value="expense">Expense</TabsTrigger>
+                <TabsTrigger class="min-w-15" value="net">Net</TabsTrigger>
+                <TabsTrigger class="min-w-15" value="income">Income</TabsTrigger>
+                <TabsTrigger class="min-w-15" value="expense">Expense</TabsTrigger>
             </TabsList>
         </Tabs>
     </div>
 
-    <!-- Square region: the tallest month (6 week rows + header = 7) fills it
-        exactly; shorter months keep a stable card height with bottom slack. -->
+    <!-- Square region: the tallest month (6 week rows + header = 7) fills it exactly; shorter months keep a stable card height with bottom slack. -->
     <ChartContainer class="aspect-square w-full" config={{}}>
-        <Chart data={chartData} x="date">
+        <Chart class="relative" data={chartData} x="date">
             <MonthlyCalendarGrid {fillFor} {labelFor} {monthEnd} {monthStart} {onDayClick} />
 
             <Tooltip.Root>
@@ -160,24 +180,27 @@
                     {/if}
                 {/snippet}
             </Tooltip.Root>
+
+            <div class="absolute bottom-5 w-full">
+                {#if monthlyFlow.data.length === 0}
+                    <div
+                        class="flex flex-col items-center justify-center py-6 text-base-content/40">
+                        <i class="mb-2 iconify size-8 solar--calendar-bold-duotone"></i>
+                        <p class="text-sm">{emptyMessage}</p>
+                    </div>
+                {:else}
+                    <div
+                        class="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
+                        <span>Less</span>
+                        {#each legendFills as entry (entry.fill)}
+                            <span style:background={entry.fill} class="size-3 rounded-sm"></span>
+                        {/each}
+                        <span>More</span>
+                        <span class="mx-1 size-3 rounded-sm bg-muted"></span>
+                        <span>No activity</span>
+                    </div>
+                {/if}
+            </div>
         </Chart>
     </ChartContainer>
-
-    {#if monthlyFlow.data.length === 0}
-        <div class="flex flex-col items-center justify-center py-6 text-base-content/40">
-            <i class="mb-2 iconify size-8 solar--calendar-bold-duotone"></i>
-            <p class="text-sm">{emptyMessage}</p>
-        </div>
-    {:else}
-        <div
-            class="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
-            <span>Less</span>
-            {#each legendFills as fill (fill)}
-                <span style:background={fill} class="size-3 rounded-[3px]"></span>
-            {/each}
-            <span>More</span>
-            <span class="mx-1 size-3 rounded-[3px] bg-muted"></span>
-            <span>No activity</span>
-        </div>
-    {/if}
 </div>
