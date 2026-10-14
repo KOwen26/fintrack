@@ -25,3 +25,6 @@ day-precision columns cast to `'date'` (`transaction_date`), timestamps to
 Eager loading is explicit at the query site — `->with([...])` / `->load([...])`.
 Model-level `$with` defaults are not the house approach; introduce one only with a
 deliberate reason, not as a convenience.
+
+## Period filtering flows through DatePeriodPreset/DatePeriod
+Period filtering uses the DatePeriodPreset enum resolved to the CarbonImmutable-backed DatePeriod object; services never take raw Carbon params for windows, and there is no global Date::use override — use now()/today() elsewhere.

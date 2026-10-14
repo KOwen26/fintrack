@@ -66,3 +66,15 @@ markup → `{#snippet}` declarations → `<style>`. Snippets are declared *after
 that references them (Svelte hoists snippet declarations, so textual order is free).
 Enforced by the `personal-svelte/sort-tags` ESLint rule (defined inline in
 `eslint.config.js`); it auto-fixes on `pnpm exec eslint --fix`.
+
+## Typed wrappers for shared JSON reference data
+Static option lists live as JSON in resources/js/data/ with a sibling typed .ts wrapper (readonly typed arrays + query helpers, imported via @data/*); PHP Sushi models read the same JSON (see models.md) — edit the JSON and wrapper, never fork the list per side.
+
+## Layout slots via setLayoutProps, not page-level wiring
+Components rendered inside a page push chrome (bottom action bar, header context, mobile shell class, title) into the layout via setLayoutProps() inside $effect, returning a cleanup that clears the prop. DashboardLayout owns the slots — never restructure the layout from a page.
+
+## Navigation comes from data/menu.ts
+All sidebar/bottom-nav/settings menus and their breadcrumbs derive from the declarative config in resources/js/data/menu.ts (Wayfinder route fns + permission gates). Add nav items there; never hardcode links or breadcrumbs in a component.
+
+## Mobile is a separate render path via IsMobile + mobile component family
+Mobile UI is a distinct render path, not just responsive utilities: branch on new IsMobile() (lib/is-mobile.svelte.ts) and use the mobile family (bottom-nav, dock, mobile-page-layout, bottom-action-bar); the dashboard sidebar shell is desktop-only.

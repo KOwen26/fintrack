@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Transaction;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -12,7 +13,9 @@ final class SaveTransferRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->route('transfer') !== null
+            ? $this->user()->can('update', $this->route('transfer'))
+            : $this->user()->can('create', Transaction::class);
     }
 
     public function rules(): array

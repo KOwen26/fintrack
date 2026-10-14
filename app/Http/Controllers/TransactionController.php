@@ -85,8 +85,6 @@ final class TransactionController extends Controller
 
     public function store(SaveTransactionRequest $request): RedirectResponse
     {
-        $this->authorize('create', Transaction::class);
-
         $this->transactionService->create($this->user, TransactionData::from($request->validated()));
 
         return to_route('transactions.index')->flash('Transaction saved.');
@@ -94,8 +92,6 @@ final class TransactionController extends Controller
 
     public function update(SaveTransactionRequest $request, Transaction $transaction): RedirectResponse
     {
-        $this->authorize('update', $transaction);
-
         abort_unless($transaction->transfer_id === null, 422, 'Transfer unit members must be edited via their transfer.');
 
         abort_if(

@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\Category;
 use App\Enums\TransactionType;
+use App\Models\Transaction;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +17,9 @@ final class SaveTransactionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->route('transaction') !== null
+            ? $this->user()->can('update', $this->route('transaction'))
+            : $this->user()->can('create', Transaction::class);
     }
 
     public function rules(): array

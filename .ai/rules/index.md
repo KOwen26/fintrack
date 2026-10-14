@@ -4,15 +4,18 @@ Before planning or editing, find the row whose globs match the file's path and r
 
 | Applies to | Rule file |
 | --- | --- |
-| app/** | app.md |
-| app/Console/Commands/** | commands.md |
-| app/Http/Controllers/** | controllers.md |
-| app/Data/** | data.md |
-| app/Helpers/** | helpers.md |
-| database/migrations/** | migrations.md |
-| app/Models/** | models.md |
-| resources/js/**, resources/css/** | resources-js.md |
-| routes/** | routes.md |
-| app/Services/** | services.md |
-| tests/** | tests.md |
-| resources/views/** | views.md |
+| app/** | .ai/rules/app.md |
+| app/Console/Commands/** | .ai/rules/commands.md |
+| app/Http/Controllers/** | .ai/rules/controllers.md |
+| app/Data/** | .ai/rules/data.md |
+| app/Enums/** | .ai/rules/enums.md |
+| app/Helpers/** | .ai/rules/helpers.md |
+| database/migrations/** | .ai/rules/migrations.md |
+| app/Models/** | .ai/rules/models.md |
+| app/Objects/** | .ai/rules/objects.md |
+| app/Http/Requests/** | .ai/rules/requests.md |
+| resources/js/**, resources/css/** | .ai/rules/resources-js.md |
+| routes/** | .ai/rules/routes.md |
+| app/Services/** | .ai/rules/services.md |
+| tests/** | .ai/rules/tests.md |
+| resources/views/** | .ai/rules/views.md |

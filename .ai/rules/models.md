@@ -20,3 +20,6 @@ Reference data that must stay in sync with frontend JSON files uses the trio
 `update()`/`delete()` operations that skip model events. Implement `jsonSourcePath()`
 and `jsonColumns()` on the model. Never hand-edit the JSON files as a separate write
 path — writes flow through the model so the observer mirrors them.
+
+## Unguarded models; validation is the mass-assignment boundary
+Models are globally unguarded (Model::unguard() in AppServiceProvider) with preventSilentlyDiscardingAttributes() enabled locally — never hand-maintain $fillable; untrusted input passes through a Form Request before reaching a model.

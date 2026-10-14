@@ -30,3 +30,6 @@ Link/correlation columns (e.g. `correlation_id`) are `uuid()` string columns wit
 index and **no** foreign key constraint; services assign `(string) Str::uuid()` to them.
 An existing correlation column carrying a bigint FK is drift to migrate — fix the
 column, don't switch the service to integer IDs.
+
+## Enum storage: string column + PHP enum cast, never ->enum()
+Store enumerated values as string columns with the matching PHP enum cast on the model; never $table->enum().
