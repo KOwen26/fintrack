@@ -6,7 +6,7 @@ use App\Enums\AccountType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateAccountRequest extends FormRequest
+final class UpdateAccountRequest extends FormRequest
 {
     public function authorize(): bool
     {

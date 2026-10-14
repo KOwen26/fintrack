@@ -10,7 +10,7 @@ use App\Models\User;
  * writes are reserved to the creator alone, which keeps the unit cascade
  * creator-initiated (every member row shares the aggregate's creator).
  */
-class TransferPolicy
+final class TransferPolicy
 {
     public function view(User $user, Transfer $transfer): bool
     {

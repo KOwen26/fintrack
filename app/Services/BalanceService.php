@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Account;
 use App\Models\Transaction;
 
-class BalanceService
+final class BalanceService
 {
     public function forAccount(Account $account): string
     {

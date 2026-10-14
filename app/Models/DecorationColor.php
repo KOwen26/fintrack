@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Sushi\Sushi;
 
 #[ObservedBy([SushiJsonObserver::class])]
-class DecorationColor extends Model
+final class DecorationColor extends Model
 {
     use HasSushiJsonSource;
     use Sushi;

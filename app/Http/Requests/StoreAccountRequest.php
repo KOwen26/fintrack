@@ -7,7 +7,7 @@ use App\Enums\AccountType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreAccountRequest extends FormRequest
+final class StoreAccountRequest extends FormRequest
 {
     public function authorize(): bool
     {

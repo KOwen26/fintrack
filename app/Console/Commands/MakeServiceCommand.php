@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class MakeServiceCommand extends GeneratorCommand
+final class MakeServiceCommand extends GeneratorCommand
 {
     /**
      * The name and signature of the console command.

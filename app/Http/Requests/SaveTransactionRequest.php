@@ -12,7 +12,7 @@ use Illuminate\Validation\Rule;
  * (destination, fee) are rejected outright — they belong to
  * SaveTransferRequest via the /transfers endpoints.
  */
-class SaveTransactionRequest extends FormRequest
+final class SaveTransactionRequest extends FormRequest
 {
     public function authorize(): bool
     {

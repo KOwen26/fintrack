@@ -6,7 +6,7 @@ use App\Enums\Cashflow;
 use App\Models\Account;
 use App\Models\Transaction;
 
-class TransactionObserver
+final class TransactionObserver
 {
     /**
      * The multiplier applied to the transaction amount based on its flow.

@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class DevController extends Controller
+final class DevController extends Controller
 {
     public function table(): Response
     {

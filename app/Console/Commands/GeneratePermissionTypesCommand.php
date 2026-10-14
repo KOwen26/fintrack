@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 use Spatie\Permission\Models\Permission;
 use Throwable;
 
-class GeneratePermissionTypesCommand extends Command
+final class GeneratePermissionTypesCommand extends Command
 {
     /**
      * The name and signature of the console command.

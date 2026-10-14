@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
  * Transfer-unit validation for POST/PUT /transfers. Unconditional rules —
  * the endpoint implies the transfer type; no type field is accepted.
  */
-class SaveTransferRequest extends FormRequest
+final class SaveTransferRequest extends FormRequest
 {
     public function authorize(): bool
     {

@@ -14,11 +14,21 @@ use Tests\TestCase;
 |
 */
 
-pest()->extend(TestCase::class)
+pest()
+    ->extend(TestCase::class)
     ->use(LazilyRefreshDatabase::class)
     ->in('Feature', 'Integration', 'Browser');
 
 pest()->browser()->timeout(5000);
+
+pest()->group('architecture')->in('Architecture');
+pest()->group('browser')->in('Browser');
+pest()->group('feature')->in('Feature');
+pest()->group('integration')->in('Integration');
+pest()->group('unit')->in('Unit');
+
+pest()->group('feature:auth')->in('Feature/Auth');
+pest()->group('feature:app')->in('Feature/App');
 
 /*
 |--------------------------------------------------------------------------
