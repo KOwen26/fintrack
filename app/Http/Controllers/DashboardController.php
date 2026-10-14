@@ -43,7 +43,7 @@ final class DashboardController extends Controller
             'accounts' => $accounts,
             'summary' => $summary,
             'categorySpending' => $categorySpending,
-            'recent_transactions' => $recentTransactions,
+            'recentTransactions' => $recentTransactions,
         ]);
     }
 }

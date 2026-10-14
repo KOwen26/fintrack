@@ -18,6 +18,17 @@ test('lists only the accounts owned by the authenticated user', function (): voi
         );
 });
 
+test('renders the account creation page', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('accounts.create'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('app/account/create')
+            ->has('providers')
+        );
+});
+
 test('stores a new account and redirects to its page', function (): void {
     $user = User::factory()->create();
 
@@ -43,6 +54,24 @@ test('stores a new account and redirects to its page', function (): void {
     $response->assertRedirectToRoute('accounts.show', ['account' => $account]);
 });
 
+test('updates an account and redirects to its page', function (): void {
+    $user = User::factory()->create();
+    $account = Account::factory()->create(['owner_id' => $user->id]);
+
+    $this->actingAs($user)->put(route('accounts.update', $account), [
+        'name' => 'Renamed Savings',
+        'type' => AccountType::DebitAccount->value,
+        'provider_id' => null,
+        'initial_balance' => 0,
+        'decorations' => [
+            'icon' => 'wallet-bold',
+            'color' => 'green-500',
+        ],
+    ])->assertRedirectToRoute('accounts.show', ['account' => $account]);
+
+    expect($account->fresh()->name)->toBe('Renamed Savings');
+});
+
 test('shows the account page for its owner', function (): void {
     $user = User::factory()->create();
     $account = Account::factory()->create(['owner_id' => $user->id]);
@@ -66,6 +95,18 @@ test('forbids viewing a personal account owned by another user', function (): vo
 
     $this->actingAs($user)->get(route('accounts.show', $otherAccount))
         ->assertForbidden();
+});
+
+test('renders the edit page for its owner', function (): void {
+    $user = User::factory()->create();
+    $account = Account::factory()->create(['owner_id' => $user->id]);
+
+    $this->actingAs($user)->get(route('accounts.edit', $account))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('app/account/edit')
+            ->has('providers')
+        );
 });
 
 test('prevents non-owner from editing an account', function (): void {
@@ -94,6 +135,16 @@ test('forbids archiving an account owned by another user', function (): void {
         ->assertForbidden();
 
     expect($otherAccount->fresh()->archived_at)->toBeNull();
+});
+
+test('restores an archived account', function (): void {
+    $user = User::factory()->create();
+    $account = Account::factory()->archived()->create(['owner_id' => $user->id]);
+
+    $this->actingAs($user)->post(route('accounts.restore', $account))
+        ->assertRedirectToRoute('accounts.show', ['account' => $account]);
+
+    expect($account->fresh()->archived_at)->toBeNull();
 });
 
 test('soft-deletes an account', function (): void {

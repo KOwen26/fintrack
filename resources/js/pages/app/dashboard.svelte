@@ -29,12 +29,12 @@
     let {
         categorySpending = null,
         summary = null,
-        recent_transactions = [],
+        recentTransactions = [],
         accounts = [],
     }: {
         categorySpending?: CategorySpendingReportData | null;
         summary?: Summary | null;
-        recent_transactions?: TransactionListData[];
+        recentTransactions?: TransactionListData[];
         accounts?: App.Models.Account[];
     } = $props();
 </script>
@@ -106,7 +106,7 @@
                     <TransactionList
                         hideTotal
                         loadMoreAction={() => router.visit(TransactionController.index.url())}
-                        transactions={recent_transactions} />
+                        transactions={recentTransactions} />
                 </div>
             </ResponsiveCard>
         </div>

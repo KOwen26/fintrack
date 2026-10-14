@@ -40,6 +40,18 @@ test('lists transactions for the authenticated user', function (): void {
         );
 });
 
+test('renders the transaction creation page', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('transactions.create'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('app/transaction/create')
+            ->has('accounts')
+            ->has('transaction')
+        );
+});
+
 test('stores an income transaction', function (): void {
     [$user, $account] = createAccountForUser();
 
@@ -68,6 +80,80 @@ test('stores an expense transaction', function (): void {
     ])->assertRedirectToRoute('transactions.index');
 
     expect(Transaction::where('account_id', $account->id)->where('type', TransactionType::Expense->value)->exists())->toBeTrue();
+});
+
+test('updates a transaction and redirects to the list', function (): void {
+    [$user, $account] = createAccountForUser();
+    $transaction = Transaction::factory()->expense()->create([
+        'account_id' => $account->id,
+        'created_by' => $user->id,
+        'amount' => 100_000,
+    ]);
+
+    $this->actingAs($user)->put(route('transactions.update', $transaction), [
+        'account_id' => $account->id,
+        'type' => TransactionType::Expense->value,
+        'amount' => 150_000,
+        'transaction_date' => now()->toDateString(),
+        'category_id' => 'groceries',
+        'description' => 'Updated groceries',
+    ])->assertRedirectToRoute('transactions.index');
+
+    expect((float) $transaction->fresh()->amount)->toBe(150_000.0)
+        ->and($transaction->fresh()->description)->toBe('Updated groceries')
+        ->and((float) $account->fresh()->current_balance)->toBe(-150_000.0);
+});
+
+test('renders the edit page for its owner', function (): void {
+    [$user, $account] = createAccountForUser();
+    $transaction = Transaction::factory()->expense()->create([
+        'account_id' => $account->id,
+        'created_by' => $user->id,
+    ]);
+
+    $this->actingAs($user)->get(route('transactions.edit', $transaction))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('app/transaction/edit')
+            ->has('accounts')
+            ->has('transaction')
+        );
+});
+
+test('shows a transaction to its creator', function (): void {
+    [$user, $account] = createAccountForUser();
+    $transaction = Transaction::factory()->expense()->create([
+        'account_id' => $account->id,
+        'created_by' => $user->id,
+    ]);
+
+    $this->actingAs($user)->get(route('transactions.show', $transaction))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('app/transaction/show')
+            ->has('transaction')
+        );
+});
+
+test('forbids viewing a transaction created by another user', function (): void {
+    [$user] = createAccountForUser();
+    $otherTransaction = Transaction::factory()->expense()->create(['amount' => 200_000]); // another user's personal account
+
+    $this->actingAs($user)->get(route('transactions.show', $otherTransaction))
+        ->assertForbidden();
+});
+
+test('shows a transaction on a joint account to any authenticated user', function (): void {
+    [$user] = createAccountForUser();
+    $jointAccount = Account::factory()->joint()->create(); // another owner, shared
+    $transaction = Transaction::factory()->expense()->create([
+        'account_id' => $jointAccount->id,
+        'created_by' => $jointAccount->owner_id,
+    ]);
+
+    $this->actingAs($user)->get(route('transactions.show', $transaction))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('app/transaction/show'));
 });
 
 test('creates a transfer unit with member rows via POST /transfers', function (): void {
@@ -178,6 +264,59 @@ test('edits a transfer unit via PUT /transfers keeping the id stable', function 
     expect($fresh->id)->toBe($transfer->id)
         ->and((float) $fresh->amount)->toEqual(300_000.0)
         ->and($fresh->transactions()->get())->toHaveCount(3); // source + destination + fee
+});
+
+test('renders the transfer edit page for its creator', function (): void {
+    [$user, $sourceAccount] = createAccountForUser();
+    $destAccount = Account::factory()->create(['owner_id' => $user->id]);
+
+    $transfer = resolve(TransferService::class)->create($user, new TransferData(
+        account_id: $sourceAccount->id,
+        destination_account_id: $destAccount->id,
+        amount: 250_000,
+        transaction_date: now()->toDateString(),
+    ));
+
+    $this->actingAs($user)->get(route('transfers.edit', $transfer))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('app/transaction/edit')
+            ->has('accounts')
+            ->has('transaction')
+        );
+});
+
+test('forbids editing a transfer created by another user', function (): void {
+    [$user] = createAccountForUser();
+    $otherUser = User::factory()->create();
+    $source = Account::factory()->create(['owner_id' => $otherUser->id]);
+    $destination = Account::factory()->create(['owner_id' => $otherUser->id]);
+
+    $transfer = resolve(TransferService::class)->create($otherUser, new TransferData(
+        account_id: $source->id,
+        destination_account_id: $destination->id,
+        amount: 250_000,
+        transaction_date: now()->toDateString(),
+    ));
+
+    $this->actingAs($user)->get(route('transfers.edit', $transfer))
+        ->assertForbidden();
+});
+
+test('redirects a transfer member edit to the transfer edit page', function (): void {
+    [$user, $sourceAccount] = createAccountForUser();
+    $destAccount = Account::factory()->create(['owner_id' => $user->id]);
+
+    $transfer = resolve(TransferService::class)->create($user, new TransferData(
+        account_id: $sourceAccount->id,
+        destination_account_id: $destAccount->id,
+        amount: 250_000,
+        transaction_date: now()->toDateString(),
+    ));
+    $outflow = $transfer->transactions()->get()->first(fn ($row): bool => $row->flow === Cashflow::Outflow);
+
+    $this->actingAs($user)->get(route('transactions.edit', $outflow))
+        ->assertRedirectToRoute('transfers.edit', ['transfer' => $transfer]);
 });
 
 test('soft-deletes the whole unit (aggregate, member rows, fee) when any member is deleted', function (): void {
