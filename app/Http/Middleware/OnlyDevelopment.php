@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\Response;
 
-class OnlyDevelopment
+final class OnlyDevelopment
 {
     /**
      * Handle an incoming request.

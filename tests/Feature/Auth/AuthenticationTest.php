@@ -2,31 +2,31 @@
 
 use App\Models\User;
 
-describe('Authentication', function () {
-    it('renders the login page for guests', function () {
+describe('Authentication', function (): void {
+    test('renders the login page for guests', function (): void {
         $this->get(route('auth.login'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('auth/login'));
     });
 
-    it('redirects authenticated users away from login page', function () {
+    test('redirects authenticated users away from login page', function (): void {
         $this->actingAs(User::factory()->create())
             ->get(route('auth.login'))
-            ->assertRedirect(route('dashboard'));
+            ->assertRedirectToRoute('dashboard');
     });
 
-    it('authenticates a user with valid credentials', function () {
+    test('authenticates a user with valid credentials', function (): void {
         $user = User::factory()->create();
 
         $this->post(route('auth.login'), [
             'email' => $user->email,
             'password' => 'password',
-        ])->assertRedirect(route('dashboard'));
+        ])->assertRedirectToRoute('dashboard');
 
         $this->assertAuthenticatedAs($user);
     });
 
-    it('rejects invalid credentials', function () {
+    test('rejects invalid credentials', function (): void {
         User::factory()->create(['email' => 'user@example.com']);
 
         $this->post(route('auth.login'), [
@@ -37,7 +37,7 @@ describe('Authentication', function () {
         $this->assertGuest();
     });
 
-    it('rejects login for non-existent user', function () {
+    test('rejects login for non-existent user', function (): void {
         $this->post(route('auth.login'), [
             'email' => 'nobody@example.com',
             'password' => 'password',
@@ -46,7 +46,7 @@ describe('Authentication', function () {
         $this->assertGuest();
     });
 
-    it('logs out an authenticated user', function () {
+    test('logs out an authenticated user', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
@@ -56,17 +56,17 @@ describe('Authentication', function () {
         $this->assertGuest();
     });
 
-    it('redirects unverified users to email verification when accessing protected routes', function () {
+    test('redirects unverified users to email verification when accessing protected routes', function (): void {
         $user = User::factory()->unverified()->create();
 
         $this->post(route('auth.login'), [
             'email' => $user->email,
             'password' => 'password',
-        ])->assertRedirect(route('dashboard'));
+        ])->assertRedirectToRoute('dashboard');
 
         // Subsequent access to a verified-only route redirects to email verification
         $this->actingAs($user)
             ->get(route('dashboard'))
-            ->assertRedirect(route('auth.verification.notice'));
+            ->assertRedirectToRoute('auth.verification.notice');
     });
 });

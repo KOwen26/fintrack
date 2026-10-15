@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\File;
  * populating its cache table during migration, and re-syncing there would
  * write the JSON source on every cold boot.
  */
-class SushiJsonBuilder extends Builder
+final class SushiJsonBuilder extends Builder
 {
     public function update(array $values)
     {

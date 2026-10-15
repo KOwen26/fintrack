@@ -84,8 +84,6 @@ final class AccountController extends Controller
 
     public function update(UpdateAccountRequest $request, Account $account): RedirectResponse
     {
-        $this->authorize('update', $account);
-
         $this->accountService->update($account, $request->validated());
 
         return to_route('accounts.show', $account)->flash('Account updated.');

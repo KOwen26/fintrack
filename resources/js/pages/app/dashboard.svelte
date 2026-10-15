@@ -11,7 +11,7 @@
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountList from '@components/module/account/account-list.svelte';
     import DashboardWelcomeCard from '@components/module/dashboard/dashboard-welcome-card.svelte';
-    import CategorySpendingChart from '@components/module/report/category-spending-chart.svelte';
+    import CategorySpendingChart from '@components/module/statistics/category-spending-chart.svelte';
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
     import HeaderContext from '@components/navigation/header-context.svelte';
     import AppIcon from '@components/ui/app-icon.svelte';
@@ -29,12 +29,12 @@
     let {
         categorySpending = null,
         summary = null,
-        recent_transactions = [],
+        recentTransactions = [],
         accounts = [],
     }: {
         categorySpending?: CategorySpendingReportData | null;
         summary?: Summary | null;
-        recent_transactions?: TransactionListData[];
+        recentTransactions?: TransactionListData[];
         accounts?: App.Models.Account[];
     } = $props();
 </script>
@@ -106,7 +106,7 @@
                     <TransactionList
                         hideTotal
                         loadMoreAction={() => router.visit(TransactionController.index.url())}
-                        transactions={recent_transactions} />
+                        transactions={recentTransactions} />
                 </div>
             </ResponsiveCard>
         </div>

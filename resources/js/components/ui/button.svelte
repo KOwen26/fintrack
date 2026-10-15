@@ -51,27 +51,27 @@
             {
                 variant: 'solid',
                 color: 'light',
-                class: 'border-transparent bg-base-200 text-base-content hover:bg-base-300',
+                class: 'border-transparent bg-base-200 text-foreground hover:bg-base-300',
             },
             {
                 variant: 'outline',
                 color: 'light',
-                class: 'border-border text-base-content hover:bg-base-content/10',
+                class: 'border-border text-foreground hover:bg-foreground/10',
             },
             {
                 variant: 'soft',
                 color: 'light',
-                class: 'border-base-content/10 bg-base-content/10 text-base-content hover:bg-base-content/20',
+                class: 'border-foreground/10 bg-foreground/10 text-foreground hover:bg-foreground/20',
             },
             {
                 variant: 'ghost',
                 color: 'light',
-                class: 'text-base-content hover:bg-base-content/10',
+                class: 'text-foreground hover:bg-foreground/10',
             },
             {
                 variant: 'link',
                 color: 'light',
-                class: 'text-base-content/70 hover:text-base-content',
+                class: 'text-foreground/70 hover:text-foreground',
             },
         ],
         defaultVariants: {

@@ -31,7 +31,7 @@ final class Transaction extends Model
             'type' => TransactionType::class,
             'flow' => Cashflow::class,
             'amount' => 'integer',
-            'transaction_date' => 'datetime',
+            'transaction_date' => 'date',
         ];
     }
 

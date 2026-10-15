@@ -2,17 +2,20 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Transaction;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Transfer-unit validation for POST/PUT /transfers. Unconditional rules —
  * the endpoint implies the transfer type; no type field is accepted.
  */
-class SaveTransferRequest extends FormRequest
+final class SaveTransferRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->route('transfer') !== null
+            ? $this->user()->can('update', $this->route('transfer'))
+            : $this->user()->can('create', Transaction::class);
     }
 
     public function rules(): array

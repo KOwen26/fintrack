@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\Category;
 use App\Enums\TransactionType;
+use App\Models\Transaction;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -12,11 +13,13 @@ use Illuminate\Validation\Rule;
  * (destination, fee) are rejected outright — they belong to
  * SaveTransferRequest via the /transfers endpoints.
  */
-class SaveTransactionRequest extends FormRequest
+final class SaveTransactionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->route('transaction') !== null
+            ? $this->user()->can('update', $this->route('transaction'))
+            : $this->user()->can('create', Transaction::class);
     }
 
     public function rules(): array
@@ -26,7 +29,7 @@ class SaveTransactionRequest extends FormRequest
             'type' => ['required', 'string', Rule::in([TransactionType::Income->value, TransactionType::Expense->value])],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'transaction_date' => ['required', 'date', 'before_or_equal:today'],
-            'category_id' => ['required', Rule::enum(Category::class)->unless(Category::InitialBalance)],
+            'category_id' => ['required', Rule::enum(Category::class)->except(Category::InitialBalance)],
             'description' => ['nullable', 'string', 'max:500'],
             'destination_account_id' => ['prohibited'],
             'fee_amount' => ['prohibited'],

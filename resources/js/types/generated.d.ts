@@ -5,14 +5,12 @@ export type CategoryData = {
     decorations: Decoration;
     group: CategoryGroupData;
 };
-
 export type CategoryGroupData = {
     id: string;
     name: string;
     cashflow: App.Enums.Cashflow;
     decorations: Decoration;
 };
-
 export type CategorySpendingItemData = {
     category_id: string;
     group: string;
@@ -22,14 +20,12 @@ export type CategorySpendingItemData = {
     total: number;
     percentage: number;
 };
-
 export type CategorySpendingReportData = {
     categories: ParentSpendingItemData[];
     period_total: number;
     from: string;
     to: string;
 };
-
 export type ChildSpendingItemData = {
     category_id: string;
     name: string;
@@ -38,9 +34,7 @@ export type ChildSpendingItemData = {
     total: number;
     percentage: number;
 };
-
 export type CursorPaginatedDataCollection<TKey, TValue> = CursorPaginator<TKey, TValue>;
-
 export type CursorPaginator<TKey, TValue> = {
     data: TKey extends string ? Record<TKey, TValue> : TValue[];
     links: {
@@ -57,9 +51,13 @@ export type CursorPaginator<TKey, TValue> = {
         prev_page_url: string | null;
     };
 };
-
 export type CursorPaginatorInterface<TKey, TValue> = CursorPaginator<TKey, TValue>;
-
+export type DailyFlow = {
+    readonly date: string;
+    readonly net: number;
+    readonly income: number;
+    readonly expense: number;
+};
 export type DataTablePayloadData = {
     has_sort: boolean;
     has_filters: boolean;
@@ -68,12 +66,10 @@ export type DataTablePayloadData = {
     sort: Array<any> | null;
     filters: Array<any> | null;
 };
-
 export type Decoration = {
     readonly icon: string | null;
     readonly color: string | null;
 };
-
 export type LengthAwarePaginator<TKey, TValue> = {
     data: TKey extends string ? Record<TKey, TValue> : TValue[];
     links: {
@@ -95,11 +91,19 @@ export type LengthAwarePaginator<TKey, TValue> = {
         to: number | null;
     };
 };
-
 export type LengthAwarePaginatorInterface<TKey, TValue> = LengthAwarePaginator<TKey, TValue>;
-
+export type MonthlyFlowReportData = {
+    data: DailyFlow[];
+    readonly from: string;
+    readonly to: string;
+    readonly total_income: number;
+    readonly total_expense: number;
+    readonly total_net: number;
+    readonly max_abs_net: number;
+    readonly max_income: number;
+    readonly max_expense: number;
+};
 export type PaginatedDataCollection<TKey, TValue> = LengthAwarePaginator<TKey, TValue>;
-
 export type ParentSpendingItemData = {
     group_id: string;
     name: string;
@@ -109,7 +113,6 @@ export type ParentSpendingItemData = {
     percentage: number;
     children: ChildSpendingItemData[];
 };
-
 export type TransactionData = {
     account_id: number;
     type: App.Enums.TransactionType;
@@ -120,7 +123,6 @@ export type TransactionData = {
     flow: App.Enums.Cashflow | null;
     transfer_id: number | null;
 };
-
 export type TransactionDetailData = {
     id: number;
     type: App.Enums.TransactionType;
@@ -135,7 +137,6 @@ export type TransactionDetailData = {
     account: App.Models.Account;
     destination_account: App.Models.Account;
 };
-
 export type TransactionFormData = {
     id: number | null;
     type: App.Enums.TransactionType;
@@ -148,7 +149,6 @@ export type TransactionFormData = {
     fee_amount: number | null;
     transfer_id: number | null;
 };
-
 export type TransactionListData = {
     id: number;
     type: App.Enums.TransactionType;
@@ -163,7 +163,6 @@ export type TransactionListData = {
     related_transaction: App.Models.Transaction;
     account: App.Models.Account;
 };
-
 export type TransferData = {
     account_id: number;
     destination_account_id: number;

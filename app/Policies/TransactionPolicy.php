@@ -13,7 +13,7 @@ use App\Models\User;
  * the owning account is shared (joint). Writes (update/delete) are reserved
  * to the creator alone — this is what keeps the transfer cascade safe.
  */
-class TransactionPolicy
+final class TransactionPolicy
 {
     public function viewAny(User $user): bool
     {

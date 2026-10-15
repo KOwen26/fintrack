@@ -13,9 +13,13 @@ return [
             'form_variant' => env('WAYFINDER_GENERATE_FORM_VARIANT', true),
             'ignore' => [
                 // Patterns to ignore for URLs (e.g. 'nova-api/*')
-                'urls' => ['telescope/*', '_debugbar/*', '_boost/*', '_laravel-brain/*', 'up'],
+                'urls' => [
+                    'telescope/*', '_debugbar/*', '_boost/*', '_laravel-brain/*', '_inertia/*', 'up', 'storage',
+                ],
                 // Patterns to ignore for route names (e.g. 'nova.*')
-                'names' => ['nova.*', 'debugbar.*', 'telescope.*', 'boost.*', 'laravel_brain.*'],
+                'names' => [
+                    'nova.*', 'debugbar.*', 'telescope.*', 'boost.*', 'laravel_brain.*', 'log-viewer.*', 'resend.*',
+                ],
             ],
         ],
 

@@ -4,15 +4,15 @@ use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Notification;
 
-describe('Password Reset', function () {
-    describe('Forgot Password', function () {
-        it('renders the forgot password page', function () {
+describe('Password Reset', function (): void {
+    describe('Forgot Password', function (): void {
+        test('renders the forgot password page', function (): void {
             $this->get(route('auth.password.request'))
                 ->assertOk()
                 ->assertInertia(fn ($page) => $page->component('auth/forgot-password'));
         });
 
-        it('sends a password reset link to a registered email', function () {
+        test('sends a password reset link to a registered email', function (): void {
             Notification::fake();
             $user = User::factory()->create();
 
@@ -22,7 +22,7 @@ describe('Password Reset', function () {
             Notification::assertSentTo($user, ResetPassword::class);
         });
 
-        it('returns a validation error for an unregistered email', function () {
+        test('returns a validation error for an unregistered email', function (): void {
             Notification::fake();
 
             $this->post(route('auth.password.email'), ['email' => 'notfound@example.com'])
@@ -31,14 +31,14 @@ describe('Password Reset', function () {
             Notification::assertNothingSent();
         });
 
-        it('validates that email is required', function () {
+        test('validates that email is required', function (): void {
             $this->post(route('auth.password.email'), ['email' => ''])
                 ->assertSessionHasErrors('email');
         });
     });
 
-    describe('Reset Password', function () {
-        it('renders the reset password page with a valid token', function () {
+    describe('Reset Password', function (): void {
+        test('renders the reset password page with a valid token', function (): void {
             Notification::fake();
             $user = User::factory()->create();
 
@@ -52,7 +52,7 @@ describe('Password Reset', function () {
             });
         });
 
-        it('resets the password with a valid token', function () {
+        test('resets the password with a valid token', function (): void {
             Notification::fake();
             $user = User::factory()->create();
 
@@ -64,13 +64,13 @@ describe('Password Reset', function () {
                     'email' => $user->email,
                     'password' => 'NewPassword1!',
                     'password_confirmation' => 'NewPassword1!',
-                ])->assertRedirect(route('auth.login'));
+                ])->assertRedirectToRoute('auth.login');
 
                 return true;
             });
         });
 
-        it('requires password confirmation to match during reset', function () {
+        test('requires password confirmation to match during reset', function (): void {
             Notification::fake();
             $user = User::factory()->create();
 
@@ -88,7 +88,7 @@ describe('Password Reset', function () {
             });
         });
 
-        it('requires a valid token to reset password', function () {
+        test('requires a valid token to reset password', function (): void {
             $user = User::factory()->create();
 
             $this->post(route('auth.password.store'), [

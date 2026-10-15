@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\File;
  * declared by jsonColumns() are written, so the Sushi-internal id never
  * leaks into the source file.
  */
-class SushiJsonObserver
+final class SushiJsonObserver
 {
     public function saved(Model $model): void
     {

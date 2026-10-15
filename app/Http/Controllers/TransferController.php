@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Data\Transaction\TransactionFormData;
 use App\Data\Transaction\TransferData;
 use App\Http\Requests\SaveTransferRequest;
-use App\Models\Transaction;
 use App\Models\Transfer;
 use App\Models\User;
 use App\Services\AccountService;
@@ -36,8 +35,6 @@ final class TransferController extends Controller
 
     public function store(SaveTransferRequest $request): RedirectResponse
     {
-        $this->authorize('create', Transaction::class);
-
         $this->transferService->create($this->user, TransferData::from($request->validated()));
 
         return to_route('transactions.index')->flash('Transfer saved.');
@@ -45,8 +42,6 @@ final class TransferController extends Controller
 
     public function update(SaveTransferRequest $request, Transfer $transfer): RedirectResponse
     {
-        $this->authorize('update', $transfer);
-
         $this->transferService->update($transfer, TransferData::from($request->validated()));
 
         return to_route('transactions.index')->flash('Transfer updated.');

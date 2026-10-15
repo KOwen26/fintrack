@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class MakeRepositoryCommand extends GeneratorCommand
+final class MakeRepositoryCommand extends GeneratorCommand
 {
     /**
      * The name of the console command.

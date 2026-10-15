@@ -20,9 +20,9 @@ use Illuminate\Support\Facades\DB;
  * optional fee). Plain-row CRUD and list queries live in TransactionService,
  * which this service reuses for booking individual rows.
  */
-class TransferService
+final readonly class TransferService
 {
-    public function __construct(private readonly TransactionService $transactionService) {}
+    public function __construct(private TransactionService $transactionService) {}
 
     public function create(User $creator, TransferData $data): Transfer
     {

@@ -6,7 +6,7 @@ use App\Enums\AccountAccessType;
 use App\Models\Account;
 use App\Models\User;
 
-class AccountPolicy
+final class AccountPolicy
 {
     public function viewAny(User $user): bool
     {
