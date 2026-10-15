@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\DatePeriodPreset;
+use App\Http\Requests\MonthPeriodRequest;
 use App\Models\User;
 use App\Services\SpendingService;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -17,12 +17,14 @@ final class StatisticController extends Controller
     ) {}
 
     /**
-     * Statistics overview — current-month daily income/expense calendar.
+     * Statistics overview — daily income/expense calendar for one month.
+     * `?month` (Y-m or Y-m-d) navigates to an explicit month; see
+     * MonthPeriodRequest for the resolution and fallback rules.
      */
-    public function index(): Response
+    public function index(MonthPeriodRequest $request): Response
     {
         return Inertia::render('app/statistics/index', [
-            'monthlyFlow' => $this->spendingService->monthlyFlow($this->user, DatePeriodPreset::ThisMonth),
+            'monthlyFlow' => $this->spendingService->monthlyCashflow($this->user, $request->period()),
         ]);
     }
 }

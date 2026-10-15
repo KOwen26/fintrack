@@ -5,14 +5,15 @@ namespace App\Services;
 use App\Data\Report\CategorySpendingItemData;
 use App\Data\Report\CategorySpendingReportData;
 use App\Data\Report\ChildSpendingItemData;
-use App\Data\Report\MonthlyFlowReportData;
+use App\Data\Report\MonthlyCashflowReportData;
 use App\Data\Report\ParentSpendingItemData;
 use App\Enums\CategoryGroup;
 use App\Enums\DatePeriodPreset;
 use App\Enums\TransactionType;
 use App\Models\Transaction;
 use App\Models\User;
-use App\Objects\DailyFlow;
+use App\Objects\DailyCashflow;
+use App\Objects\DatePeriod;
 use Illuminate\Support\Facades\Date;
 
 final class SpendingService
@@ -74,19 +75,20 @@ final class SpendingService
 
     /**
      * Aggregate per-day income and expense across all of a user's accounts
-     * for a period. SQL groups by day and type; the pivot into one
-     * DailyFlow value object per activity day happens in PHP, with the net
-     * derived inside the object. Days without activity are omitted — the
-     * frontend calendar grid synthesizes them.
+     * for a period — a preset or an explicit window (e.g. a navigated month).
+     * SQL groups by day and type; the pivot into one DailyFlow value object
+     * per activity day happens in PHP, with the net derived inside the object.
+     * Days without activity are omitted — the frontend calendar grid
+     * synthesizes them.
      */
-    public function monthlyFlow(User $user, DatePeriodPreset $periodPreset): MonthlyFlowReportData
+    public function monthlyCashflow(User $user, DatePeriodPreset | DatePeriod $period): MonthlyCashflowReportData
     {
-        $period = $periodPreset->toPeriod();
+        $period = $period instanceof DatePeriodPreset ? $period->toPeriod() : $period;
 
-        $accountIds = AccountService::getAccountsByUser($user)->pluck('id')->all();
+        $accountIds = AccountService::getAccountIdsByUser($user)->all();
 
         if ($accountIds === []) {
-            return MonthlyFlowReportData::emptyForPeriod($period);
+            return MonthlyCashflowReportData::emptyForPeriod($period);
         }
 
         $rows = Transaction::query()
@@ -106,7 +108,7 @@ final class SpendingService
             $buckets[$row->day][$row->type->value] += (float) $row->total;
         }
 
-        $flows = [];
+        $data = [];
         $totalIncome = 0.0;
         $totalExpense = 0.0;
         $maxAbsNet = 0.0;
@@ -114,18 +116,18 @@ final class SpendingService
         $maxExpense = 0.0;
 
         foreach ($buckets as $day => $bucket) {
-            $flow = new DailyFlow(Date::parse($day), $bucket['income'], $bucket['expense']);
+            $cashflow = new DailyCashflow(Date::parse($day), $bucket['income'], $bucket['expense']);
 
-            $flows[] = $flow;
-            $totalIncome += $flow->income;
-            $totalExpense += $flow->expense;
-            $maxAbsNet = max($maxAbsNet, abs($flow->net));
-            $maxIncome = max($maxIncome, $flow->income);
-            $maxExpense = max($maxExpense, $flow->expense);
+            $data[] = $cashflow;
+            $totalIncome += $cashflow->income;
+            $totalExpense += $cashflow->expense;
+            $maxAbsNet = max($maxAbsNet, abs($cashflow->net));
+            $maxIncome = max($maxIncome, $cashflow->income);
+            $maxExpense = max($maxExpense, $cashflow->expense);
         }
 
-        return new MonthlyFlowReportData(
-            data: $flows,
+        return new MonthlyCashflowReportData(
+            data: $data,
             from: $period->start,
             to: $period->end,
             total_income: $totalIncome,

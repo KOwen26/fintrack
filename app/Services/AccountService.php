@@ -27,6 +27,15 @@ final readonly class AccountService
             ->get();
     }
 
+    public static function getAccountIdsByUser(User $user): Collection
+    {
+        return Account::query()
+            ->where('owner_id', $user->id)
+            ->notArchived()
+            // ->shareable()
+            ->pluck('id');
+    }
+
     public static function getArchivedAccountsByUser(User $user): Collection
     {
         return Account::query()

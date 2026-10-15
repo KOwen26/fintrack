@@ -14,7 +14,7 @@
     {/snippet}
 
     <div class="grid grid-cols-1 gap-6">
-        <ResponsiveCard title="Daily Flow">
+        <ResponsiveCard title="Monthly Cashflow">
             <MonthlyCalendarChart {monthlyFlow} />
         </ResponsiveCard>
     </div>

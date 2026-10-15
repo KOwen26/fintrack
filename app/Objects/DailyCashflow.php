@@ -17,7 +17,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * disagree with the subtraction.
  */
 #[TypeScript]
-final readonly class DailyFlow implements Arrayable
+final readonly class DailyCashflow implements Arrayable
 {
     public readonly CarbonImmutable $date;
 

@@ -1,15 +1,22 @@
 <script lang="ts">
+    import type { CalendarBackground } from '@components/module/statistics/monthly-calendar-grid.svelte';
+    import type { ChartConfig } from '@components/ui/atoms/chart';
     import type { MonthlyFlowReportData } from '@type/generated';
 
-    import { endOfMonth } from 'date-fns';
+    import { router } from '@inertiajs/svelte';
+    import statistics from '@wayfinder/routes/statistics';
+    import { addMonths, endOfMonth, format, isSameMonth } from 'date-fns';
     import { Chart } from 'layerchart';
 
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
 
-    import MonthlyCalendarGrid from '@components/module/statistics/monthly-calendar-grid.svelte';
+    import MonthlyCalendarGrid, {
+        calendarRamp,
+    } from '@components/module/statistics/monthly-calendar-grid.svelte';
     import { ChartContainer, ChartTooltip } from '@components/ui/atoms/chart';
     import { Tabs, TabsList, TabsTrigger } from '@components/ui/atoms/tabs';
+    import Button from '@components/ui/button.svelte';
 
     interface DayDatum {
         date: Date;
@@ -40,33 +47,25 @@
 
     let mode = $state<Mode>('net');
 
-    interface CalendarFill {
-        /** Cell background — SVG fill / CSS background. */
-        fill: string;
-        /** Ink for the day number + amount on top of that fill. */
-        text: string;
-    }
+    const chartConfig: ChartConfig = {
+        income: { label: 'Income', color: 'var(--success)' },
+        expense: { label: 'Expense', color: 'var(--error)' },
+        'income-foreground': { color: 'var(--success-foreground)' },
+        'expense-foreground': { color: 'var(--error-foreground)' },
+        none: { color: 'var(--muted)' },
+        'none-foreground': { color: 'color-mix(in oklab, var(--foreground) 55%, transparent)' },
+    };
 
-    // Step fills as var references — the --calendar-* vars (defined in the
-    // grid's <style>) own the colors; override them per theme or instance.
-    // Index = intensity step (0–3), lightest tint up to the full token.
-    const incomeFills: CalendarFill[] = [
-        { fill: 'var(--calendar-income-tint-1)', text: 'var(--calendar-text-1)' },
-        { fill: 'var(--calendar-income-tint-2)', text: 'var(--calendar-text-2)' },
-        { fill: 'var(--calendar-income-tint-3)', text: 'var(--calendar-text-3)' },
-        { fill: 'var(--calendar-income-full)', text: 'var(--calendar-income-text-full)' },
-    ];
+    // Index = intensity step (0–3), lightest tint up to the full anchor.
+    const incomeBackgrounds = calendarRamp('var(--color-income)', 'var(--color-income-foreground)');
+    const expenseBackgrounds = calendarRamp(
+        'var(--color-expense)',
+        'var(--color-expense-foreground)'
+    );
 
-    const expenseFills: CalendarFill[] = [
-        { fill: 'var(--calendar-expense-tint-1)', text: 'var(--calendar-text-1)' },
-        { fill: 'var(--calendar-expense-tint-2)', text: 'var(--calendar-text-2)' },
-        { fill: 'var(--calendar-expense-tint-3)', text: 'var(--calendar-text-3)' },
-        { fill: 'var(--calendar-expense-full)', text: 'var(--calendar-expense-text-full)' },
-    ];
-
-    const noActivityFill: CalendarFill = {
-        fill: 'var(--calendar-none)',
-        text: 'var(--calendar-none-text)',
+    const noActivityBackground: CalendarBackground = {
+        background: 'var(--color-none)',
+        foreground: 'var(--color-none-foreground)',
     };
 
     /**
@@ -104,28 +103,28 @@
     const maxIncome = $derived(monthlyFlow.max_income);
     const maxExpense = $derived(monthlyFlow.max_expense);
 
-    function fillFor(cell: CalendarCell): CalendarFill {
+    function backgroundFor(cell: CalendarCell): CalendarBackground {
         const d = cell.data;
 
-        if (!('net' in d)) return noActivityFill;
+        if (!('net' in d)) return noActivityBackground;
 
         if (mode === 'net') {
-            if (d.net === 0) return noActivityFill;
+            if (d.net === 0) return noActivityBackground;
 
             const step = stepOf(Math.abs(d.net), maxAbsNet);
 
-            return d.net > 0 ? incomeFills[step] : expenseFills[step];
+            return d.net > 0 ? incomeBackgrounds[step] : expenseBackgrounds[step];
         }
 
         if (mode === 'income') {
-            if (d.income <= 0) return noActivityFill;
+            if (d.income <= 0) return noActivityBackground;
 
-            return incomeFills[stepOf(d.income, maxIncome)];
+            return incomeBackgrounds[stepOf(d.income, maxIncome)];
         }
 
-        if (d.expense <= 0) return noActivityFill;
+        if (d.expense <= 0) return noActivityBackground;
 
-        return expenseFills[stepOf(d.expense, maxExpense)];
+        return expenseBackgrounds[stepOf(d.expense, maxExpense)];
     }
 
     /**
@@ -143,28 +142,67 @@
         return value === 0 ? null : Formatter.compactAmount(value);
     }
 
-    const legendFills = $derived(mode === 'expense' ? expenseFills : incomeFills);
+    const legendBackgrounds = $derived(mode === 'expense' ? expenseBackgrounds : incomeBackgrounds);
+
+    const isCurrentMonth = $derived(isSameMonth(monthStart, new Date()));
+
+    /** Partial reload — swaps only the monthlyFlow prop, keeps view state. */
+    function visitMonth(delta: number): void {
+        const month = format(addMonths(monthStart, delta), 'yyyy-MM');
+
+        router.get(statistics.index.url({ query: { month } }), {
+            only: ['monthlyFlow'],
+            preserveScroll: true,
+            preserveState: true,
+        });
+    }
 </script>
 
 <div class="w-full">
-    <div class="mb-3 flex justify-between">
-        <div>
-            <!-- TODO MONTH PREV NEXT -->
+    <div class="mb-3 flex items-center justify-between">
+        <div class="flex items-center gap-1">
+            <Button
+                aria-label="Previous month"
+                onclick={() => visitMonth(-1)}
+                size="icon-sm"
+                variant="ghost">
+                <i class="iconify size-5 solar--alt-arrow-left-line-duotone"></i>
+            </Button>
+
+            <span class=" text-center text-sm font-medium">
+                {DateTimeHelper.format(monthStart, 'month-year')}
+            </span>
+
+            <Button
+                aria-label="Next month"
+                disabled={isCurrentMonth}
+                onclick={() => visitMonth(1)}
+                size="icon-sm"
+                variant="ghost">
+                <i class="iconify size-5 solar--alt-arrow-right-line-duotone"></i>
+            </Button>
         </div>
 
         <Tabs onValueChange={(v) => (mode = v)} value={mode}>
             <TabsList>
-                <TabsTrigger class="min-w-15" value="net">Net</TabsTrigger>
-                <TabsTrigger class="min-w-15" value="income">Income</TabsTrigger>
-                <TabsTrigger class="min-w-15" value="expense">Expense</TabsTrigger>
+                <TabsTrigger class="min-w-8 p-1" aria-label="Net" value="net">
+                    <i class="iconify size-5 solar--sort-vertical-line-duotone"></i>
+                </TabsTrigger>
+                <TabsTrigger class="min-w-8 p-1" aria-label="Income" value="income">
+                    <i class="iconify size-5 text-success solar--arrow-to-down-right-line-duotone"
+                    ></i>
+                </TabsTrigger>
+                <TabsTrigger class="min-w-8 p-1" aria-label="Expense" value="expense">
+                    <i class="iconify size-5 text-error solar--arrow-to-top-left-line-duotone"></i>
+                </TabsTrigger>
             </TabsList>
         </Tabs>
     </div>
 
     <!-- Square region: the tallest month (6 week rows + header = 7) fills it exactly; shorter months keep a stable card height with bottom slack. -->
-    <ChartContainer class="aspect-square w-full" config={{}}>
+    <ChartContainer class="aspect-square w-full" config={chartConfig}>
         <Chart class="relative" data={chartData} x="date">
-            <MonthlyCalendarGrid {fillFor} {labelFor} {monthEnd} {monthStart} {onDayClick} />
+            <MonthlyCalendarGrid {backgroundFor} {labelFor} {monthEnd} {monthStart} {onDayClick} />
 
             <ChartTooltip>
                 {#snippet tooltipContent(data, ui)}
@@ -180,7 +218,7 @@
                 {/snippet}
             </ChartTooltip>
 
-            <div class="absolute bottom-5 w-full">
+            <div class="absolute bottom-0 w-full">
                 {#if monthlyFlow.data.length === 0}
                     <div
                         class="flex flex-col items-center justify-center py-6 text-base-content/40">
@@ -191,8 +229,9 @@
                     <div
                         class="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
                         <span>Less</span>
-                        {#each legendFills as entry (entry.fill)}
-                            <span style:background={entry.fill} class="size-3 rounded-sm"></span>
+                        {#each legendBackgrounds as entry (entry.background)}
+                            <span style:background={entry.background} class="size-3 rounded-sm"
+                            ></span>
                         {/each}
                         <span>More</span>
                         <span class="mx-1 size-3 rounded-sm bg-muted"></span>

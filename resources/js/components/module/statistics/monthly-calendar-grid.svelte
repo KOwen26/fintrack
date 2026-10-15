@@ -1,3 +1,27 @@
+<script lang="ts" module>
+    /** A cell's visual pair — background plus the foreground readable on it. */
+    export interface CalendarBackground {
+        /** Cell background — applied as the SVG fill / CSS background. */
+        background: string;
+        /** Foreground for the day number + amount on top of that background. */
+        foreground: string;
+    }
+
+    /**
+     * Expand a color anchor into the 4 intensity steps — tints mix onto the
+     * card surface, the top step is the anchor at full strength with its
+     * companion foreground. Anchors arrive as chart-config vars (`var(--color-*)`)
+     * so each chart instance owns its palette through the config prop.
+     */
+    export function calendarRamp(anchor: string, foreground: string): CalendarBackground[] {
+        return [25, 50, 75, 100].map((pct) => ({
+            background:
+                pct === 100 ? anchor : `color-mix(in oklab, ${anchor} ${pct}%, var(--card))`,
+            foreground: pct === 100 ? foreground : 'var(--foreground)',
+        }));
+    }
+</script>
+
 <script lang="ts">
     import { getChartContext, Layer, Month } from 'layerchart';
 
@@ -14,13 +38,13 @@
     let {
         monthStart,
         monthEnd,
-        fillFor,
+        backgroundFor,
         labelFor,
         onDayClick,
     }: {
         monthStart: Date;
         monthEnd: Date;
-        fillFor: (cell: CalendarCell) => { fill: string; text: string };
+        backgroundFor: (cell: CalendarCell) => CalendarBackground;
         labelFor?: (cell: CalendarCell) => string | null;
         onDayClick?: (date: Date) => void;
     } = $props();
@@ -58,14 +82,14 @@
                 {@const slot = leading + cell.date.getDate() - 1}
                 {@const x = (slot % 7) * cellSize}
                 {@const y = Math.floor(slot / 7) * cellSize + cellSize}
-                {@const fill = fillFor(cell)}
+                {@const background = backgroundFor(cell)}
 
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                 <rect
                     class={cn(onDayClick && 'cursor-pointer')}
                     aria-label={cell.date.toDateString()}
-                    fill={fill.fill}
+                    fill={background.background}
                     height={cellSize - 2}
                     onclick={onDayClick ? () => onDayClick(cell.date) : undefined}
                     onpointerleave={() => chart.tooltip?.hide()}
@@ -81,7 +105,7 @@
                 {#if label}
                     <!-- day number small in the corner, amount centered below -->
                     <text
-                        style:fill={fill.text}
+                        style:fill={background.foreground}
                         class="pointer-events-none text-xs font-medium tabular-nums select-none"
                         dominant-baseline="middle"
                         opacity="0.75"
@@ -92,7 +116,7 @@
                     </text>
 
                     <text
-                        style:fill={fill.text}
+                        style:fill={background.foreground}
                         class="pointer-events-none text-xs font-semibold tabular-nums select-none"
                         dominant-baseline="middle"
                         text-anchor="middle"
@@ -102,7 +126,7 @@
                     </text>
                 {:else}
                     <text
-                        style:fill={fill.text}
+                        style:fill={background.foreground}
                         class="pointer-events-none text-sm font-medium tabular-nums select-none"
                         dominant-baseline="middle"
                         text-anchor="middle"
@@ -115,29 +139,3 @@
         {/snippet}
     </Month>
 </Layer>
-
-<style>
-    /* Calendar fill/text steps — CSS-owned so themes or instances can override
-       any step without touching JS. Each polarity owns its tint ramp; the top
-       step is the full status token with its companion foreground ink. */
-    :global(:root) {
-        --calendar-income-tint-1: color-mix(in oklab, var(--success) 25%, var(--card));
-        --calendar-income-tint-2: color-mix(in oklab, var(--success) 50%, var(--card));
-        --calendar-income-tint-3: color-mix(in oklab, var(--success) 75%, var(--card));
-        --calendar-income-full: var(--success);
-
-        --calendar-expense-tint-1: color-mix(in oklab, var(--error) 25%, var(--card));
-        --calendar-expense-tint-2: color-mix(in oklab, var(--error) 50%, var(--card));
-        --calendar-expense-tint-3: color-mix(in oklab, var(--error) 75%, var(--card));
-        --calendar-expense-full: var(--error);
-
-        --calendar-none: var(--muted);
-
-        --calendar-text-1: var(--foreground);
-        --calendar-text-2: var(--foreground);
-        --calendar-text-3: var(--foreground);
-        --calendar-income-text-full: var(--success-foreground);
-        --calendar-expense-text-full: var(--error-foreground);
-        --calendar-none-text: color-mix(in oklab, var(--foreground) 55%, transparent);
-    }
-</style>

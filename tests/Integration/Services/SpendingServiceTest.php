@@ -7,7 +7,8 @@ use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use App\Models\User;
-use App\Objects\DailyFlow;
+use App\Objects\DailyCashflow;
+use App\Objects\DatePeriod;
 use App\Services\SpendingService;
 use Carbon\CarbonImmutable;
 
@@ -222,10 +223,10 @@ describe('monthlyFlow', function (): void {
         ]);
 
         $service = new SpendingService;
-        $report = $service->monthlyFlow($user, DatePeriodPreset::ThisMonth);
+        $report = $service->monthlyCashflow($user, DatePeriodPreset::ThisMonth);
 
         expect($report->data)->toHaveCount(2)
-            ->and($report->data[0])->toBeInstanceOf(DailyFlow::class)
+            ->and($report->data[0])->toBeInstanceOf(DailyCashflow::class)
             ->and($report->data[0]->date)->toBeInstanceOf(CarbonImmutable::class)
             ->and($report->data[0]->date->toDateString())->toBe(now()->startOfMonth()->addDays(2)->toDateString())
             ->and($report->data[0]->income)->toBe(500_000.0)
@@ -260,7 +261,7 @@ describe('monthlyFlow', function (): void {
         ]);
 
         $service = new SpendingService;
-        $report = $service->monthlyFlow($user, DatePeriodPreset::ThisMonth);
+        $report = $service->monthlyCashflow($user, DatePeriodPreset::ThisMonth);
 
         expect($report->data)->toBeEmpty();
     });
@@ -276,7 +277,7 @@ describe('monthlyFlow', function (): void {
         ]);
 
         $service = new SpendingService;
-        $report = $service->monthlyFlow($user, DatePeriodPreset::ThisMonth);
+        $report = $service->monthlyCashflow($user, DatePeriodPreset::ThisMonth);
 
         expect($report->data)->toBeEmpty()
             ->and($report->from->toDateString())->toBe(now()->startOfMonth()->toDateString());
@@ -286,7 +287,7 @@ describe('monthlyFlow', function (): void {
         $user = User::factory()->create();
 
         $service = new SpendingService;
-        $report = $service->monthlyFlow($user, DatePeriodPreset::ThisMonth);
+        $report = $service->monthlyCashflow($user, DatePeriodPreset::ThisMonth);
 
         expect($report->data)->toBeEmpty()
             ->and($report->from->isSameDay(now()->startOfMonth()))->toBeTrue()
@@ -294,5 +295,31 @@ describe('monthlyFlow', function (): void {
             ->and($report->total_income)->toBe(0.0)
             ->and($report->total_net)->toBe(0.0)
             ->and($report->max_abs_net)->toBe(0.0);
+    });
+
+    it('aggregates an explicit month window from any day within it', function (): void {
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['owner_id' => $user->id]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 120_000,
+            'transaction_date' => '2026-03-10',
+        ]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 80_000,
+            'transaction_date' => '2026-04-02',
+        ]);
+
+        $service = new SpendingService;
+        $report = $service->monthlyCashflow($user, DatePeriod::forMonth(new CarbonImmutable('2026-03-15')));
+
+        expect($report->from->toDateString())->toBe('2026-03-01')
+            ->and($report->to->toDateString())->toBe('2026-03-31')
+            ->and($report->data)->toHaveCount(1)
+            ->and($report->data[0]->expense)->toBe(120_000.0)
+            ->and($report->total_expense)->toBe(120_000.0);
     });
 });

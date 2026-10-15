@@ -39,6 +39,14 @@ final readonly class DatePeriod
         return new self($day, $day->endOfDay());
     }
 
+    /** The calendar month containing the given day. */
+    public static function forMonth(DateTimeInterface $day): self
+    {
+        $start = CarbonImmutable::instance($day)->startOfMonth();
+
+        return new self($start, $start->endOfMonth());
+    }
+
     /** The widest period a MySQL `date` column can reliably express. */
     public static function unbounded(): self
     {

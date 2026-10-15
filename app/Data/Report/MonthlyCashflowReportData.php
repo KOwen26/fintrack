@@ -2,17 +2,17 @@
 
 namespace App\Data\Report;
 
-use App\Objects\DailyFlow;
+use App\Objects\DailyCashflow;
 use App\Objects\DatePeriod;
 use Carbon\CarbonImmutable;
 use Spatie\LaravelData\Attributes\WithTransformer;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Transformers\DateTimeInterfaceTransformer;
 
-class MonthlyFlowReportData extends Data
+class MonthlyCashflowReportData extends Data
 {
     public function __construct(
-        /** @var DailyFlow[] */
+        /** @var DailyCashflow[] */
         public array $data,
         // The bounds are calendar days, not instants — serialized as Y-m-d so
         // consumers never have to strip an offset they never wanted.
