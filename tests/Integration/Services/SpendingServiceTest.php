@@ -9,6 +9,7 @@ use App\Models\Transfer;
 use App\Models\User;
 use App\Objects\DailyCashflow;
 use App\Objects\DatePeriod;
+use App\Objects\WeekdayCashflow;
 use App\Services\SpendingService;
 use Carbon\CarbonImmutable;
 
@@ -199,7 +200,7 @@ describe('groupByCategoryGroup', function (): void {
     });
 });
 
-describe('monthlyFlow', function (): void {
+describe('monthlyCashflow', function (): void {
     it('aggregates same-day income and expense into one flow with net', function (): void {
         $user = User::factory()->create();
         $account = Account::factory()->create(['owner_id' => $user->id]);
@@ -321,5 +322,238 @@ describe('monthlyFlow', function (): void {
             ->and($report->data)->toHaveCount(1)
             ->and($report->data[0]->expense)->toBe(120_000.0)
             ->and($report->total_expense)->toBe(120_000.0);
+    });
+});
+
+describe('cashflowTrend', function (): void {
+    it('aggregates per month, zero-fills gaps, and derives surplus rate', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['owner_id' => $user->id]);
+
+        Transaction::factory()->income()->create([
+            'account_id' => $account->id,
+            'amount' => 1_000_000,
+            'transaction_date' => '2026-10-05',
+        ]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 400_000,
+            'transaction_date' => '2026-10-20',
+        ]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 100_000,
+            'transaction_date' => '2026-08-02',
+        ]);
+
+        $service = new SpendingService;
+        $report = $service->cashflowTrend($user, 3);
+
+        expect($report->from->toDateString())->toBe('2026-08-01')
+            ->and($report->to->toDateString())->toBe('2026-10-31')
+            ->and($report->data)->toHaveCount(3)
+            ->and($report->data[0]->date->toDateString())->toBe('2026-08-01')
+            ->and($report->data[0]->expense)->toBe(100_000.0)
+            ->and($report->data[0]->surplus_rate)->toBe(0.0)
+            ->and($report->data[1]->income)->toBe(0.0)
+            ->and($report->data[1]->expense)->toBe(0.0)
+            ->and($report->data[2]->income)->toBe(1_000_000.0)
+            ->and($report->data[2]->net)->toBe(600_000.0)
+            ->and($report->data[2]->surplus_rate)->toBe(60.0)
+            ->and($report->total_income)->toBe(1_000_000.0)
+            ->and($report->total_expense)->toBe(500_000.0)
+            ->and($report->total_net)->toBe(500_000.0);
+    });
+
+    it('scopes to the own accounts and excludes transfers', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['owner_id' => $user->id]);
+        $transfer = Transfer::factory()->create();
+
+        Transaction::factory()->transferOutflow($transfer)->create([
+            'account_id' => $account->id,
+            'amount' => 750_000,
+            'transaction_date' => '2026-10-04',
+        ]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => Account::factory()->create()->id,
+            'amount' => 300_000,
+            'transaction_date' => '2026-10-06',
+        ]);
+
+        $service = new SpendingService;
+        $report = $service->cashflowTrend($user, 6);
+
+        expect($report->data)->toHaveCount(6)
+            ->and($report->total_income)->toBe(0.0)
+            ->and($report->total_expense)->toBe(0.0)
+            ->and($report->total_net)->toBe(0.0);
+    });
+
+    it('returns a fully zero-filled span for a user without accounts', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        $user = User::factory()->create();
+
+        $service = new SpendingService;
+        $report = $service->cashflowTrend($user, 12);
+
+        expect($report->data)->toHaveCount(12)
+            ->and($report->data[11]->date->toDateString())->toBe('2026-10-01')
+            ->and($report->total_income)->toBe(0.0)
+            ->and($report->total_net)->toBe(0.0);
+    });
+});
+
+describe('balanceTrend', function (): void {
+    it('walks month-end balances backward from the current total', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        $user = User::factory()->create();
+        $account = Account::factory()->create([
+            'owner_id' => $user->id,
+            'current_balance' => 1_000_000,
+        ]);
+
+        // Observer-maintained balance after both rows: 1_000_000 + 500_000 - 300_000 = 1_200_000.
+        Transaction::factory()->income()->create([
+            'account_id' => $account->id,
+            'amount' => 500_000,
+            'transaction_date' => '2026-10-08',
+        ]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 300_000,
+            'transaction_date' => '2026-09-20',
+        ]);
+
+        $service = new SpendingService;
+        $report = $service->balanceTrend($user, 3);
+
+        expect($report->current_total)->toBe(1_200_000.0)
+            ->and($report->from->toDateString())->toBe('2026-08-01')
+            ->and($report->data)->toHaveCount(3)
+            ->and($report->data[2]['date'])->toBe('2026-10-31')
+            ->and($report->data[2]['balance'])->toBe(1_200_000.0)
+            ->and($report->data[2]['net_delta'])->toBe(500_000.0)
+            ->and($report->data[1]['date'])->toBe('2026-09-30')
+            ->and($report->data[1]['balance'])->toBe(700_000.0)
+            ->and($report->data[1]['net_delta'])->toBe(-300_000.0)
+            // August reconstructs the pre-transaction balance exactly.
+            ->and($report->data[0]['balance'])->toBe(1_000_000.0);
+    });
+
+    it('cancels internal transfers out of the monthly deltas', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        $user = User::factory()->create();
+        $source = Account::factory()->create(['owner_id' => $user->id]);
+        $destination = Account::factory()->create(['owner_id' => $user->id]);
+        $transfer = Transfer::factory()->create();
+
+        Transaction::factory()->transferOutflow($transfer)->create([
+            'account_id' => $source->id,
+            'amount' => 250_000,
+            'transaction_date' => '2026-10-06',
+        ]);
+
+        Transaction::factory()->transferInflow($transfer)->create([
+            'account_id' => $destination->id,
+            'amount' => 250_000,
+            'transaction_date' => '2026-10-06',
+        ]);
+
+        $service = new SpendingService;
+        $report = $service->balanceTrend($user, 3);
+
+        expect($report->current_total)->toBe(0.0)
+            ->and($report->data[2]['net_delta'])->toBe(0.0)
+            ->and($report->data[0]['balance'])->toBe(0.0);
+    });
+
+    it('returns zero balances across the span for a user without accounts', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        $user = User::factory()->create();
+
+        $service = new SpendingService;
+        $report = $service->balanceTrend($user, 6);
+
+        expect($report->data)->toHaveCount(6)
+            ->and($report->current_total)->toBe(0.0)
+            ->and(array_column($report->data, 'balance'))->toBe([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
+    });
+});
+
+describe('weekdayPattern', function (): void {
+    it('averages by weekday occurrence and resolves the peak day', function (): void {
+        // Window: 2026-05-01 (Fri) .. 2026-10-31 (Sat), 184 days —
+        // 27 Saturdays, 26 Wednesdays.
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['owner_id' => $user->id]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 300_000,
+            'transaction_date' => '2026-10-03',   // Saturday
+        ]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 200_000,
+            'transaction_date' => '2026-05-02',   // Saturday
+        ]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 100_000,
+            'transaction_date' => '2026-10-07',   // Wednesday
+        ]);
+
+        $service = new SpendingService;
+        $report = $service->weekdayPattern($user);
+
+        $byWeekday = collect($report->data)->keyBy('weekday');
+
+        expect($report->from->toDateString())->toBe('2026-05-01')
+            ->and($report->to->toDateString())->toBe('2026-10-31')
+            ->and($report->data)->toHaveCount(7)
+            ->and($report->total_expense)->toBe(600_000.0)
+            ->and($report->peak_weekday)->toBe(6)
+            ->and($byWeekday[6])->toBeInstanceOf(WeekdayCashflow::class)
+            ->and($byWeekday[6]->expense)->toBe(500_000.0)
+            ->and($byWeekday[6]->count)->toBe(2)
+            ->and($byWeekday[6]->average)->toBe(18_518.52)   // 500_000 / 27
+            ->and($byWeekday[6]->share)->toBe(83.33)
+            ->and($byWeekday[3]->expense)->toBe(100_000.0)
+            ->and($byWeekday[3]->average)->toBe(3_846.15)    // 100_000 / 26
+            ->and($byWeekday[3]->share)->toBe(16.67)
+            ->and($byWeekday[1]->expense)->toBe(0.0)
+            ->and($byWeekday[1]->average)->toBe(0.0)
+            ->and($byWeekday[1]->share)->toBe(0.0);
+    });
+
+    it('returns zero-filled weekdays without a peak for a user without expenses', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        $user = User::factory()->create();
+
+        $service = new SpendingService;
+        $report = $service->weekdayPattern($user);
+
+        expect($report->data)->toHaveCount(7)
+            ->and($report->total_expense)->toBe(0.0)
+            ->and($report->peak_weekday)->toBeNull()
+            ->and(array_column($report->data, 'expense'))->toBe([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
     });
 });

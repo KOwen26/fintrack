@@ -25,6 +25,7 @@ export default class DateTimeHelper {
      * | `datetime-long` | `1 Januari 2025 14.30` |
      * | `date` | `1 Januari 2025` |
      * | `month-year` | `Januari 2025` |
+     * | `month-year-short` | `Mei 26` |
      * | `time` | `14.30` |
      * | `day-date` | `Sen, 3 Feb 26` |
      * | `day-date-long` | `Senin, 3 Februari 26` |
@@ -38,6 +39,7 @@ export default class DateTimeHelper {
             | 'datetime-long'
             | 'date'
             | 'month-year'
+            | 'month-year-short'
             | 'time'
             | 'day-date'
             | 'day-date-long' = 'datetime'
@@ -98,6 +100,12 @@ export default class DateTimeHelper {
                 dateOptions = {
                     year: 'numeric',
                     month: 'long',
+                };
+                break;
+            case 'month-year-short':
+                dateOptions = {
+                    year: '2-digit',
+                    month: 'short',
                 };
                 break;
             case 'time':

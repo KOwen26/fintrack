@@ -1,3 +1,21 @@
+export type BalanceTrendReportData = {
+    data: {
+        date: string;
+        balance: number;
+        net_delta: number;
+    }[];
+    readonly from: string;
+    readonly to: string;
+    readonly current_total: number;
+};
+export type CashflowTrendReportData = {
+    data: MonthlyCashflow[];
+    readonly from: string;
+    readonly to: string;
+    readonly total_income: number;
+    readonly total_expense: number;
+    readonly total_net: number;
+};
 export type CategoryData = {
     id: string;
     name: string;
@@ -52,7 +70,7 @@ export type CursorPaginator<TKey, TValue> = {
     };
 };
 export type CursorPaginatorInterface<TKey, TValue> = CursorPaginator<TKey, TValue>;
-export type DailyFlow = {
+export type DailyCashflow = {
     readonly date: string;
     readonly net: number;
     readonly income: number;
@@ -92,8 +110,15 @@ export type LengthAwarePaginator<TKey, TValue> = {
     };
 };
 export type LengthAwarePaginatorInterface<TKey, TValue> = LengthAwarePaginator<TKey, TValue>;
-export type MonthlyFlowReportData = {
-    data: DailyFlow[];
+export type MonthlyCashflow = {
+    readonly date: string;
+    readonly net: number;
+    readonly surplus_rate: number;
+    readonly income: number;
+    readonly expense: number;
+};
+export type MonthlyCashflowReportData = {
+    data: DailyCashflow[];
     readonly from: string;
     readonly to: string;
     readonly total_income: number;
@@ -170,4 +195,18 @@ export type TransferData = {
     transaction_date: string;
     fee_amount: number | null;
     description: string | null;
+};
+export type WeekdayCashflow = {
+    readonly average: number;
+    readonly share: number;
+    readonly weekday: number;
+    readonly expense: number;
+    readonly count: number;
+};
+export type WeekdayPatternReportData = {
+    data: WeekdayCashflow[];
+    readonly from: string;
+    readonly to: string;
+    readonly total_expense: number;
+    readonly peak_weekday: number | null;
 };

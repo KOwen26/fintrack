@@ -4,7 +4,7 @@ use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
 
-test('renders the statistics page with monthly flow props', function (): void {
+test('renders the statistics page with deferred report props', function (): void {
     $user = User::factory()->create();
     $account = Account::factory()->create(['owner_id' => $user->id]);
 
@@ -19,8 +19,18 @@ test('renders the statistics page with monthly flow props', function (): void {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('app/statistics/index')
-            ->has('monthlyFlow')
-            ->has('monthlyFlow.data', 1)
+            // Deferred props are not part of the initial paint.
+            ->missing('monthlyCashflow')
+            ->missing('cashflowTrend')
+            ->missing('balanceTrend')
+            ->missing('weekdayPattern')
+            ->loadDeferredProps(fn ($page) => $page
+                ->has('monthlyCashflow')
+                ->has('monthlyCashflow.data', 1)
+                ->has('cashflowTrend')
+                ->has('balanceTrend')
+                ->has('weekdayPattern')
+            )
         );
 });
 
@@ -31,8 +41,13 @@ test('renders the statistics page for a user without accounts', function (): voi
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('app/statistics/index')
-            ->has('monthlyFlow')
-            ->has('monthlyFlow.data', 0)
+            ->loadDeferredProps(fn ($page) => $page
+                ->has('monthlyCashflow')
+                ->has('monthlyCashflow.data', 0)
+                ->has('cashflowTrend.data', 6)
+                ->has('balanceTrend.data', 12)
+                ->has('weekdayPattern.data', 7)
+            )
         );
 });
 
@@ -51,8 +66,10 @@ test('renders a requested month window', function (): void {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('app/statistics/index')
-            ->where('monthlyFlow.from', '2026-03-01')
-            ->has('monthlyFlow.data', 1)
+            ->loadDeferredProps(fn ($page) => $page
+                ->where('monthlyCashflow.from', '2026-03-01')
+                ->has('monthlyCashflow.data', 1)
+            )
         );
 });
 
@@ -71,9 +88,11 @@ test('accepts a Y-m-d month anchor and splits to the month window', function ():
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('app/statistics/index')
-            ->where('monthlyFlow.from', '2026-03-01')
-            ->where('monthlyFlow.to', '2026-03-31')
-            ->has('monthlyFlow.data', 1)
+            ->loadDeferredProps(fn ($page) => $page
+                ->where('monthlyCashflow.from', '2026-03-01')
+                ->where('monthlyCashflow.to', '2026-03-31')
+                ->has('monthlyCashflow.data', 1)
+            )
         );
 });
 
@@ -83,7 +102,48 @@ test('falls back to the current month for an unparseable month', function (): vo
     $this->actingAs($user)->get(route('statistics.index', ['month' => 'garbage']))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->component('app/statistics/index')
-            ->where('monthlyFlow.from', now()->startOfMonth()->toDateString())
+            ->loadDeferredProps(fn ($page) => $page
+                ->where('monthlyCashflow.from', now()->startOfMonth()->toDateString())
+            )
+        );
+});
+
+test('applies an explicit trend span', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('statistics.index', ['trend' => 3]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->loadDeferredProps(fn ($page) => $page
+                ->has('cashflowTrend.data', 3)
+                ->has('balanceTrend.data', 12)
+            )
+        );
+});
+
+test('applies an explicit balance span alongside other params', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('statistics.index', ['month' => '2026-03', 'balance' => 24]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->loadDeferredProps(fn ($page) => $page
+                ->where('monthlyCashflow.from', '2026-03-01')
+                ->has('cashflowTrend.data', 6)
+                ->has('balanceTrend.data', 24)
+            )
+        );
+});
+
+test('defaults out-of-range spans instead of rejecting', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('statistics.index', ['trend' => 99, 'balance' => 'nope']))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->loadDeferredProps(fn ($page) => $page
+                ->has('cashflowTrend.data', 6)
+                ->has('balanceTrend.data', 12)
+            )
         );
 });

@@ -1,7 +1,8 @@
 <?php
 
-use App\Providers\AppServiceProvider;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MonthPeriodRequest;
+use App\Providers\AppServiceProvider;
 
 arch()->preset()->php();
 
@@ -13,4 +14,6 @@ arch('app classes to be final, except data, exceptions, helpers, providers, and 
     ->expect('App')
     ->classes()
     ->toBeFinal()
-    ->ignoring(['App\Data', 'App\Exceptions', 'App\Helpers', 'App\Providers', Controller::class]);
+    // MonthPeriodRequest is the only extendable FormRequest — StatisticsIndexRequest
+    // subclasses it to reuse the month window alongside the trend span params.
+    ->ignoring(['App\Data', 'App\Exceptions', 'App\Helpers', 'App\Providers', Controller::class, MonthPeriodRequest::class]);

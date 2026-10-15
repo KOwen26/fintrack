@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\MonthPeriodRequest;
+use App\Data\Report\MonthlyCashflowReportData;
+use App\Data\Report\CashflowTrendReportData;
+use App\Data\Report\BalanceTrendReportData;
+use App\Data\Report\WeekdayPatternReportData;
+use App\Http\Requests\StatisticsIndexRequest;
 use App\Models\User;
 use App\Services\SpendingService;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -17,14 +21,25 @@ final class StatisticController extends Controller
     ) {}
 
     /**
-     * Statistics overview — daily income/expense calendar for one month.
-     * `?month` (Y-m or Y-m-d) navigates to an explicit month; see
-     * MonthPeriodRequest for the resolution and fallback rules.
+     * Statistics overview — daily income/expense calendar for one month plus
+     * the rolling trend cards. Every report prop is deferred: the page paints
+     * with skeletons and each card streams in, and a partial reload of one
+     * prop never evaluates the other reports. `?month` navigates the calendar
+     * (see MonthPeriodRequest); `?trend` / `?balance` set the rolling spans.
      */
-    public function index(MonthPeriodRequest $request): Response
+    public function index(StatisticsIndexRequest $request): Response
     {
         return Inertia::render('app/statistics/index', [
-            'monthlyFlow' => $this->spendingService->monthlyCashflow($this->user, $request->period()),
+            'monthlyCashflow' => Inertia::defer(
+                fn (): MonthlyCashflowReportData => $this->spendingService->monthlyCashflow($this->user, $request->period())
+            ),
+            'cashflowTrend' => Inertia::defer(
+                fn (): CashflowTrendReportData => $this->spendingService->cashflowTrend($this->user, $request->trendSpan())
+            ),
+            'balanceTrend' => Inertia::defer(
+                fn (): BalanceTrendReportData => $this->spendingService->balanceTrend($this->user, $request->balanceSpan())
+            ),
+            'weekdayPattern' => Inertia::defer(fn (): WeekdayPatternReportData => $this->spendingService->weekdayPattern($this->user)),
         ]);
     }
 }

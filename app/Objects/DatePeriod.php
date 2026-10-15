@@ -47,6 +47,21 @@ final readonly class DatePeriod
         return new self($start, $start->endOfMonth());
     }
 
+    /**
+     * Whole calendar months ending with the anchor's month — the final month
+     * may be partial (the current one during live use), by rolling-span
+     * design rather than accident.
+     */
+    public static function forRollingMonths(int $months, ?DateTimeInterface $anchor = null): self
+    {
+        $end = CarbonImmutable::instance($anchor ?? now());
+
+        return new self(
+            $end->subMonthsNoOverflow($months - 1)->startOfMonth(),
+            $end->endOfMonth(),
+        );
+    }
+
     /** The widest period a MySQL `date` column can reliably express. */
     public static function unbounded(): self
     {
