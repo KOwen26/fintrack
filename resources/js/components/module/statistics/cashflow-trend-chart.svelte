@@ -1,16 +1,18 @@
 <script lang="ts">
+    import type { PeriodPreset } from '@components/module/period-preset-select.svelte';
     import type { ChartConfig } from '@components/ui/atoms/chart';
     import type { CashflowTrendReportData } from '@type/generated';
 
     import { page, router } from '@inertiajs/svelte';
+    import DatePeriodPreset from '@wayfinder/App/Enums/DatePeriodPreset';
     import { BarChart } from 'layerchart';
     import { SvelteURLSearchParams } from 'svelte/reactivity';
 
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
 
+    import PeriodPresetSelect from '@components/module/period-preset-select.svelte';
     import { ChartContainer, ChartTooltip } from '@components/ui/atoms/chart';
-    import { Tabs, TabsList, TabsTrigger } from '@components/ui/atoms/tabs';
     import Skeleton from '@components/ui/skeleton.svelte';
 
     interface TrendMonth {
@@ -21,14 +23,18 @@
         surplus_rate: number;
     }
 
-    type Span = '3' | '6' | '12';
-
     let { trend }: { trend?: CashflowTrendReportData } = $props();
 
-    // Seeds from the URL so a shared or reloaded link keeps its window.
-    const initialSpan = new SvelteURLSearchParams(page.url.split('?')[1] ?? '').get('trend');
+    const PRESET_VALUES = new Set<string>(Object.values(DatePeriodPreset));
 
-    let span = $state<Span>(initialSpan === '3' || initialSpan === '12' ? initialSpan : '6');
+    // Seeds from the URL so a shared or reloaded link keeps its window.
+    const initialPreset = new SvelteURLSearchParams(page.url.split('?')[1] ?? '').get('trend');
+
+    let selected = $state<PeriodPreset>(
+        initialPreset && PRESET_VALUES.has(initialPreset)
+            ? (initialPreset as PeriodPreset)
+            : DatePeriodPreset.Last6Months
+    );
 
     // Labels only — colors ride the series as direct theme tokens, so no
     // `--color-*` aliases get minted for this chart.
@@ -54,9 +60,9 @@
         return rate >= 20 ? 'Healthy' : 'Warning';
     }
 
-    /** Partial reload — swaps only this card's prop; `data` merges over the live query. */
-    function visitSpan(next: string): void {
-        span = next as Span;
+    /** Partial reload — swaps only this card's prop; the backend resolves the preset into a window. */
+    function visitPreset(next: PeriodPreset): void {
+        selected = next;
 
         router.reload({ only: ['cashflowTrend'], data: { trend: next } });
     }
@@ -74,13 +80,13 @@
     </div>
 {:else}
     <div class="mb-3 flex justify-end">
-        <Tabs onValueChange={(v) => visitSpan(v)} value={span}>
-            <TabsList>
-                <TabsTrigger value="3">3M</TabsTrigger>
-                <TabsTrigger value="6">6M</TabsTrigger>
-                <TabsTrigger value="12">12M</TabsTrigger>
-            </TabsList>
-        </Tabs>
+        <PeriodPresetSelect
+            columns={2}
+            includeQuickPicks
+            labelVariant="short"
+            onValueChange={visitPreset}
+            preset="monthly"
+            bind:value={selected} />
     </div>
 
     <div class="mb-3 grid grid-cols-3 gap-2">

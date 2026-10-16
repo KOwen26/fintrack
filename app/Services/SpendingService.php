@@ -147,18 +147,18 @@ final class SpendingService
     }
 
     /**
-     * Aggregate per-month income and expense over a rolling span of whole
-     * months ending with the current one (the final month may be partial).
+     * Aggregate per-month income and expense across the preset's window,
+     * zero-filling months without activity (the final month may be partial).
      * SQL groups by month and type exactly like monthlyCashflow does by day;
      * months without activity are zero-filled server-side so the frontend
      * renders a continuous axis, with net and surplus rate derived inside
      * the MonthlyCashflow value object.
      */
-    public function cashflowTrend(User $user, int $months): CashflowTrendReportData
+    public function cashflowTrend(User $user, DatePeriodPreset $preset): CashflowTrendReportData
     {
-        $period = DatePeriod::forRollingMonths($months);
-
         $accountIds = AccountService::getAccountIdsByUser($user)->all();
+
+        $period = $this->trendPeriod($preset, $accountIds);
 
         $rows = $accountIds === [] ? [] : Transaction::query()
             ->whereIn('account_id', $accountIds)
@@ -181,7 +181,13 @@ final class SpendingService
         $totalIncome = 0.0;
         $totalExpense = 0.0;
 
-        for ($month = $period->start; $month->lessThan($period->end); $month = $month->addMonthsNoOverflow(1)) {
+        // Walk every calendar month the window touches — a day-anchored
+        // preset (e.g. Last 30 Days) may span two partial months, and
+        // skipping the last one would drop its rows from the totals.
+        $month = $period->start->startOfMonth();
+        $endMonth = $period->end->startOfMonth();
+
+        for (; $month->lessThanOrEqualTo($endMonth); $month = $month->addMonthsNoOverflow(1)) {
             $bucket = $buckets[$month->format('Y-m')] ?? ['income' => 0.0, 'expense' => 0.0];
 
             $cashflow = new MonthlyCashflow($month, $bucket['income'], $bucket['expense']);
@@ -199,6 +205,43 @@ final class SpendingService
             total_expense: $totalExpense,
             total_net: $totalIncome - $totalExpense,
         );
+    }
+
+    /**
+     * The window the trend chart reports on for a preset. Month-count
+     * presets keep the classic whole-month rolling span so the chart always
+     * ends with the current (partial) month; All Time is unbounded and gets
+     * bounded at the accounts' earliest transaction month so the bucket
+     * walk stays finite; every other preset uses its literal window.
+     *
+     * @param  list<int>  $accountIds
+     */
+    private function trendPeriod(DatePeriodPreset $preset, array $accountIds): DatePeriod
+    {
+        $months = match ($preset) {
+            DatePeriodPreset::Last3Months => 3,
+            DatePeriodPreset::Last6Months => 6,
+            DatePeriodPreset::Last12Months, DatePeriodPreset::YearOnYear => 12,
+            default => null,
+        };
+
+        if ($months !== null) {
+            return DatePeriod::forRollingMonths($months);
+        }
+
+        if ($preset === DatePeriodPreset::All) {
+            $earliest = $accountIds === []
+                ? null
+                : Transaction::query()->whereIn('account_id', $accountIds)->min('transaction_date');
+
+            // No history at all — report the current month as a single
+            // zero-filled bucket instead of a 26-year axis of zeros.
+            return $earliest === null
+                ? DatePeriod::forMonth(now())
+                : new DatePeriod(Date::parse($earliest)->startOfMonth());
+        }
+
+        return $preset->toPeriod();
     }
 
     /**

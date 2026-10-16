@@ -351,7 +351,7 @@ describe('cashflowTrend', function (): void {
         ]);
 
         $service = new SpendingService;
-        $report = $service->cashflowTrend($user, 3);
+        $report = $service->cashflowTrend($user, DatePeriodPreset::Last3Months);
 
         expect($report->from->toDateString())->toBe('2026-08-01')
             ->and($report->to->toDateString())->toBe('2026-10-31')
@@ -389,7 +389,7 @@ describe('cashflowTrend', function (): void {
         ]);
 
         $service = new SpendingService;
-        $report = $service->cashflowTrend($user, 6);
+        $report = $service->cashflowTrend($user, DatePeriodPreset::Last6Months);
 
         expect($report->data)->toHaveCount(6)
             ->and($report->total_income)->toBe(0.0)
@@ -403,12 +403,89 @@ describe('cashflowTrend', function (): void {
         $user = User::factory()->create();
 
         $service = new SpendingService;
-        $report = $service->cashflowTrend($user, 12);
+        $report = $service->cashflowTrend($user, DatePeriodPreset::Last12Months);
 
         expect($report->data)->toHaveCount(12)
             ->and($report->data[11]->date->toDateString())->toBe('2026-10-01')
             ->and($report->total_income)->toBe(0.0)
             ->and($report->total_net)->toBe(0.0);
+    });
+
+    it('bounds an All Time window at the earliest transaction month', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['owner_id' => $user->id]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 100_000,
+            'transaction_date' => '2024-03-05',
+        ]);
+
+        Transaction::factory()->income()->create([
+            'account_id' => $account->id,
+            'amount' => 1_000_000,
+            'transaction_date' => '2026-10-10',
+        ]);
+
+        $service = new SpendingService;
+        $report = $service->cashflowTrend($user, DatePeriodPreset::All);
+
+        // March 2024 through October 2026 inclusive — 32 monthly buckets.
+        expect($report->from->toDateString())->toBe('2024-03-01')
+            ->and($report->to->toDateString())->toBe('2026-10-15')
+            ->and($report->data)->toHaveCount(32)
+            ->and($report->data[0]->date->toDateString())->toBe('2024-03-01')
+            ->and($report->data[0]->expense)->toBe(100_000.0)
+            ->and($report->data[31]->date->toDateString())->toBe('2026-10-01')
+            ->and($report->data[31]->income)->toBe(1_000_000.0)
+            ->and($report->total_income)->toBe(1_000_000.0)
+            ->and($report->total_expense)->toBe(100_000.0);
+    });
+
+    it('reports the current month alone for All Time without history', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        $user = User::factory()->create();
+        Account::factory()->create(['owner_id' => $user->id]);
+
+        $service = new SpendingService;
+        $report = $service->cashflowTrend($user, DatePeriodPreset::All);
+
+        expect($report->from->toDateString())->toBe('2026-10-01')
+            ->and($report->data)->toHaveCount(1)
+            ->and($report->data[0]->income)->toBe(0.0);
+    });
+
+    it('uses the literal window for a day-anchored preset', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['owner_id' => $user->id]);
+
+        // Sep 16 – Oct 15 window touches two partial months; both buckets
+        // must survive the walk or the totals would silently drop rows.
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 200_000,
+            'transaction_date' => '2026-09-20',
+        ]);
+
+        Transaction::factory()->income()->create([
+            'account_id' => $account->id,
+            'amount' => 500_000,
+            'transaction_date' => '2026-10-05',
+        ]);
+
+        $service = new SpendingService;
+        $report = $service->cashflowTrend($user, DatePeriodPreset::Last30Days);
+
+        expect($report->from->toDateString())->toBe('2026-09-16')
+            ->and($report->data)->toHaveCount(2)
+            ->and($report->data[0]->expense)->toBe(200_000.0)
+            ->and($report->data[1]->income)->toBe(500_000.0)
+            ->and($report->total_expense)->toBe(200_000.0);
     });
 });
 

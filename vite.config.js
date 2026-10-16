@@ -32,7 +32,17 @@ export default defineConfig({
 });
 
 // Helper function to read and format .gitignore paths for Chokidar
-function getGitignorePatterns() {
+function getGitignorePatterns(excludes = ['resources/js/wayfinder']) {
+    // Matches a raw .gitignore line (slash-stripped) against the exception list,
+    // covering the line itself and anything nested under it
+    function isWatchException(line) {
+        const clean = line.replace(/^\/|\/$/g, '');
+
+        return excludes.some(
+            (exception) => clean === exception || clean.startsWith(`${exception}/`)
+        );
+    }
+
     try {
         const gitignorePath = path.resolve(process.cwd(), '.gitignore');
         if (!fs.existsSync(gitignorePath)) return [];
@@ -41,8 +51,8 @@ function getGitignorePatterns() {
             .readFileSync(gitignorePath, 'utf-8')
             .split(/\r?\n/)
             .map((line) => line.trim())
-            // Filter out comments and empty lines
-            .filter((line) => line && !line.startsWith('#'))
+            // Filter out comments, empty lines, and watch exceptions
+            .filter((line) => line && !line.startsWith('#') && !isWatchException(line))
             // Convert to Chokidar-compatible globs
             .map((pattern) => {
                 // If it targets a folder or a generic name without an extension
