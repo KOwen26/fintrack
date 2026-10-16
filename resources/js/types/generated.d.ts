@@ -197,16 +197,19 @@ export type TransferData = {
     description: string | null;
 };
 export type WeekdayCashflow = {
-    readonly average: number;
-    readonly share: number;
+    readonly deviation: number;
     readonly weekday: number;
-    readonly expense: number;
-    readonly count: number;
+    readonly current: number;
+    readonly baseline: number;
+    readonly tier: App.Enums.StatisticDataTier;
 };
 export type WeekdayPatternReportData = {
     data: WeekdayCashflow[];
     readonly from: string;
     readonly to: string;
+    readonly baseline_from: string;
+    readonly baseline_to: string;
     readonly total_expense: number;
     readonly peak_weekday: number | null;
+    readonly peak_deviation_weekday: number | null;
 };

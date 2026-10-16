@@ -3,13 +3,13 @@
 use App\Data\Report\CategorySpendingItemData;
 use App\Enums\Category;
 use App\Enums\DatePeriodPreset;
+use App\Enums\StatisticDataTier;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use App\Models\User;
 use App\Objects\DailyCashflow;
 use App\Objects\DatePeriod;
-use App\Objects\WeekdayCashflow;
 use App\Services\SpendingService;
 use Carbon\CarbonImmutable;
 
@@ -494,30 +494,72 @@ describe('balanceTrend', function (): void {
 });
 
 describe('weekdayPattern', function (): void {
-    it('averages by weekday occurrence and resolves the peak day', function (): void {
-        // Window: 2026-05-01 (Fri) .. 2026-10-31 (Sat), 184 days —
-        // 27 Saturdays, 26 Wednesdays.
-        $this->travelTo(new CarbonImmutable('2026-10-15'));
+    it('compares this week per weekday against the trailing three-month average', function (): void {
+        // Frozen Friday: current week runs Mon 2026-10-12 .. Sun 2026-10-18;
+        // the baseline window is 2026-08-01 .. 2026-10-31, holding Saturday
+        // 14 times and Monday 13 times.
+        $this->travelTo(new CarbonImmutable('2026-10-16'));
 
         $user = User::factory()->create();
         $account = Account::factory()->create(['owner_id' => $user->id]);
 
+        // Baseline fodder — Saturdays and a Monday, all outside this week.
         Transaction::factory()->expense()->create([
             'account_id' => $account->id,
-            'amount' => 300_000,
-            'transaction_date' => '2026-10-03',   // Saturday
+            'amount' => 200_000,
+            'transaction_date' => '2026-08-01',
         ]);
 
         Transaction::factory()->expense()->create([
             'account_id' => $account->id,
             'amount' => 200_000,
-            'transaction_date' => '2026-05-02',   // Saturday
+            'transaction_date' => '2026-09-05',
+        ]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 130_000,
+            'transaction_date' => '2026-08-03',
+        ]);
+
+        // Tuesday baseline — two occurrences so this week's Tuesday can sit
+        // above its average (the deviation-peak candidate).
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 100_000,
+            'transaction_date' => '2026-08-04',
         ]);
 
         Transaction::factory()->expense()->create([
             'account_id' => $account->id,
             'amount' => 100_000,
-            'transaction_date' => '2026-10-07',   // Wednesday
+            'transaction_date' => '2026-09-08',
+        ]);
+
+        // This week: Tuesday (above baseline) and today (heaviest, no baseline).
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 100_000,
+            'transaction_date' => '2026-10-13',
+        ]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 150_000,
+            'transaction_date' => '2026-10-16',
+        ]);
+
+        // Noise: before the baseline window, and income inside the week.
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 500_000,
+            'transaction_date' => '2026-07-01',
+        ]);
+
+        Transaction::factory()->income()->create([
+            'account_id' => $account->id,
+            'amount' => 900_000,
+            'transaction_date' => '2026-10-14',
         ]);
 
         $service = new SpendingService;
@@ -525,26 +567,42 @@ describe('weekdayPattern', function (): void {
 
         $byWeekday = collect($report->data)->keyBy('weekday');
 
-        expect($report->from->toDateString())->toBe('2026-05-01')
-            ->and($report->to->toDateString())->toBe('2026-10-31')
+        expect($report->from->toDateString())->toBe('2026-10-12')
+            ->and($report->to->toDateString())->toBe('2026-10-18')
+            ->and($report->baseline_from->toDateString())->toBe('2026-08-01')
+            ->and($report->baseline_to->toDateString())->toBe('2026-10-31')
             ->and($report->data)->toHaveCount(7)
-            ->and($report->total_expense)->toBe(600_000.0)
-            ->and($report->peak_weekday)->toBe(6)
-            ->and($byWeekday[6])->toBeInstanceOf(WeekdayCashflow::class)
-            ->and($byWeekday[6]->expense)->toBe(500_000.0)
-            ->and($byWeekday[6]->count)->toBe(2)
-            ->and($byWeekday[6]->average)->toBe(18_518.52)   // 500_000 / 27
-            ->and($byWeekday[6]->share)->toBe(83.33)
-            ->and($byWeekday[3]->expense)->toBe(100_000.0)
-            ->and($byWeekday[3]->average)->toBe(3_846.15)    // 100_000 / 26
-            ->and($byWeekday[3]->share)->toBe(16.67)
-            ->and($byWeekday[1]->expense)->toBe(0.0)
-            ->and($byWeekday[1]->average)->toBe(0.0)
-            ->and($byWeekday[1]->share)->toBe(0.0);
+            ->and($report->total_expense)->toBe(250_000.0)
+            // Peaks answer different questions: Friday is heaviest outright,
+            // Tuesday is the one running hottest against its baseline
+            // (Friday has no baseline, so its deviation is a non-peak 0).
+            ->and($report->peak_weekday)->toBe(5)
+            ->and($report->peak_deviation_weekday)->toBe(2)
+            // Tuesday: spent this week, above its 3-mo average.
+            ->and($byWeekday[2]->current)->toBe(100_000.0)
+            ->and($byWeekday[2]->baseline)->toBe(15_384.62)  // 200_000 / 13
+            ->and($byWeekday[2]->deviation)->toBe(550.0)
+            // Friday: today — heaviest, but no baseline to deviate from.
+            ->and($byWeekday[5]->current)->toBe(150_000.0)
+            ->and($byWeekday[5]->baseline)->toBe(0.0)
+            ->and($byWeekday[5]->deviation)->toBe(0.0)
+            // Tiers ride the server's rank: the two heaviest spending days
+            // step up the ladder, everything else — including zero-current
+            // days — stays muted.
+            ->and($byWeekday[5]->tier)->toBe(StatisticDataTier::Top)
+            ->and($byWeekday[2]->tier)->toBe(StatisticDataTier::Second)
+            ->and($byWeekday[6]->tier)->toBe(StatisticDataTier::Rest)
+            // Saturday: nothing yet this week vs the 3-mo average.
+            ->and($byWeekday[6]->current)->toBe(0.0)
+            ->and($byWeekday[6]->baseline)->toBe(28_571.43)  // 400_000 / 14
+            ->and($byWeekday[6]->deviation)->toBe(-100.0)
+            // Monday: outside this week, averaged over 13 occurrences.
+            ->and($byWeekday[1]->baseline)->toBe(10_000.0)   // 130_000 / 13
+            ->and($byWeekday[1]->tier)->toBe(StatisticDataTier::Rest);
     });
 
-    it('returns zero-filled weekdays without a peak for a user without expenses', function (): void {
-        $this->travelTo(new CarbonImmutable('2026-10-15'));
+    it('returns zero-filled weekdays for a user without accounts', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-16'));
 
         $user = User::factory()->create();
 
@@ -554,6 +612,17 @@ describe('weekdayPattern', function (): void {
         expect($report->data)->toHaveCount(7)
             ->and($report->total_expense)->toBe(0.0)
             ->and($report->peak_weekday)->toBeNull()
-            ->and(array_column($report->data, 'expense'))->toBe([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
+            ->and($report->peak_deviation_weekday)->toBeNull()
+            ->and(array_column($report->data, 'current'))->toBe([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+            ->and(array_column($report->data, 'baseline'))->toBe([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+            ->and(array_column($report->data, 'tier'))->toBe([
+                StatisticDataTier::Rest,
+                StatisticDataTier::Rest,
+                StatisticDataTier::Rest,
+                StatisticDataTier::Rest,
+                StatisticDataTier::Rest,
+                StatisticDataTier::Rest,
+                StatisticDataTier::Rest,
+            ]);
     });
 });

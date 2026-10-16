@@ -13,6 +13,7 @@ use App\Data\Report\WeekdayPatternReportData;
 use App\Enums\Cashflow;
 use App\Enums\CategoryGroup;
 use App\Enums\DatePeriodPreset;
+use App\Enums\StatisticDataTier;
 use App\Enums\TransactionType;
 use App\Models\Transaction;
 use App\Models\User;
@@ -256,76 +257,121 @@ final class SpendingService
     }
 
     /**
-     * Aggregate expense by day-of-week over a fixed trailing six-month
-     * window. SQL groups by MySQL WEEKDAY() (Monday = 0); the averaging base
-     * is how often each weekday occurs in the window, so bars compare fairly
-     * across months that hold four or five of each. All seven rows are
-     * always emitted, zero-filled, with averages, shares, and the peak
-     * (highest-average) weekday resolved here.
+     * Compare each weekday's spending this week against its trailing
+     * three-month average. Two grouped queries (MySQL WEEKDAY(), Monday = 0)
+     * — the current week and the baseline window — then per-weekday
+     * baselines divide the window totals by how often each weekday occurs
+     * in it, so a 4-vs-5-occurrence month compares fairly. All seven rows
+     * are always emitted, zero-filled; days after today carry current = 0
+     * (week-to-date).
      */
     public function weekdayPattern(User $user): WeekdayPatternReportData
     {
-        $period = DatePeriod::forRollingMonths(6);
+        $week = DatePeriod::forWeek();
+        $baselinePeriod = DatePeriod::forRollingMonths(3);
 
         $accountIds = AccountService::getAccountIdsByUser($user)->all();
 
-        $rows = $accountIds === [] ? [] : Transaction::query()
-            ->whereIn('account_id', $accountIds)
-            ->where('type', TransactionType::Expense->value)
-            ->withinPeriod($period)
-            ->selectRaw('WEEKDAY(transaction_date) AS weekday, SUM(amount) AS total, COUNT(*) AS transactions')
-            ->groupBy('weekday')
-            ->get();
+        /** @var array<int, float> $currentByWeekday keyed ISO weekday */
+        $currentByWeekday = array_fill(1, 7, 0.0);
 
-        /** @var array<int, array{total: float, transactions: int}> $buckets keyed ISO weekday */
-        $buckets = [];
+        if ($accountIds !== []) {
+            $currentRows = Transaction::query()
+                ->whereIn('account_id', $accountIds)
+                ->where('type', TransactionType::Expense->value)
+                ->withinPeriod($week)
+                ->selectRaw('WEEKDAY(transaction_date) AS weekday, SUM(amount) AS total')
+                ->groupBy('weekday')
+                ->get();
 
-        foreach ($rows as $row) {
-            $buckets[((int) $row->weekday) + 1] = [
-                'total' => (float) $row->total,
-                'transactions' => (int) $row->transactions,
-            ];
+            foreach ($currentRows as $row) {
+                $currentByWeekday[(int) $row->weekday + 1] = (float) $row->total;
+            }
         }
 
+        /** @var array<int, float> $baselineTotals keyed ISO weekday */
+        $baselineTotals = array_fill(1, 7, 0.0);
+
+        if ($accountIds !== []) {
+            $baselineRows = Transaction::query()
+                ->whereIn('account_id', $accountIds)
+                ->where('type', TransactionType::Expense->value)
+                ->withinPeriod($baselinePeriod)
+                ->selectRaw('WEEKDAY(transaction_date) AS weekday, SUM(amount) AS total')
+                ->groupBy('weekday')
+                ->get();
+
+            foreach ($baselineRows as $row) {
+                $baselineTotals[(int) $row->weekday + 1] = (float) $row->total;
+            }
+        }
+
+        // The averaging base — how often each weekday occurs in the window.
         $occurrences = array_fill(1, 7, 0);
 
-        for ($day = $period->start; $day->lessThan($period->end); $day = $day->addDay()) {
+        for ($day = $baselinePeriod->start; $day->lessThan($baselinePeriod->end); $day = $day->addDay()) {
             $occurrences[(int) $day->format('N')]++;
         }
 
-        $totalExpense = array_sum(array_column($buckets, 'total'));
+        // Emphasis tiers — the two heaviest spending days of the scope step
+        // up the tint ladder; zero-current days (week not yet reached them)
+        // always stay muted, whatever their rank among empty rows. Ties keep
+        // the earlier weekday (uasort is stable over the Mon→Sun insertion).
+        $tiers = array_fill(1, 7, StatisticDataTier::Rest);
 
-        $data = [];
+        $eligible = array_filter(
+            $currentByWeekday,
+            fn (float $current): bool => $current > 0,
+        );
 
-        for ($weekday = 1; $weekday <= 7; $weekday++) {
-            $bucket = $buckets[$weekday] ?? ['total' => 0.0, 'transactions' => 0];
+        uasort($eligible, fn (float $a, float $b): int => $b <=> $a);
 
-            $data[] = new WeekdayCashflow(
-                weekday: $weekday,
-                expense: $bucket['total'],
-                count: $bucket['transactions'],
-                occurrences: $occurrences[$weekday],
-                windowTotal: $totalExpense,
-            );
+        foreach (array_keys($eligible) as $index => $weekday) {
+            $tiers[$weekday] = $index === 0
+                ? StatisticDataTier::Top
+                : ($index === 1 ? StatisticDataTier::Second : StatisticDataTier::Rest);
         }
 
-        // Strict `>` keeps the earliest weekday on ties (data runs Mon→Sun).
+        $data = [];
+        $totalExpense = 0.0;
+
+        for ($weekday = 1; $weekday <= 7; $weekday++) {
+            $baseline = round($baselineTotals[$weekday] / max($occurrences[$weekday], 1), 2);
+            $current = $currentByWeekday[$weekday];
+
+            $data[] = new WeekdayCashflow($weekday, $current, $baseline, $tiers[$weekday]);
+            $totalExpense += $current;
+        }
+
+        // Strict `>` scans over the Mon→Sun-ordered rows keep the earliest
+        // weekday on ties. The deviation peak only counts days that are
+        // actually above their baseline — "under average" is not a peak.
         $peakWeekday = null;
-        $maxAverage = 0.0;
+        $peakDeviationWeekday = null;
+        $maxCurrent = 0.0;
+        $maxDeviation = 0.0;
 
         foreach ($data as $cashflow) {
-            if ($cashflow->average > $maxAverage) {
-                $maxAverage = $cashflow->average;
+            if ($cashflow->current > $maxCurrent) {
+                $maxCurrent = $cashflow->current;
                 $peakWeekday = $cashflow->weekday;
+            }
+
+            if ($cashflow->current > 0 && $cashflow->deviation > $maxDeviation) {
+                $maxDeviation = $cashflow->deviation;
+                $peakDeviationWeekday = $cashflow->weekday;
             }
         }
 
         return new WeekdayPatternReportData(
             data: $data,
-            from: $period->start,
-            to: $period->end,
+            from: $week->start,
+            to: $week->end,
+            baseline_from: $baselinePeriod->start,
+            baseline_to: $baselinePeriod->end,
             total_expense: $totalExpense,
             peak_weekday: $peakWeekday,
+            peak_deviation_weekday: $peakDeviationWeekday,
         );
     }
 

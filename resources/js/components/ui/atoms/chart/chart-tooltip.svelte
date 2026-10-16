@@ -56,13 +56,14 @@
         // Receives the hovered datum (fed via `chart.tooltip.show(event, data)`)
         // and a styling kit: house-rendered `label` and `row` snippets so
         // custom content matches the built-in look without copying classes.
+        // A row's value may be a plain string or a snippet (rendered into the
+        // value slot) for richer content like CurrencyAmount.
         tooltipContent?: Snippet<
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             [
                 data: any,
                 ui: {
                     label: Snippet<[text?: string]>;
-                    row: Snippet<[label: string, value: string]>;
+                    row: Snippet<[label: string, value: string | Snippet]>;
                 },
             ]
         >;
@@ -212,9 +213,13 @@
     {/if}
 {/snippet}
 
-{#snippet TooltipRow(label: string, value: string)}
+{#snippet TooltipRow(label: string, value: string | Snippet)}
     <div class="flex w-full flex-wrap items-center justify-between gap-2 leading-none">
-        <span class="text-muted-foreground">{label}</span>
-        <span class="font-mono font-medium text-foreground tabular-nums">{value}</span>
+        <span class="text-muted">{label}</span>
+        {#if typeof value === 'function'}
+            {@render value?.()}
+        {:else}
+            <span class="font-mono font-medium text-foreground tabular-nums">{value}</span>
+        {/if}
     </div>
 {/snippet}

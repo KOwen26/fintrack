@@ -1,4 +1,7 @@
+import type { Day, LocaleWidth } from 'date-fns';
+
 import { parse, startOfDay } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 
 export default class DateTimeHelper {
     /**
@@ -13,6 +16,42 @@ export default class DateTimeHelper {
      */
     static parseLocalDay(day: string): Date {
         return startOfDay(parse(day, 'yyyy-MM-dd', new Date()));
+    }
+
+    static weekdayNameByIndex(
+        index: number,
+        variant: 'short' | 'long' = 'short',
+        weekStart: 'monday' | 'sunday' = 'monday'
+    ): string {
+        return DateTimeHelper.weekdayNames(variant, weekStart)[index];
+    }
+
+    /**
+     * Weekday names Monday-first, indexed by ISO weekday (1–7 → [0]–[6]).
+     * Reads the bundled locale data directly rather than formatting a
+     * sample date — no anchor, and deterministic where runtime ICU could
+     * silently fall back to English. date-fns days run Sunday-first
+     * (0 = Sunday), so ISO 7 wraps to 0.
+     *
+     * @example DateTimeHelper.weekdayNames('short') // ["Sen", "Sel", … "Min"]
+     */
+    static weekdayNames(
+        variant: 'short' | 'long' = 'short',
+        weekStart: 'monday' | 'sunday' = 'monday'
+    ): string[] {
+        const firstDay = weekStart === 'monday' ? 1 : 0;
+        const variantMap: Record<'short' | 'long', LocaleWidth> = {
+            short: 'abbreviated',
+            long: 'wide',
+        };
+
+        return Array.from({ length: 7 }, (_, i) => {
+            const weekday = ((firstDay + i) % 7) as Day;
+
+            return enUS.localize.day(weekday, {
+                width: variantMap[variant],
+            });
+        });
     }
 
     /**
