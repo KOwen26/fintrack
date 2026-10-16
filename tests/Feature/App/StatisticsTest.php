@@ -108,10 +108,10 @@ test('falls back to the current month for an unparseable month', function (): vo
         );
 });
 
-test('applies an explicit trend span', function (): void {
+test('applies an explicit trend preset', function (): void {
     $user = User::factory()->create();
 
-    $this->actingAs($user)->get(route('statistics.index', ['trend' => 3]))
+    $this->actingAs($user)->get(route('statistics.index', ['trend' => 'last_3months']))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->loadDeferredProps(fn ($page) => $page
@@ -138,12 +138,31 @@ test('applies an explicit balance span alongside other params', function (): voi
 test('defaults out-of-range spans instead of rejecting', function (): void {
     $user = User::factory()->create();
 
-    $this->actingAs($user)->get(route('statistics.index', ['trend' => 99, 'balance' => 'nope']))
+    $this->actingAs($user)->get(route('statistics.index', ['trend' => 'not-a-preset', 'balance' => 'nope']))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->loadDeferredProps(fn ($page) => $page
                 ->has('cashflowTrend.data', 6)
                 ->has('balanceTrend.data', 12)
+            )
+        );
+});
+
+test('bounds the All Time trend at the earliest transaction', function (): void {
+    $user = User::factory()->create();
+    $account = Account::factory()->create(['owner_id' => $user->id]);
+
+    Transaction::factory()->expense()->create([
+        'account_id' => $account->id,
+        'amount' => 50_000,
+        'transaction_date' => '2024-03-05',
+    ]);
+
+    $this->actingAs($user)->get(route('statistics.index', ['trend' => 'all']))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->loadDeferredProps(fn ($page) => $page
+                ->where('cashflowTrend.from', '2024-03-01')
             )
         );
 });

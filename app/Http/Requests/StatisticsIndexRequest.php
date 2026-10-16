@@ -2,40 +2,41 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\DatePeriodPreset;
 use Illuminate\Contracts\Validation\Validator;
 
 /**
- * The statistics page request — the month window plus the trend cards'
- * rolling spans. Spans are normalized in the validator's after hook rather
- * than rules: anything outside the allowed sets defaults silently, mirroring
- * `?month`'s lenient handling — the cards never 422 on a hand-edited URL.
+ * The statistics page request — the month window plus the cashflow trend
+ * card's period preset. `?trend` is normalized in the validator's after
+ * hook rather than rules: anything outside the enum falls back to the
+ * default silently, mirroring `?month`'s lenient handling — the card never
+ * 422s on a hand-edited URL.
  */
 final class StatisticsIndexRequest extends MonthPeriodRequest
 {
-    /** @var list<int> */
-    private const array TrendSpans = [3, 6, 12];
+    private const DatePeriodPreset DefaultTrendPreset = DatePeriodPreset::Last6Months;
 
     /** @var list<int> */
     private const array BalanceSpans = [6, 12, 24];
-
-    private const int DefaultTrendSpan = 6;
 
     private const int DefaultBalanceSpan = 12;
 
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (): void {
+            $preset = DatePeriodPreset::tryFrom((string) $this->query('trend', '')) ?? self::DefaultTrendPreset;
+
             $this->merge([
-                'trend' => $this->normalizeSpan('trend', self::TrendSpans, self::DefaultTrendSpan),
+                'trend' => $preset->value,
                 'balance' => $this->normalizeSpan('balance', self::BalanceSpans, self::DefaultBalanceSpan),
             ]);
         });
     }
 
-    /** The income/expense trend span in months — `?trend` or the default. */
-    public function trendSpan(): int
+    /** The cashflow trend window — `?trend` as a DatePeriodPreset or the default. */
+    public function trendPreset(): DatePeriodPreset
     {
-        return $this->integer('trend');
+        return DatePeriodPreset::from((string) $this->input('trend'));
     }
 
     /** The balance trend span in months — `?balance` or the default. */

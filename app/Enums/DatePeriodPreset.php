@@ -40,6 +40,48 @@ enum DatePeriodPreset: string
 
     case All = 'all';
 
+    public function label(): string
+    {
+        return match ($this) {
+            self::Today => 'Today',
+            self::Yesterday => 'Yesterday',
+            self::ThisWeek => 'This Week',
+            self::ThisMonth => 'This Month',
+            self::ThisYear => 'This Year',
+            self::Last7Days => 'Last 7 Days',
+            self::Last14Days => 'Last 14 Days',
+            self::Last30Days => 'Last 30 Days',
+            self::LastMonth => 'Last Month',
+            self::Last3Months => 'Last 3 Months',
+            self::Last6Months => 'Last 6 Months',
+            self::YearOnYear => 'Year on Year',
+            self::Last12Months => 'Last 12 Months',
+            self::LastYear => 'Last Year',
+            self::All => 'All Time',
+        };
+    }
+
+    public function labelShort(): string
+    {
+        return match ($this) {
+            self::Today => 'Today',
+            self::Yesterday => 'Yesterday',
+            self::ThisWeek => 'This Week',
+            self::ThisMonth => 'This Month',
+            self::ThisYear => 'This Year',
+            self::Last7Days => 'Last 7D',
+            self::Last14Days => 'Last 14D',
+            self::Last30Days => 'Last 30D',
+            self::LastMonth => 'Last Month',
+            self::Last3Months => 'Last 3M',
+            self::Last6Months => 'Last 6M',
+            self::YearOnYear => 'YoY',
+            self::Last12Months => 'Last 12M',
+            self::LastYear => 'Last Year',
+            self::All => 'All',
+        };
+    }
+
     /**
      * Resolve the preset into a concrete period anchored at the given moment
      * (defaults to now) so tests can freeze time and future callers can pin a
