@@ -35,12 +35,7 @@
 {:else}
     <Card
         {...mergedProps}
-        class={cn(
-            '',
-            'md:py-6',
-            'border-x-none rounded-none border-y md:rounded-md md:border',
-            _class
-        )}
+        class={cn('md:py-6', 'border-x-none rounded-none border-y md:rounded-md md:border', _class)}
         headerClass="px-8 md:px-6"
         titleClass="grow">
         {@render children?.()}

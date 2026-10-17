@@ -25,6 +25,9 @@ use Illuminate\Support\Facades\Date;
 
 final class SpendingService
 {
+    /** The fallback balance trend span when the preset has no rolling month count. */
+    private const int DefaultBalanceSpanMonths = 6;
+
     /**
      * Aggregate category spending across multiple accounts for a given period.
      * SQL sums per category; the enum supplies presentation metadata and the
@@ -218,12 +221,7 @@ final class SpendingService
      */
     private function trendPeriod(DatePeriodPreset $preset, array $accountIds): DatePeriod
     {
-        $months = match ($preset) {
-            DatePeriodPreset::Last3Months => 3,
-            DatePeriodPreset::Last6Months => 6,
-            DatePeriodPreset::Last12Months, DatePeriodPreset::YearOnYear => 12,
-            default => null,
-        };
+        $months = $preset->rollingMonths();
 
         if ($months !== null) {
             return DatePeriod::forRollingMonths($months);
@@ -250,11 +248,12 @@ final class SpendingService
      * legs sit inside the account scope, and fees are ordinary expense rows —
      * then the series is walked backward from the accounts' current balance
      * total, so historical row drift can never accumulate and the series
-     * lands exactly on the dashboard's number.
+     * lands exactly on the dashboard's number. Rolling month presets supply
+     * the span; anything else falls back to the default 6-month window.
      */
-    public function balanceTrend(User $user, int $months): BalanceTrendReportData
+    public function balanceTrend(User $user, DatePeriodPreset $preset): BalanceTrendReportData
     {
-        $period = DatePeriod::forRollingMonths($months);
+        $period = DatePeriod::forRollingMonths($preset->rollingMonths() ?? self::DefaultBalanceSpanMonths);
 
         $accounts = AccountService::getAccountsByUser($user);
         $accountIds = $accounts->pluck('id')->all();
@@ -416,6 +415,30 @@ final class SpendingService
             peak_weekday: $peakWeekday,
             peak_deviation_weekday: $peakDeviationWeekday,
         );
+    }
+
+    /**
+     * Current-week expense projected to a full week — week-to-date ÷ days
+     * elapsed × 7. The week is Monday-based, matching the weekday pattern
+     * beside it, so the hero number reads as "at this pace, X per week".
+     */
+    public function weeklySpendingAverage(User $user): float
+    {
+        $week = DatePeriod::forWeek();
+
+        $accountIds = AccountService::getAccountIdsByUser($user);
+
+        if ($accountIds->isEmpty()) {
+            return 0.0;
+        }
+
+        $amountAverage = (float) Transaction::query()
+            ->whereIn('account_id', $accountIds)
+            ->where('type', TransactionType::Expense)
+            ->withinPeriod($week)
+            ->avg('amount');
+
+        return $amountAverage;
     }
 
     /**

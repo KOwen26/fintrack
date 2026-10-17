@@ -61,13 +61,10 @@
         <p class="text-sm">No expense data this week</p>
     </div>
 {:else}
-    <div class="mb-5 flex items-center justify-between text-sm text-primary">
-        <span class="flex items-center gap-1.5">
-            <i class="iconify size-5 text-primary solar--minus-linear"></i>
-            3 Month Average
-        </span>
-        <span>Week to date</span>
-    </div>
+    <p class="flex items-center justify-end gap-1.5 text-sm text-primary">
+        <i class="iconify size-5 text-primary solar--minus-linear"></i>
+        3-Mon Average, Week to date
+    </p>
 
     <ChartContainer
         class={[

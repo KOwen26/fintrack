@@ -36,6 +36,9 @@ enum DatePeriodPreset: string
     case Last6Months = 'last_6months';
     case YearOnYear = 'year_on_year';
     case Last12Months = 'last_12months';
+    case Last24Months = 'last_24months';
+    case Last3Years = 'last_3years';
+    case Last5Years = 'last_5years';
     case LastYear = 'last_year';
 
     case All = 'all';
@@ -56,6 +59,9 @@ enum DatePeriodPreset: string
             self::Last6Months => 'Last 6 Months',
             self::YearOnYear => 'Year on Year',
             self::Last12Months => 'Last 12 Months',
+            self::Last24Months => 'Last 24 Months',
+            self::Last3Years => 'Last 3 Years',
+            self::Last5Years => 'Last 5 Years',
             self::LastYear => 'Last Year',
             self::All => 'All Time',
         };
@@ -67,16 +73,19 @@ enum DatePeriodPreset: string
             self::Today => 'Today',
             self::Yesterday => 'Yesterday',
             self::ThisWeek => 'This Week',
-            self::ThisMonth => 'This Month',
-            self::ThisYear => 'This Year',
-            self::Last7Days => 'Last 7D',
-            self::Last14Days => 'Last 14D',
-            self::Last30Days => 'Last 30D',
+            self::ThisMonth => '1M',
+            self::ThisYear => '1Y',
+            self::Last7Days => '7D',
+            self::Last14Days => '14D',
+            self::Last30Days => '30D',
             self::LastMonth => 'Last Month',
-            self::Last3Months => 'Last 3M',
-            self::Last6Months => 'Last 6M',
+            self::Last3Months => '3M',
+            self::Last6Months => '6M',
             self::YearOnYear => 'YoY',
-            self::Last12Months => 'Last 12M',
+            self::Last12Months => '12M',
+            self::Last24Months => '24M',
+            self::Last3Years => '3Y',
+            self::Last5Years => '5Y',
             self::LastYear => 'Last Year',
             self::All => 'All',
         };
@@ -115,11 +124,35 @@ enum DatePeriodPreset: string
 
             self::YearOnYear, self::Last12Months => new DatePeriod($now->subMonthsNoOverflow(12)->startOfDay(), $now->endOfDay()),
 
+            self::Last24Months => new DatePeriod($now->subMonthsNoOverflow(24)->startOfDay(), $now->endOfDay()),
+
+            self::Last3Years => new DatePeriod($now->subYears(3)->startOfDay(), $now->endOfDay()),
+
+            self::Last5Years => new DatePeriod($now->subYears(5)->startOfDay(), $now->endOfDay()),
+
             self::LastMonth => new DatePeriod($now->subMonthNoOverflow()->startOfMonth(), $now->subMonthNoOverflow()->endOfMonth()),
 
             self::LastYear => new DatePeriod($now->subYear()->startOfYear(), $now->subYear()->endOfYear()),
 
             self::All => DatePeriod::unbounded(),
+        };
+    }
+
+    /**
+     * The rolling month count for month-granular rolling windows, or null
+     * for day/week windows, calendar windows, and unbounded All. Shared by
+     * the trend reports, which both walk whole months backward from now.
+     */
+    public function rollingMonths(): ?int
+    {
+        return match ($this) {
+            self::Last3Months => 3,
+            self::Last6Months => 6,
+            self::YearOnYear, self::Last12Months => 12,
+            self::Last24Months => 24,
+            self::Last3Years => 36,
+            self::Last5Years => 60,
+            default => null,
         };
     }
 }

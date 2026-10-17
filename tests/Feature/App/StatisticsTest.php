@@ -3,6 +3,7 @@
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 
 test('renders the statistics page with deferred report props', function (): void {
     $user = User::factory()->create();
@@ -45,7 +46,7 @@ test('renders the statistics page for a user without accounts', function (): voi
                 ->has('monthlyCashflow')
                 ->has('monthlyCashflow.data', 0)
                 ->has('cashflowTrend.data', 6)
-                ->has('balanceTrend.data', 12)
+                ->has('balanceTrend.data', 6)
                 ->has('weekdayPattern.data', 7)
             )
         );
@@ -116,21 +117,64 @@ test('applies an explicit trend preset', function (): void {
         ->assertInertia(fn ($page) => $page
             ->loadDeferredProps(fn ($page) => $page
                 ->has('cashflowTrend.data', 3)
-                ->has('balanceTrend.data', 12)
+                ->has('balanceTrend.data', 6)
             )
         );
 });
 
-test('applies an explicit balance span alongside other params', function (): void {
+test('maps multi-year trend presets to rolling month windows', function (string $trend, int $buckets): void {
     $user = User::factory()->create();
 
-    $this->actingAs($user)->get(route('statistics.index', ['month' => '2026-03', 'balance' => 24]))
+    $this->actingAs($user)->get(route('statistics.index', ['trend' => $trend]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->loadDeferredProps(fn ($page) => $page
+                ->has('cashflowTrend.data', $buckets)
+            )
+        );
+})->with([
+    'last 24 months' => ['last_24months', 24],
+    'last 3 years' => ['last_3years', 36],
+    'last 5 years' => ['last_5years', 60],
+]);
+
+test('applies an explicit balance preset alongside other params', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('statistics.index', ['month' => '2026-03', 'balance' => 'last_24months']))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->loadDeferredProps(fn ($page) => $page
                 ->where('monthlyCashflow.from', '2026-03-01')
                 ->has('cashflowTrend.data', 6)
                 ->has('balanceTrend.data', 24)
+            )
+        );
+});
+
+test('maps multi-year balance presets to rolling spans', function (string $balance, int $buckets): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('statistics.index', ['balance' => $balance]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->loadDeferredProps(fn ($page) => $page
+                ->has('balanceTrend.data', $buckets)
+            )
+        );
+})->with([
+    'last 3 years' => ['last_3years', 36],
+    'last 5 years' => ['last_5years', 60],
+]);
+
+test('falls non-rolling balance presets back to the default span', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('statistics.index', ['balance' => 'this_year']))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->loadDeferredProps(fn ($page) => $page
+                ->has('balanceTrend.data', 6)
             )
         );
 });
@@ -143,7 +187,7 @@ test('defaults out-of-range spans instead of rejecting', function (): void {
         ->assertInertia(fn ($page) => $page
             ->loadDeferredProps(fn ($page) => $page
                 ->has('cashflowTrend.data', 6)
-                ->has('balanceTrend.data', 12)
+                ->has('balanceTrend.data', 6)
             )
         );
 });
@@ -163,6 +207,28 @@ test('bounds the All Time trend at the earliest transaction', function (): void 
         ->assertInertia(fn ($page) => $page
             ->loadDeferredProps(fn ($page) => $page
                 ->where('cashflowTrend.from', '2024-03-01')
+            )
+        );
+});
+
+test('projects the current week to a full week spending run-rate', function (): void {
+    $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+    $user = User::factory()->create();
+    $account = Account::factory()->create(['owner_id' => $user->id]);
+
+    Transaction::factory()->expense()->create([
+        'account_id' => $account->id,
+        'amount' => 200_000,
+        'transaction_date' => '2026-10-13',
+    ]);
+
+    $this->actingAs($user)->get(route('statistics.index'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->loadDeferredProps(fn ($page) => $page
+                // 200_000 / 4 elapsed days × 7 = 350_000 exactly.
+                ->where('weeklySpendingAverage', 350_000.0)
             )
         );
 });

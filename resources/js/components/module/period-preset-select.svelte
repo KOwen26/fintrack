@@ -6,14 +6,7 @@
     export type PeriodPreset = App.Enums.DatePeriodPreset;
 
     /** Which preset family the selector offers. */
-    export type PresetScope = 'all' | 'monthly';
-
-    /** Presets rendered as always-visible segments; everything else collapses into the dropdown. */
-    const DEFAULT_QUICK_PICKS: PeriodPreset[] = [
-        DatePeriodPreset.ThisMonth,
-        DatePeriodPreset.Last30Days,
-        DatePeriodPreset.Last3Months,
-    ];
+    export type PresetScope = 'all' | 'monthly' | 'rolling';
 
     /** The full offered universe — every preset the enum exposes. */
     const ALL_PRESETS: PeriodPreset[] = Object.values(DatePeriodPreset);
@@ -27,12 +20,50 @@
         DatePeriodPreset.Last3Months,
         DatePeriodPreset.Last6Months,
         DatePeriodPreset.Last12Months,
+        DatePeriodPreset.Last24Months,
+        DatePeriodPreset.Last3Years,
+        DatePeriodPreset.Last5Years,
+    ];
+
+    /** Rolling month-granular windows only — no calendar or day windows, no unbounded All. */
+    const ROLLING_PRESETS: PeriodPreset[] = [
+        DatePeriodPreset.Last3Months,
+        DatePeriodPreset.Last6Months,
+        DatePeriodPreset.Last12Months,
+        DatePeriodPreset.Last24Months,
+        DatePeriodPreset.Last3Years,
+        DatePeriodPreset.Last5Years,
     ];
 
     /** Preset families the selector can offer, keyed by the `preset` prop. */
-    const PRESET_SETS: Record<PresetScope, PeriodPreset[]> = {
-        all: ALL_PRESETS,
-        monthly: MONTHLY_PRESETS,
+    const PRESET_SETS: Record<
+        PresetScope,
+        { presets: PeriodPreset[]; quickPicks: PeriodPreset[] }
+    > = {
+        all: {
+            presets: ALL_PRESETS,
+            quickPicks: [
+                DatePeriodPreset.ThisMonth,
+                DatePeriodPreset.Last30Days,
+                DatePeriodPreset.Last3Months,
+            ],
+        },
+        monthly: {
+            presets: MONTHLY_PRESETS,
+            quickPicks: [
+                DatePeriodPreset.ThisMonth,
+                DatePeriodPreset.Last3Months,
+                DatePeriodPreset.Last6Months,
+            ],
+        },
+        rolling: {
+            presets: ROLLING_PRESETS,
+            quickPicks: [
+                DatePeriodPreset.Last3Months,
+                DatePeriodPreset.Last6Months,
+                DatePeriodPreset.Last12Months,
+            ],
+        },
     };
 
     /**
@@ -40,6 +71,19 @@
      * identical period as `Last12Months` (see DatePeriodPreset::toPeriod()).
      */
     const OVERFLOW_GROUPS: { label: string; presets: PeriodPreset[] }[] = [
+        {
+            label: 'Rolling',
+            presets: [
+                DatePeriodPreset.Last7Days,
+                DatePeriodPreset.Last14Days,
+                DatePeriodPreset.Last3Months,
+                DatePeriodPreset.Last6Months,
+                DatePeriodPreset.Last12Months,
+                DatePeriodPreset.Last24Months,
+                DatePeriodPreset.Last3Years,
+                DatePeriodPreset.Last5Years,
+            ],
+        },
         {
             label: 'Day',
             presets: [DatePeriodPreset.Today, DatePeriodPreset.Yesterday, DatePeriodPreset.All],
@@ -54,16 +98,6 @@
                 DatePeriodPreset.LastYear,
             ],
         },
-        {
-            label: 'Rolling',
-            presets: [
-                DatePeriodPreset.Last7Days,
-                DatePeriodPreset.Last14Days,
-                DatePeriodPreset.Last3Months,
-                DatePeriodPreset.Last6Months,
-                DatePeriodPreset.Last12Months,
-            ],
-        },
     ];
 </script>
 
@@ -76,7 +110,7 @@
 
     interface Props {
         value?: PeriodPreset;
-        /** Which preset family to offer — 'monthly' shows only month-granular values. */
+        /** Which preset family to offer — 'monthly' shows only month-granular values, 'rolling' only rolling windows. */
         preset?: PresetScope;
         quickPicks?: PeriodPreset[];
         /** Dropdown-only — no segments; the trigger shows the selected label and the dropdown offers the full universe. */
@@ -93,7 +127,7 @@
     let {
         value = $bindable(DatePeriodPreset.ThisMonth),
         preset = 'all',
-        quickPicks = DEFAULT_QUICK_PICKS,
+        quickPicks, // undefined → scope default from PRESET_SETS
         withoutQuickPicks = false,
         onValueChange,
         labelVariant = 'default',
@@ -107,12 +141,15 @@
             DatePeriodPresetMeta[scope][labelVariant === 'short' ? 'labelShort' : 'label']
     );
 
-    const offered = $derived(new Set(PRESET_SETS[preset]));
+    const offered = $derived(new Set(PRESET_SETS[preset].presets));
 
-    // Dropdown-only mode forces no segments; quick picks outside the
-    // offered universe vanish from the segments otherwise.
+    /** Caller quickPicks override the scope's defaults; scope defaults are guaranteed members of the offered universe. */
+    const effectiveQuickPicks = $derived(quickPicks ?? PRESET_SETS[preset].quickPicks);
+
+    // Dropdown-only mode forces no segments; caller-supplied quick picks
+    // outside the offered universe still vanish from the segments.
     const segments = $derived(
-        withoutQuickPicks ? [] : quickPicks.filter((preset) => offered.has(preset))
+        withoutQuickPicks ? [] : effectiveQuickPicks.filter((preset) => offered.has(preset))
     );
 
     const overflowGroups = $derived(
@@ -123,7 +160,9 @@
                     offered.has(preset) &&
                     // Dropdown-only must not lose quick picks — segments are gone,
                     // so the dropdown carries the full offered universe.
-                    (withoutQuickPicks || showQuickPicksInDropdown || !quickPicks.includes(preset))
+                    (withoutQuickPicks ||
+                        showQuickPicksInDropdown ||
+                        !effectiveQuickPicks.includes(preset))
             ),
         })).filter((group) => group.presets.length > 0)
     );

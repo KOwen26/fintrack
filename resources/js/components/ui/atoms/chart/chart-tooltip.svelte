@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { TooltipPayload } from './chart-utils.js';
+    import type { FlexRenderer } from '@utilities/render-helper.js';
     import type { WithElementRef, WithoutChildren } from '@utilities/shadcn.js';
     import type { Snippet } from 'svelte';
     import type { HTMLAttributes } from 'svelte/elements';
@@ -9,6 +10,8 @@
     import { getChartContext, Tooltip as TooltipPrimitive } from 'layerchart';
 
     import { cn } from '@utilities/shadcn.js';
+
+    import FlexRender from '@components/ui/flex-render.svelte';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function defaultFormatter(value: any, _payload: TooltipPayload[]) {
@@ -63,7 +66,7 @@
                 data: any,
                 ui: {
                     label: Snippet<[text?: string]>;
-                    row: Snippet<[label: string, value: string | Snippet]>;
+                    row: Snippet<[label: string, value: string | FlexRenderer]>;
                 },
             ]
         >;
@@ -160,7 +163,7 @@
                                 <div
                                     style="--color-bg: {indicatorColor}; --color-border: {indicatorColor};"
                                     class={cn(
-                                        'shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)',
+                                        'shrink-0 rounded-xs border-(--color-border) bg-(--color-bg)',
                                         {
                                             'h-2.5 w-2.5': indicator === 'dot',
                                             'h-full w-1': indicator === 'line',
@@ -213,13 +216,13 @@
     {/if}
 {/snippet}
 
-{#snippet TooltipRow(label: string, value: string | Snippet)}
+{#snippet TooltipRow(label: string, value: string | FlexRenderer)}
     <div class="flex w-full flex-wrap items-center justify-between gap-2 leading-none">
-        <span class="text-muted">{label}</span>
-        {#if typeof value === 'function'}
-            {@render value?.()}
-        {:else}
+        <span class="text-muted-foreground">{label}</span>
+        {#if typeof value === 'string'}
             <span class="font-mono font-medium text-foreground tabular-nums">{value}</span>
+        {:else}
+            <FlexRender content={() => value} context={value} />
         {/if}
     </div>
 {/snippet}

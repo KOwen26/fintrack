@@ -84,12 +84,12 @@
             columns={2}
             labelVariant="short"
             onValueChange={visitPreset}
-            preset="monthly"
+            preset="rolling"
             showQuickPicksInDropdown
             bind:value={selected} />
     </div>
 
-    <div class="mb-3 grid grid-cols-3 gap-2">
+    <!-- <div class="mb-3 grid grid-cols-3 gap-2">
         <div class="rounded-lg bg-muted/50 p-2.5">
             <p class="text-xs text-muted-foreground">Income</p>
             <p class="mt-1 truncate font-mono text-sm font-semibold text-success">
@@ -111,13 +111,20 @@
                 {Formatter.currency(trend.total_net, true)}
             </p>
         </div>
-    </div>
+    </div> -->
 
-    <ChartContainer class="min-h-55 w-full" config={chartConfig}>
+    <ChartContainer class="mb-10 min-h-50 w-full" config={chartConfig}>
         <BarChart
             data={chartData}
-            padding={{ left: 16, bottom: 24 }}
-            props={{ yAxis: { format: (v) => Formatter.compactAmount(v) } }}
+            padding={{ left: 30, bottom: 0, top: 0, right: 0 }}
+            props={{
+                bars: { strokeWidth: 0 },
+                yAxis: { format: (v) => Formatter.compactAmount(v) },
+                xAxis: {
+                    tickOcclusion: true,
+                    tickLabelProps: { rotate: -45, textAnchor: 'end' },
+                },
+            }}
             series={[
                 { key: 'income', color: 'var(--success)' },
                 { key: 'expense', color: 'var(--error)' },

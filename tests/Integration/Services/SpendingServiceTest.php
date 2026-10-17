@@ -513,7 +513,7 @@ describe('balanceTrend', function (): void {
         ]);
 
         $service = new SpendingService;
-        $report = $service->balanceTrend($user, 3);
+        $report = $service->balanceTrend($user, DatePeriodPreset::Last3Months);
 
         expect($report->current_total)->toBe(1_200_000.0)
             ->and($report->from->toDateString())->toBe('2026-08-01')
@@ -549,7 +549,7 @@ describe('balanceTrend', function (): void {
         ]);
 
         $service = new SpendingService;
-        $report = $service->balanceTrend($user, 3);
+        $report = $service->balanceTrend($user, DatePeriodPreset::Last3Months);
 
         expect($report->current_total)->toBe(0.0)
             ->and($report->data[2]['net_delta'])->toBe(0.0)
@@ -562,7 +562,7 @@ describe('balanceTrend', function (): void {
         $user = User::factory()->create();
 
         $service = new SpendingService;
-        $report = $service->balanceTrend($user, 6);
+        $report = $service->balanceTrend($user, DatePeriodPreset::Last6Months);
 
         expect($report->data)->toHaveCount(6)
             ->and($report->current_total)->toBe(0.0)
@@ -701,5 +701,58 @@ describe('weekdayPattern', function (): void {
                 StatisticDataTier::Rest,
                 StatisticDataTier::Rest,
             ]);
+    });
+});
+
+describe('weeklySpendingAverage', function (): void {
+    it('projects the current week to a full week run-rate', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        // Frozen Thursday: week-to-date covers Mon 2026-10-12 .. today —
+        // 4 elapsed days; the week runs through Sun 2026-10-18.
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['owner_id' => $user->id]);
+
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 100_000,
+            'transaction_date' => '2026-10-12',
+        ]);
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 50_000,
+            'transaction_date' => '2026-10-13',
+        ]);
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 50_000,
+            'transaction_date' => '2026-10-14',
+        ]);
+        // Last week's spending, income rows, and pre-week rows never count.
+        Transaction::factory()->expense()->create([
+            'account_id' => $account->id,
+            'amount' => 400_000,
+            'transaction_date' => '2026-10-05',
+        ]);
+        Transaction::factory()->income()->create([
+            'account_id' => $account->id,
+            'amount' => 999_000,
+            'transaction_date' => '2026-10-13',
+        ]);
+
+        $service = new SpendingService;
+
+        // 200_000 / 4 elapsed days × 7 = 350_000 exactly.
+        expect($service->weeklySpendingAverage($user))->toBe(350_000.0);
+    });
+
+    it('returns zero for a user without accounts', function (): void {
+        $this->travelTo(new CarbonImmutable('2026-10-15'));
+
+        $user = User::factory()->create();
+
+        $service = new SpendingService;
+
+        expect($service->weeklySpendingAverage($user))->toBe(0.0);
     });
 });
