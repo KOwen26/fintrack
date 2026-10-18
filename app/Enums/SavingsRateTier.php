@@ -25,13 +25,13 @@ enum SavingsRateTier: string
     /** The rate (percent) at or above which a month counts as healthy. */
     public static function healthyThreshold(): float
     {
-        return 20.0;
+        return 30.0;
     }
 
     /** The lower bound (inclusive) of the caution band. */
     public static function cautionThreshold(): float
     {
-        return 0.0;
+        return 10.0;
     }
 
     public static function fromRate(float $rate): self
@@ -45,11 +45,5 @@ enum SavingsRateTier: string
         }
 
         return self::Negative;
-    }
-
-    /** @return array<string> Tier values counted toward the "on target" metric. */
-    public static function onTargetTiers(): array
-    {
-        return [self::Healthy->value];
     }
 }

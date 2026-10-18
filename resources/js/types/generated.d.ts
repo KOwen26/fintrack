@@ -152,7 +152,6 @@ export type SavingsRateReportData = {
     readonly target_rate: number;
     readonly current_rate: number;
     readonly average_rate: number;
-    readonly months_on_target: number;
     readonly current_streak: number;
     readonly longest_streak: number;
     readonly best_rate: number;

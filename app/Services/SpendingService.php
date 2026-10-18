@@ -471,13 +471,6 @@ final class SpendingService
 
         $averageRate = $rates === [] ? 0.0 : round(array_sum($rates) / count($rates), 2);
 
-        $monthsOnTarget = 0;
-        foreach ($data as $point) {
-            if (in_array($point->tier, SavingsRateTier::onTargetTiers(), true)) {
-                $monthsOnTarget++;
-            }
-        }
-
         // Streaks over consecutive healthy months.
         $currentStreak = 0;
         for ($i = count($data) - 1; $i >= 0; $i--) {
@@ -509,7 +502,6 @@ final class SpendingService
             target_rate: SavingsRateTier::healthyThreshold(),
             current_rate: $currentRate,
             average_rate: $averageRate,
-            months_on_target: $monthsOnTarget,
             current_streak: $currentStreak,
             longest_streak: $longestStreak,
             best_rate: $bestRate,

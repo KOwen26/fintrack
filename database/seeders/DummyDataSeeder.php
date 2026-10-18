@@ -157,7 +157,7 @@ final class DummyDataSeeder extends Seeder
                 'account_id' => $accountIds[array_rand($accountIds)],
                 'category_id' => $incomePickList[$seq->index % $incomePickList->count()]->value,
                 'created_by' => $user->id,
-                'amount' => random_int(10, 500) * 1000,
+                'amount' => random_int(25, 50) * 100_000,
                 'transaction_date' => $this->randomDateInMonth($year, $month),
                 'description' => fake()->sentence(3),
             ])
@@ -170,7 +170,7 @@ final class DummyDataSeeder extends Seeder
                 'account_id' => $accountIds[array_rand($accountIds)],
                 'category_id' => $expensePickList[$seq->index % $expensePickList->count()]->value,
                 'created_by' => $user->id,
-                'amount' => random_int(10, 500) * 1000,
+                'amount' => random_int(1, 250) * 10_000,
                 'transaction_date' => $this->randomDateInMonth($year, $month),
                 'description' => fake()->sentence(3),
             ])

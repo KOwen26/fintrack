@@ -29,9 +29,6 @@ class SavingsRateReportData extends Data
         // Arithmetic mean of the window's monthly rates.
         public readonly float $average_rate,
 
-        // Months in the window that hit the healthy band.
-        public readonly int $months_on_target,
-
         // Consecutive healthy months ending at the latest month.
         public readonly int $current_streak,
 
