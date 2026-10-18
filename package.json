@@ -2,7 +2,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "php artisan wayfinder:generate && vite build",
+        "build": "vite build",
+        "build:deploy": "php artisan wayfinder:generate && vite build",
         "build:ssr": "php artisan wayfinder:generate && vite build && vite build --ssr",
         "dev": "vite",
         "lint:all": "prettier . --check . && eslint .",

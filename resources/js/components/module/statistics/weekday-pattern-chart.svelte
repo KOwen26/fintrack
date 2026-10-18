@@ -7,6 +7,7 @@
 
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
+    import { renderComponent } from '@utilities/render-helper';
 
     import CurrencyAmount from '@components/data/currency-amount.svelte';
     import { ChartContainer, ChartTooltip } from '@components/ui/atoms/chart';
@@ -63,7 +64,7 @@
 {:else}
     <p class="flex items-center justify-end gap-1.5 text-sm text-primary">
         <i class="iconify size-5 text-primary solar--minus-linear"></i>
-        3-Mon Average, Week to date
+        3-Mon Avg, Week to date
     </p>
 
     <ChartContainer
@@ -86,6 +87,7 @@
                 labels: {
                     format: (v) => Formatter.compactAmount(v),
                 },
+                highlight: { opacity: 0.1 },
             }}
             series={[{ key: 'current' }]}
             x="label">
@@ -100,21 +102,21 @@
                         {@render ui.label(data.label_long)}
 
                         <div class="grid gap-1.5">
-                            {#snippet currentValue()}
-                                <CurrencyAmount
-                                    class="font-semibold text-foreground"
-                                    value={data.current.toFixed(0)} />
-                            {/snippet}
+                            {@render ui.row(
+                                'This week',
+                                renderComponent(CurrencyAmount, {
+                                    value: data.current.toFixed(0),
+                                    class: 'font-semibold text-foreground',
+                                })
+                            )}
 
-                            {@render ui.row('This week', currentValue)}
-
-                            {#snippet baselineValue()}
-                                <CurrencyAmount
-                                    class="font-semibold text-foreground"
-                                    value={data.baseline.toFixed(0)} />
-                            {/snippet}
-
-                            {@render ui.row('3 Month Avg', baselineValue)}
+                            {@render ui.row(
+                                '3 Month Avg',
+                                renderComponent(CurrencyAmount, {
+                                    value: data.baseline.toFixed(0),
+                                    class: 'font-semibold text-foreground',
+                                })
+                            )}
 
                             {@render ui.row('Change', deviationLabel(data.deviation))}
                         </div>

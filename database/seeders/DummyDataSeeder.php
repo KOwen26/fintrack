@@ -41,7 +41,7 @@ final class DummyDataSeeder extends Seeder
     public function run(
         int $users = 2,
         ?array $userNames = null,
-        int $months = 3,
+        int $months = 12,
         int $accountsPerUserMin = 5,
         int $accountsPerUserMax = 10,
         int $transactionsPerMonth = 50,

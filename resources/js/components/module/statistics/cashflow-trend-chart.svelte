@@ -119,6 +119,7 @@
             padding={{ left: 30, bottom: 0, top: 0, right: 0 }}
             props={{
                 bars: { strokeWidth: 0 },
+                highlight: { opacity: 0.1 },
                 yAxis: { format: (v) => Formatter.compactAmount(v) },
                 xAxis: {
                     tickOcclusion: true,
