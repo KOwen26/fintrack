@@ -3,6 +3,7 @@
         BalanceTrendReportData,
         CashflowTrendReportData,
         MonthlyCashflowReportData,
+        SavingsRateReportData,
         WeekdayPatternReportData,
     } from '@type/generated';
 
@@ -13,6 +14,7 @@
     import BalanceTrendChart from '@components/module/statistics/balance-trend-chart.svelte';
     import CashflowTrendChart from '@components/module/statistics/cashflow-trend-chart.svelte';
     import MonthlyCalendarChart from '@components/module/statistics/monthly-calendar-chart.svelte';
+    import SavingsRateChart from '@components/module/statistics/savings-rate-chart.svelte';
     import WeekdayPatternChart from '@components/module/statistics/weekday-pattern-chart.svelte';
     import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
 
@@ -22,12 +24,14 @@
         monthlyCashflow,
         cashflowTrend,
         balanceTrend,
+        savingsRate,
         weekdayPattern,
     }: {
         weeklySpendingAverage?: number;
         monthlyCashflow?: MonthlyCashflowReportData;
         cashflowTrend?: CashflowTrendReportData;
         balanceTrend?: BalanceTrendReportData;
+        savingsRate?: SavingsRateReportData;
         weekdayPattern?: WeekdayPatternReportData;
     } = $props();
 
@@ -54,6 +58,12 @@
     <div class="grid grid-cols-1 gap-6">
         <ResponsiveCard title="Monthly Cashflow">
             <MonthlyCalendarChart {monthlyCashflow} />
+        </ResponsiveCard>
+
+        {@render separator?.()}
+
+        <ResponsiveCard title="Savings Rate">
+            <SavingsRateChart report={savingsRate} />
         </ResponsiveCard>
 
         {@render separator?.()}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Data\Report\BalanceTrendReportData;
 use App\Data\Report\CashflowTrendReportData;
 use App\Data\Report\MonthlyCashflowReportData;
+use App\Data\Report\SavingsRateReportData;
 use App\Http\Requests\StatisticsIndexRequest;
 use App\Models\User;
 use App\Services\SpendingService;
@@ -46,6 +47,10 @@ final class StatisticController extends Controller
 
             'balanceTrend' => Inertia::defer(
                 fn (): BalanceTrendReportData => $this->spendingService->balanceTrend($this->user, $request->balancePreset())
+            ),
+
+            'savingsRate' => Inertia::defer(
+                fn (): SavingsRateReportData => $this->spendingService->savingsRate($this->user, (int) $request->input('savings_months', 12))
             ),
         ]);
     }

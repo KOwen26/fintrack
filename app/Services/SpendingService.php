@@ -9,10 +9,12 @@ use App\Data\Report\CategorySpendingReportData;
 use App\Data\Report\ChildSpendingItemData;
 use App\Data\Report\MonthlyCashflowReportData;
 use App\Data\Report\ParentSpendingItemData;
+use App\Data\Report\SavingsRateReportData;
 use App\Data\Report\WeekdayPatternReportData;
 use App\Enums\Cashflow;
 use App\Enums\CategoryGroup;
 use App\Enums\DatePeriodPreset;
+use App\Enums\SavingsRateTier;
 use App\Enums\StatisticDataTier;
 use App\Enums\TransactionType;
 use App\Models\Transaction;
@@ -20,6 +22,7 @@ use App\Models\User;
 use App\Objects\DailyCashflow;
 use App\Objects\DatePeriod;
 use App\Objects\MonthlyCashflow;
+use App\Objects\SavingsRatePoint;
 use App\Objects\WeekdayCashflow;
 use Illuminate\Support\Facades\Date;
 
@@ -414,6 +417,103 @@ final class SpendingService
             total_expense: $totalExpense,
             peak_weekday: $peakWeekday,
             peak_deviation_weekday: $peakDeviationWeekday,
+        );
+    }
+
+    /**
+     * Savings-rate history over a rolling window (default 12 months). Each
+     * month's rate is (income - expense) / income, banded into healthy /
+     * caution / negative. Aggregates (current, average, streaks, best/worst)
+     * are derived server-side so the gauge + meta read consistently with the
+     * history line.
+     *
+     * @param  int  $months  Rolling month count (clamped to >= 1).
+     */
+    public function savingsRate(User $user, int $months = 12): SavingsRateReportData
+    {
+        $months = max(1, $months);
+        $accountIds = AccountService::getAccountIdsByUser($user)->all();
+
+        $period = DatePeriod::forRollingMonths($months);
+
+        $rows = $accountIds === [] ? [] : Transaction::query()
+            ->whereIn('account_id', $accountIds)
+            ->whereIn('type', [TransactionType::Income->value, TransactionType::Expense->value])
+            ->withinPeriod($period)
+            ->selectRaw("DATE_FORMAT(transaction_date, '%Y-%m') AS month, type, SUM(amount) AS total")
+            ->groupBy('month', 'type')
+            ->orderBy('month')
+            ->get();
+
+        /** @var array<string, array{income: float, expense: float}> $buckets */
+        $buckets = [];
+
+        foreach ($rows as $row) {
+            $buckets[$row->month] ??= ['income' => 0.0, 'expense' => 0.0];
+            $buckets[$row->month][$row->type->value] += (float) $row->total;
+        }
+
+        $data = [];
+        $rates = [];
+
+        $month = $period->start->startOfMonth();
+        $endMonth = $period->end->startOfMonth();
+
+        for (; $month->lessThanOrEqualTo($endMonth); $month = $month->addMonthsNoOverflow(1)) {
+            $bucket = $buckets[$month->format('Y-m')] ?? ['income' => 0.0, 'expense' => 0.0];
+
+            $point = new SavingsRatePoint($month, $bucket['income'], $bucket['expense']);
+            $data[] = $point;
+            $rates[] = $point->savings_rate;
+        }
+
+        $currentRate = $data === [] ? 0.0 : array_last($data)->savings_rate;
+
+        $averageRate = $rates === [] ? 0.0 : round(array_sum($rates) / count($rates), 2);
+
+        $monthsOnTarget = 0;
+        foreach ($data as $point) {
+            if (in_array($point->tier, SavingsRateTier::onTargetTiers(), true)) {
+                $monthsOnTarget++;
+            }
+        }
+
+        // Streaks over consecutive healthy months.
+        $currentStreak = 0;
+        for ($i = count($data) - 1; $i >= 0; $i--) {
+            if ($data[$i]->tier === SavingsRateTier::Healthy->value) {
+                $currentStreak++;
+            } else {
+                break;
+            }
+        }
+
+        $longestStreak = 0;
+        $run = 0;
+        foreach ($data as $point) {
+            if ($point->tier === SavingsRateTier::Healthy->value) {
+                $run++;
+                $longestStreak = max($longestStreak, $run);
+            } else {
+                $run = 0;
+            }
+        }
+
+        $bestRate = $rates === [] ? 0.0 : max($rates);
+        $worstRate = $rates === [] ? 0.0 : min($rates);
+
+        return new SavingsRateReportData(
+            data: $data,
+            from: $period->start,
+            to: $period->end,
+            target_rate: SavingsRateTier::healthyThreshold(),
+            current_rate: $currentRate,
+            average_rate: $averageRate,
+            months_on_target: $monthsOnTarget,
+            current_streak: $currentStreak,
+            longest_streak: $longestStreak,
+            best_rate: $bestRate,
+            worst_rate: $worstRate,
         );
     }
 
