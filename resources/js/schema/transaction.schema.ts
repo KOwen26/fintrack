@@ -50,10 +50,11 @@ const transactionSchema: DataSchema<
         }),
     },
     transaction_date: {
-        label: 'Date',
+        label: 'Date & Time',
         form: () => ({
             type: 'date',
             required: true,
+            inputProps: { type: 'date-time' },
         }),
     },
     description: {

@@ -34,7 +34,7 @@
         {
             accessorKey: 'transaction_date',
             header: ({ column }) => DataTable.sortableHeader({ column, title: 'Date' }),
-            cell: ({ row }) => DateTimeHelper.format(row.original.transaction_date, 'date'),
+            cell: ({ row }) => DateTimeHelper.format(row.original.transaction_date, 'datetime'),
         },
         {
             accessorKey: 'description',
@@ -65,7 +65,7 @@
         {
             accessorKey: 'transaction_date',
             header: 'Date',
-            cell: ({ row }) => DateTimeHelper.format(row.original.transaction_date, 'date'),
+            cell: ({ row }) => DateTimeHelper.format(row.original.transaction_date, 'datetime'),
         },
         { accessorKey: 'description', header: 'Description' },
         {

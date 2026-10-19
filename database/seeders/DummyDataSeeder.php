@@ -195,7 +195,7 @@ final class DummyDataSeeder extends Seeder
         $keys = array_rand($accountIds, 2);
         [$fromAccountId, $toAccountId] = [$accountIds[$keys[0]], $accountIds[$keys[1]]];
         $amount = random_int(10, 500) * 1000;
-        $date = $this->randomDateInMonth($year, $month)->toDateString();
+        $date = $this->randomDateInMonth($year, $month);
         $withFee = fake()->boolean(30);
 
         $transfer = Transfer::factory()->create([
@@ -240,6 +240,7 @@ final class DummyDataSeeder extends Seeder
             $month,
             random_int(1, Date::create($year, $month)->daysInMonth),
             random_int(0, 23),
+            random_int(0, 59),
             random_int(0, 59),
         );
     }

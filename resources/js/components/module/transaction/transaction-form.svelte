@@ -117,7 +117,7 @@
             destination_account_id: transaction.destination_account_id ?? '',
             fee_amount: transaction.fee_amount !== null ? String(transaction.fee_amount) : '',
             category_id: transaction.category_id ?? '',
-            transaction_date: transaction.transaction_date,
+            transaction_date: transaction.transaction_date ?? '',
         };
     }
 
@@ -310,16 +310,17 @@
                 </Field>
             {/if}
 
-            <!-- 4 · Date -->
+            <!-- 4 · Date & Time -->
             <Field
                 id="transaction-date"
                 titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
                 error={form.errors.transaction_date}
                 required
-                title="Date">
+                title="Date & Time">
                 <DateInput
                     id="transaction-date"
                     placeholder="Pick a date"
+                    type="date-time"
                     bind:value={form.transaction_date} />
             </Field>
 

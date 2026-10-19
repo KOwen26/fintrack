@@ -20,9 +20,9 @@ final class Transfer extends Model
     protected function casts(): array
     {
         return [
-            'amount' => 'decimal:0',
-            'fee_amount' => 'decimal:0',
-            'transaction_date' => 'date',
+            'amount' => 'integer',
+            'fee_amount' => 'integer',
+            'transaction_date' => 'datetime',
         ];
     }
 

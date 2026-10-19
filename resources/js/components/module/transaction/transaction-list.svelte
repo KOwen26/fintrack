@@ -147,12 +147,12 @@
 
     const groupedTransactions = $derived.by<DayGroup[]>(() => {
         const groups = new SvelteMap<string, Data.TransactionListData[]>();
-
         for (const transaction of transactions) {
-            const group = groups.get(transaction.transaction_date);
+            const day = transaction.transaction_date.slice(0, 10);
+            const group = groups.get(day);
 
             if (group) group.push(transaction);
-            else groups.set(transaction.transaction_date, [transaction]);
+            else groups.set(day, [transaction]);
         }
 
         return [...groups.entries()].map(([date, txns]) => ({

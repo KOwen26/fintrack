@@ -16,9 +16,9 @@ Inline comments are short narrative markers inside docblocked methods. Use
 
 Get the current time with `now()` for simple values or the `Date::` facade for chained
 date-range math (`Date::parse()` for input parsing); never `Carbon::now()`. Import
-`Carbon\Carbon` only as a type hint. Match the model cast to the column precision —
-day-precision columns cast to `'date'` (`transaction_date`), timestamps to
-`'datetime'`.
+Match the model cast to the column precision — day-precision columns cast to
+'date' (e.g. a genuinely day-only column), timestamps and `transaction_date` to
+'datetime'.
 
 ## Cross-cutting: explicit per-query eager loading
 

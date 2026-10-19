@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->decimal('amount', 15, 2);
             $table->decimal('fee_amount', 15, 2)->nullable();
-            $table->date('transaction_date');
+            $table->dateTime('transaction_date')->useCurrent();
             $table->string('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
