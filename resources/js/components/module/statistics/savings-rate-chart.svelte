@@ -19,7 +19,7 @@
     const history = $derived(
         (report?.data ?? []).map((m) => ({
             label: DateTimeHelper.format(DateTimeHelper.parseLocalDay(m.date), 'month-year-short'),
-            rate: m.savings_rate,
+            rate: m.rate,
             tier: m.tier,
         }))
     );
@@ -63,7 +63,11 @@
         return current === 0 || tier == null ? 'var(--muted-foreground)' : tierColor(tier);
     });
 
-    function tierColor(tier: string): string {
+    function tierColor(tier: string | null): string {
+        if (tier == null) {
+            return 'var(--muted-foreground)';
+        }
+
         switch (tier) {
             case SavingsRateTier.Healthy:
                 return 'var(--success)';

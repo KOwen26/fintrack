@@ -2,7 +2,7 @@
 
 namespace App\Data\Report;
 
-use App\Objects\SavingsRatePoint;
+use App\Objects\CashflowPoint;
 use Carbon\CarbonImmutable;
 use Spatie\LaravelData\Attributes\WithTransformer;
 use Spatie\LaravelData\Data;
@@ -11,8 +11,8 @@ use Spatie\LaravelData\Transformers\DateTimeInterfaceTransformer;
 class SavingsRateReportData extends Data
 {
     public function __construct(
-        /** @var SavingsRatePoint[] */
-        public array $data,
+        /** @var CashflowPoint[] */
+        public readonly array $data,
 
         #[WithTransformer(DateTimeInterfaceTransformer::class, format: 'Y-m-d')]
         public readonly CarbonImmutable $from,

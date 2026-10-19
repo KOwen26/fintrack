@@ -8,7 +8,7 @@ use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use App\Models\User;
-use App\Objects\DailyCashflow;
+use App\Objects\CashflowPoint;
 use App\Objects\DatePeriod;
 use App\Services\SpendingService;
 use Carbon\CarbonImmutable;
@@ -35,7 +35,7 @@ function spendingItem(string $categoryId, string $group, float $total, float $pe
     );
 }
 
-describe('globalCategorySpending', function (): void {
+describe('categorySpending', function (): void {
     it('nests category spending under its group', function (): void {
         $account = createAccountWithOwner();
         Transaction::factory()->expense()->forCategory('groceries')->create([
@@ -45,26 +45,27 @@ describe('globalCategorySpending', function (): void {
         ]);
 
         $service = new SpendingService;
-        $report = $service->globalCategorySpending(
-            [$account->id],
+        $report = $service->categorySpending(
+            $account->owner,
             DatePeriodPreset::ThisMonth,
         );
 
         expect($report->categories)->toHaveCount(1)
-            ->and($report->categories[0])->group_id->toBe('shopping')->name->toBe('Shopping')->total->toBe(200_000.0)->children->toHaveCount(1)
+            ->and($report->categories[0])->group->toBe('shopping')->name->toBe('Shopping')->total->toBe(200_000.0)->children->toHaveCount(1)
             ->and($report->categories[0]->children[0])->category_id->toBe('groceries')->name->toBe('Groceries')->total->toBe(200_000.0);
     });
 
     it('returns an empty report when no accounts are given', function (): void {
         $service = new SpendingService;
+        $user = User::factory()->create();
 
-        $report = $service->globalCategorySpending(
-            [],
+        $report = $service->categorySpending(
+            $user,
             DatePeriodPreset::ThisMonth,
         );
 
         expect($report->categories)->toBeEmpty()
-            ->and($report->period_total)->toBe(0.0);
+            ->and($report->total_expense)->toBe(0.0);
     });
 
     it('merges sibling category spending into one group', function (): void {
@@ -83,13 +84,13 @@ describe('globalCategorySpending', function (): void {
         ]);
 
         $service = new SpendingService;
-        $report = $service->globalCategorySpending(
-            [$account->id],
+        $report = $service->categorySpending(
+            $account->owner,
             DatePeriodPreset::ThisMonth,
         );
 
         expect($report->categories)->toHaveCount(1)
-            ->and($report->categories[0])->group_id->toBe('transport')->name->toBe('Transport')->total->toBe(450_000.0)
+            ->and($report->categories[0])->group->toBe('transport')->name->toBe('Transport')->total->toBe(450_000.0)
             ->and($report->categories[0]->children)->toHaveCount(2)
             ->and(array_column($report->categories[0]->children, 'total'))->toBe([300_000.0, 150_000.0]);
     });
@@ -110,22 +111,22 @@ describe('globalCategorySpending', function (): void {
         ]);
 
         $service = new SpendingService;
-        $report = $service->globalCategorySpending(
-            [$account->id],
+        $report = $service->categorySpending(
+            $account->owner,
             DatePeriodPreset::ThisMonth,
         );
 
         expect($report->categories)->toHaveCount(2)
-            ->and($report->categories[0]->group_id)->toBe('transport')
-            ->and($report->categories[1]->group_id)->toBe('shopping');
+            ->and($report->categories[0]->group)->toBe('transport')
+            ->and($report->categories[1]->group)->toBe('shopping');
     });
 });
 
-describe('groupByCategoryGroup', function (): void {
+describe('rollUpByCategoryGroup', function (): void {
     it('returns empty array for no items', function (): void {
         $service = new SpendingService;
 
-        $result = $service->groupByCategoryGroup([], 1000);
+        $result = $service->rollUpByCategoryGroup([], 1000);
 
         expect($result)->toBeEmpty();
     });
@@ -135,10 +136,10 @@ describe('groupByCategoryGroup', function (): void {
 
         $items = [spendingItem('dining_out', 'food_and_drinks', 500.0, 50.0)];
 
-        $result = $service->groupByCategoryGroup($items, 1000);
+        $result = $service->rollUpByCategoryGroup($items, 1000);
 
         expect($result)->toHaveCount(1)
-            ->and($result[0])->group_id->toBe('food_and_drinks')->name->toBe('Food & Drinks')->total->toBe(500.0)->percentage->toBe(50.0)->children->toHaveCount(1)
+            ->and($result[0])->group->toBe('food_and_drinks')->name->toBe('Food & Drinks')->total->toBe(500.0)->percentage->toBe(50.0)->children->toHaveCount(1)
             ->and($result[0]->children[0])->category_id->toBe('dining_out')->total->toBe(500.0);
     });
 
@@ -150,10 +151,10 @@ describe('groupByCategoryGroup', function (): void {
             spendingItem('public_transport', 'transport', 150.0, 15.0),
         ];
 
-        $result = $service->groupByCategoryGroup($items, 1000);
+        $result = $service->rollUpByCategoryGroup($items, 1000);
 
         expect($result)->toHaveCount(1)
-            ->and($result[0])->group_id->toBe('transport')->name->toBe('Transport')->total->toBe(450.0)->percentage->toBe(45.0);
+            ->and($result[0])->group->toBe('transport')->name->toBe('Transport')->total->toBe(450.0)->percentage->toBe(45.0);
 
         // Child percentages are relative to the group subtotal (450)
         expect($result[0]->children)->toHaveCount(2);
@@ -168,12 +169,12 @@ describe('groupByCategoryGroup', function (): void {
             spendingItem('groceries', 'shopping', 500.0, 50.0),
         ];
 
-        $result = $service->groupByCategoryGroup($items, 1000);
+        $result = $service->rollUpByCategoryGroup($items, 1000);
 
         expect($result)->toHaveCount(2);
         // Shopping comes first (higher total)
-        expect($result[0]->group_id)->toBe('shopping');
-        expect($result[1]->group_id)->toBe('transport')
+        expect($result[0]->group)->toBe('shopping');
+        expect($result[1]->group)->toBe('transport')
             ->and($result[0]->total)->toBe(500.0)
             ->and($result[1]->total)->toBe(300.0);
     });
@@ -187,7 +188,7 @@ describe('groupByCategoryGroup', function (): void {
             spendingItem('bus_trains', 'transport', 100.0, 10.0),
         ];
 
-        $result = $service->groupByCategoryGroup($items, 1000);
+        $result = $service->rollUpByCategoryGroup($items, 1000);
 
         expect($result)->toHaveCount(1)
             ->and($result[0]->total)->toBe(500.0)
@@ -227,7 +228,7 @@ describe('monthlyCashflow', function (): void {
         $report = $service->monthlyCashflow($user, DatePeriodPreset::ThisMonth);
 
         expect($report->data)->toHaveCount(2)
-            ->and($report->data[0])->toBeInstanceOf(DailyCashflow::class)
+            ->and($report->data[0])->toBeInstanceOf(CashflowPoint::class)
             ->and($report->data[0]->date)->toBeInstanceOf(CarbonImmutable::class)
             ->and($report->data[0]->date->toDateString())->toBe(now()->startOfMonth()->addDays(2)->toDateString())
             ->and($report->data[0]->income)->toBe(500_000.0)
@@ -358,12 +359,12 @@ describe('cashflowTrend', function (): void {
             ->and($report->data)->toHaveCount(3)
             ->and($report->data[0]->date->toDateString())->toBe('2026-08-01')
             ->and($report->data[0]->expense)->toBe(100_000.0)
-            ->and($report->data[0]->surplus_rate)->toBe(0.0)
+            ->and($report->data[0]->rate)->toBe(0.0)
             ->and($report->data[1]->income)->toBe(0.0)
             ->and($report->data[1]->expense)->toBe(0.0)
             ->and($report->data[2]->income)->toBe(1_000_000.0)
             ->and($report->data[2]->net)->toBe(600_000.0)
-            ->and($report->data[2]->surplus_rate)->toBe(60.0)
+            ->and($report->data[2]->rate)->toBe(60.0)
             ->and($report->total_income)->toBe(1_000_000.0)
             ->and($report->total_expense)->toBe(500_000.0)
             ->and($report->total_net)->toBe(500_000.0);
@@ -705,11 +706,10 @@ describe('weekdayPattern', function (): void {
 });
 
 describe('weeklySpendingAverage', function (): void {
-    it('projects the current week to a full week run-rate', function (): void {
+    it('returns the average expense amount per transaction of the current week', function (): void {
         $this->travelTo(new CarbonImmutable('2026-10-15'));
 
-        // Frozen Thursday: week-to-date covers Mon 2026-10-12 .. today —
-        // 4 elapsed days; the week runs through Sun 2026-10-18.
+        // Frozen Thursday: week-to-date covers Mon 2026-10-12 .. today.
         $user = User::factory()->create();
         $account = Account::factory()->create(['owner_id' => $user->id]);
 
@@ -720,12 +720,12 @@ describe('weeklySpendingAverage', function (): void {
         ]);
         Transaction::factory()->expense()->create([
             'account_id' => $account->id,
-            'amount' => 50_000,
+            'amount' => 100_000,
             'transaction_date' => '2026-10-13',
         ]);
         Transaction::factory()->expense()->create([
             'account_id' => $account->id,
-            'amount' => 50_000,
+            'amount' => 100_000,
             'transaction_date' => '2026-10-14',
         ]);
         // Last week's spending, income rows, and pre-week rows never count.
@@ -742,8 +742,9 @@ describe('weeklySpendingAverage', function (): void {
 
         $service = new SpendingService;
 
-        // 200_000 / 4 elapsed days × 7 = 350_000 exactly.
-        expect($service->weeklySpendingAverage($user))->toBe(350_000.0);
+        // 300_000 across 3 week rows — AVG(amount), not SUM ÷ elapsed days
+        // (a projection would be 300_000 / 4 × 7 = 525_000).
+        expect($service->weeklySpendingAverage($user))->toBe(100_000.0);
     });
 
     it('returns zero for a user without accounts', function (): void {

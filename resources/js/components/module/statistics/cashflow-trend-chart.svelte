@@ -22,7 +22,7 @@
         income: number;
         expense: number;
         net: number;
-        surplus_rate: number;
+        rate: number;
     }
 
     let { trend }: { trend?: CashflowTrendReportData } = $props();
@@ -51,7 +51,7 @@
             income: m.income,
             expense: m.expense,
             net: m.net,
-            surplus_rate: m.surplus_rate,
+            rate: m.rate,
         }))
     );
 
@@ -162,7 +162,7 @@
                             )}
                             {@render ui.row(
                                 'Surplus rate',
-                                `${Math.round(data.surplus_rate)}% · ${surplusStatus(data.surplus_rate)}`
+                                `${Math.round(data.rate)}% · ${surplusStatus(data.rate)}`
                             )}
                         </div>
                     {/snippet}

@@ -9,7 +9,6 @@ use App\Data\Report\MonthlyCashflowReportData;
 use App\Data\Report\SavingsRateReportData;
 use App\Http\Requests\StatisticsIndexRequest;
 use App\Models\User;
-use App\Services\AccountService;
 use App\Services\SpendingService;
 use Illuminate\Container\Attributes\CurrentUser;
 use Inertia\Inertia;
@@ -57,8 +56,8 @@ final class StatisticController extends Controller
             ),
 
             'categorySpending' => Inertia::defer(
-                fn (): CategorySpendingReportData => $this->spendingService->globalCategorySpending(
-                    AccountService::getAccountIdsByUser($this->user)->all(),
+                fn (): CategorySpendingReportData => $this->spendingService->categorySpending(
+                    $this->user,
                     $request->period(),
                 )
             ),

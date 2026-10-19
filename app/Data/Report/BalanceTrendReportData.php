@@ -18,7 +18,7 @@ class BalanceTrendReportData extends Data
          *
          * @var array<int, array{date: string, balance: float, net_delta: float}>
          */
-        public array $data,
+        public readonly array $data,
         #[WithTransformer(DateTimeInterfaceTransformer::class, format: 'Y-m-d')]
         public readonly CarbonImmutable $from,
         #[WithTransformer(DateTimeInterfaceTransformer::class, format: 'Y-m-d')]

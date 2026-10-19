@@ -2,7 +2,7 @@
 
 namespace App\Data\Report;
 
-use App\Objects\MonthlyCashflow;
+use App\Objects\CashflowPoint;
 use Carbon\CarbonImmutable;
 use Spatie\LaravelData\Attributes\WithTransformer;
 use Spatie\LaravelData\Data;
@@ -11,8 +11,8 @@ use Spatie\LaravelData\Transformers\DateTimeInterfaceTransformer;
 class CashflowTrendReportData extends Data
 {
     public function __construct(
-        /** @var MonthlyCashflow[] */
-        public array $data,
+        /** @var CashflowPoint[] */
+        public readonly array $data,
         // The bounds are calendar months, not instants — serialized as Y-m-d so
         // consumers never have to strip an offset they never wanted.
         #[WithTransformer(DateTimeInterfaceTransformer::class, format: 'Y-m-d')]

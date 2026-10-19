@@ -101,7 +101,7 @@ test('scopes category spending to the requested month window', function (): void
             ->loadDeferredProps(fn ($page) => $page
                 ->where('categorySpending.from', '2026-03-01')
                 ->where('categorySpending.to', '2026-03-31')
-                ->where('categorySpending.period_total', 150_000.0)
+                ->where('categorySpending.total_expense', 150_000.0)
                 ->has('categorySpending.categories', 1)
             )
         );

@@ -1,5 +1,5 @@
 export type BalanceTrendReportData = {
-    data: {
+    readonly data: {
         date: string;
         balance: number;
         net_delta: number;
@@ -8,8 +8,16 @@ export type BalanceTrendReportData = {
     readonly to: string;
     readonly current_total: number;
 };
+export type CashflowPoint = {
+    readonly date: string;
+    readonly net: number;
+    readonly rate: number;
+    readonly income: number;
+    readonly expense: number;
+    readonly tier: App.Enums.SavingsRateTier | null;
+};
 export type CashflowTrendReportData = {
-    data: MonthlyCashflow[];
+    readonly data: CashflowPoint[];
     readonly from: string;
     readonly to: string;
     readonly total_income: number;
@@ -39,18 +47,10 @@ export type CategorySpendingItemData = {
     percentage: number;
 };
 export type CategorySpendingReportData = {
-    categories: ParentSpendingItemData[];
-    period_total: number;
-    from: string;
-    to: string;
-};
-export type ChildSpendingItemData = {
-    category_id: string;
-    name: string;
-    color: string;
-    icon: string;
-    total: number;
-    percentage: number;
+    readonly categories: ParentSpendingItemData[];
+    readonly total_expense: number;
+    readonly from: string;
+    readonly to: string;
 };
 export type CursorPaginatedDataCollection<TKey, TValue> = CursorPaginator<TKey, TValue>;
 export type CursorPaginator<TKey, TValue> = {
@@ -70,12 +70,6 @@ export type CursorPaginator<TKey, TValue> = {
     };
 };
 export type CursorPaginatorInterface<TKey, TValue> = CursorPaginator<TKey, TValue>;
-export type DailyCashflow = {
-    readonly date: string;
-    readonly net: number;
-    readonly income: number;
-    readonly expense: number;
-};
 export type DataTablePayloadData = {
     has_sort: boolean;
     has_filters: boolean;
@@ -110,15 +104,8 @@ export type LengthAwarePaginator<TKey, TValue> = {
     };
 };
 export type LengthAwarePaginatorInterface<TKey, TValue> = LengthAwarePaginator<TKey, TValue>;
-export type MonthlyCashflow = {
-    readonly date: string;
-    readonly net: number;
-    readonly surplus_rate: number;
-    readonly income: number;
-    readonly expense: number;
-};
 export type MonthlyCashflowReportData = {
-    data: DailyCashflow[];
+    readonly data: CashflowPoint[];
     readonly from: string;
     readonly to: string;
     readonly total_income: number;
@@ -130,23 +117,16 @@ export type MonthlyCashflowReportData = {
 };
 export type PaginatedDataCollection<TKey, TValue> = LengthAwarePaginator<TKey, TValue>;
 export type ParentSpendingItemData = {
-    group_id: string;
-    name: string;
-    color: string;
-    icon: string;
-    total: number;
-    percentage: number;
-    children: ChildSpendingItemData[];
-};
-export type SavingsRatePoint = {
-    readonly date: string;
-    readonly savings_rate: number;
-    readonly tier: string;
-    readonly income: number;
-    readonly expense: number;
+    readonly group: string;
+    readonly name: string;
+    readonly color: string;
+    readonly icon: string;
+    readonly total: number;
+    readonly percentage: number;
+    readonly children: CategorySpendingItemData[];
 };
 export type SavingsRateReportData = {
-    data: SavingsRatePoint[];
+    readonly data: CashflowPoint[];
     readonly from: string;
     readonly to: string;
     readonly target_rate: number;
@@ -223,7 +203,7 @@ export type WeekdayCashflow = {
     readonly tier: App.Enums.StatisticDataTier;
 };
 export type WeekdayPatternReportData = {
-    data: WeekdayCashflow[];
+    readonly data: WeekdayCashflow[];
     readonly from: string;
     readonly to: string;
     readonly baseline_from: string;

@@ -27,7 +27,7 @@ final readonly class WeekdayCashflow implements Arrayable
         public readonly StatisticDataTier $tier = StatisticDataTier::Rest,
     ) {
         // A zero baseline has no fair percent — 0.0, matching the report
-        // family's zero-data convention (see surplus_rate).
+        // family's zero-data convention (see CashflowPoint::rate).
         $this->deviation = $this->baseline > 0
             ? round(($this->current - $this->baseline) / $this->baseline * 100, 2)
             : 0.0;

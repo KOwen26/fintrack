@@ -12,7 +12,7 @@ class WeekdayPatternReportData extends Data
 {
     public function __construct(
         /** @var WeekdayCashflow[] */
-        public array $data,
+        public readonly array $data,
         // The compared week (Monday through Sunday of the current one).
         #[WithTransformer(DateTimeInterfaceTransformer::class, format: 'Y-m-d')]
         public readonly CarbonImmutable $from,
