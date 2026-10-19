@@ -2,41 +2,63 @@
 
 namespace App\Services;
 
+use App\Data\Report\BalanceTrendReportData;
+use App\Data\Report\CashflowTrendReportData;
 use App\Data\Report\CategorySpendingItemData;
 use App\Data\Report\CategorySpendingReportData;
-use App\Data\Report\ChildSpendingItemData;
 use App\Data\Report\MonthlyCashflowReportData;
 use App\Data\Report\ParentSpendingItemData;
+use App\Data\Report\SavingsRateReportData;
+use App\Data\Report\WeekdayPatternReportData;
+use App\Enums\Cashflow;
 use App\Enums\CategoryGroup;
 use App\Enums\DatePeriodPreset;
+use App\Enums\SavingsRateTier;
+use App\Enums\StatisticDataTier;
 use App\Enums\TransactionType;
+use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
-use App\Objects\DailyCashflow;
+use App\Objects\CashflowPoint;
 use App\Objects\DatePeriod;
+use App\Objects\WeekdayCashflow;
+use Generator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Date;
 
 final class SpendingService
 {
-    /**
-     * Aggregate category spending across multiple accounts for a given period.
-     * SQL sums per category; the enum supplies presentation metadata and the
-     * group rollup folds in PHP.
-     */
-    public function globalCategorySpending(array $accountIds, DatePeriodPreset $periodPreset): CategorySpendingReportData
-    {
-        $period = $periodPreset->toPeriod();
+    /** The fallback balance trend span when the preset has no rolling month count. */
+    private const int DefaultBalanceSpanMonths = 6;
 
-        if ($accountIds === []) {
+    /**
+     * Aggregate category spending across all of a user's accounts for a
+     * given period. SQL sums per category; the enum supplies presentation
+     * metadata and the group rollup folds in PHP.
+     */
+    public function categorySpending(User $user, DatePeriodPreset | DatePeriod $period): CategorySpendingReportData
+    {
+        return $this->buildCategorySpending(AccountService::getAccountIdsByUser($user), $period);
+    }
+
+    /** Aggregate category spending within a single account. */
+    public function categorySpendingForAccount(Account $account, DatePeriodPreset | DatePeriod $period): CategorySpendingReportData
+    {
+        return $this->buildCategorySpending(collect([$account->id]), $period);
+    }
+
+    private function buildCategorySpending(Collection $accountIds, DatePeriodPreset | DatePeriod $periodPreset): CategorySpendingReportData
+    {
+        $period = $periodPreset instanceof DatePeriodPreset ? $periodPreset->toPeriod() : $periodPreset;
+
+        if ($accountIds->isEmpty()) {
             return CategorySpendingReportData::emptyForPeriod($period);
         }
 
-        [$from, $to] = $period->toRange();
-
         $periodTotal = (float) Transaction::query()
-            ->whereIn('account_id', $accountIds)
-            ->where('type', TransactionType::Expense->value)
-            ->whereBetween('transaction_date', [$from, $to])
+            ->byAccounts($accountIds)
+            ->byTypes(TransactionType::Expense)
+            ->withinPeriod($period)
             ->sum('amount');
 
         if ($periodTotal <= 0) {
@@ -44,9 +66,9 @@ final class SpendingService
         }
 
         $rows = Transaction::query()
-            ->whereIn('account_id', $accountIds)
-            ->where('type', TransactionType::Expense->value)
-            ->whereBetween('transaction_date', [$from, $to])
+            ->byAccounts($accountIds)
+            ->byTypes(TransactionType::Expense)
+            ->withinPeriod($period)
             ->selectRaw('category_id, SUM(amount) AS total, ROUND(SUM(amount) / ? * 100, 2) AS percentage', [$periodTotal])
             ->groupBy('category_id')
             ->orderByDesc('total')
@@ -63,13 +85,13 @@ final class SpendingService
             ))
             ->all();
 
-        $groups = $this->groupByCategoryGroup($items, $periodTotal);
+        $groups = $this->rollUpByCategoryGroup($items, $periodTotal);
 
         return new CategorySpendingReportData(
             categories: $groups,
-            period_total: $periodTotal,
-            from: $from,
-            to: $to,
+            total_expense: $periodTotal,
+            from: $period->start,
+            to: $period->end,
         );
     }
 
@@ -85,15 +107,15 @@ final class SpendingService
     {
         $period = $period instanceof DatePeriodPreset ? $period->toPeriod() : $period;
 
-        $accountIds = AccountService::getAccountIdsByUser($user)->all();
+        $accountIds = AccountService::getAccountIdsByUser($user);
 
-        if ($accountIds === []) {
+        if ($accountIds->isEmpty()) {
             return MonthlyCashflowReportData::emptyForPeriod($period);
         }
 
         $rows = Transaction::query()
-            ->whereIn('account_id', $accountIds)
-            ->whereIn('type', [TransactionType::Income->value, TransactionType::Expense->value])
+            ->byAccounts($accountIds)
+            ->byTypes(TransactionType::Income, TransactionType::Expense)
             ->withinPeriod($period)
             ->selectRaw('DATE(transaction_date) AS day, type, SUM(amount) AS total')
             ->groupBy('day', 'type')
@@ -116,7 +138,7 @@ final class SpendingService
         $maxExpense = 0.0;
 
         foreach ($buckets as $day => $bucket) {
-            $cashflow = new DailyCashflow(Date::parse($day), $bucket['income'], $bucket['expense']);
+            $cashflow = new CashflowPoint(Date::parse($day), $bucket['income'], $bucket['expense']);
 
             $data[] = $cashflow;
             $totalIncome += $cashflow->income;
@@ -140,13 +162,405 @@ final class SpendingService
     }
 
     /**
+     * Aggregate per-month income and expense across the preset's window,
+     * zero-filling months without activity (the final month may be partial).
+     * SQL groups by month and type exactly like monthlyCashflow does by day;
+     * months without activity are zero-filled server-side so the frontend
+     * renders a continuous axis, with net and rate derived inside the
+     * CashflowPoint value object.
+     */
+    public function cashflowTrend(User $user, DatePeriodPreset $period): CashflowTrendReportData
+    {
+        $accountIds = AccountService::getAccountIdsByUser($user);
+
+        $period = $this->trendPeriod($period, $accountIds);
+
+        $buckets = $this->cashflowBuckets($accountIds, $period);
+
+        $data = [];
+        $totalIncome = 0.0;
+        $totalExpense = 0.0;
+
+        foreach ($this->monthBuckets($period, $buckets) as [$month, $bucket]) {
+            $cashflow = new CashflowPoint($month, $bucket['income'], $bucket['expense']);
+
+            $data[] = $cashflow;
+            $totalIncome += $cashflow->income;
+            $totalExpense += $cashflow->expense;
+        }
+
+        return new CashflowTrendReportData(
+            data: $data,
+            from: $period->start,
+            to: $period->end,
+            total_income: $totalIncome,
+            total_expense: $totalExpense,
+            total_net: $totalIncome - $totalExpense,
+        );
+    }
+
+    /**
+     * The window the trend chart reports on for a preset. Month-count
+     * presets keep the classic whole-month rolling span so the chart always
+     * ends with the current (partial) month; All Time is unbounded and gets
+     * bounded at the accounts' earliest transaction month so the bucket
+     * walk stays finite; every other preset uses its literal window.
+     */
+    private function trendPeriod(DatePeriodPreset $preset, Collection $accountIds): DatePeriod
+    {
+        $months = $preset->rollingMonths();
+
+        if ($months !== null) {
+            return DatePeriod::forRollingMonths($months);
+        }
+
+        if ($preset === DatePeriodPreset::All) {
+            $earliest = $accountIds->isEmpty()
+                ? null
+                : Transaction::query()->byAccounts($accountIds)->min('transaction_date');
+
+            // No history at all — report the current month as a single
+            // zero-filled bucket instead of a 26-year axis of zeros.
+            return $earliest === null
+                ? DatePeriod::forMonth(now())
+                : new DatePeriod(Date::parse($earliest)->startOfMonth());
+        }
+
+        return $preset->toPeriod();
+    }
+
+    /**
+     * Reconstruct month-end total balance over a rolling span. Monthly deltas
+     * aggregate every transaction type — transfers self-cancel while both
+     * legs sit inside the account scope, and fees are ordinary expense rows —
+     * then the series is walked backward from the accounts' current balance
+     * total, so historical row drift can never accumulate and the series
+     * lands exactly on the dashboard's number. Rolling month presets supply
+     * the span; anything else falls back to the default 6-month window.
+     */
+    public function balanceTrend(User $user, DatePeriodPreset $period): BalanceTrendReportData
+    {
+        $period = DatePeriod::forRollingMonths($period->rollingMonths() ?? self::DefaultBalanceSpanMonths);
+
+        $accounts = AccountService::getAccountsByUser($user);
+        $accountIds = $accounts->pluck('id');
+
+        $rows = $accountIds->isEmpty() ? [] : Transaction::query()
+            ->byAccounts($accountIds)
+            ->withinPeriod($period)
+            ->selectRaw("DATE_FORMAT(transaction_date, '%Y-%m') AS month, SUM(CASE WHEN flow = ? THEN amount ELSE -amount END) AS delta", [Cashflow::Inflow->value])
+            ->groupBy('month')
+            ->orderByDesc('month')
+            ->get();
+
+        /** @var array<string, float> $deltas */
+        $deltas = [];
+
+        foreach ($rows as $row) {
+            $deltas[$row->month] = (float) $row->delta;
+        }
+
+        // Newest first: the latest month-end equals the current total, then
+        // each older month-end subtracts the month that follows it.
+        $data = [];
+        $balance = (float) $accounts->sum('current_balance');
+
+        for ($month = $period->end->startOfMonth(); $month->greaterThanOrEqualTo($period->start); $month = $month->subMonthsNoOverflow(1)) {
+            $delta = $deltas[$month->format('Y-m')] ?? 0.0;
+
+            $data[] = [
+                'date' => $month->endOfMonth()->toDateString(),
+                'balance' => $balance,
+                'net_delta' => $delta,
+            ];
+
+            $balance -= $delta;
+        }
+
+        return new BalanceTrendReportData(
+            data: array_reverse($data),
+            from: $period->start,
+            to: $period->end,
+            current_total: (float) $accounts->sum('current_balance'),
+        );
+    }
+
+    /**
+     * Compare each weekday's spending this week against its trailing
+     * three-month average. Two grouped queries (MySQL WEEKDAY(), Monday = 0)
+     * — the current week and the baseline window — then per-weekday
+     * baselines divide the window totals by how often each weekday occurs
+     * in it, so a 4-vs-5-occurrence month compares fairly. All seven rows
+     * are always emitted, zero-filled; days after today carry current = 0
+     * (week-to-date).
+     */
+    public function weekdayPattern(User $user): WeekdayPatternReportData
+    {
+        $week = DatePeriod::forWeek();
+        $baselinePeriod = DatePeriod::forRollingMonths(3);
+
+        $accountIds = AccountService::getAccountIdsByUser($user);
+
+        /** @var array<int, float> $currentByWeekday keyed ISO weekday */
+        $currentByWeekday = $this->expenseTotalsByWeekday($accountIds, $week);
+
+        /** @var array<int, float> $baselineTotals keyed ISO weekday */
+        $baselineTotals = $this->expenseTotalsByWeekday($accountIds, $baselinePeriod);
+
+        // The averaging base — how often each weekday occurs in the window.
+        $occurrences = array_fill(1, 7, 0);
+
+        for ($day = $baselinePeriod->start; $day->lessThan($baselinePeriod->end); $day = $day->addDay()) {
+            $occurrences[(int) $day->format('N')]++;
+        }
+
+        // Emphasis tiers — the two heaviest spending days of the scope step
+        // up the tint ladder; zero-current days (week not yet reached them)
+        // always stay muted, whatever their rank among empty rows. Ties keep
+        // the earlier weekday (uasort is stable over the Mon→Sun insertion).
+        $tiers = array_fill(1, 7, StatisticDataTier::Rest);
+
+        $eligible = array_filter(
+            $currentByWeekday,
+            fn (float $current): bool => $current > 0,
+        );
+
+        uasort($eligible, fn (float $a, float $b): int => $b <=> $a);
+
+        foreach (array_keys($eligible) as $index => $weekday) {
+            $tiers[$weekday] = $index === 0
+                ? StatisticDataTier::Top
+                : ($index === 1 ? StatisticDataTier::Second : StatisticDataTier::Rest);
+        }
+
+        $data = [];
+        $totalExpense = 0.0;
+
+        for ($weekday = 1; $weekday <= 7; $weekday++) {
+            $baseline = round($baselineTotals[$weekday] / max($occurrences[$weekday], 1), 2);
+            $current = $currentByWeekday[$weekday];
+
+            $data[] = new WeekdayCashflow($weekday, $current, $baseline, $tiers[$weekday]);
+            $totalExpense += $current;
+        }
+
+        // Strict `>` scans over the Mon→Sun-ordered rows keep the earliest
+        // weekday on ties. The deviation peak only counts days that are
+        // actually above their baseline — "under average" is not a peak.
+        $peakWeekday = null;
+        $peakDeviationWeekday = null;
+        $maxCurrent = 0.0;
+        $maxDeviation = 0.0;
+
+        foreach ($data as $cashflow) {
+            if ($cashflow->current > $maxCurrent) {
+                $maxCurrent = $cashflow->current;
+                $peakWeekday = $cashflow->weekday;
+            }
+
+            if ($cashflow->current > 0 && $cashflow->deviation > $maxDeviation) {
+                $maxDeviation = $cashflow->deviation;
+                $peakDeviationWeekday = $cashflow->weekday;
+            }
+        }
+
+        return new WeekdayPatternReportData(
+            data: $data,
+            from: $week->start,
+            to: $week->end,
+            baseline_from: $baselinePeriod->start,
+            baseline_to: $baselinePeriod->end,
+            total_expense: $totalExpense,
+            peak_weekday: $peakWeekday,
+            peak_deviation_weekday: $peakDeviationWeekday,
+        );
+    }
+
+    /**
+     * Savings-rate history over a rolling window (default 12 months). Each
+     * month's rate is (income - expense) / income, banded into healthy /
+     * caution / negative. Aggregates (current, average, streaks, best/worst)
+     * are derived server-side so the gauge + meta read consistently with the
+     * history line.
+     *
+     * @param  int  $months  Rolling month count (clamped to >= 1).
+     */
+    public function savingsRate(User $user, int $months = 12): SavingsRateReportData
+    {
+        $months = max(1, $months);
+        $accountIds = AccountService::getAccountIdsByUser($user);
+
+        $period = DatePeriod::forRollingMonths($months);
+
+        $buckets = $this->cashflowBuckets($accountIds, $period);
+
+        $data = [];
+        $rates = [];
+
+        foreach ($this->monthBuckets($period, $buckets) as [$month, $bucket]) {
+            $point = CashflowPoint::banded($month, $bucket['income'], $bucket['expense']);
+            $data[] = $point;
+            $rates[] = $point->rate;
+        }
+
+        $currentRate = $data === [] ? 0.0 : array_last($data)->rate;
+
+        $averageRate = $rates === [] ? 0.0 : round(array_sum($rates) / count($rates), 2);
+
+        // Streaks over consecutive healthy months.
+        $currentStreak = 0;
+        for ($i = count($data) - 1; $i >= 0; $i--) {
+            if ($data[$i]->tier === SavingsRateTier::Healthy->value) {
+                $currentStreak++;
+            } else {
+                break;
+            }
+        }
+
+        $longestStreak = 0;
+        $run = 0;
+        foreach ($data as $point) {
+            if ($point->tier === SavingsRateTier::Healthy->value) {
+                $run++;
+                $longestStreak = max($longestStreak, $run);
+            } else {
+                $run = 0;
+            }
+        }
+
+        $bestRate = $rates === [] ? 0.0 : max($rates);
+        $worstRate = $rates === [] ? 0.0 : min($rates);
+
+        return new SavingsRateReportData(
+            data: $data,
+            from: $period->start,
+            to: $period->end,
+            target_rate: SavingsRateTier::healthyThreshold(),
+            current_rate: $currentRate,
+            average_rate: $averageRate,
+            current_streak: $currentStreak,
+            longest_streak: $longestStreak,
+            best_rate: $bestRate,
+            worst_rate: $worstRate,
+        );
+    }
+
+    /**
+     * The average expense amount per transaction within the current week —
+     * the typical single expense during the Monday-based week-to-date
+     * window. Deliberately not a projection: a weekly total or run-rate
+     * would divide by elapsed days, this does not. The week base matches
+     * the weekday pattern beside it.
+     */
+    public function weeklySpendingAverage(User $user): float
+    {
+        $week = DatePeriod::forWeek();
+
+        $accountIds = AccountService::getAccountIdsByUser($user);
+
+        if ($accountIds->isEmpty()) {
+            return 0.0;
+        }
+
+        $amountAverage = (float) Transaction::query()
+            ->byAccounts($accountIds)
+            ->byTypes(TransactionType::Expense)
+            ->withinPeriod($week)
+            ->avg('amount');
+
+        return $amountAverage;
+    }
+
+    /**
+     * Per-month income/expense sums — the shared grain of cashflowTrend and
+     * savingsRate. Keyed by `Y-m`; months without activity are absent, the
+     * zero-fill happens in the month walk the reports follow up with.
+     *
+     * @return array<string, array{income: float, expense: float}>
+     */
+    private function cashflowBuckets(Collection $accountIds, DatePeriod $period): array
+    {
+        if ($accountIds->isEmpty()) {
+            return [];
+        }
+
+        $rows = Transaction::query()
+            ->byAccounts($accountIds)
+            ->byTypes(TransactionType::Income, TransactionType::Expense)
+            ->withinPeriod($period)
+            ->selectRaw("DATE_FORMAT(transaction_date, '%Y-%m') AS month, type, SUM(amount) AS total")
+            ->groupBy('month', 'type')
+            ->get();
+
+        /** @var array<string, array{income: float, expense: float}> $buckets */
+        $buckets = [];
+
+        foreach ($rows as $row) {
+            $buckets[$row->month] ??= ['income' => 0.0, 'expense' => 0.0];
+            $buckets[$row->month][$row->type->value] += (float) $row->total;
+        }
+
+        return $buckets;
+    }
+
+    /**
+     * Walk every calendar month the window touches — a day-anchored preset
+     * (e.g. Last 30 Days) may span two partial months, and skipping the last
+     * one would drop its rows from the totals. Months without activity are
+     * zero-filled.
+     *
+     * @param  array<string, array{income: float, expense: float}>  $buckets
+     *
+     * @return Generator<int, array{0: CarbonImmutable, 1: array{income: float, expense: float}}>
+     */
+    private function monthBuckets(DatePeriod $period, array $buckets): Generator
+    {
+        $month = $period->start->startOfMonth();
+        $endMonth = $period->end->startOfMonth();
+
+        for (; $month->lessThanOrEqualTo($endMonth); $month = $month->addMonthsNoOverflow(1)) {
+            yield [$month, $buckets[$month->format('Y-m')] ?? ['income' => 0.0, 'expense' => 0.0]];
+        }
+    }
+
+    /**
+     * Expense totals per ISO weekday (1 Monday … 7 Sunday) within the window
+     * — MySQL WEEKDAY(), Monday = 0. weekdayPattern's current week and the
+     * trailing baseline window share this shape.
+     *
+     * @return array<int, float> keyed ISO weekday
+     */
+    private function expenseTotalsByWeekday(Collection $accountIds, DatePeriod $period): array
+    {
+        $totals = array_fill(1, 7, 0.0);
+
+        if ($accountIds->isEmpty()) {
+            return $totals;
+        }
+
+        $rows = Transaction::query()
+            ->byAccounts($accountIds)
+            ->byTypes(TransactionType::Expense)
+            ->withinPeriod($period)
+            ->selectRaw('WEEKDAY(transaction_date) AS weekday, SUM(amount) AS total')
+            ->groupBy('weekday')
+            ->get();
+
+        foreach ($rows as $row) {
+            $totals[(int) $row->weekday + 1] = (float) $row->total;
+        }
+
+        return $totals;
+    }
+
+    /**
      * Roll flat category spending items up into their category groups.
      *
      * @param  CategorySpendingItemData[]  $items
      *
      * @return ParentSpendingItemData[]
      */
-    public function groupByCategoryGroup(array $items, float $periodTotal): array
+    public function rollUpByCategoryGroup(array $items, float $periodTotal): array
     {
         $grouped = [];
 
@@ -164,7 +578,7 @@ final class SpendingService
             ));
 
             $result[] = new ParentSpendingItemData(
-                group_id: $group->value,
+                group: $group->value,
                 name: $group->label(),
                 color: $group->decorations()->color,
                 icon: $group->decorations()->icon,
@@ -182,17 +596,19 @@ final class SpendingService
     }
 
     /**
-     * Build ChildSpendingItemData array, recalculating percentages relative to the group subtotal.
+     * Build the leaf rows — same item class, the percentage is recalculated
+     * relative to the group subtotal rather than the whole window.
      *
      * @param  CategorySpendingItemData[]  $children
      *
-     * @return ChildSpendingItemData[]
+     * @return CategorySpendingItemData[]
      */
     private function buildChildren(array $children, float $groupSubtotal): array
     {
         return array_map(
-            fn (CategorySpendingItemData $c): ChildSpendingItemData => new ChildSpendingItemData(
+            fn (CategorySpendingItemData $c): CategorySpendingItemData => new CategorySpendingItemData(
                 category_id: $c->category_id,
+                group: $c->group,
                 name: $c->name,
                 color: $c->color,
                 icon: $c->icon,

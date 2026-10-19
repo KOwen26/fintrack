@@ -109,3 +109,6 @@ export function renderComponent<
 export function renderSnippet<TProps>(snippet: Snippet<[TProps]>, params: TProps = {} as TProps) {
     return new RenderSnippetConfig(snippet, params);
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type FlexRenderer = RenderComponentConfig<Component<any>> | RenderSnippetConfig<any>;

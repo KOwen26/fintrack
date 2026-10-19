@@ -28,7 +28,7 @@ final class DashboardController extends Controller
     {
         $accounts = $this->accountService->getAccountsByUser($this->user);
 
-        $categorySpending = $this->spendingService->globalCategorySpending($accounts->pluck('id')->all(), DatePeriodPreset::ThisMonth);
+        $categorySpending = $this->spendingService->categorySpending($this->user, DatePeriodPreset::ThisMonth);
 
         $recentTransactions = $this->transactionService->getTransactions($this->user, DatePeriodPreset::Last14Days);
 

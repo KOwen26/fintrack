@@ -49,7 +49,7 @@ final class AccountController extends Controller
 
         $transactions = $transactionService->getAccountTransactions($account, $period);
 
-        $categorySpending = $spendingService->globalCategorySpending([$account->id], $period);
+        $categorySpending = $spendingService->categorySpendingForAccount($account, $period);
 
         return Inertia::render('app/account/show', [
             'account' => $account,

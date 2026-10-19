@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 #[ObservedBy([TransactionObserver::class])]
 final class Transaction extends Model
@@ -55,5 +56,19 @@ final class Transaction extends Model
     protected function withinPeriod(Builder $query, DatePeriod $period): Builder
     {
         return $query->whereBetween('transaction_date', $period->toRange());
+    }
+
+    /** Restrict rows to the given account set — the report queries' scope prefix. */
+    #[Scope]
+    protected function byAccounts(Builder $query, Collection $accountIds): Builder
+    {
+        return $query->whereIn('account_id', $accountIds);
+    }
+
+    /** Restrict rows to the given transaction types; enum instances only, no raw literals. */
+    #[Scope]
+    protected function byTypes(Builder $query, TransactionType ...$types): Builder
+    {
+        return $query->whereIn('type', $types);
     }
 }

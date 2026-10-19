@@ -12,8 +12,11 @@ use Illuminate\Support\Facades\Date;
  * before validation (a Y-m month anchors to its first day); anything
  * malformed is dropped rather than rejected, so the window defaults to the
  * current month — lenient by design, hand-edited URLs degrade gracefully.
+ *
+ * Deliberately extendable (see the arch exemption): page requests that add
+ * their own params subclass this and reuse the month window as-is.
  */
-final class MonthPeriodRequest extends FormRequest
+class MonthPeriodRequest extends FormRequest
 {
     public function authorize(): bool
     {

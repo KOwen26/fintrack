@@ -1,22 +1,24 @@
 <script lang="ts">
     import type { CalendarBackground } from '@components/module/statistics/monthly-calendar-grid.svelte';
     import type { ChartConfig } from '@components/ui/atoms/chart';
-    import type { MonthlyFlowReportData } from '@type/generated';
+    import type { MonthlyCashflowReportData } from '@type/generated';
 
     import { router } from '@inertiajs/svelte';
-    import statistics from '@wayfinder/routes/statistics';
     import { addMonths, endOfMonth, format, isSameMonth } from 'date-fns';
     import { Chart } from 'layerchart';
 
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
+    import { renderComponent } from '@utilities/render-helper';
 
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
     import MonthlyCalendarGrid, {
         calendarRamp,
     } from '@components/module/statistics/monthly-calendar-grid.svelte';
     import { ChartContainer, ChartTooltip } from '@components/ui/atoms/chart';
     import { Tabs, TabsList, TabsTrigger } from '@components/ui/atoms/tabs';
     import Button from '@components/ui/button.svelte';
+    import Skeleton from '@components/ui/skeleton.svelte';
 
     interface DayDatum {
         date: Date;
@@ -36,11 +38,11 @@
     type Mode = 'net' | 'income' | 'expense';
 
     let {
-        monthlyFlow,
+        monthlyCashflow,
         onDayClick,
         emptyMessage = 'No transaction data this month',
     }: {
-        monthlyFlow: MonthlyFlowReportData;
+        monthlyCashflow?: MonthlyCashflowReportData;
         onDayClick?: (date: Date) => void;
         emptyMessage?: string;
     } = $props();
@@ -86,11 +88,13 @@
     }
 
     // Month window from the server's period (`from` is start-of-month, Y-m-d).
-    const monthStart = $derived(DateTimeHelper.parseLocalDay(monthlyFlow.from));
+    const monthStart = $derived(
+        monthlyCashflow ? DateTimeHelper.parseLocalDay(monthlyCashflow.from) : new Date()
+    );
     const monthEnd = $derived(endOfMonth(monthStart));
 
     const chartData = $derived(
-        monthlyFlow.data.map((d): DayDatum => ({
+        (monthlyCashflow?.data ?? []).map((d): DayDatum => ({
             date: DateTimeHelper.parseLocalDay(d.date),
             income: d.income,
             expense: d.expense,
@@ -99,9 +103,9 @@
     );
 
     // Scale anchors come from the report — the server already aggregated them.
-    const maxAbsNet = $derived(monthlyFlow.max_abs_net);
-    const maxIncome = $derived(monthlyFlow.max_income);
-    const maxExpense = $derived(monthlyFlow.max_expense);
+    const maxAbsNet = $derived(monthlyCashflow?.max_abs_net ?? 0);
+    const maxIncome = $derived(monthlyCashflow?.max_income ?? 0);
+    const maxExpense = $derived(monthlyCashflow?.max_expense ?? 0);
 
     function backgroundFor(cell: CalendarCell): CalendarBackground {
         const d = cell.data;
@@ -146,99 +150,128 @@
 
     const isCurrentMonth = $derived(isSameMonth(monthStart, new Date()));
 
-    /** Partial reload — swaps only the monthlyFlow prop, keeps view state. */
+    /** Partial reload — swaps only the monthlyCashflow prop; `data` merges over the live query. */
     function visitMonth(delta: number): void {
         const month = format(addMonths(monthStart, delta), 'yyyy-MM');
 
-        router.get(statistics.index.url({ query: { month } }), {
-            only: ['monthlyFlow'],
-            preserveScroll: true,
-            preserveState: true,
-        });
+        router.reload({ only: ['monthlyCashflow'], data: { month } });
     }
 </script>
 
-<div class="w-full">
-    <div class="mb-3 flex items-center justify-between">
-        <div class="flex items-center gap-1">
-            <Button
-                aria-label="Previous month"
-                onclick={() => visitMonth(-1)}
-                size="icon-sm"
-                variant="ghost">
-                <i class="iconify size-5 solar--alt-arrow-left-line-duotone"></i>
-            </Button>
+{#if !monthlyCashflow}
+    <!-- Deferred prop skeleton — the report streams in after first paint. -->
+    <div class="space-y-3">
+        <Skeleton class="mx-auto h-6 w-40" />
+        <Skeleton class="aspect-square w-full" />
+    </div>
+{:else}
+    <div class="w-full">
+        <div class="mb-3 flex items-center justify-between">
+            <div class="flex items-center gap-1">
+                <Button
+                    aria-label="Previous month"
+                    onclick={() => visitMonth(-1)}
+                    size="icon-sm"
+                    variant="ghost">
+                    <i class="iconify size-5 solar--alt-arrow-left-line-duotone"></i>
+                </Button>
 
-            <span class=" text-center text-sm font-medium">
-                {DateTimeHelper.format(monthStart, 'month-year')}
-            </span>
+                <span class=" text-center text-sm font-medium">
+                    {DateTimeHelper.format(monthStart, 'month-year')}
+                </span>
 
-            <Button
-                aria-label="Next month"
-                disabled={isCurrentMonth}
-                onclick={() => visitMonth(1)}
-                size="icon-sm"
-                variant="ghost">
-                <i class="iconify size-5 solar--alt-arrow-right-line-duotone"></i>
-            </Button>
+                <Button
+                    aria-label="Next month"
+                    disabled={isCurrentMonth}
+                    onclick={() => visitMonth(1)}
+                    size="icon-sm"
+                    variant="ghost">
+                    <i class="iconify size-5 solar--alt-arrow-right-line-duotone"></i>
+                </Button>
+            </div>
+
+            <Tabs onValueChange={(v) => (mode = v)} value={mode}>
+                <TabsList>
+                    <TabsTrigger class="min-w-8 p-1" aria-label="Net" value="net">
+                        <i class="iconify size-5 solar--sort-vertical-line-duotone"></i>
+                    </TabsTrigger>
+                    <TabsTrigger class="min-w-8 p-1" aria-label="Income" value="income">
+                        <i
+                            class="iconify size-5 text-success solar--arrow-to-down-right-line-duotone"
+                        ></i>
+                    </TabsTrigger>
+                    <TabsTrigger class="min-w-8 p-1" aria-label="Expense" value="expense">
+                        <i class="iconify size-5 text-error solar--arrow-to-top-left-line-duotone"
+                        ></i>
+                    </TabsTrigger>
+                </TabsList>
+            </Tabs>
         </div>
 
-        <Tabs onValueChange={(v) => (mode = v)} value={mode}>
-            <TabsList>
-                <TabsTrigger class="min-w-8 p-1" aria-label="Net" value="net">
-                    <i class="iconify size-5 solar--sort-vertical-line-duotone"></i>
-                </TabsTrigger>
-                <TabsTrigger class="min-w-8 p-1" aria-label="Income" value="income">
-                    <i class="iconify size-5 text-success solar--arrow-to-down-right-line-duotone"
-                    ></i>
-                </TabsTrigger>
-                <TabsTrigger class="min-w-8 p-1" aria-label="Expense" value="expense">
-                    <i class="iconify size-5 text-error solar--arrow-to-top-left-line-duotone"></i>
-                </TabsTrigger>
-            </TabsList>
-        </Tabs>
-    </div>
+        <!-- Square region: the tallest month (6 week rows + header = 7) fills it exactly; shorter months keep a stable card height with bottom slack. -->
+        <ChartContainer class="aspect-square w-full" config={chartConfig}>
+            <Chart class="relative" data={chartData} x="date">
+                <MonthlyCalendarGrid
+                    {backgroundFor}
+                    {labelFor}
+                    {monthEnd}
+                    {monthStart}
+                    {onDayClick} />
 
-    <!-- Square region: the tallest month (6 week rows + header = 7) fills it exactly; shorter months keep a stable card height with bottom slack. -->
-    <ChartContainer class="aspect-square w-full" config={chartConfig}>
-        <Chart class="relative" data={chartData} x="date">
-            <MonthlyCalendarGrid {backgroundFor} {labelFor} {monthEnd} {monthStart} {onDayClick} />
+                <ChartTooltip>
+                    {#snippet tooltipContent(data, ui)}
+                        {@render ui.label(DateTimeHelper.format(data.date, 'date'))}
 
-            <ChartTooltip>
-                {#snippet tooltipContent(data, ui)}
-                    {@render ui.label(DateTimeHelper.format(data.date, 'date'))}
+                        {#if 'net' in data}
+                            <div class="grid gap-1.5">
+                                {@render ui.row(
+                                    'Income',
+                                    renderComponent(CurrencyAmount, {
+                                        value: data.income,
+                                        class: 'font-semibold text-foreground',
+                                    })
+                                )}
+                                {@render ui.row(
+                                    'Expense',
+                                    renderComponent(CurrencyAmount, {
+                                        value: data.expense,
+                                        class: 'font-semibold text-foreground',
+                                    })
+                                )}
+                                {@render ui.row(
+                                    'Net',
+                                    renderComponent(CurrencyAmount, {
+                                        value: data.net,
+                                        class: 'font-semibold text-foreground',
+                                    })
+                                )}
+                            </div>
+                        {/if}
+                    {/snippet}
+                </ChartTooltip>
 
-                    {#if 'net' in data}
-                        <div class="grid gap-1.5">
-                            {@render ui.row('Income', Formatter.currency(data.income, true))}
-                            {@render ui.row('Expense', Formatter.currency(data.expense, true))}
-                            {@render ui.row('Net', Formatter.currency(data.net, true))}
+                <div class="absolute bottom-0 w-full">
+                    {#if monthlyCashflow.data.length === 0}
+                        <div
+                            class="flex flex-col items-center justify-center py-6 text-base-content/40">
+                            <i class="mb-2 iconify size-8 solar--calendar-bold-duotone"></i>
+                            <p class="text-sm">{emptyMessage}</p>
+                        </div>
+                    {:else}
+                        <div
+                            class="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
+                            <span>Less</span>
+                            {#each legendBackgrounds as entry (entry.background)}
+                                <span style:background={entry.background} class="size-3 rounded-sm"
+                                ></span>
+                            {/each}
+                            <span>More</span>
+                            <span class="mx-1 size-3 rounded-sm bg-muted"></span>
+                            <span>No activity</span>
                         </div>
                     {/if}
-                {/snippet}
-            </ChartTooltip>
-
-            <div class="absolute bottom-0 w-full">
-                {#if monthlyFlow.data.length === 0}
-                    <div
-                        class="flex flex-col items-center justify-center py-6 text-base-content/40">
-                        <i class="mb-2 iconify size-8 solar--calendar-bold-duotone"></i>
-                        <p class="text-sm">{emptyMessage}</p>
-                    </div>
-                {:else}
-                    <div
-                        class="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
-                        <span>Less</span>
-                        {#each legendBackgrounds as entry (entry.background)}
-                            <span style:background={entry.background} class="size-3 rounded-sm"
-                            ></span>
-                        {/each}
-                        <span>More</span>
-                        <span class="mx-1 size-3 rounded-sm bg-muted"></span>
-                        <span>No activity</span>
-                    </div>
-                {/if}
-            </div>
-        </Chart>
-    </ChartContainer>
-</div>
+                </div>
+            </Chart>
+        </ChartContainer>
+    </div>
+{/if}

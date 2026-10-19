@@ -22,7 +22,7 @@
     } = $props();
 
     const categories = $derived(categorySpending.categories);
-    const periodTotal = $derived(categorySpending.period_total);
+    const periodTotal = $derived(categorySpending.total_expense);
 
     // View state: 'parent' shows grouped parents, 'children' shows one parent's breakdown
     let view: 'parent' | 'children' = $state('parent');

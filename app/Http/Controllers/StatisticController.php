@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\MonthPeriodRequest;
+use App\Data\Report\BalanceTrendReportData;
+use App\Data\Report\CashflowTrendReportData;
+use App\Data\Report\CategorySpendingReportData;
+use App\Data\Report\MonthlyCashflowReportData;
+use App\Data\Report\SavingsRateReportData;
+use App\Http\Requests\StatisticsIndexRequest;
 use App\Models\User;
 use App\Services\SpendingService;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -17,14 +22,45 @@ final class StatisticController extends Controller
     ) {}
 
     /**
-     * Statistics overview — daily income/expense calendar for one month.
-     * `?month` (Y-m or Y-m-d) navigates to an explicit month; see
-     * MonthPeriodRequest for the resolution and fallback rules.
+     * Statistics overview — daily income/expense calendar for one month plus
+     * the trend cards. Every report prop is deferred: the page paints with
+     * skeletons and each card streams in, and a partial reload of one prop
+     * never evaluates the other reports. `?month` navigates the calendar
+     * (see MonthPeriodRequest); `?trend` picks the cashflow card's
+     * DatePeriodPreset; `?balance` picks the balance card's rolling
+     * DatePeriodPreset. `weeklySpendingAverage` projects the current week to
+     * a full week (run-rate). `categorySpending` follows the same `?month`
+     * window as the calendar.
      */
-    public function index(MonthPeriodRequest $request): Response
+    public function index(StatisticsIndexRequest $request): Response
     {
         return Inertia::render('app/statistics/index', [
-            'monthlyFlow' => $this->spendingService->monthlyCashflow($this->user, $request->period()),
+            'weeklySpendingAverage' => $this->spendingService->weeklySpendingAverage($this->user),
+
+            'weekdayPattern' => $this->spendingService->weekdayPattern($this->user),
+
+            'monthlyCashflow' => Inertia::defer(
+                fn (): MonthlyCashflowReportData => $this->spendingService->monthlyCashflow($this->user, $request->period())
+            ),
+
+            'cashflowTrend' => Inertia::defer(
+                fn (): CashflowTrendReportData => $this->spendingService->cashflowTrend($this->user, $request->trendPreset())
+            ),
+
+            'balanceTrend' => Inertia::defer(
+                fn (): BalanceTrendReportData => $this->spendingService->balanceTrend($this->user, $request->balancePreset())
+            ),
+
+            'savingsRate' => Inertia::defer(
+                fn (): SavingsRateReportData => $this->spendingService->savingsRate($this->user, (int) $request->input('savings_months', 12))
+            ),
+
+            'categorySpending' => Inertia::defer(
+                fn (): CategorySpendingReportData => $this->spendingService->categorySpending(
+                    $this->user,
+                    $request->period(),
+                )
+            ),
         ]);
     }
 }

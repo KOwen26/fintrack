@@ -1,4 +1,7 @@
+import type { Day, LocaleWidth } from 'date-fns';
+
 import { parse, startOfDay } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 
 export default class DateTimeHelper {
     /**
@@ -15,6 +18,42 @@ export default class DateTimeHelper {
         return startOfDay(parse(day, 'yyyy-MM-dd', new Date()));
     }
 
+    static weekdayNameByIndex(
+        index: number,
+        variant: 'short' | 'long' = 'short',
+        weekStart: 'monday' | 'sunday' = 'monday'
+    ): string {
+        return DateTimeHelper.weekdayNames(variant, weekStart)[index];
+    }
+
+    /**
+     * Weekday names Monday-first, indexed by ISO weekday (1–7 → [0]–[6]).
+     * Reads the bundled locale data directly rather than formatting a
+     * sample date — no anchor, and deterministic where runtime ICU could
+     * silently fall back to English. date-fns days run Sunday-first
+     * (0 = Sunday), so ISO 7 wraps to 0.
+     *
+     * @example DateTimeHelper.weekdayNames('short') // ["Sen", "Sel", … "Min"]
+     */
+    static weekdayNames(
+        variant: 'short' | 'long' = 'short',
+        weekStart: 'monday' | 'sunday' = 'monday'
+    ): string[] {
+        const firstDay = weekStart === 'monday' ? 1 : 0;
+        const variantMap: Record<'short' | 'long', LocaleWidth> = {
+            short: 'abbreviated',
+            long: 'wide',
+        };
+
+        return Array.from({ length: 7 }, (_, i) => {
+            const weekday = ((firstDay + i) % 7) as Day;
+
+            return enUS.localize.day(weekday, {
+                width: variantMap[variant],
+            });
+        });
+    }
+
     /**
      * @param value - Date, ISO string, or timestamp
      * @param preset - Format preset:
@@ -25,6 +64,7 @@ export default class DateTimeHelper {
      * | `datetime-long` | `1 Januari 2025 14.30` |
      * | `date` | `1 Januari 2025` |
      * | `month-year` | `Januari 2025` |
+     * | `month-year-short` | `Mei 26` |
      * | `time` | `14.30` |
      * | `day-date` | `Sen, 3 Feb 26` |
      * | `day-date-long` | `Senin, 3 Februari 26` |
@@ -38,6 +78,7 @@ export default class DateTimeHelper {
             | 'datetime-long'
             | 'date'
             | 'month-year'
+            | 'month-year-short'
             | 'time'
             | 'day-date'
             | 'day-date-long' = 'datetime'
@@ -98,6 +139,12 @@ export default class DateTimeHelper {
                 dateOptions = {
                     year: 'numeric',
                     month: 'long',
+                };
+                break;
+            case 'month-year-short':
+                dateOptions = {
+                    year: '2-digit',
+                    month: 'short',
                 };
                 break;
             case 'time':

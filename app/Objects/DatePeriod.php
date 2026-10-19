@@ -3,6 +3,7 @@
 namespace App\Objects;
 
 use Carbon\CarbonImmutable;
+use Carbon\WeekDay;
 use DateTimeInterface;
 use InvalidArgumentException;
 
@@ -45,6 +46,29 @@ final readonly class DatePeriod
         $start = CarbonImmutable::instance($day)->startOfMonth();
 
         return new self($start, $start->endOfMonth());
+    }
+
+    /** The calendar week containing the given day — Monday through Sunday. */
+    public static function forWeek(?DateTimeInterface $anchor = null): self
+    {
+        $day = CarbonImmutable::instance($anchor ?? now());
+
+        return new self($day->startOfWeek(WeekDay::Monday), $day->endOfWeek(WeekDay::Sunday));
+    }
+
+    /**
+     * Whole calendar months ending with the anchor's month — the final month
+     * may be partial (the current one during live use), by rolling-span
+     * design rather than accident.
+     */
+    public static function forRollingMonths(int $months, ?DateTimeInterface $anchor = null): self
+    {
+        $end = CarbonImmutable::instance($anchor ?? now());
+
+        return new self(
+            $end->subMonthsNoOverflow($months - 1)->startOfMonth(),
+            $end->endOfMonth(),
+        );
     }
 
     /** The widest period a MySQL `date` column can reliably express. */
