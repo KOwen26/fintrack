@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 final class DummyDataSeeder extends Seeder
@@ -49,34 +50,67 @@ final class DummyDataSeeder extends Seeder
         int $incomePerMonthMax = 15,
         int $transfersPerMonth = 5,
     ): void {
-        $userNames ??= ['Alice Johnson', 'Bob Smith'];
+        DB::disableQueryLog();
 
-        // Bookable preset categories only — the system-only opening balance is excluded.
-        $incomeCategories = collect(CategoryGroup::Income->children())
-            ->reject(fn (Category $category): bool => $category === Category::InitialBalance)
-            ->values();
+        DB::transaction(function () use (
+            $users,
+            $userNames,
+            $months,
+            $accountsPerUserMin,
+            $accountsPerUserMax,
+            $transactionsPerMonth,
+            $incomePerMonthMin,
+            $incomePerMonthMax,
+            $transfersPerMonth,
+        ): void {
+            $incomeCategories = collect(CategoryGroup::Income->children())
+                ->reject(fn (Category $category): bool => $category === Category::InitialBalance)
+                ->values();
 
-        $expenseCategories = collect(Category::cases())
-            ->reject(fn (Category $category): bool => $category->group()->flow() === Cashflow::Inflow)
-            ->values();
+            $expenseCategories = collect(Category::cases())
+                ->reject(fn (Category $category): bool => $category->group()->flow() === Cashflow::Inflow)
+                ->values();
 
-        for ($index = 0; $index < $users; $index++) {
-            $name = $userNames[$index] ?? fake()->name();
+            Transaction::withoutEvents(function () use (
+                $users,
+                $userNames,
+                $months,
+                $accountsPerUserMin,
+                $accountsPerUserMax,
+                $transactionsPerMonth,
+                $incomePerMonthMin,
+                $incomePerMonthMax,
+                $transfersPerMonth,
+                $incomeCategories,
+                $expenseCategories,
+            ): void {
+                for ($index = 0; $index < $users; $index++) {
+                    $name = $userNames[$index] ?? ['Alice Johnson', 'Bob Smith'][$index % 2];
 
-            $this->seedUser(
-                name: $name,
-                email: Str::slug($name, '.') . '@example.com',
-                months: $months,
-                accountsPerUserMin: $accountsPerUserMin,
-                accountsPerUserMax: $accountsPerUserMax,
-                transactionsPerMonth: $transactionsPerMonth,
-                incomePerMonthMin: $incomePerMonthMin,
-                incomePerMonthMax: $incomePerMonthMax,
-                transfersPerMonth: $transfersPerMonth,
-                incomeCategories: $incomeCategories,
-                expenseCategories: $expenseCategories,
+                    $this->seedUser(
+                        name: $name,
+                        email: Str::slug($name, '.') . '@example.com',
+                        months: $months,
+                        accountsPerUserMin: $accountsPerUserMin,
+                        accountsPerUserMax: $accountsPerUserMax,
+                        transactionsPerMonth: $transactionsPerMonth,
+                        incomePerMonthMin: $incomePerMonthMin,
+                        incomePerMonthMax: $incomePerMonthMax,
+                        transfersPerMonth: $transfersPerMonth,
+                        incomeCategories: $incomeCategories,
+                        expenseCategories: $expenseCategories,
+                    );
+                }
+            });
+
+            // Recompute account balances in one statement — the observer was disabled above.
+            DB::statement(
+                'UPDATE accounts SET current_balance = COALESCE(('
+                . "SELECT SUM(CASE WHEN flow = 'inflow' THEN amount ELSE -amount END) "
+                . 'FROM transactions WHERE transactions.account_id = accounts.id '
+                . 'AND transactions.deleted_at IS NULL), 0)'
             );
-        }
+        });
     }
 
     private function resetCoverage(): void
