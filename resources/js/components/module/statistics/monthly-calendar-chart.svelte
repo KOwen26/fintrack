@@ -9,7 +9,9 @@
 
     import DateTimeHelper from '@utilities/date-time-helper';
     import Formatter from '@utilities/formatter';
+    import { renderComponent } from '@utilities/render-helper';
 
+    import CurrencyAmount from '@components/data/currency-amount.svelte';
     import MonthlyCalendarGrid, {
         calendarRamp,
     } from '@components/module/statistics/monthly-calendar-grid.svelte';
@@ -222,9 +224,27 @@
 
                         {#if 'net' in data}
                             <div class="grid gap-1.5">
-                                {@render ui.row('Income', Formatter.currency(data.income, true))}
-                                {@render ui.row('Expense', Formatter.currency(data.expense, true))}
-                                {@render ui.row('Net', Formatter.currency(data.net, true))}
+                                {@render ui.row(
+                                    'Income',
+                                    renderComponent(CurrencyAmount, {
+                                        value: data.income,
+                                        class: 'font-semibold text-foreground',
+                                    })
+                                )}
+                                {@render ui.row(
+                                    'Expense',
+                                    renderComponent(CurrencyAmount, {
+                                        value: data.expense,
+                                        class: 'font-semibold text-foreground',
+                                    })
+                                )}
+                                {@render ui.row(
+                                    'Net',
+                                    renderComponent(CurrencyAmount, {
+                                        value: data.net,
+                                        class: 'font-semibold text-foreground',
+                                    })
+                                )}
                             </div>
                         {/if}
                     {/snippet}

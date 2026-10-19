@@ -25,12 +25,14 @@ test('renders the statistics page with deferred report props', function (): void
             ->missing('cashflowTrend')
             ->missing('balanceTrend')
             ->missing('weekdayPattern')
+            ->missing('categorySpending')
             ->loadDeferredProps(fn ($page) => $page
                 ->has('monthlyCashflow')
                 ->has('monthlyCashflow.data', 1)
                 ->has('cashflowTrend')
                 ->has('balanceTrend')
                 ->has('weekdayPattern')
+                ->has('categorySpending')
             )
         );
 });
@@ -70,6 +72,37 @@ test('renders a requested month window', function (): void {
             ->loadDeferredProps(fn ($page) => $page
                 ->where('monthlyCashflow.from', '2026-03-01')
                 ->has('monthlyCashflow.data', 1)
+            )
+        );
+});
+
+test('scopes category spending to the requested month window', function (): void {
+    $user = User::factory()->create();
+    $account = Account::factory()->create(['owner_id' => $user->id]);
+
+    Transaction::factory()->expense()->forCategory('groceries')->create([
+        'account_id' => $account->id,
+        'created_by' => $user->id,
+        'amount' => 150_000,
+        'transaction_date' => '2026-03-10',
+    ]);
+
+    Transaction::factory()->expense()->forCategory('cinema_and_shows')->create([
+        'account_id' => $account->id,
+        'created_by' => $user->id,
+        'amount' => 80_000,
+        'transaction_date' => '2026-02-10',
+    ]);
+
+    $this->actingAs($user)->get(route('statistics.index', ['month' => '2026-03']))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('app/statistics/index')
+            ->loadDeferredProps(fn ($page) => $page
+                ->where('categorySpending.from', '2026-03-01')
+                ->where('categorySpending.to', '2026-03-31')
+                ->where('categorySpending.period_total', 150_000.0)
+                ->has('categorySpending.categories', 1)
             )
         );
 });

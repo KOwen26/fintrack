@@ -132,11 +132,17 @@
                         <div class="grid gap-1.5">
                             {@render ui.row(
                                 'Balance',
-                                renderComponent(CurrencyAmount, { value: data.balance })
+                                renderComponent(CurrencyAmount, {
+                                    value: data.balance,
+                                    class: 'font-semibold text-foreground',
+                                })
                             )}
                             {@render ui.row(
                                 'Net change',
-                                renderComponent(CurrencyAmount, { value: data.net_delta })
+                                renderComponent(CurrencyAmount, {
+                                    value: data.net_delta,
+                                    class: 'font-semibold text-foreground',
+                                })
                             )}
                         </div>
                     {/snippet}

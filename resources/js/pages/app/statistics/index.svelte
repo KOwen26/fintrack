@@ -2,6 +2,7 @@
     import type {
         BalanceTrendReportData,
         CashflowTrendReportData,
+        CategorySpendingReportData,
         MonthlyCashflowReportData,
         SavingsRateReportData,
         WeekdayPatternReportData,
@@ -13,10 +14,12 @@
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import BalanceTrendChart from '@components/module/statistics/balance-trend-chart.svelte';
     import CashflowTrendChart from '@components/module/statistics/cashflow-trend-chart.svelte';
+    import CategorySpendingChart from '@components/module/statistics/category-spending-chart.svelte';
     import MonthlyCalendarChart from '@components/module/statistics/monthly-calendar-chart.svelte';
     import SavingsRateChart from '@components/module/statistics/savings-rate-chart.svelte';
     import WeekdayPatternChart from '@components/module/statistics/weekday-pattern-chart.svelte';
     import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
+    import Skeleton from '@components/ui/skeleton.svelte';
 
     // All report props are deferred — undefined while they stream in.
     let {
@@ -26,6 +29,7 @@
         balanceTrend,
         savingsRate,
         weekdayPattern,
+        categorySpending,
     }: {
         weeklySpendingAverage?: number;
         monthlyCashflow?: MonthlyCashflowReportData;
@@ -33,6 +37,7 @@
         balanceTrend?: BalanceTrendReportData;
         savingsRate?: SavingsRateReportData;
         weekdayPattern?: WeekdayPatternReportData;
+        categorySpending?: CategorySpendingReportData;
     } = $props();
 
     setLayoutProps({
@@ -76,6 +81,17 @@
 
         <ResponsiveCard title="Balance Trend">
             <BalanceTrendChart trend={balanceTrend} />
+        </ResponsiveCard>
+
+        {@render separator?.()}
+
+        <ResponsiveCard title="Spending By Category">
+            {#if categorySpending}
+                <CategorySpendingChart {categorySpending} />
+            {:else}
+                <!-- Deferred prop skeleton — the report streams in after first paint. -->
+                <Skeleton class="aspect-square w-full" />
+            {/if}
         </ResponsiveCard>
 
         {@render separator?.()}

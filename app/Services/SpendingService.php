@@ -36,9 +36,9 @@ final class SpendingService
      * SQL sums per category; the enum supplies presentation metadata and the
      * group rollup folds in PHP.
      */
-    public function globalCategorySpending(array $accountIds, DatePeriodPreset $periodPreset): CategorySpendingReportData
+    public function globalCategorySpending(array $accountIds, DatePeriodPreset | DatePeriod $periodPreset): CategorySpendingReportData
     {
-        $period = $periodPreset->toPeriod();
+        $period = $periodPreset instanceof DatePeriodPreset ? $periodPreset->toPeriod() : $periodPreset;
 
         if ($accountIds === []) {
             return CategorySpendingReportData::emptyForPeriod($period);

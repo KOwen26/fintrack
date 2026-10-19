@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Data\Report\BalanceTrendReportData;
 use App\Data\Report\CashflowTrendReportData;
+use App\Data\Report\CategorySpendingReportData;
 use App\Data\Report\MonthlyCashflowReportData;
 use App\Data\Report\SavingsRateReportData;
 use App\Http\Requests\StatisticsIndexRequest;
 use App\Models\User;
+use App\Services\AccountService;
 use App\Services\SpendingService;
 use Illuminate\Container\Attributes\CurrentUser;
 use Inertia\Inertia;
@@ -28,7 +30,8 @@ final class StatisticController extends Controller
      * (see MonthPeriodRequest); `?trend` picks the cashflow card's
      * DatePeriodPreset; `?balance` picks the balance card's rolling
      * DatePeriodPreset. `weeklySpendingAverage` projects the current week to
-     * a full week (run-rate).
+     * a full week (run-rate). `categorySpending` follows the same `?month`
+     * window as the calendar.
      */
     public function index(StatisticsIndexRequest $request): Response
     {
@@ -51,6 +54,13 @@ final class StatisticController extends Controller
 
             'savingsRate' => Inertia::defer(
                 fn (): SavingsRateReportData => $this->spendingService->savingsRate($this->user, (int) $request->input('savings_months', 12))
+            ),
+
+            'categorySpending' => Inertia::defer(
+                fn (): CategorySpendingReportData => $this->spendingService->globalCategorySpending(
+                    AccountService::getAccountIdsByUser($this->user)->all(),
+                    $request->period(),
+                )
             ),
         ]);
     }
