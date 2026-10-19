@@ -54,40 +54,42 @@
 
     const typeConfig = $derived(TYPE_STYLE[transaction.type]);
 
-    const signIcon = $derived(
-        transaction.flow === 'inflow' ? 'solar--add-bold-duotone' : 'solar--minus-bold-duotone'
-    );
+    /* Resolved tile config for <DecorationBadge>: category decoration (with
+       parent/group fallback) wins, then transaction-type styling. */
+    const decoration = $derived.by(() => {
+        const colorSlug =
+            transaction.category?.decorations?.color ??
+            transaction.category?.group?.decorations?.color;
+        const iconSlug =
+            transaction.category?.decorations?.icon ??
+            transaction.category?.group?.decorations?.icon;
 
-    /* Category decoration drives the tile; kind styling is the fallback
-       (transfers and uncategorized rows keep the kind-colored tile). */
-    const decoColor = $derived(
-        transaction.category?.decorations?.color
-            ? (getDecorationColor(transaction.category.decorations.color)?.hex ?? undefined)
-            : undefined
-    );
+        const decoColor = colorSlug ? getDecorationColor(colorSlug)?.hex : undefined;
+        const decoIcon = iconSlug
+            ? (getDecorationIcon(iconSlug)?.value ?? 'solar--tag-bold-duotone')
+            : undefined;
 
-    const decoIcon = $derived(
-        transaction.category?.decorations?.icon
-            ? (getDecorationIcon(transaction.category.decorations.icon)?.value ??
-                  'solar--tag-bold-duotone')
-            : undefined
-    );
-
-    /* Resolved tile config — passed to <DecorationBadge>. */
-    const tileIcon = $derived(decoIcon ?? typeConfig.icon);
-    const tileBackground = $derived(decoColor ? `${decoColor}20` : typeConfig.bg);
-    const tileColor = $derived(decoColor ?? typeConfig.color);
+        return {
+            icon: decoIcon ?? typeConfig.icon,
+            background: decoColor ? `${decoColor}20` : typeConfig.bg,
+            color: decoColor ?? typeConfig.color,
+        };
+    });
 </script>
 
 <Link
     class={cn(
-        'flex items-center gap-2 border-b border-base-content/10 p-3 transition-colors duration-100 last:border-b-0 hover:bg-base-200/40',
+        'flex items-center gap-2 border-b border-base-content/10 py-3 transition-colors duration-100 last:border-b-0 hover:bg-base-200/40',
         _class
     )}
     href={TransactionController.show.url(transaction)}>
     <!-- Icon -->
     {#if !hideIcon}
-        <DecorationBadge background={tileBackground} color={tileColor} icon={tileIcon} size="sm" />
+        <DecorationBadge
+            background={decoration.background}
+            color={decoration.color}
+            icon={decoration.icon}
+            size="sm" />
     {/if}
 
     <div class="min-w-0 flex-1">

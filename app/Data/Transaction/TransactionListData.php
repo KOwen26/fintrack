@@ -2,6 +2,7 @@
 
 namespace App\Data\Transaction;
 
+use App\Data\Category\CategoryData;
 use App\Enums\Cashflow;
 use App\Enums\Category;
 use App\Enums\TransactionType;
@@ -30,6 +31,8 @@ class TransactionListData extends Data
         public CarbonInterface $transaction_date,
 
         public ?Category $category_id,
+
+        public ?CategoryData $category,
 
         public int $account_id,
 
@@ -63,6 +66,8 @@ class TransactionListData extends Data
                     && $member->flow !== $transaction->flow);
         }
 
+        $category = $transaction->category_id;
+
         return new self(
             id: $transaction->id,
             type: $transaction->type,
@@ -71,6 +76,7 @@ class TransactionListData extends Data
             description: $transaction->description,
             transaction_date: $transaction->transaction_date,
             category_id: $transaction->category_id,
+            category: $category !== null ? CategoryData::fromEnum($category) : null,
             account_id: $transaction->account_id,
             transfer_id: $transaction->transfer_id,
             destination_account_id: $counterpart?->account_id,

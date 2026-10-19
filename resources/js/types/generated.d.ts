@@ -181,6 +181,7 @@ export type TransactionListData = {
     description: string | null;
     transaction_date: string;
     category_id: App.Enums.Category | null;
+    category: CategoryData | null;
     account_id: number;
     transfer_id: number | null;
     destination_account_id: number | null;
