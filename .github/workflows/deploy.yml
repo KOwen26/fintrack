@@ -44,7 +44,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build frontend assets
-        run: pnpm run build # wayfinder:generate && vite build
+        run: pnpm run build:deploy # wayfinder:generate && vite build
 
       # The only artifact the server needs — PHP code arrives via the server's own git pull
       - name: Package built assets

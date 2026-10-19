@@ -83,12 +83,25 @@ All reports are SQL-aggregated and cached per account (past months indefinitely,
 ### Current focus
 
 1. Define MVP-ready scope (Account, Transaction, simple spending report)
-2. Fix Transaction form & behavior
-3. Implement / rework budgeting
-4. Implement / rework transaction presets (including recurring execution)
+2. Improve transaction list
+    - each list item should show date, description, category, account and amount
+    - list can be grouped by the date, in the grouped item also calculate the net amount
+3. Transaction Tagging Feature
+    - transaction can be tagged by multiple tags
+    - tags are input by user when creating transaction (combobox like with create new value capability)
+    - the tag value will be normalized as snake_case (symbols removed) and stored as comma separated string or array, and null on empty.
+    - later, in the transaction list will be added filter by the tags
+    - in distant feature, there will be tags management per user
+4. Transaction Presets Feature
+    - user can create a preset, optionally the preset can be set for some accounts (for quick access)
+    - the preset will have name, and decoration on it for easier management (another meta is accepted)
+    - the preset will be managed from the menu on the settings
 
 ### Later
 
+- Implement / rework budgeting
+- Scheduled Transaction (Preset Improvement)
+  - from the transaction preset user can set it as an scheduled transaction, either require confirmation or not
 - Household / shared-account membership — joint accounts are currently visible to all users as a placeholder until membership exists
 - Deeper Provider integration (provider data is metadata-only today)
 
