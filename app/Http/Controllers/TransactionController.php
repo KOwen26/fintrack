@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransactionDetailData;
 use App\Data\Transaction\TransactionFormData;
-use App\Data\Transaction\TransactionListData;
 use App\Enums\AccountAccessType;
 use App\Enums\Category;
 use App\Enums\TransactionType;
@@ -35,7 +34,7 @@ final class TransactionController extends Controller
     {
         $this->authorize('viewAny', Transaction::class);
 
-        $transactions = TransactionListData::collect($this->transactionService->getTransactions($this->user));
+        $transactions = $this->transactionService->getTransactions($this->user);
 
         $accounts = Account::query()
             ->notArchived()

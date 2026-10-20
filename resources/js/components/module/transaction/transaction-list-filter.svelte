@@ -51,6 +51,7 @@
     import { TYPE_STYLE } from './transaction-list-item.svelte';
 
     import { getDecorationColor } from '@data/decoration-colors';
+    import { getDecorationIcon } from '@data/decoration-icons';
     import { onDestroy } from 'svelte';
 
     import { cn } from '@utilities/shadcn';
@@ -237,7 +238,7 @@
     }
 
     /** Direct-CSS badge colors from an optional decoration color slug. */
-    function decorationBadgeColors(color?: string): { background: string; color: string } {
+    function decorationBadgeColors(color?: string | null): { background: string; color: string } {
         const hex = color ? getDecorationColor(color)?.hex : undefined;
 
         return {
@@ -320,7 +321,8 @@
                         selected: tAccountIds.includes(acct.id),
                         onSelect: () => (tAccountIds = toggled(tAccountIds, acct.id)),
                         badge: {
-                            icon: 'solar--banknote-2-bold-duotone',
+                            // icon: 'solar--banknote-2-bold-duotone',
+                            icon: getDecorationIcon(acct.decorations?.icon)?.value,
                             ...decorationBadgeColors(acct.decorations?.color),
                         },
                     })),
@@ -343,7 +345,7 @@
                         selected: tCategoryIds.includes(cat.id),
                         onSelect: () => (tCategoryIds = toggled(tCategoryIds, cat.id)),
                         badge: {
-                            icon: 'solar--tag-bold-duotone',
+                            icon: getDecorationIcon(cat.decorations?.icon)?.value,
                             ...decorationBadgeColors(cat.decorations?.color),
                         },
                     })),
@@ -396,7 +398,7 @@
                         'border-1.5 inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 font-sans text-xs font-semibold whitespace-nowrap transition-all duration-150',
                         active
                             ? 'border-primary bg-primary text-primary-content'
-                            : 'border-border bg-background text-foreground hover:border-primary hover:text-primary'
+                            : 'border-border bg-card text-foreground hover:border-primary hover:text-primary'
                     )}
                     onclick={() => openSheet(kind)}>
                     <span>{label}</span>
@@ -411,7 +413,7 @@
                 'border-1.5 flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150',
                 sortKey !== 'newest'
                     ? 'border-primary bg-primary text-primary-content'
-                    : 'border-border bg-background text-foreground hover:border-primary'
+                    : 'border-border bg-card text-foreground hover:border-primary'
             )}
             aria-label="Sort"
             onclick={() => openSheet('sort')}>
@@ -440,7 +442,7 @@
         title={sheetTitle}
         bind:open={sheetOpen}>
         {#snippet actionButton()}
-            <Button class="w-full rounded-2xl font-bold normal-case" onclick={applyFilter}>
+            <Button class="w-full rounded-2xl font-semibold normal-case" onclick={applyFilter}>
                 Apply Filters
             </Button>
         {/snippet}

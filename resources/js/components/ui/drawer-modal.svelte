@@ -76,6 +76,7 @@
                 {@render trigger()}
             </DrawerTrigger>
         {/if}
+
         <DrawerContent class={cn(contentClass)}>
             {#if header}
                 {@render header(headerCloseButton)}
@@ -106,8 +107,8 @@
 
 {#snippet headerCloseButton()}
     <DrawerClose
-        class="rounded-md border border-base-content/20 p-1.5 text-base-content transition hover:bg-base-200">
-        <i class="iconify text-lg solar--close-linear"></i>
+        class="size-8 rounded-md border border-border p-1 text-foreground transition hover:bg-background/70">
+        <i class="iconify size-5 solar--close-linear"></i>
     </DrawerClose>
 {/snippet}
 
@@ -126,7 +127,7 @@
 
 {#snippet defaultHeader(closeButton: Snippet)}
     {#if title}
-        <DrawerHeader class="flex-row items-center justify-between">
+        <DrawerHeader class="flex-row items-center justify-between px-5 py-3">
             <DrawerTitle>{title}</DrawerTitle>
             {@render closeButton?.()}
         </DrawerHeader>

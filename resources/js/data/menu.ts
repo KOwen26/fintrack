@@ -124,7 +124,7 @@ export const dashboardMenu: MenuGroup = {
             url: accounts.index().url,
             route: 'accounts',
             active: 'accounts.*',
-            icon: 'iconify solar--user-line-duotone',
+            icon: 'iconify solar--wallet-money-line-duotone',
             type: 'menu',
         },
     },
@@ -233,7 +233,7 @@ export const transformMenuToBreadcrumbs = (menu_groups: MenuGroups = menus) => {
     });
 };
 
-export const filterMenuByPermissions = (menu_groups: MenuGroups): MenuGroups =>
+export const filterMenuByPermissions = (menu_groups: MenuGroups) =>
     menu_groups
         .map((group) => {
             const filtered = Object.entries(group.menus).reduce(
@@ -254,7 +254,7 @@ export const filterMenuByPermissions = (menu_groups: MenuGroups): MenuGroups =>
                 menus: checkSubmenuPermission(filtered),
             };
         })
-        .filter(Boolean);
+        .filter(Boolean) as MenuGroups;
 
 const checkSubmenuPermission = (menus: Record<string, Menu>): Record<string, Menu> =>
     Object.entries(menus).reduce(

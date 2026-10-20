@@ -1,6 +1,5 @@
 <script lang="ts" module>
     import type { ColumnDef, SvelteTable } from '@tanstack/svelte-table';
-    import type { Data } from '@type/type';
 
     import { FILTER_COLUMNS } from './transaction-list-filter.svelte';
 
@@ -30,12 +29,9 @@
 
     export type TransactionListFeatures = typeof transactionListFeatures;
 
-    export type TransactionListTable = SvelteTable<
-        TransactionListFeatures,
-        Data.TransactionListData
-    >;
+    export type TransactionListTable = SvelteTable<TransactionListFeatures, TransactionListData>;
 
-    const transactionListColumns: ColumnDef<TransactionListFeatures, Data.TransactionListData>[] = [
+    const transactionListColumns: ColumnDef<TransactionListFeatures, TransactionListData>[] = [
         { accessorKey: 'id', enableGlobalFilter: false },
         { accessorKey: 'transaction_date', enableGlobalFilter: false },
         { accessorKey: 'amount', enableGlobalFilter: true },
@@ -79,7 +75,7 @@
      * The page owns the instance; the list component only renders rows.
      */
     export function createTransactionListTable(
-        transactions: () => Data.TransactionListData[]
+        transactions: () => TransactionListData[]
     ): TransactionListTable {
         return createTable({
             features: transactionListFeatures,
@@ -93,6 +89,7 @@
 </script>
 
 <script lang="ts">
+    import type { TransactionListData } from '@type/generated';
     import type { RestProps } from '@type/index';
 
     import TransactionListItem from './transaction-list-item.svelte';
@@ -111,7 +108,7 @@
 
     interface Props extends RestProps {
         /** Pre-filtered, flat transaction rows — the page owns filtering. */
-        transactions: Data.TransactionListData[];
+        transactions: TransactionListData[];
         class?: string;
         hideTotal?: boolean;
         hideControl?: boolean;
@@ -132,12 +129,12 @@
 
     interface DayGroup {
         date: string;
-        transactions: Data.TransactionListData[];
+        transactions: TransactionListData[];
         net: number;
     }
 
     /** Inflows minus outflows for a set of transactions; transfers excluded. */
-    function dayNet(transactions: Data.TransactionListData[]): number {
+    function dayNet(transactions: TransactionListData[]): number {
         let net = 0;
 
         for (const transaction of transactions) {
@@ -160,7 +157,7 @@
     const visibleTransactions = $derived(transactions.slice(0, visibleCount));
 
     const groupedTransactions = $derived.by<DayGroup[]>(() => {
-        const groups = new SvelteMap<string, Data.TransactionListData[]>();
+        const groups = new SvelteMap<string, TransactionListData[]>();
         for (const transaction of visibleTransactions) {
             const day = transaction.transaction_date.slice(0, 10);
             const group = groups.get(day);
@@ -194,7 +191,7 @@
         </p>
     {/if}
 
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col">
         {#each groupedTransactions as group, i (group.date)}
             {#if variant === 'collapsible'}
                 <Collapsible.Root
@@ -212,40 +209,23 @@
                                 dayOpenOverrides.get(group.date) && 'rotate-180'
                             )}></i>
 
-                        <span class="text-xs font-semibold text-foreground uppercase">
-                            {DateTimeHelper.format(group.date, 'date')}
-                        </span>
+                        {@render groupTitle(group)}
 
-                        <CurrencyAmount
-                            class={cn(
-                                'ml-auto text-sm font-semibold whitespace-nowrap text-foreground',
-                                group.net > 0 && 'text-success',
-                                group.net < 0 && 'text-error'
-                            )}
-                            value={group.net} />
+                        {@render groupNet(group)}
                     </Collapsible.Trigger>
 
                     <Collapsible.Content>
-                        <div>
-                            {#each group.transactions as txn (txn.id)}
-                                <TransactionListItem transaction={txn} />
-                            {/each}
-                        </div>
+                        {#each group.transactions as txn (txn.id)}
+                            <TransactionListItem transaction={txn} />
+                        {/each}
                     </Collapsible.Content>
                 </Collapsible.Root>
             {:else}
                 <div>
                     <div class="flex items-center gap-2 py-2">
-                        <span class="text-xs font-semibold text-foreground uppercase">
-                            {DateTimeHelper.format(group.date, 'date')}
-                        </span>
-                        <CurrencyAmount
-                            class={cn(
-                                'ml-auto text-sm font-semibold whitespace-nowrap text-foreground',
-                                group.net > 0 && 'text-success',
-                                group.net < 0 && 'text-error'
-                            )}
-                            value={group.net} />
+                        {@render groupTitle(group)}
+
+                        {@render groupNet(group)}
                     </div>
                     <div>
                         {#each group.transactions as txn (txn.id)}
@@ -255,7 +235,7 @@
                 </div>
             {/if}
 
-            <Separator />
+            <Separator class="mt-2 mb-4" />
         {/each}
     </div>
 
@@ -273,3 +253,21 @@
         {/if}
     {/if}
 </div>
+
+{#snippet groupTitle(group)}
+    <span class="text-xs font-semibold text-foreground uppercase">
+        {DateTimeHelper.format(group.date, 'date')}
+    </span>
+{/snippet}
+
+{#snippet groupNet(group)}
+    {#if group.net != 0}
+        <CurrencyAmount
+            class={cn(
+                'ml-auto text-sm font-semibold whitespace-nowrap text-foreground',
+                group.net > 0 && 'text-success',
+                group.net < 0 && 'text-error'
+            )}
+            value={group.net} />
+    {/if}
+{/snippet}

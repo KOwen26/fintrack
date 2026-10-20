@@ -11,6 +11,7 @@
         oninput?: (value: string) => void;
         onclear?: () => void;
         class?: string;
+        inputClass?: string;
     }
 
     let {
@@ -19,7 +20,8 @@
         oninput,
         onclear,
         class: _class,
-        ...rest
+        inputClass = '',
+        ...props
     }: Props = $props();
 </script>
 
@@ -28,15 +30,15 @@
         class="pointer-events-none absolute left-3 iconify size-4 text-foreground/70 solar--magnifer-line-duotone"
         aria-hidden="true"></i>
     <Input
-        class="px-9"
+        class="px-9 {inputClass} text-sm"
         oninput={(e) => oninput?.(e.currentTarget.value ?? '')}
         {placeholder}
         type="text"
         bind:value
-        {...rest} />
+        {...props} />
     {#if value}
         <button
-            class="absolute right-2 flex size-6 items-center justify-center rounded text-foreground/70 transition-colors hover:text-foreground"
+            class="absolute right-3 flex size-5 items-center justify-center rounded text-foreground/70 transition-colors hover:text-foreground"
             aria-label="Clear search"
             onclick={() => {
                 value = '';

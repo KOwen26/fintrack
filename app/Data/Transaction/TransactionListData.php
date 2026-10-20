@@ -15,7 +15,7 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
-class TransactionListData extends Data
+final class TransactionListData extends Data
 {
     public function __construct(
         public int $id,
@@ -40,11 +40,11 @@ class TransactionListData extends Data
 
         public ?int $destination_account_id,
 
-        #[TypeScriptModel(Transaction::class)]
-        public ?Transaction $related_transaction,
-
         #[TypeScriptModel(Account::class)]
         public ?Account $account,
+
+        #[TypeScriptModel(Account::class)]
+        public ?Account $destination_account,
     ) {}
 
     /**
@@ -55,15 +55,20 @@ class TransactionListData extends Data
      */
     public static function fromTransaction(Transaction $transaction): self
     {
-        $transaction->loadMissing('transfer.transactions.account');
+        $transaction->loadMissing([
+            'account',
+            'transfer.sourceTransaction.account',
+            'transfer.destinationTransaction.account',
+        ]);
 
         $transfer = $transaction->getRelation('transfer');
 
         $counterpart = null;
+
         if ($transfer !== null && $transaction->type === TransactionType::Transfer) {
-            $counterpart = $transfer->transactions
-                ->first(fn (Transaction $member): bool => $member->id !== $transaction->id
-                    && $member->flow !== $transaction->flow);
+            $counterpart = $transaction->flow === Cashflow::Outflow
+                ? $transfer->destinationTransaction
+                : $transfer->sourceTransaction;
         }
 
         $category = $transaction->category_id;
@@ -80,7 +85,7 @@ class TransactionListData extends Data
             account_id: $transaction->account_id,
             transfer_id: $transaction->transfer_id,
             destination_account_id: $counterpart?->account_id,
-            related_transaction: $counterpart,
+            destination_account: $counterpart?->account,
             account: $transaction->relationLoaded('account') ? $transaction->account : null,
         );
     }

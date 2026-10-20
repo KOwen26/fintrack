@@ -23,7 +23,7 @@
             label: 'Transfer',
             color: 'var(--color-info)',
             bg: 'color-mix(in oklab, var(--color-info) 12%, transparent)',
-            icon: 'solar--transfer-horizontal-bold-duotone',
+            icon: 'solar--sort-horizontal-line-duotone',
         },
     };
 </script>
@@ -94,20 +94,31 @@
             size="sm" />
     {/if}
 
-    <div class="flex min-w-0 flex-1 flex-col text-sm">
-        <div class="truncate font-heading font-medium text-foreground">
-            {transaction.description}
+    <div class="min-w-0 flex-1">
+        <div class="flex flex-row items-center justify-between text-sm">
+            <div class="truncate font-heading font-medium text-foreground">
+                {transaction.description}
+            </div>
+
+            <CurrencyAmount
+                style="color: {typeConfig.color}"
+                class="inline-block text-sm font-semibold"
+                value={transaction.amount} />
         </div>
 
-        <span class="truncate text-xs">{transaction?.category?.name}</span>
-    </div>
+        <div class="flex flex-row items-center justify-between gap-2 text-xs">
+            <span class="inline-flex items-center gap-2">
+                {transaction?.account?.name}
 
-    <div class="flex shrink-0 flex-col text-right">
-        <CurrencyAmount
-            style="color: {typeConfig.color}"
-            class="inline-block text-sm font-semibold"
-            value={transaction.amount} />
+                {#if transaction.type === 'transfer'}
+                    <i style="font-size: 1cap;" class="iconify solar--arrow-right-line-duotone"></i>
+                    {transaction.destination_account?.name}
+                {/if}
+            </span>
 
-        <span class="text-xs">{transaction?.account?.name}</span>
+            {#if transaction.type !== 'transfer'}
+                <span class="truncate">{transaction?.category?.name}</span>
+            {/if}
+        </div>
     </div>
 </Link>

@@ -63,23 +63,19 @@
 
 <MobilePageLayout contentClass="[timeline-scope:--filter-stuck]" variant="4/5">
     {#snippet hero()}
-        <!-- ── SUMMARY CARD ────────────────────────────────────── -->
         {#if transactions.length > 0}
             <TransactionSummaryCard {summary} />
         {/if}
     {/snippet}
 
     <!-- ── SEARCH + FILTERS (sticky in content) ───────────── -->
-    <!-- Non-sticky sentinel: Chromium's view() timelines don't advance for
-         position:sticky subjects, so this 1px marker (invisible to layout)
-         crosses the scrollport top exactly when the bar sticks. -->
+    <!-- Non-sticky sentinel: Chromium's view() timelines don't advance for position:sticky subjects, so this 1px marker (invisible to layout) crosses the scrollport top exactly when the bar sticks. -->
     <div class="filter-sentinel" aria-hidden="true"></div>
     <div
-        class="sticky-filter sticky top-0 z-20 -mx-5 border-b border-transparent bg-popover px-5 py-2.5">
+        class="sticky-filter sticky top-0 z-20 -mx-5 border-b border-transparent bg-background px-5 py-2.5">
         <TransactionListFilter {accounts} {categories} {table} />
     </div>
 
-    <!-- ── TRANSACTION LIST ────────────────────────────────── -->
     {#if filteredTransactions.length === 0}
         {#if hasActiveFilters}
             <EmptyItemPlaceholder
@@ -97,13 +93,12 @@
     {:else}
         <TransactionList {loadMoreAction} transactions={filteredTransactions} variant="flat" />
     {/if}
+
+    <div class="mb-5"></div>
 </MobilePageLayout>
 
 <style>
-    /* Scroll-driven "stuck" styling: the view() timeline tracks this element
-       through the scrollport; `contain 99% -> 100%` ends exactly at the stick
-       moment, and while stuck the timeline freezes there, holding the styles.
-       Browsers without scroll-driven animations simply keep the bar flat. */
+    /* Scroll-driven "stuck" styling: the view() timeline tracks this element through the scrollport; `contain 99% -> 100%` ends exactly at the stick moment, and while stuck the timeline freezes there, holding the styles. Browsers without scroll-driven animations simply keep the bar flat. */
     .filter-sentinel {
         height: 1px;
         margin-bottom: -1px;
