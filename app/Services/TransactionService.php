@@ -22,20 +22,23 @@ final class TransactionService
      * Global list: one row per transfer unit (the outflow row) plus plain
      * rows and fee rows — inflow rows are hidden.
      */
-    public static function getTransactions(User $user, DatePeriodPreset $period = DatePeriodPreset::YearOnYear): Collection
+    public static function getTransactions(User $user, DatePeriodPreset $period = DatePeriodPreset::Last6Months): array
     {
         $transactions = Transaction::query()
             ->where('created_by', $user->id)
             ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', Cashflow::Inflow))
             ->withinPeriod($period->toPeriod())
-            ->with(['account', 'transfer.transactions.account'])
+            ->with([
+                'account',
+                'transfer.destinationTransaction.account',
+            ])
             ->latest('transaction_date')
             ->get();
 
         return TransactionListData::collectFromTransactions($transactions);
     }
 
-    public static function getSummary(User $user, DatePeriodPreset $period = DatePeriodPreset::YearOnYear): array
+    public static function getSummary(User $user, DatePeriodPreset $period = DatePeriodPreset::Last6Months): array
     {
         $row = Transaction::query()
             ->where('created_by', $user->id)
