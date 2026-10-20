@@ -105,6 +105,7 @@
 
     import CurrencyAmount from '@components/data/currency-amount.svelte';
     import Button from '@components/ui/button.svelte';
+    import Separator from '@components/ui/separator.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
 
@@ -115,6 +116,7 @@
         hideTotal?: boolean;
         hideControl?: boolean;
         loadMoreAction?: () => void;
+        variant?: 'collapsible' | 'flat';
     }
 
     let {
@@ -123,6 +125,7 @@
         hideTotal = false,
         hideControl = false,
         loadMoreAction,
+        variant = 'collapsible',
     }: Props = $props();
 
     /* ── Group by date ───────────────────────────────────── */
@@ -145,9 +148,20 @@
         return net;
     }
 
+    let visibleCount = $state(Math.max(1, Math.ceil(transactions.length * 0.25)));
+
+    function handleShowMore() {
+        visibleCount = Math.min(
+            transactions.length,
+            visibleCount + Math.ceil(transactions.length * 0.25)
+        );
+    }
+
+    const visibleTransactions = $derived(transactions.slice(0, visibleCount));
+
     const groupedTransactions = $derived.by<DayGroup[]>(() => {
         const groups = new SvelteMap<string, Data.TransactionListData[]>();
-        for (const transaction of transactions) {
+        for (const transaction of visibleTransactions) {
             const day = transaction.transaction_date.slice(0, 10);
             const group = groups.get(day);
 
@@ -168,17 +182,13 @@
     // default: the first group (today) open, all others collapsed.
     const dayOpenOverrides = new SvelteMap<string, boolean>();
 
-    /* ── Count ───────────────────────────────────────────── */
-
     const filteredCount = $derived(transactions.length);
-
-    /* ── Load more ───────────────────────────────────────── */
 </script>
 
 <div class={cn('flex flex-col gap-3', _class)}>
     {#if !hideTotal}
         <!-- Count header -->
-        <p class="mx-0.5 mt-1 mb-0 text-sm text-base-content/60">
+        <p class="mx-0.5 mt-1 mb-0 text-sm text-foreground/70">
             {filteredCount}
             transactions
         </p>
@@ -186,55 +196,78 @@
 
     <div class="flex flex-col gap-2">
         {#each groupedTransactions as group, i (group.date)}
-            <Collapsible.Root
-                class="overflow-hidden rounded-lg bg-base-200 shadow-xs"
-                onOpenChange={(open) => dayOpenOverrides.set(group.date, open)}
-                open={dayOpenOverrides.get(group.date) ??
-                    i <= Math.ceil(groupedTransactions.length / 3)}>
-                <!-- Day header (trigger) -->
-                <Collapsible.Trigger
-                    class="flex w-full cursor-pointer items-center gap-2 p-3 text-left select-none">
-                    <span class="text-xs font-semibold text-base-content uppercase">
-                        {DateTimeHelper.format(group.date, 'date')}
-                    </span>
-
-                    <span
+            {#if variant === 'collapsible'}
+                <Collapsible.Root
+                    onOpenChange={(open) => dayOpenOverrides.set(group.date, open)}
+                    open={dayOpenOverrides.get(group.date) ??
+                        i <= Math.ceil(groupedTransactions.length / 3)}>
+                    <Collapsible.Trigger
                         class={cn(
-                            'ml-auto flex items-center text-sm font-semibold whitespace-nowrap',
-                            group.net > 0
-                                ? 'text-success'
-                                : group.net < 0
-                                  ? 'text-error'
-                                  : 'text-base-content'
+                            'flex w-full cursor-pointer items-center gap-2 py-2 text-left select-none'
                         )}>
-                        <CurrencyAmount value={group.net} />
-                    </span>
-                    <i
-                        class={cn(
-                            'iconify size-4 shrink-0 text-base-content/40 transition-transform duration-150',
-                            (dayOpenOverrides.get(group.date) ?? i === 0)
-                                ? 'solar--alt-arrow-up-line-duotone'
-                                : 'solar--alt-arrow-down-line-duotone'
-                        )}></i>
-                </Collapsible.Trigger>
+                        <i
+                            class={cn(
+                                'iconify size-4 shrink-0 text-foreground/70 transition-transform duration-150',
+                                'solar--alt-arrow-down-line-duotone',
+                                dayOpenOverrides.get(group.date) && 'rotate-180'
+                            )}></i>
 
-                <!-- Group card -->
-                <Collapsible.Content>
-                    <div class="border-t border-base-content/10">
+                        <span class="text-xs font-semibold text-foreground uppercase">
+                            {DateTimeHelper.format(group.date, 'date')}
+                        </span>
+
+                        <CurrencyAmount
+                            class={cn(
+                                'ml-auto text-sm font-semibold whitespace-nowrap text-foreground',
+                                group.net > 0 && 'text-success',
+                                group.net < 0 && 'text-error'
+                            )}
+                            value={group.net} />
+                    </Collapsible.Trigger>
+
+                    <Collapsible.Content>
+                        <div>
+                            {#each group.transactions as txn (txn.id)}
+                                <TransactionListItem transaction={txn} />
+                            {/each}
+                        </div>
+                    </Collapsible.Content>
+                </Collapsible.Root>
+            {:else}
+                <div>
+                    <div class="flex items-center gap-2 py-2">
+                        <span class="text-xs font-semibold text-foreground uppercase">
+                            {DateTimeHelper.format(group.date, 'date')}
+                        </span>
+                        <CurrencyAmount
+                            class={cn(
+                                'ml-auto text-sm font-semibold whitespace-nowrap text-foreground',
+                                group.net > 0 && 'text-success',
+                                group.net < 0 && 'text-error'
+                            )}
+                            value={group.net} />
+                    </div>
+                    <div>
                         {#each group.transactions as txn (txn.id)}
                             <TransactionListItem transaction={txn} />
                         {/each}
                     </div>
-                </Collapsible.Content>
-            </Collapsible.Root>
+                </div>
+            {/if}
+
+            <Separator />
         {/each}
     </div>
 
     {#if !hideControl}
-        <!-- Load more -->
-        {#if loadMoreAction}
+        {#if visibleCount < transactions.length}
+            <Button class="mt-2 w-full" color="light" onclick={handleShowMore} variant="soft">
+                <i class="iconify size-4 solar--alt-arrow-down-line-duotone"></i>
+                Show More ({visibleCount}/{transactions.length})
+            </Button>
+        {:else if loadMoreAction}
             <Button class="mt-2 w-full" color="light" onclick={loadMoreAction} variant="soft">
-                <i class="iconify size-3.5 solar--alt-arrow-down-line-duotone"></i>
+                <i class="iconify size-4 solar--alt-arrow-down-line-duotone"></i>
                 Load more
             </Button>
         {/if}

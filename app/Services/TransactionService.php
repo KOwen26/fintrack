@@ -35,6 +35,24 @@ final class TransactionService
         return TransactionListData::collectFromTransactions($transactions);
     }
 
+    public static function getSummary(User $user, DatePeriodPreset $period = DatePeriodPreset::YearOnYear): array
+    {
+        $row = Transaction::query()
+            ->where('created_by', $user->id)
+            ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', Cashflow::Inflow))
+            ->withinPeriod($period->toPeriod())
+            ->selectRaw(
+                'COALESCE(SUM(CASE WHEN type = ? THEN amount ELSE 0 END), 0) AS income, COALESCE(SUM(CASE WHEN type = ? THEN amount ELSE 0 END), 0) AS expense',
+                [TransactionType::Income->value, TransactionType::Expense->value]
+            )
+            ->first();
+
+        $income = (float) ($row->income ?? 0);
+        $expense = (float) ($row->expense ?? 0);
+
+        return ['income' => $income, 'expense' => $expense, 'net' => $income - $expense];
+    }
+
     public static function getAccountTransactions(Account $account, DatePeriodPreset $period = DatePeriodPreset::YearOnYear): Collection
     {
         return Transaction::query()

@@ -6,9 +6,11 @@ use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransactionDetailData;
 use App\Data\Transaction\TransactionFormData;
 use App\Data\Transaction\TransactionListData;
+use App\Enums\AccountAccessType;
 use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Http\Requests\SaveTransactionRequest;
+use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\AccountService;
@@ -35,9 +37,25 @@ final class TransactionController extends Controller
 
         $transactions = TransactionListData::collect($this->transactionService->getTransactions($this->user));
 
+        $accounts = Account::query()
+            ->notArchived()
+            ->where(function ($query): void {
+                $query->where('owner_id', $this->user->id)
+                    ->orWhere('access_type', AccountAccessType::Joint);
+            })
+            ->get(['id', 'name', 'decorations', 'owner_id', 'access_type']);
+
+        $categories = collect(Category::cases())->map(fn (Category $category): array => [
+            'id' => $category->value,
+            'name' => $category->label(),
+            'decorations' => $category->decorations()->toArray(),
+        ])->all();
+
         return Inertia::render('app/transaction/index', [
             'transactions' => $transactions,
-            'summary' => [],
+            'summary' => $this->transactionService->getSummary($this->user),
+            'accounts' => $accounts,
+            'categories' => $categories,
         ]);
     }
 

@@ -46,27 +46,37 @@
 
 <script lang="ts">
     import type { TransactionListTable } from './transaction-list.svelte';
-    import type { Data } from '@type/type';
     import type { App } from '@wayfinder/types';
 
     import { TYPE_STYLE } from './transaction-list-item.svelte';
 
     import { getDecorationColor } from '@data/decoration-colors';
+    import { onDestroy } from 'svelte';
 
     import { cn } from '@utilities/shadcn';
 
     import DecorationBadge from '@components/module/decoration-badge.svelte';
     import Button from '@components/ui/button.svelte';
     import DrawerModal from '@components/ui/drawer-modal.svelte';
+    import SearchInput from '@components/ui/forms/search-input.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
 
     interface Props {
-        transactions: Data.TransactionListData[];
+        accounts: {
+            id: number;
+            name: string;
+            decorations?: { icon?: string | null; color?: string | null };
+        }[];
+        categories: {
+            id: string;
+            name: string;
+            decorations?: { icon?: string | null; color?: string | null };
+        }[];
         table: TransactionListTable;
     }
 
-    let { transactions, table }: Props = $props();
+    let { accounts: uniqueAccounts, categories: uniqueCategories, table }: Props = $props();
 
     /* ── Table state (read reactively from the table atoms) ─ */
 
@@ -75,7 +85,7 @@
     const sortKey = $derived(toSortKey(table.atoms.sorting.get()));
 
     const accountIds = $derived(getArrayFilter<number>(columnFilters, FILTER_COLUMNS.account_id));
-    const categoryIds = $derived(getArrayFilter<number>(columnFilters, FILTER_COLUMNS.category_id));
+    const categoryIds = $derived(getArrayFilter<string>(columnFilters, FILTER_COLUMNS.category_id));
     const types = $derived(
         getArrayFilter<App.Enums.TransactionType>(columnFilters, FILTER_COLUMNS.type)
     );
@@ -108,27 +118,21 @@
 
     // Temp filters (while sheet is open)
     let tAccountIds: number[] = $state([]);
-    let tCategoryIds: number[] = $state([]);
+    let tCategoryIds: string[] = $state([]);
     let tTypes: App.Enums.TransactionType[] = $state([]);
     let tSort: SortKey = $state('newest');
 
-    /* ── Derived options ─────────────────────────────────── */
+    /** Debounced global filter — typing should not hammer the table on every keystroke. */
+    const SEARCH_DEBOUNCE_MS = 300;
+    let searchTimer: ReturnType<typeof setTimeout> | undefined;
 
-    const uniqueAccounts = $derived<
-        { id: number; name: string; decorations?: App.Models.Account['decorations'] }[]
-    >([
-        ...new Map(
-            transactions.flatMap((t) => (t.account ? [[t.account.id, t.account]] : []))
-        ).values(),
-    ]);
-
-    const uniqueCategories = $derived<
-        { id: number; name: string; decorations?: App.Models.Category['decorations'] }[]
-    >([
-        ...new Map(
-            transactions.flatMap((t) => (t.category ? [[t.category.id, t.category]] : []))
-        ).values(),
-    ]);
+    function handleSearchInput(value: string) {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(
+            (): void => table.setGlobalFilter(value || undefined),
+            SEARCH_DEBOUNCE_MS
+        );
+    }
 
     /* ── Table mutations ─────────────────────────────────── */
 
@@ -137,6 +141,8 @@
     function setArrayFilter(columnId: string, ids: unknown[]) {
         table.getColumn(columnId)?.setFilterValue(ids.length ? [...ids] : undefined);
     }
+
+    onDestroy(() => clearTimeout(searchTimer));
 
     /* ── Active filter tags ──────────────────────────────── */
     const activeFilters = $derived.by(() => {
@@ -235,8 +241,8 @@
         const hex = color ? getDecorationColor(color)?.hex : undefined;
 
         return {
-            background: hex ? `${hex}20` : 'var(--color-base-300)',
-            color: hex ?? 'color-mix(in oklab, var(--color-base-content) 60%, transparent)',
+            background: hex ? `${hex}20` : 'var(--color-popover)',
+            color: hex ?? 'color-mix(in oklab, var(--color-foreground) 60%, transparent)',
         };
     }
 
@@ -372,24 +378,14 @@
 </script>
 
 <div class="flex flex-col gap-3">
-    <!-- ── SEARCH ───────────────────────────────────────────── -->
-    <div class="flex items-center gap-2 rounded-xl bg-base-100 px-3.5 py-2.5 shadow-xs">
-        <i class="iconify size-4 shrink-0 text-base-content/40 solar--magnifer-line-duotone"></i>
-        <input
-            class="flex-1 bg-transparent text-sm text-base-content outline-none placeholder:text-base-content/40"
-            oninput={(e) => table.setGlobalFilter(e.currentTarget.value || undefined)}
-            placeholder="Search transactions"
-            type="text"
-            value={search} />
-        {#if search}
-            <button
-                class="flex items-center justify-center text-base-content/40 hover:text-base-content"
-                aria-label="Clear search"
-                onclick={() => table.setGlobalFilter(undefined)}>
-                <i class="iconify size-4 solar--close-line-duotone"></i>
-            </button>
-        {/if}
-    </div>
+    <SearchInput
+        onclear={() => {
+            clearTimeout(searchTimer);
+            table.setGlobalFilter(undefined);
+        }}
+        oninput={handleSearchInput}
+        placeholder="Search transactions"
+        value={search} />
 
     <!-- ── FILTER CHIPS ─────────────────────────────────────── -->
     <div class="flex items-center gap-2">
@@ -400,7 +396,7 @@
                         'border-1.5 inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 font-sans text-xs font-semibold whitespace-nowrap transition-all duration-150',
                         active
                             ? 'border-primary bg-primary text-primary-content'
-                            : 'border-base-content/10 bg-base-100 text-base-content/60 hover:border-primary hover:text-primary'
+                            : 'border-border bg-background text-foreground hover:border-primary hover:text-primary'
                     )}
                     onclick={() => openSheet(kind)}>
                     <span>{label}</span>
@@ -415,7 +411,7 @@
                 'border-1.5 flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150',
                 sortKey !== 'newest'
                     ? 'border-primary bg-primary text-primary-content'
-                    : 'border-base-content/10 bg-base-100 text-base-content/60 hover:border-primary'
+                    : 'border-border bg-background text-foreground hover:border-primary'
             )}
             aria-label="Sort"
             onclick={() => openSheet('sort')}>
@@ -453,12 +449,12 @@
             <button
                 class={cn(
                     'flex w-full items-center gap-3 px-5 py-3 text-left font-sans transition-colors duration-100',
-                    option.selected ? 'bg-info/10' : 'hover:bg-base-200/60'
+                    option.selected ? 'bg-info/10' : 'hover:bg-card'
                 )}
                 onclick={option.onSelect}>
                 {@render optionBadge(option.badge)}
 
-                <div class="flex-1 text-sm font-medium text-base-content">{option.label}</div>
+                <div class="flex-1 text-sm font-medium text-foreground">{option.label}</div>
 
                 {#if option.selected}
                     <i class="iconify size-5 shrink-0 text-info solar--check-read-line-duotone"></i>

@@ -17,31 +17,30 @@
 
     let {
         transactions,
+        summary,
+        accounts,
+        categories,
     }: {
         transactions: TransactionListData[];
+        summary: { income: number; expense: number; net: number };
+        accounts: {
+            id: number;
+            name: string;
+            decorations?: { icon?: string | null; color?: string | null } | null;
+        }[];
+        categories: {
+            id: string;
+            name: string;
+            decorations?: { icon?: string | null; color?: string | null } | null;
+        }[];
     } = $props();
 
     /* ── Table (filtering + sorting brain) ───────────────── */
-
     const table = createTransactionListTable(() => transactions);
 
     const filteredTransactions = $derived(
         table.getFilteredRowModel().rows.map((row) => row.original)
     );
-
-    /* ── Summary over the filtered set ───────────────────── */
-
-    const summary = $derived.by(() => {
-        let income = 0;
-        let expense = 0;
-
-        for (const transaction of filteredTransactions) {
-            if (transaction.type === 'income') income += transaction.amount;
-            else if (transaction.type === 'expense') expense += transaction.amount;
-        }
-
-        return { income, expense, net: income - expense };
-    });
 
     /* ── Active filter state ─────────────────────────────── */
 
@@ -76,8 +75,8 @@
          crosses the scrollport top exactly when the bar sticks. -->
     <div class="filter-sentinel" aria-hidden="true"></div>
     <div
-        class="sticky-filter sticky top-0 z-20 -mx-5 border-b border-transparent bg-base-100 px-5 py-2.5">
-        <TransactionListFilter {table} {transactions} />
+        class="sticky-filter sticky top-0 z-20 -mx-5 border-b border-transparent bg-popover px-5 py-2.5">
+        <TransactionListFilter {accounts} {categories} {table} />
     </div>
 
     <!-- ── TRANSACTION LIST ────────────────────────────────── -->
@@ -96,7 +95,7 @@
                 label="No transactions" />
         {/if}
     {:else}
-        <TransactionList {loadMoreAction} transactions={filteredTransactions} />
+        <TransactionList {loadMoreAction} transactions={filteredTransactions} variant="flat" />
     {/if}
 </MobilePageLayout>
 
@@ -120,7 +119,7 @@
 
     @keyframes sticky-filter-stuck {
         to {
-            border-color: var(--color-base-300);
+            border-color: var(--color-border);
             box-shadow:
                 0 1px 3px 0 rgb(0 0 0 / 0.1),
                 0 1px 2px -1px rgb(0 0 0 / 0.1);

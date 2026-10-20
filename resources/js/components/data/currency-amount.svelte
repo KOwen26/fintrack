@@ -1,10 +1,11 @@
 <script lang="ts">
+    import type { RestProps } from '@type/index';
     import type { Snippet } from 'svelte';
 
     import Formatter from '@utilities/formatter';
     import { cn } from '@utilities/shadcn';
 
-    interface Props {
+    interface Props extends RestProps {
         value: number | string | null | undefined;
         symbol?: string;
         withoutSymbol?: boolean;
@@ -22,6 +23,7 @@
         class: _class,
         symbolClass,
         amountClass,
+        ...props
     }: Props = $props();
 
     const isMinus = $derived(Number(value) < 0);
@@ -33,7 +35,8 @@
         // '@container/currency-amount',
         'inline-flex items-baseline gap-0.5 whitespace-nowrap',
         _class
-    )}>
+    )}
+    {...props}>
     {#if operator}
         {@render operator?.()}
     {:else if isMinus}

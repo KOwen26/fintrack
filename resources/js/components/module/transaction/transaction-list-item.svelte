@@ -79,7 +79,9 @@
 
 <Link
     class={cn(
-        'flex items-center gap-2 border-b border-base-content/10 py-3 transition-colors duration-100 last:border-b-0 hover:bg-base-200/40',
+        'flex items-center gap-2 p-2 transition-colors duration-100  hover:bg-card',
+        '-mx-2 rounded-md',
+        // 'border-b border-border last:border-b-0',
         _class
     )}
     href={TransactionController.show.url(transaction)}>
@@ -92,26 +94,20 @@
             size="sm" />
     {/if}
 
-    <div class="min-w-0 flex-1">
-        <div class="truncate text-sm font-medium text-base-content">
+    <div class="flex min-w-0 flex-1 flex-col text-sm">
+        <div class="truncate font-heading font-medium text-foreground">
             {transaction.description}
         </div>
-        <div class="mt-0.5 flex items-center gap-1.5 text-xs">
-            {#if transaction.category}
-                <span class="truncate">{transaction.category.name}</span>
-            {/if}
-            {#if transaction.category && transaction.account}
-                <span class="size-0.5 shrink-0 rounded-full bg-base-content/20"></span>
-            {/if}
-            {#if transaction.account}
-                <span class="truncate">{transaction.account.name}</span>
-            {/if}
-        </div>
+
+        <span class="truncate text-xs">{transaction?.category?.name}</span>
     </div>
 
-    <div class="shrink-0 text-right">
-        <div style:color={typeConfig.color} class="text-sm font-semibold">
-            <CurrencyAmount value={transaction.amount} />
-        </div>
+    <div class="flex shrink-0 flex-col text-right">
+        <CurrencyAmount
+            style="color: {typeConfig.color}"
+            class="inline-block text-sm font-semibold"
+            value={transaction.amount} />
+
+        <span class="text-xs">{transaction?.account?.name}</span>
     </div>
 </Link>
