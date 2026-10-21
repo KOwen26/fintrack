@@ -12,14 +12,17 @@ use App\Http\Requests\SaveTransactionRequest;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Objects\TransactionCursor;
 use App\Services\AccountService;
 use App\Services\TransactionService;
 use App\Services\TransferService;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use InvalidArgumentException;
 
 final class TransactionController extends Controller
 {
@@ -34,7 +37,14 @@ final class TransactionController extends Controller
     {
         $this->authorize('viewAny', Transaction::class);
 
-        $transactions = $this->transactionService->getTransactions($this->user);
+        try {
+            $cursor = TransactionCursor::fromWire($request->input('cursor'));
+        } catch (InvalidFormatException | InvalidArgumentException) {
+            abort(400, 'Malformed transaction cursor.');
+        }
+
+        ['rows' => $transactions, 'total' => $total, 'has_more' => $hasMore] =
+            $this->transactionService->getTransactionsPage($this->user, $cursor);
 
         $accounts = Account::query()
             ->notArchived()
@@ -50,8 +60,12 @@ final class TransactionController extends Controller
             'decorations' => $category->decorations()->toArray(),
         ])->all();
 
+        // Append semantics are carried by the merge prop: a partial reload
+        // with `only: ['transactions', 'transactions_meta']` extends the
+        // client's array instead of replacing it; full visits replace it.
         return Inertia::render('app/transaction/index', [
-            'transactions' => $transactions,
+            'transactions' => Inertia::merge($transactions),
+            'transactions_meta' => ['total' => $total, 'has_more' => $hasMore],
             'summary' => $this->transactionService->getSummary($this->user),
             'accounts' => $accounts,
             'categories' => $categories,

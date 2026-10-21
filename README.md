@@ -84,8 +84,7 @@ All reports are SQL-aggregated and cached per account (past months indefinitely,
 
 1. Define MVP-ready scope (Account, Transaction, simple spending report)
 2. Improve transaction list
-    - each list item should show date, description, category, account and amount
-    - list can be grouped by the date, in the grouped item also calculate the net amount
+    - retry another approach for the transaction list page
 3. Transaction Tagging Feature
     - transaction can be tagged by multiple tags
     - tags are input by user when creating transaction (combobox like with create new value capability)

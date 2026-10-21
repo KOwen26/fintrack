@@ -13,29 +13,80 @@ use App\Events\TransactionSaved;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Objects\DatePeriod;
+use App\Objects\TransactionCursor;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 final class TransactionService
 {
+    /** Rows fetched per "load more" request from the transaction index. */
+    public const int PAGE_SIZE = 60;
+
     /**
      * Global list: one row per transfer unit (the outflow row) plus plain
      * rows and fee rows — inflow rows are hidden.
      */
     public static function getTransactions(User $user, DatePeriodPreset $period = DatePeriodPreset::Last6Months): array
     {
-        $transactions = Transaction::query()
+        return TransactionListData::collectFromTransactions(self::listQuery($user, $period->toPeriod())->get());
+    }
+
+    /**
+     * One keyset page of the global list — same rows as getTransactions(),
+     * capped at PAGE_SIZE after the cursor, with the total matching rows in
+     * the period and whether further rows exist past the fetched page.
+     *
+     * @return array{rows: list<array<string, mixed>>, total: int, has_more: bool}
+     */
+    public static function getTransactionsPage(User $user, ?TransactionCursor $cursor, DatePeriodPreset $period = DatePeriodPreset::Last6Months): array
+    {
+        $query = self::listQuery($user, $period->toPeriod());
+
+        if ($cursor !== null) {
+            $query->where(function (Builder $query) use ($cursor): void {
+                $query->where('transaction_date', '<', $cursor->date)
+                    ->orWhere(function (Builder $query) use ($cursor): void {
+                        $query->where('transaction_date', $cursor->date)
+                            ->where('id', '<', $cursor->id);
+                    });
+            });
+        }
+
+        $transactions = $query->limit(self::PAGE_SIZE + 1)->get();
+        $hasMore = $transactions->count() > self::PAGE_SIZE;
+
+        return [
+            'rows' => TransactionListData::collectFromTransactions($transactions->take(self::PAGE_SIZE)),
+            'total' => (int) self::baseQuery($user, $period->toPeriod())->count(),
+            'has_more' => $hasMore,
+        ];
+    }
+
+    /** The list's ownership, type and period filters; count targets use this alone. */
+    private static function baseQuery(User $user, DatePeriod $period): Builder
+    {
+        return Transaction::query()
             ->where('created_by', $user->id)
             ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', Cashflow::Inflow))
-            ->withinPeriod($period->toPeriod())
+            ->withinPeriod($period);
+    }
+
+    /**
+     * The fully-ordered, eagerly-loaded list query. Keyset tiebreaker on `id`
+     * makes the newest-first order deterministic per (date, id) — the unit of
+     * the cursor.
+     */
+    private static function listQuery(User $user, DatePeriod $period): Builder
+    {
+        return self::baseQuery($user, $period)
             ->with([
                 'account',
                 'transfer.destinationTransaction.account',
             ])
             ->latest('transaction_date')
-            ->get();
-
-        return TransactionListData::collectFromTransactions($transactions);
+            ->orderByDesc('id');
     }
 
     public static function getSummary(User $user, DatePeriodPreset $period = DatePeriodPreset::Last6Months): array

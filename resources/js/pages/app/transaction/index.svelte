@@ -20,6 +20,7 @@
         summary,
         accounts,
         categories,
+        transactions_meta: meta,
     }: {
         transactions: TransactionListData[];
         summary: { income: number; expense: number; net: number };
@@ -33,6 +34,7 @@
             name: string;
             decorations?: { icon?: string | null; color?: string | null } | null;
         }[];
+        transactions_meta: { total: number; has_more: boolean };
     } = $props();
 
     /* ── Table (filtering + sorting brain) ───────────────── */
@@ -56,8 +58,24 @@
         table.setSorting(SORT_STATE.newest);
     }
 
+    /* ── Server-side "load more" (append via merge prop) ──── */
+
+    let loadingMore = $state(false);
+
     function loadMoreAction() {
-        router.reload({ only: ['transactions'] });
+        if (loadingMore || transactions.length === 0) return;
+        /**
+         * Cursor = the (transaction_date, id) of the last loaded row. The
+         * server appends the next page onto the prop itself (Inertia::merge),
+         * so the last element after every fetch is always the loading point.
+         */
+        const { transaction_date, id } = transactions[transactions.length - 1];
+        loadingMore = true;
+        router.reload({
+            data: { cursor: `${transaction_date}|${id}` },
+            only: ['transactions', 'transactions_meta'],
+            onFinish: () => (loadingMore = false),
+        });
     }
 </script>
 
@@ -91,7 +109,13 @@
                 label="No transactions" />
         {/if}
     {:else}
-        <TransactionList {loadMoreAction} transactions={filteredTransactions} variant="flat" />
+        <TransactionList
+            hasMore={meta.has_more}
+            {loadMoreAction}
+            {loadingMore}
+            transactions={filteredTransactions}
+            total={meta.total}
+            variant="flat" />
     {/if}
 
     <div class="mb-5"></div>

@@ -47,6 +47,7 @@
 <script lang="ts">
     import type { TransactionListTable } from './transaction-list.svelte';
     import type { App } from '@wayfinder/types';
+    import type { Snippet } from 'svelte';
 
     import { TYPE_STYLE } from './transaction-list-item.svelte';
 
@@ -60,6 +61,8 @@
     import Button from '@components/ui/button.svelte';
     import DrawerModal from '@components/ui/drawer-modal.svelte';
     import SearchInput from '@components/ui/forms/search-input.svelte';
+    import ToggleGroupItem from '@components/ui/forms/toggle-group-item.svelte';
+    import ToggleGroup from '@components/ui/forms/toggle-group.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
 
@@ -93,8 +96,9 @@
 
     /* ── State ───────────────────────────────────────────── */
 
-    // Sheet
-    type SheetKind = 'account' | 'category' | 'type' | 'sort';
+    // Sheet — `settings` groups the transaction-type enum and sort selector
+    // into a single drawer, sectioned per filter (time period slots in later).
+    type SheetKind = 'account' | 'category' | 'settings';
 
     /** Leading badge: an icon or short text on a tinted square (direct CSS). */
     interface RowBadge {
@@ -113,6 +117,17 @@
         badge?: RowBadge;
     }
 
+    /**
+     * One sheet section: either generated rows (`options`) or arbitrary
+     * markup (`content` snippet, e.g. a date-range picker) — one of the two.
+     */
+    interface SheetSection {
+        /** Heading rendered above the section; null keeps the sheet header-free. */
+        label: string | null;
+        options?: SheetOption[];
+        content?: Snippet;
+    }
+
     let sheetOpen = $state(false);
     let sheetKind = $state<SheetKind | null>(null);
     let sheetTitle = $state('');
@@ -120,7 +135,7 @@
     // Temp filters (while sheet is open)
     let tAccountIds: number[] = $state([]);
     let tCategoryIds: string[] = $state([]);
-    let tTypes: App.Enums.TransactionType[] = $state([]);
+    let tTypes: string[] = $state([]);
     let tSort: SortKey = $state('newest');
 
     /** Debounced global filter — typing should not hammer the table on every keystroke. */
@@ -204,8 +219,7 @@
     const SHEET_TITLES: Record<SheetKind, string> = {
         account: 'Account',
         category: 'Category',
-        type: 'Transaction Type',
-        sort: 'Sort',
+        settings: 'Settings',
     };
 
     function openSheet(kind: SheetKind) {
@@ -284,95 +298,81 @@
                       : `${categoryIds.length} Categories`,
             active: categoryIds.length > 0,
         },
-        {
-            kind: 'type',
-            label:
-                types.length === 0
-                    ? 'All Types'
-                    : types.length === 1
-                      ? TYPE_STYLE[types[0]].label
-                      : `${types.length} Types`,
-            active: types.length > 0,
-        },
     ]);
 
     /* ── Sheet content ───────────────────────────────────── */
 
-    /** Normalized option list for the active sheet — the markup stays generic. */
-    const sheetOptions = $derived.by<SheetOption[]>(() => {
+    /**
+     * Normalized option sections for the active sheet — the markup stays
+     * generic. The `settings` sheet renders both filters in order, stacked
+     * as its sections.
+     */
+    const sheetSections = $derived.by<SheetSection[]>(() => {
         switch (sheetKind) {
             case 'account':
                 return [
                     {
-                        key: 'all',
-                        label: 'All Accounts',
-                        selected: tAccountIds.length === 0,
-                        onSelect: () => (tAccountIds = []),
-                        badge: {
-                            text: 'ALL',
-                            background:
-                                'color-mix(in oklab, var(--color-primary) 10%, transparent)',
-                            color: 'var(--color-primary)',
-                        },
+                        label: null,
+                        options: [
+                            {
+                                key: 'all',
+                                label: 'All Accounts',
+                                selected: tAccountIds.length === 0,
+                                onSelect: () => (tAccountIds = []),
+                                badge: {
+                                    text: 'ALL',
+                                    background:
+                                        'color-mix(in oklab, var(--color-primary) 10%, transparent)',
+                                    color: 'var(--color-primary)',
+                                },
+                            },
+                            ...uniqueAccounts.map((acct): SheetOption => ({
+                                key: String(acct.id),
+                                label: acct.name,
+                                selected: tAccountIds.includes(acct.id),
+                                onSelect: () => (tAccountIds = toggled(tAccountIds, acct.id)),
+                                badge: {
+                                    // icon: 'solar--banknote-2-bold-duotone',
+                                    icon: getDecorationIcon(acct.decorations?.icon)?.value,
+                                    ...decorationBadgeColors(acct.decorations?.color),
+                                },
+                            })),
+                        ],
                     },
-                    ...uniqueAccounts.map((acct): SheetOption => ({
-                        key: String(acct.id),
-                        label: acct.name,
-                        selected: tAccountIds.includes(acct.id),
-                        onSelect: () => (tAccountIds = toggled(tAccountIds, acct.id)),
-                        badge: {
-                            // icon: 'solar--banknote-2-bold-duotone',
-                            icon: getDecorationIcon(acct.decorations?.icon)?.value,
-                            ...decorationBadgeColors(acct.decorations?.color),
-                        },
-                    })),
                 ];
             case 'category':
                 return [
                     {
-                        key: 'all',
-                        label: 'All Categories',
-                        selected: tCategoryIds.length === 0,
-                        onSelect: () => (tCategoryIds = []),
-                        badge: {
-                            icon: 'solar--tag-bold-duotone',
-                            ...decorationBadgeColors(),
-                        },
+                        label: null,
+                        options: [
+                            {
+                                key: 'all',
+                                label: 'All Categories',
+                                selected: tCategoryIds.length === 0,
+                                onSelect: () => (tCategoryIds = []),
+                                badge: {
+                                    icon: 'solar--tag-bold-duotone',
+                                    ...decorationBadgeColors(),
+                                },
+                            },
+                            ...uniqueCategories.map((cat): SheetOption => ({
+                                key: String(cat.id),
+                                label: cat.name,
+                                selected: tCategoryIds.includes(cat.id),
+                                onSelect: () => (tCategoryIds = toggled(tCategoryIds, cat.id)),
+                                badge: {
+                                    icon: getDecorationIcon(cat.decorations?.icon)?.value,
+                                    ...decorationBadgeColors(cat.decorations?.color),
+                                },
+                            })),
+                        ],
                     },
-                    ...uniqueCategories.map((cat): SheetOption => ({
-                        key: String(cat.id),
-                        label: cat.name,
-                        selected: tCategoryIds.includes(cat.id),
-                        onSelect: () => (tCategoryIds = toggled(tCategoryIds, cat.id)),
-                        badge: {
-                            icon: getDecorationIcon(cat.decorations?.icon)?.value,
-                            ...decorationBadgeColors(cat.decorations?.color),
-                        },
-                    })),
                 ];
-            case 'type':
-                return Object.entries(TYPE_STYLE).map(([key, cfg]): SheetOption => {
-                    const type = key as App.Enums.TransactionType;
-
-                    return {
-                        key,
-                        label: cfg.label,
-                        selected: tTypes.includes(type),
-                        onSelect: () => (tTypes = toggled(tTypes, type)),
-                        badge: {
-                            text: cfg.label.charAt(0),
-                            background: cfg.bg,
-                            color: cfg.color,
-                        },
-                    };
-                });
-            case 'sort':
-                return sortOptions.map((opt): SheetOption => ({
-                    key: opt.id,
-                    label: opt.label,
-                    selected: tSort === opt.id,
-                    onSelect: () => (tSort = opt.id),
-                }));
+            case 'settings':
+                // The whole settings sheet is handed over to the
+                // `settingContent` snippet — type selection (toggle group)
+                // and sort (option rows) live there.
+                return [{ label: null, content: settingContent }];
             default:
                 return [];
         }
@@ -391,6 +391,19 @@
 
     <!-- ── FILTER CHIPS ─────────────────────────────────────── -->
     <div class="flex items-center gap-2">
+        <!-- Sort button (standalone) -->
+        <button
+            class={cn(
+                'border-1.5 flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150',
+                sortKey !== 'newest'
+                    ? 'border-primary bg-primary text-primary-content'
+                    : 'border-border bg-card text-foreground hover:border-primary'
+            )}
+            aria-label="Sort"
+            onclick={() => openSheet('settings')}>
+            <i class="iconify size-4 solar--tuning-3-line-duotone"></i>
+        </button>
+
         <div class="flex flex-1 scrollbar-none gap-1.5 overflow-x-auto">
             {#each filterChips as { kind, label, active }, i (i)}
                 <button
@@ -402,23 +415,10 @@
                     )}
                     onclick={() => openSheet(kind)}>
                     <span>{label}</span>
-                    <i class="iconify size-2.5 solar--alt-arrow-down-line-duotone"></i>
+                    <i class="iconify size-4 solar--alt-arrow-down-line-duotone"></i>
                 </button>
             {/each}
         </div>
-
-        <!-- Sort button (standalone) -->
-        <button
-            class={cn(
-                'border-1.5 flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150',
-                sortKey !== 'newest'
-                    ? 'border-primary bg-primary text-primary-content'
-                    : 'border-border bg-card text-foreground hover:border-primary'
-            )}
-            aria-label="Sort"
-            onclick={() => openSheet('sort')}>
-            <i class="iconify size-3.5 solar--sort-vertical-line-duotone"></i>
-        </button>
     </div>
 
     <!-- ── ACTIVE FILTER TAGS ──────────────────────────────── -->
@@ -447,24 +447,94 @@
             </Button>
         {/snippet}
 
-        {#each sheetOptions as option (option.key)}
-            <button
-                class={cn(
-                    'flex w-full items-center gap-3 px-5 py-3 text-left font-sans transition-colors duration-100',
-                    option.selected ? 'bg-info/10' : 'hover:bg-card'
-                )}
-                onclick={option.onSelect}>
-                {@render optionBadge(option.badge)}
+        {#each sheetSections as section, index (section.label ?? String(index))}
+            {#if index > 0}
+                <div class="mx-5 border-t border-border"></div>
+            {/if}
 
-                <div class="flex-1 text-sm font-medium text-foreground">{option.label}</div>
+            {#if section.label}
+                <div class={cn('px-5 pt-3 pb-1', index > 0 && 'pt-4')}>
+                    {@render sectionHeading(section.label)}
+                </div>
+            {/if}
 
-                {#if option.selected}
-                    <i class="iconify size-5 shrink-0 text-info solar--check-read-line-duotone"></i>
-                {/if}
-            </button>
+            {#if section?.content}
+                <div class="px-5 pt-1 pb-2">
+                    {@render section.content()}
+                </div>
+            {:else if section?.options}
+                {#each section.options as option (option.key)}
+                    {@render optionRow(option)}
+                {/each}
+            {/if}
         {/each}
     </DrawerModal>
 </div>
+
+{#snippet optionRow(option: SheetOption)}
+    <button
+        class={cn(
+            'flex w-full items-center gap-3 px-5 py-3 text-left font-sans transition-colors duration-100',
+            option.selected ? 'bg-info/10' : 'hover:bg-card'
+        )}
+        onclick={option.onSelect}>
+        {@render optionBadge(option.badge)}
+
+        <div class="flex-1 text-sm font-medium text-foreground">{option.label}</div>
+
+        {#if option.selected}
+            <i class="iconify size-5 shrink-0 text-info solar--check-read-line-duotone"></i>
+        {/if}
+    </button>
+{/snippet}
+
+{#snippet sectionHeading(label: string)}
+    <!-- Text styling only; spacing is owned by the wrapper rendering it. -->
+    <div class="font-sans text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+        {label}
+    </div>
+{/snippet}
+
+{#snippet settingContent()}
+    <!-- Root: horizontal spacing comes from the drawer wrapper; each element's rhythm from its own wrapper below. -->
+    <div class="flex flex-col">
+        <div class="py-2">
+            {@render sectionHeading('Transaction Type')}
+        </div>
+
+        <!-- Multi-select segmented toggle group over the transaction types. -->
+        <div
+            class="inline-flex items-stretch overflow-hidden rounded-md border border-input shadow-xs">
+            <ToggleGroup
+                class="w-full rounded-none"
+                size="sm"
+                type="multiple"
+                variant="default"
+                bind:value={tTypes as never}>
+                {#each Object.entries(TYPE_STYLE) as [typeKey, cfg] (typeKey)}
+                    <ToggleGroupItem class="px-3" value={typeKey}>
+                        {cfg.label}
+                    </ToggleGroupItem>
+                {/each}
+            </ToggleGroup>
+        </div>
+
+        <div class="my-2 border-t border-border"></div>
+
+        <div class="pb-1">
+            {@render sectionHeading('Sort')}
+        </div>
+
+        {#each sortOptions as sortOption (sortOption.id)}
+            {@render optionRow({
+                key: sortOption.id,
+                label: sortOption.label,
+                selected: tSort === sortOption.id,
+                onSelect: () => (tSort = sortOption.id),
+            })}
+        {/each}
+    </div>
+{/snippet}
 
 {#snippet optionBadge(badge)}
     {#if badge}

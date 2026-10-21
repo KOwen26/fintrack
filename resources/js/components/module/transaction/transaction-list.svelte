@@ -113,6 +113,12 @@
         hideTotal?: boolean;
         hideControl?: boolean;
         loadMoreAction?: () => void;
+        /** True when the server holds more rows than have been loaded so far. */
+        hasMore?: boolean;
+        /** Total matching rows in the period across all server pages. */
+        total?: number;
+        /** True while the page's load-more request is in flight. */
+        loadingMore?: boolean;
         variant?: 'collapsible' | 'flat';
     }
 
@@ -122,6 +128,9 @@
         hideTotal = false,
         hideControl = false,
         loadMoreAction,
+        hasMore = false,
+        total,
+        loadingMore = false,
         variant = 'collapsible',
     }: Props = $props();
 
@@ -145,20 +154,9 @@
         return net;
     }
 
-    let visibleCount = $state(Math.max(1, Math.ceil(transactions.length * 0.25)));
-
-    function handleShowMore() {
-        visibleCount = Math.min(
-            transactions.length,
-            visibleCount + Math.ceil(transactions.length * 0.25)
-        );
-    }
-
-    const visibleTransactions = $derived(transactions.slice(0, visibleCount));
-
     const groupedTransactions = $derived.by<DayGroup[]>(() => {
         const groups = new SvelteMap<string, TransactionListData[]>();
-        for (const transaction of visibleTransactions) {
+        for (const transaction of transactions) {
             const day = transaction.transaction_date.slice(0, 10);
             const group = groups.get(day);
 
@@ -239,18 +237,25 @@
         {/each}
     </div>
 
-    {#if !hideControl}
-        {#if visibleCount < transactions.length}
-            <Button class="mt-2 w-full" color="light" onclick={handleShowMore} variant="soft">
+    {#if !hideControl && hasMore && loadMoreAction}
+        <Button
+            class="mt-2 w-full"
+            color="light"
+            disabled={loadingMore}
+            onclick={loadMoreAction}
+            variant="soft">
+            {#if loadingMore}
+                <i class="iconify size-4 animate-spin solar--refresh-bold-duotone"></i>
+            {:else}
                 <i class="iconify size-4 solar--alt-arrow-down-line-duotone"></i>
-                Show More ({visibleCount}/{transactions.length})
-            </Button>
-        {:else if loadMoreAction}
-            <Button class="mt-2 w-full" color="light" onclick={loadMoreAction} variant="soft">
-                <i class="iconify size-4 solar--alt-arrow-down-line-duotone"></i>
+            {/if}
+
+            {#if total !== undefined}
+                {transactions.length} of {total} transactions
+            {:else}
                 Load more
-            </Button>
-        {/if}
+            {/if}
+        </Button>
     {/if}
 </div>
 
