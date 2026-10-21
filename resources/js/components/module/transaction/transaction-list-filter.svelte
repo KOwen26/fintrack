@@ -1,64 +1,16 @@
-<script lang="ts" module>
-    import type { ColumnFiltersState, SortingState } from '@tanstack/svelte-table';
-    import type { App } from '@wayfinder/types';
-
-    import { DatePeriodPresetMeta } from '@wayfinder/App/Enums/DatePeriodPreset';
-
-    /** Column ids (on the transaction list table) that this filter drives. */
-    export const FILTER_COLUMNS = {
-        account_id: 'account_id',
-        category_id: 'category_id',
-        type: 'type',
-    } as const;
-
-    /** Friendly sort keys used by the filter UI. */
-    export type SortKey = 'newest' | 'oldest' | 'highest' | 'lowest';
-
-    /** Maps a UI sort key to TanStack `SortingState`. */
-    export const SORT_STATE: Record<SortKey, SortingState> = {
-        newest: [
-            { id: 'transaction_date', desc: true },
-            { id: 'id', desc: true },
-        ],
-        oldest: [
-            { id: 'transaction_date', desc: false },
-            { id: 'id', desc: false },
-        ],
-        highest: [{ id: 'amount', desc: true }],
-        lowest: [{ id: 'amount', desc: false }],
-    };
-
-    /** Reverse-derives the UI sort key from the table's current sorting state. */
-    export function toSortKey(sorting: SortingState): SortKey {
-        const primary = sorting[0];
-
-        if (!primary) return 'newest';
-        if (primary.id === 'transaction_date') return primary.desc ? 'newest' : 'oldest';
-        if (primary.id === 'amount') return primary.desc ? 'highest' : 'lowest';
-
-        return 'newest';
-    }
-
-    /** Reads an array-valued column filter (empty array when the filter is off). */
-    export function getArrayFilter<T>(filters: ColumnFiltersState, columnId: string): T[] {
-        const value = filters.find((filter) => filter.id === columnId)?.value;
-
-        return Array.isArray(value) ? (value as T[]) : [];
-    }
-</script>
-
 <script lang="ts">
-    import type { TransactionListTable } from './transaction-list.svelte';
+    import type { SortKey, TransactionListHandler } from '@services/transaction-list.svelte';
+    import type { App } from '@wayfinder/types';
     import type { Snippet } from 'svelte';
 
     import { TYPE_STYLE } from './transaction-list-item.svelte';
-    import { DEFAULT_PERIOD } from './transaction-list.svelte';
 
     import { getDecorationColor } from '@data/decoration-colors';
     import { getDecorationIcon } from '@data/decoration-icons';
-    import { onDestroy } from 'svelte';
+    import { DatePeriodPresetMeta } from '@wayfinder/App/Enums/DatePeriodPreset';
 
     import { cn } from '@utilities/shadcn';
+    import { DEFAULT_PERIOD, SORT_LABELS, SORT_OPTIONS } from '@services/transaction-list.svelte';
 
     import DecorationBadge from '@components/module/decoration-badge.svelte';
     import PeriodPresetSelect from '@components/module/period-preset-select.svelte';
@@ -81,36 +33,10 @@
             name: string;
             decorations?: { icon?: string | null; color?: string | null } | null;
         }[];
-        table: TransactionListTable;
-        /** The period the server is serving the list under (server-side filter). */
-        period?: App.Enums.DatePeriodPreset;
-        /** Applies a period change on the server; undefined hides the period section. */
-        onPeriodChange?: (preset: App.Enums.DatePeriodPreset) => void;
+        list: TransactionListHandler;
     }
 
-    let {
-        accounts: uniqueAccounts,
-        categories: uniqueCategories,
-        table,
-        period,
-        onPeriodChange,
-    }: Props = $props();
-
-    const periodActive = $derived(
-        onPeriodChange !== undefined && period !== undefined && period !== DEFAULT_PERIOD
-    );
-
-    /* ── Table state (read reactively from the table atoms) ─ */
-
-    const columnFilters = $derived(table.atoms.columnFilters.get());
-    const search = $derived((table.atoms.globalFilter.get() as string | undefined) ?? '');
-    const sortKey = $derived(toSortKey(table.atoms.sorting.get()));
-
-    const accountIds = $derived(getArrayFilter<number>(columnFilters, FILTER_COLUMNS.account_id));
-    const categoryIds = $derived(getArrayFilter<string>(columnFilters, FILTER_COLUMNS.category_id));
-    const types = $derived(
-        getArrayFilter<App.Enums.TransactionType>(columnFilters, FILTER_COLUMNS.type)
-    );
+    let { accounts: uniqueAccounts, categories: uniqueCategories, list }: Props = $props();
 
     /* ── State ───────────────────────────────────────────── */
 
@@ -155,88 +81,61 @@
 
     let tAccountIds: number[] = $state([]);
     let tCategoryIds: string[] = $state([]);
-    let tTypes: string[] = $state([]);
+    let tTypes: App.Enums.TransactionType[] = $state([]);
     let tSort: SortKey = $state('newest');
     let tPeriod: PeriodPreset | undefined = $state(undefined);
 
-    /** Debounced global filter — typing should not hammer the table on every keystroke. */
-    const SEARCH_DEBOUNCE_MS = 300;
-    let searchTimer: ReturnType<typeof setTimeout> | undefined;
-
     function handleSearchInput(value: string) {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(
-            (): void => table.setGlobalFilter(value || undefined),
-            SEARCH_DEBOUNCE_MS
-        );
+        list.search(value);
     }
-
-    /* ── Table mutations ─────────────────────────────────── */
-
-    // An empty array must unset the filter, otherwise the in-array filter fn
-    // would reject every row.
-    function setArrayFilter(columnId: string, ids: unknown[]) {
-        table.getColumn(columnId)?.setFilterValue(ids.length ? [...ids] : undefined);
-    }
-
-    onDestroy(() => clearTimeout(searchTimer));
 
     /* ── Active filter tags ──────────────────────────────── */
     const activeFilters = $derived.by(() => {
         const tags: { label: string; icon?: string; onClear: () => void }[] = [];
 
-        for (const id of accountIds) {
+        for (const id of list.accountFilter) {
             const account = uniqueAccounts.find((x) => x.id === id);
             if (account)
                 tags.push({
                     label: account.name,
                     onClear: () => {
-                        setArrayFilter(
-                            FILTER_COLUMNS.account_id,
-                            accountIds.filter((x) => x !== id)
-                        );
+                        list.setAccountFilter(list.accountFilter.filter((x) => x !== id));
                     },
                 });
         }
-        for (const id of categoryIds) {
+        for (const id of list.categoryFilter) {
             const category = uniqueCategories.find((x) => x.id === id);
             if (category)
                 tags.push({
                     label: category.name,
                     onClear: () => {
-                        setArrayFilter(
-                            FILTER_COLUMNS.category_id,
-                            categoryIds.filter((x) => x !== id)
-                        );
+                        list.setCategoryFilter(list.categoryFilter.filter((x) => x !== id));
                     },
                 });
         }
-        for (const type of types) {
+        for (const type of list.typeFilter) {
             tags.push({
                 label: TYPE_STYLE[type].label,
                 onClear: () => {
-                    setArrayFilter(
-                        FILTER_COLUMNS.type,
-                        types.filter((x) => x !== type)
-                    );
+                    list.setTypeFilter(list.typeFilter.filter((x) => x !== type));
                 },
             });
         }
-        if (periodActive) {
+        if (list.periodActive) {
             tags.push({
-                label: DatePeriodPresetMeta[period!].label,
+                label: DatePeriodPresetMeta[list.period].label,
                 icon: 'solar--calendar-mark-bold-duotone',
                 onClear: () => {
-                    onPeriodChange?.(DEFAULT_PERIOD);
+                    list.setPeriod(DEFAULT_PERIOD);
                 },
             });
         }
-        if (sortKey !== 'newest') {
+        if (list.sortKey !== 'newest') {
             tags.push({
-                label: SORT_LABELS[sortKey],
+                label: SORT_LABELS[list.sortKey],
                 icon: 'solar--sort-vertical-line-duotone',
                 onClear: () => {
-                    table.setSorting(SORT_STATE.newest);
+                    list.setSort('newest');
                 },
             });
         }
@@ -253,11 +152,11 @@
     };
 
     function openSheet(kind: SheetKind) {
-        tAccountIds = [...accountIds];
-        tCategoryIds = [...categoryIds];
-        tTypes = [...types];
-        tSort = sortKey;
-        tPeriod = onPeriodChange ? (period ?? DEFAULT_PERIOD) : undefined;
+        tAccountIds = [...list.accountFilter];
+        tCategoryIds = [...list.categoryFilter];
+        tTypes = [...list.typeFilter];
+        tSort = list.sortKey;
+        tPeriod = list.paginated ? list.period : undefined;
 
         sheetTitle = SHEET_TITLES[kind];
         sheetKind = kind;
@@ -272,20 +171,20 @@
     function applyFilter() {
         // Period is server-side: release it before the client filters so the
         // reload carrying it lands first.
-        if (onPeriodChange && tPeriod !== undefined && tPeriod !== period) {
-            onPeriodChange(tPeriod);
+        if (list.paginated && tPeriod !== undefined && tPeriod !== list.period) {
+            list.setPeriod(tPeriod);
         }
 
-        setArrayFilter(FILTER_COLUMNS.account_id, tAccountIds);
-        setArrayFilter(FILTER_COLUMNS.category_id, tCategoryIds);
-        setArrayFilter(FILTER_COLUMNS.type, tTypes);
-        table.setSorting(SORT_STATE[tSort]);
+        list.setAccountFilter(tAccountIds);
+        list.setCategoryFilter(tCategoryIds);
+        list.setTypeFilter(tTypes);
+        list.setSort(tSort);
         closeSheet();
     }
 
     /** Pure toggle — returns a new array with `item` added or removed. */
-    function toggled<T>(list: T[], item: T): T[] {
-        return list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
+    function toggled<T>(items: T[], item: T): T[] {
+        return items.includes(item) ? items.filter((x) => x !== item) : [...items, item];
     }
 
     /** Direct-CSS badge colors from an optional decoration color slug. */
@@ -300,40 +199,28 @@
 
     /* ── Chip data ─────────────────────────────────────────── */
 
-    /** Single source for sort-key labels — active tags and sheet options. */
-    const SORT_LABELS: Record<SortKey, string> = {
-        newest: 'Newest',
-        oldest: 'Oldest',
-        highest: 'Highest',
-        lowest: 'Lowest',
-    };
-
-    const sortOptions = (Object.entries(SORT_LABELS) as [SortKey, string][]).map(([id, label]) => ({
-        id,
-        label,
-    }));
-
     const filterChips = $derived<{ kind: SheetKind; label: string; active: boolean }[]>([
         {
             kind: 'account',
             label:
-                accountIds.length === 0
+                list.accountFilter.length === 0
                     ? 'All Accounts'
-                    : accountIds.length === 1
-                      ? (uniqueAccounts.find((a) => a.id === accountIds[0])?.name ?? '1 Account')
-                      : `${accountIds.length} Accounts`,
-            active: accountIds.length > 0,
+                    : list.accountFilter.length === 1
+                      ? (uniqueAccounts.find((a) => a.id === list.accountFilter[0])?.name ??
+                        '1 Account')
+                      : `${list.accountFilter.length} Accounts`,
+            active: list.accountFilter.length > 0,
         },
         {
             kind: 'category',
             label:
-                categoryIds.length === 0
+                list.categoryFilter.length === 0
                     ? 'All Categories'
-                    : categoryIds.length === 1
-                      ? (uniqueCategories.find((c) => c.id === categoryIds[0])?.name ??
+                    : list.categoryFilter.length === 1
+                      ? (uniqueCategories.find((c) => c.id === list.categoryFilter[0])?.name ??
                         '1 Category')
-                      : `${categoryIds.length} Categories`,
-            active: categoryIds.length > 0,
+                      : `${list.categoryFilter.length} Categories`,
+            active: list.categoryFilter.length > 0,
         },
     ]);
 
@@ -419,12 +306,12 @@
 <div class="flex flex-col gap-3">
     <SearchInput
         onclear={() => {
-            clearTimeout(searchTimer);
-            table.setGlobalFilter(undefined);
+            list.search('');
+            list.table.setGlobalFilter(undefined);
         }}
         oninput={handleSearchInput}
         placeholder="Search transactions"
-        value={search} />
+        value={list.searchValue} />
 
     <!-- ── FILTER CHIPS ─────────────────────────────────────── -->
     <div class="flex items-center gap-2">
@@ -432,7 +319,7 @@
         <button
             class={cn(
                 'border-1.5 flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150',
-                sortKey !== 'newest' || periodActive
+                list.sortKey !== 'newest' || list.periodActive
                     ? 'border-primary bg-primary text-primary-content'
                     : 'border-border bg-card text-foreground hover:border-primary'
             )}
@@ -535,7 +422,7 @@
 {#snippet settingContent()}
     <!-- Root: horizontal spacing comes from the drawer wrapper; each element's rhythm from its own wrapper below. -->
     <div class="flex flex-col">
-        {#if onPeriodChange}
+        {#if list.paginated}
             <div class="py-2">
                 {@render sectionHeading('Period')}
             </div>
@@ -572,7 +459,7 @@
             {@render sectionHeading('Sort')}
         </div>
 
-        {#each sortOptions as sortOption (sortOption.id)}
+        {#each SORT_OPTIONS as sortOption (sortOption.id)}
             {@render optionRow({
                 key: sortOption.id,
                 label: sortOption.label,
