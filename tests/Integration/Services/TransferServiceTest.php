@@ -8,7 +8,7 @@ use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
-use App\Services\TransactionService;
+use App\Services\TransactionListService;
 use App\Services\TransferService;
 use Pest\Expectation;
 
@@ -114,7 +114,7 @@ it('hides inflow rows from the global list but shows fee and outflow rows', func
     [$user, $source, $destination] = createTransferAccounts();
     resolve(TransferService::class)->create($user, unitData($source, $destination, 1_000.0));
 
-    $global = TransactionService::getTransactions($user);
+    $global = TransactionListService::getTransactions($user);
 
     expect($global->where('flow', Cashflow::Inflow))->toBeEmpty()
         ->and($global)->toHaveCount(2); // outflow row + fee row

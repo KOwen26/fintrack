@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { TransactionListData } from '@type/generated';
+    import type { App } from '@wayfinder/types';
 
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
@@ -10,15 +11,18 @@
     import TransactionListFilter from '@components/module/transaction/transaction-list-filter.svelte';
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
     import TransactionSummaryCard from '@components/module/transaction/transaction-summary-card.svelte';
+    import Skeleton from '@components/ui/skeleton.svelte';
 
     let {
         transactions,
         summary,
         accounts,
         categories,
+        period,
         transactions_meta: meta,
     }: {
-        transactions: TransactionListData[];
+        /** Undefined while the deferred window is still in flight. */
+        transactions: TransactionListData[] | undefined;
         summary: { income: number; expense: number; net: number };
         accounts: {
             id: number;
@@ -30,21 +34,25 @@
             name: string;
             decorations?: { icon?: string | null; color?: string | null } | null;
         }[];
-        transactions_meta: { total: number; has_more: boolean };
+        /** The window the server is actually serving — seeds the list state. */
+        period: App.Enums.DatePeriodPreset;
+        /** Absent in full-window mode — paging meta is paged-mode only. */
+        transactions_meta?:
+            { total: number | null; has_more: boolean; next_cursor: string | null } | undefined;
     } = $props();
 
-    /* ── List controller: filter/sort brain + server windows ── */
+    /* ── List controller: client engine over the full window ── */
     const list = transactionListHandler({
         transactions: () => transactions,
         meta: () => meta,
+        period: () => period,
+        engine: 'client',
     });
 </script>
 
-<MobilePageLayout contentClass="[timeline-scope:--filter-stuck]" variant="4/5">
+<MobilePageLayout contentClass="[timeline-scope:--filter-stuck]" variant="full">
     {#snippet hero()}
-        {#if transactions.length > 0}
-            <TransactionSummaryCard {summary} />
-        {/if}
+        <TransactionSummaryCard {summary} />
     {/snippet}
 
     <!-- ── SEARCH + FILTERS (sticky in content) ───────────── -->
@@ -55,7 +63,14 @@
         <TransactionListFilter {accounts} {categories} {list} />
     </div>
 
-    {#if list.filtered.length === 0}
+    {#if transactions === undefined}
+        <!-- Deferred window in flight — skeleton, not the empty state. -->
+        <div class="flex flex-col gap-3">
+            {#each Array(6) as _, i (i)}
+                <Skeleton class="h-20 w-full" />
+            {/each}
+        </div>
+    {:else if list.filtered.length === 0}
         {#if list.hasActiveFilters}
             <EmptyItemPlaceholder
                 ctaLabel="Reset all filters"

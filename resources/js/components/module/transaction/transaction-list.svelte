@@ -81,7 +81,8 @@
             {#if variant === 'collapsible'}
                 <Collapsible.Root
                     onOpenChange={(open) => dayOpenOverrides.set(group.date, open)}
-                    open={dayOpenOverrides.get(group.date) ?? i <= Math.ceil(groups.length / 3)}>
+                    open={dayOpenOverrides.get(group.date) ??
+                        i <= Math.min(Math.ceil(groups.length / 3), 7)}>
                     <Collapsible.Trigger
                         class={cn(
                             'flex w-full cursor-pointer items-center gap-2 py-2 text-left select-none'
@@ -139,7 +140,7 @@
             {#if pagerTotal !== undefined}
                 {displayedCount} of {pagerTotal} transactions
             {:else}
-                Load more
+                Load more ({displayedCount})
             {/if}
         </Button>
     {/if}

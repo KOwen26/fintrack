@@ -10,7 +10,7 @@
     import { DatePeriodPresetMeta } from '@wayfinder/App/Enums/DatePeriodPreset';
 
     import { cn } from '@utilities/shadcn';
-    import { DEFAULT_PERIOD, SORT_LABELS, SORT_OPTIONS } from '@services/transaction-list.svelte';
+    import { SORT_LABELS, SORT_OPTIONS } from '@services/transaction-list.svelte';
 
     import DecorationBadge from '@components/module/decoration-badge.svelte';
     import PeriodPresetSelect from '@components/module/period-preset-select.svelte';
@@ -91,7 +91,7 @@
 
     /* ── Active filter tags ──────────────────────────────── */
     const activeFilters = $derived.by(() => {
-        const tags: { label: string; icon?: string; onClear: () => void }[] = [];
+        const tags: { label: string; icon?: string; onClear?: () => void }[] = [];
 
         for (const id of list.accountFilter) {
             const account = uniqueAccounts.find((x) => x.id === id);
@@ -121,15 +121,14 @@
                 },
             });
         }
-        if (list.periodActive) {
-            tags.push({
-                label: DatePeriodPresetMeta[list.period].label,
-                icon: 'solar--calendar-mark-bold-duotone',
-                onClear: () => {
-                    list.setPeriod(DEFAULT_PERIOD);
-                },
-            });
-        }
+        // The period is always visible as a status tag: its selection behaves
+        // like a radio — it is never unset, only replaced from the settings
+        // sheet — so there is no "clear" concept for it, just the current
+        // effective window.
+        tags.push({
+            label: DatePeriodPresetMeta[list.period].label,
+            icon: 'solar--calendar-mark-bold-duotone',
+        });
         if (list.sortKey !== 'newest') {
             tags.push({
                 label: SORT_LABELS[list.sortKey],
@@ -306,8 +305,7 @@
 <div class="flex flex-col gap-3">
     <SearchInput
         onclear={() => {
-            list.search('');
-            list.table.setGlobalFilter(undefined);
+            list.clearSearch();
         }}
         oninput={handleSearchInput}
         placeholder="Search transactions"
@@ -350,11 +348,18 @@
         <div class="flex flex-wrap gap-1.5">
             {#each activeFilters as tag, i (i)}
                 <button
-                    class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-sans text-xs font-semibold text-primary transition-all duration-120 hover:bg-primary/20"
+                    class={[
+                        'inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-sans text-xs font-semibold text-primary transition-all duration-120 hover:bg-primary/20',
+                        !tag.onClear && 'pointer-events-none',
+                    ]}
                     onclick={tag.onClear}>
                     {#if tag.icon}<i class="iconify size-3 {tag.icon}"></i>{/if}
                     <span>{tag.label}</span>
-                    <i class="iconify size-3 solar--close-line-duotone"></i>
+                    <i
+                        class={[
+                            'iconify size-3 solar--close-line-duotone',
+                            !tag.onClear && 'hidden',
+                        ]}></i>
                 </button>
             {/each}
         </div>
@@ -427,7 +432,11 @@
                 {@render sectionHeading('Period')}
             </div>
 
-            <PeriodPresetSelect class="w-full" preset="all" bind:value={tPeriod as never} />
+            <PeriodPresetSelect
+                class="w-full"
+                preset="rolling"
+                variant="radio"
+                bind:value={tPeriod} />
 
             <div class="my-2 border-t border-border"></div>
         {/if}

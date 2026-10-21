@@ -1,51 +1,17 @@
-import type {
-    ColumnDef,
-    ColumnFiltersState,
-    SortingState,
-    SvelteTable,
-} from '@tanstack/svelte-table';
+import type { SortKey } from './transaction-list/contract.svelte';
 import type { TransactionListData } from '@type/generated';
 import type { App } from '@wayfinder/types';
 
-import { router } from '@inertiajs/svelte';
-import {
-    columnFilteringFeature,
-    createFilteredRowModel,
-    createSortedRowModel,
-    createTable,
-    filterFn_arrHas,
-    globalFilteringFeature,
-    rowSortingFeature,
-    tableFeatures,
-} from '@tanstack/svelte-table';
-import DatePeriodPreset from '@wayfinder/App/Enums/DatePeriodPreset';
-import { SvelteMap } from 'svelte/reactivity';
+import { createClientEngine } from './transaction-list/client-engine.svelte';
+import { createHybridEngine } from './transaction-list/hybrid-engine.svelte';
+import { createServerEngine } from './transaction-list/server-engine.svelte';
 
-/* ── Filter/sort vocabulary ──────────────────────────── */
+import { page } from '@inertiajs/svelte';
+import { SvelteMap, SvelteURLSearchParams } from 'svelte/reactivity';
 
-/** Column ids on the transaction list table that the filter UI drives. */
-export const FILTER_COLUMNS = {
-    account_id: 'account_id',
-    category_id: 'category_id',
-    type: 'type',
-} as const;
+export type { SortKey } from './transaction-list/contract.svelte';
 
-/** Friendly sort keys used by the filter UI. */
-export type SortKey = 'newest' | 'oldest' | 'highest' | 'lowest';
-
-/** Maps a UI sort key to TanStack `SortingState`. */
-export const SORT_STATE: Record<SortKey, SortingState> = {
-    newest: [
-        { id: 'transaction_date', desc: true },
-        { id: 'id', desc: true },
-    ],
-    oldest: [
-        { id: 'transaction_date', desc: false },
-        { id: 'id', desc: false },
-    ],
-    highest: [{ id: 'amount', desc: true }],
-    lowest: [{ id: 'amount', desc: false }],
-};
+/* ── Public vocabulary ───────────────────────────────── */
 
 /** Friendly labels per sort key — active tags and sheet options. */
 export const SORT_LABELS: Record<SortKey, string> = {
@@ -59,30 +25,6 @@ export const SORT_LABELS: Record<SortKey, string> = {
 export const SORT_OPTIONS = (Object.entries(SORT_LABELS) as [SortKey, string][]).map(
     ([id, label]) => ({ id, label })
 );
-
-/** Reverse-derives the UI sort key from the table's current sorting state. */
-export function toSortKey(sorting: SortingState): SortKey {
-    const primary = sorting[0];
-
-    if (!primary) return 'newest';
-    if (primary.id === 'transaction_date') return primary.desc ? 'newest' : 'oldest';
-    if (primary.id === 'amount') return primary.desc ? 'highest' : 'lowest';
-
-    return 'newest';
-}
-
-/** Reads an array-valued column filter (empty array when the filter is off). */
-export function getArrayFilter<T>(filters: ColumnFiltersState, columnId: string): T[] {
-    const value = filters.find((filter) => filter.id === columnId)?.value;
-
-    return Array.isArray(value) ? (value as T[]) : [];
-}
-
-/**
- * The period the list serves without an explicit `?period=` — the backend
- * (TransactionService) applies this window when none is requested.
- */
-export const DEFAULT_PERIOD = DatePeriodPreset.Last6Months;
 
 /* ── Day grouping ────────────────────────────────────── */
 
@@ -123,103 +65,71 @@ export function groupTransactionsByDay(transactions: TransactionListData[]): Day
     }));
 }
 
-/* ── Table wiring ────────────────────────────────────── */
-
-export const transactionListFeatures = tableFeatures({
-    rowSortingFeature,
-    columnFilteringFeature,
-    globalFilteringFeature,
-
-    sortedRowModel: createSortedRowModel(),
-    filteredRowModel: createFilteredRowModel(),
-
-    filterFns: {
-        arrayHas: filterFn_arrHas,
-    },
-});
-
-export type TransactionListFeatures = typeof transactionListFeatures;
-
-export type TransactionListTable = SvelteTable<TransactionListFeatures, TransactionListData>;
-
-const transactionListColumns: ColumnDef<TransactionListFeatures, TransactionListData>[] = [
-    { accessorKey: 'id', enableGlobalFilter: false },
-    { accessorKey: 'transaction_date', enableGlobalFilter: false },
-    { accessorKey: 'amount', enableGlobalFilter: true },
-    {
-        id: 'description',
-        accessorFn: (row) => row.description ?? '',
-        enableGlobalFilter: true,
-    },
-    {
-        id: 'category_name',
-        accessorFn: (row) => row.category?.name ?? '',
-        enableGlobalFilter: true,
-    },
-    {
-        id: 'account_name',
-        accessorFn: (row) => row.account?.name ?? '',
-        enableGlobalFilter: true,
-    },
-    {
-        id: FILTER_COLUMNS.account_id,
-        accessorFn: (row) => row.account?.id,
-        filterFn: 'arrayHas',
-        enableGlobalFilter: false,
-    },
-    {
-        id: FILTER_COLUMNS.category_id,
-        accessorFn: (row) => row.category?.id,
-        filterFn: 'arrayHas',
-        enableGlobalFilter: false,
-    },
-    {
-        id: FILTER_COLUMNS.type,
-        accessorFn: (row) => row.type,
-        filterFn: 'arrayHas',
-        enableGlobalFilter: false,
-    },
-];
-
-/** Creates the filterable/sortable table instance behind a transaction list. */
-export function createTransactionListTable(
-    transactions: () => TransactionListData[]
-): TransactionListTable {
-    return createTable({
-        features: transactionListFeatures,
-        columns: transactionListColumns,
-        get data() {
-            return transactions();
-        },
-        getRowId: (row) => String(row.id),
-    });
-}
-
 /* ── Handler ─────────────────────────────────────────── */
 
+/**
+ * Where search/filter/sort execute. Period and the server contract are the
+ * same in every engine; only query locality and pagination mechanics differ.
+ * The serving mode is a server-owned constant (TransactionController::
+ * SERVING_WINDOW) that pairs with the engine — never request-driven.
+ *
+ * - `client`: the server ships the whole period window; search/filter/sort +
+ *   reveal pagination run in the browser.
+ * - `hybrid`: the server ships keyset pages; the browser filters/sorts the
+ *   loaded slice.
+ * - `server`: the browser only holds a page; every filter, search, sort and
+ *   the pagination cursor are server parameters (spec:
+ *   docs/specs/transaction-list-server-side-search-sort.md).
+ */
+export type TransactionListEngine = 'client' | 'hybrid' | 'server';
+
 interface HandlerOptions {
-    /** Live view of the server prop (getter keeps reactivity). */
-    transactions: () => TransactionListData[];
+    /**
+     * Live view of the server prop (getter keeps reactivity). Undefined
+     * while an `Inertia::defer` prop is still in flight.
+     */
+    transactions?: () => TransactionListData[] | undefined;
     /** Server paging state; omit on pages without server windows. */
-    meta?: () => { total: number; has_more: boolean };
+    meta?: () =>
+        | {
+              total: number | null;
+              has_more: boolean;
+              next_cursor: string | null;
+          }
+        | undefined;
+    /**
+     * The served `period` prop — the window the backend is actually
+     * providing. Always present on the transaction page; drives the
+     * effective period whenever no explicit choice is applied.
+     */
+    period: () => App.Enums.DatePeriodPreset;
+    /** Defaults to `client` — the deployed pairing for the full-window serving mode. */
+    engine?: TransactionListEngine;
 }
 
 /** Screen controller created per page; components read from it and render. */
 export interface TransactionListHandler {
-    /** The filter/sort brain; components read atoms and set state through it. */
-    readonly table: TransactionListTable;
-
-    /** Table-filtered, flat rows in server order. */
+    /** Table-filtered rows (client engine: the full filtered window). */
     readonly filtered: TransactionListData[];
-    /** Number of filtered rows on the client. */
+    /** Rows exposed by the current pagination step. */
+    readonly rows: TransactionListData[];
+    /** Number of exposed rows on the client. */
     readonly count: number;
-    /** Filtered rows grouped into calendar-day buckets. */
+    /** Exposed rows grouped into calendar-day buckets. */
     readonly groups: DayGroup[];
 
-    /** Debounced global filter — typing should not hammer the table on every keystroke. */
+    /** Debounced search — typing should not hammer its target on every keystroke. */
     search(value: string): void;
+    /** Cancels a pending debounced search and clears the applied one. */
+    clearSearch(): void;
+    /**
+     * True while a replace reload is in flight. The client engines filter
+     * synchronously and report false; the server engine toggles it so
+     * callers may surface in-flight state.
+     */
+    readonly applying: boolean;
 
-    /* ── Filter state (reads, live from the table atoms) ── */
+    /* ── Filter state (reads) ─────────────────────── */
     /** Account ids currently included by the account filter. */
     readonly accountFilter: number[];
     /** Category ids currently included by the category filter. */
@@ -228,9 +138,9 @@ export interface TransactionListHandler {
     readonly typeFilter: App.Enums.TransactionType[];
     /** UI view of the current sort. */
     readonly sortKey: SortKey;
-    /** Current global search text ('' when unset). */
+    /** Current search text ('' when unset). */
     readonly searchValue: string;
-    /** True when the server window differs from the default period. */
+    /** True while an explicit period choice is applied (clearable to the backend default). */
     readonly periodActive: boolean;
 
     /* ── Filter state (writes) ────────────────────── */
@@ -240,232 +150,178 @@ export interface TransactionListHandler {
     setCategoryFilter(ids: string[]): void;
     /** Replaces the type filter; an empty array unsets it. */
     setTypeFilter(types: App.Enums.TransactionType[]): void;
-    /** Applies a UI sort key to the table. */
+    /** Applies a UI sort key. */
     setSort(key: SortKey): void;
 
     /** True when this handler backs server-side paging windows. */
     readonly paginated: boolean;
-    /** Total matching rows in the period across all server pages. */
+    /** Total matching rows across all server pages. */
     readonly total: number | undefined;
-    /** True when the server holds more rows than have been loaded so far. */
+    /** True when more rows exist past the current pagination step. */
     readonly hasMore: boolean;
     /** True while the load-more request is in flight. */
     readonly loadingMore: boolean;
     loadMore(): void;
 
-    /** The period the server is currently serving the list under. */
+    /** The period in effect: an applied choice, else the served prop. */
     readonly period: App.Enums.DatePeriodPreset;
+    /** Applies an explicit period choice (one reload). */
     setPeriod(preset: App.Enums.DatePeriodPreset): void;
+    /** Drops the period choice — the reload omits the param and the backend serves its default. */
+    clearPeriod(): void;
 
     /** Per-day open/closed overrides; untouched days stay undefined. */
     readonly dayOpen: SvelteMap<string, boolean>;
 
-    /** True when any client filter, sort override, or period is active. */
+    /** True when any filter, sort override, or period is active. */
     readonly hasActiveFilters: boolean;
     resetAllFilters(): void;
 }
 
 /**
- * Screen controller for the transaction list: the client filter/sort
- * brain, day grouping, and the two server-side windows — period (replace)
- * and load-more (append via Inertia::merge). It must be instantiated per
+ * Screen controller for the transaction list. Composes the shared state
+ * (server props, period, day grouping) with one of three engine
+ * implementations — see `TransactionListEngine`. It must be instantiated per
  * page; its containing components read from it and render.
  */
 export function transactionListHandler({
-    transactions,
+    transactions: source = (): TransactionListData[] => [],
     meta,
+    period,
+    engine = 'client',
 }: HandlerOptions): TransactionListHandler {
-    /* ── Filter/sort brain ───────────────────────────── */
-    const table = createTransactionListTable(transactions);
-
-    const filtered = $derived(table.getFilteredRowModel().rows.map((row) => row.original));
-    const count = $derived(filtered.length);
-
-    const columnFilters = $derived(table.atoms.columnFilters.get());
-    const accountFilter = $derived(
-        getArrayFilter<number>(columnFilters, FILTER_COLUMNS.account_id)
-    );
-    const categoryFilter = $derived(
-        getArrayFilter<string>(columnFilters, FILTER_COLUMNS.category_id)
-    );
-    const typeFilter = $derived(
-        getArrayFilter<App.Enums.TransactionType>(columnFilters, FILTER_COLUMNS.type)
-    );
-    const sortKey = $derived(toSortKey(table.atoms.sorting.get()));
-    const searchValue = $derived((table.atoms.globalFilter.get() as string | undefined) ?? '');
-
-    // An empty array must unset the filter, otherwise the in-array filter fn
-    // would reject every row.
-    function setArrayFilter(columnId: string, ids: unknown[]): void {
-        table.getColumn(columnId)?.setFilterValue(ids.length ? [...ids] : undefined);
-    }
-
-    function setAccountFilter(ids: number[]): void {
-        setArrayFilter(FILTER_COLUMNS.account_id, ids);
-    }
-
-    function setCategoryFilter(ids: string[]): void {
-        setArrayFilter(FILTER_COLUMNS.category_id, ids);
-    }
-
-    function setTypeFilter(types: App.Enums.TransactionType[]): void {
-        setArrayFilter(FILTER_COLUMNS.type, types);
-    }
-
-    function setSort(key: SortKey): void {
-        table.setSorting(SORT_STATE[key]);
-    }
-
-    const SEARCH_DEBOUNCE_MS = 300;
-    let searchTimer: ReturnType<typeof setTimeout> | undefined;
-
-    /** Debounced global filter — typing should not hammer the table on every keystroke. */
-    function search(value: string) {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(
-            (): void => table.setGlobalFilter(value || undefined),
-            SEARCH_DEBOUNCE_MS
-        );
-    }
-
-    /* ── Period (server window, replaces the dataset) ─── */
-    let period = $state<App.Enums.DatePeriodPreset>(DEFAULT_PERIOD);
+    // Deferred props read as undefined until their request resolves — the whole engine works against a plain array.
+    const transactions = (): TransactionListData[] => source() ?? [];
 
     /**
-     * Period has no cursor: the server answers page one of the preset and,
-     * without a merge label (see TransactionController), the prop REPLACES
-     * — cursor resets naturally with the new dataset, while filters/sort
-     * survive because reload keeps state.
+     * Server paging state normalized to an object — the getter itself may
+     * return undefined, and `total` may be null while a window is deferred.
      */
-    function setPeriod(preset: App.Enums.DatePeriodPreset) {
-        if (preset === period) return;
-        period = preset;
-        router.reload({
-            // Explicit empty cursor forces page one server-side
-            // (fromWire('') → null), even if a stale cursor param hid in
-            // the URL query.
-            data: { period: preset, cursor: '' },
-            only: ['transactions', 'transactions_meta', 'summary'],
-            preserveUrl: true,
-        });
-    }
+    const metaState = $derived(meta?.() ?? { total: null, has_more: false, next_cursor: null });
 
-    /* ── Load-more (server window, appends pages) ─────── */
-    let loadingMore = $state(false);
+    /* ── Shared state ─────────────────────────────────── */
+    // The backend owns the default: `null` means "no explicit choice" and
+    // the served prop drives the effective period. A choice stays optimistic
+    // until its response lands; clearing drops the param so the backend
+    // serves — and echoes — its own default again.
+    let periodState = $state<App.Enums.DatePeriodPreset | null>(
+        // A deep link that requested ?period= is an applied choice; a plain
+        // visit is "follow the backend".
+        new SvelteURLSearchParams(page.url.split('?')[1] ?? '').has('period') ? period() : null
+    );
 
-    /** True when the server window differs from the default period. */
-    const periodActive = $derived(period !== DEFAULT_PERIOD);
+    const periodActive = $derived(periodState !== null);
 
-    function loadMore() {
-        if (loadingMore || transactions().length === 0) return;
-        /**
-         * Cursor = the (transaction_date, id) of the last loaded row. The
-         * server appends the next page onto the prop itself (Inertia::merge),
-         * so the last element after every fetch is always the loading point.
-         * `preserveUrl` keeps cursor/period out of pushState history — both
-         * always travel explicitly in `data`.
-         */
-        const { transaction_date, id } = transactions()[transactions().length - 1];
-        loadingMore = true;
-        router.reload({
-            data: { cursor: `${transaction_date}|${id}`, period },
-            only: ['transactions', 'transactions_meta'],
-            preserveUrl: true,
-            onFinish: () => (loadingMore = false),
-        });
-    }
+    const deps = {
+        transactions,
+        metaState: (): typeof metaState => metaState,
+        period: (): App.Enums.DatePeriodPreset | null => periodState,
+    };
 
-    /* ── Day groups ───────────────────────────────────── */
-    const groups = $derived.by<DayGroup[]>(() => groupTransactionsByDay(filtered));
+    const handler =
+        engine === 'client'
+            ? createClientEngine(deps)
+            : engine === 'server'
+              ? createServerEngine(deps)
+              : createHybridEngine(deps);
+
+    /* ── Shared derivations ───────────────────────────── */
+    const groups = $derived(groupTransactionsByDay(handler.rows));
 
     // Per-day collapse choices, aggregated in one map across instances of
     // the same list; untouched days fall back to the renderer default.
     const dayOpen = new SvelteMap<string, boolean>();
 
-    /* ── Active filters ───────────────────────────────── */
-    const hasActiveFilters = $derived(
-        table.atoms.columnFilters.get().length > 0 ||
-            Boolean(table.atoms.globalFilter.get()) ||
-            toSortKey(table.atoms.sorting.get()) !== 'newest' ||
-            period !== DEFAULT_PERIOD
-    );
+    const hasActiveFilters = $derived(handler.hasLocalFilters || periodActive);
 
-    function resetAllFilters() {
-        table.resetGlobalFilter();
-        table.resetColumnFilters();
-        table.setSorting(SORT_STATE.newest);
-        setPeriod(DEFAULT_PERIOD);
+    function setPeriod(preset: App.Enums.DatePeriodPreset): void {
+        if (preset === periodState) return;
+        periodState = preset;
+        handler.applyPeriod();
+    }
+
+    function clearPeriod(): void {
+        if (periodState === null) return;
+        periodState = null;
+        handler.applyPeriod();
     }
 
     return {
-        /** The filter/sort brain; components read atoms and set state through it. */
-        table,
-
         get filtered() {
-            return filtered;
+            return handler.filtered;
+        },
+        get rows() {
+            return handler.rows;
         },
         get count() {
-            return count;
+            return handler.count;
         },
         get groups() {
             return groups;
         },
-        search,
+        search: handler.search,
+        clearSearch: handler.clearSearch,
+        get applying() {
+            return handler.applying;
+        },
 
         /* ── Filter state (reads) ─────────────────────── */
         get accountFilter() {
-            return accountFilter;
+            return handler.accountFilter;
         },
         get categoryFilter() {
-            return categoryFilter;
+            return handler.categoryFilter;
         },
         get typeFilter() {
-            return typeFilter;
+            return handler.typeFilter;
         },
         get sortKey() {
-            return sortKey;
+            return handler.sortKey;
         },
         get searchValue() {
-            return searchValue;
+            return handler.searchValue;
         },
-        /** True when the server window differs from the default period. */
         get periodActive() {
             return periodActive;
         },
 
         /* ── Filter state (writes) ────────────────────── */
-        setAccountFilter,
-        setCategoryFilter,
-        setTypeFilter,
-        setSort,
+        setAccountFilter: handler.setAccountFilter,
+        setCategoryFilter: handler.setCategoryFilter,
+        setTypeFilter: handler.setTypeFilter,
+        setSort: handler.setSort,
 
-        /** True when this handler backs server-side paging windows. */
         get paginated() {
             return meta !== undefined;
         },
         get total() {
-            return meta?.().total;
+            // Engine-owned: client answers locally, cursor engines defer to
+            // the server meta.
+            return handler.total;
         },
         get hasMore() {
-            return meta?.().has_more ?? false;
+            return handler.hasMore;
         },
         get loadingMore() {
-            return loadingMore;
+            return handler.loadingMore;
         },
-        loadMore,
+        loadMore: handler.loadMore,
 
         get period() {
-            return period;
+            return periodState ?? period();
         },
         setPeriod,
+        clearPeriod,
 
-        /** Per-day open/closed overrides; untouched days stay undefined. */
         get dayOpen() {
             return dayOpen;
         },
         get hasActiveFilters() {
             return hasActiveFilters;
         },
-        resetAllFilters,
+        resetAllFilters(): void {
+            handler.resetLocalFilters();
+            clearPeriod();
+        },
     };
 }

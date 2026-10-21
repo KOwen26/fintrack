@@ -6,7 +6,7 @@ use App\Enums\DatePeriodPreset;
 use App\Models\User;
 use App\Services\AccountService;
 use App\Services\SpendingService;
-use App\Services\TransactionService;
+use App\Services\TransactionListService;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,7 +16,7 @@ final class DashboardController extends Controller
 {
     public function __construct(
         #[CurrentUser()] private readonly ?User $user,
-        private readonly TransactionService $transactionService,
+        private readonly TransactionListService $transactionListService,
         private readonly AccountService $accountService,
         private readonly SpendingService $spendingService,
     ) {}
@@ -30,7 +30,7 @@ final class DashboardController extends Controller
 
         $categorySpending = $this->spendingService->categorySpending($this->user, DatePeriodPreset::ThisMonth);
 
-        $recentTransactions = $this->transactionService->getTransactions($this->user, DatePeriodPreset::Last14Days);
+        $recentTransactions = $this->transactionListService->getTransactions($this->user, DatePeriodPreset::Last14Days);
 
         $summary = [
             'current_balance' => $this->accountService->summarize($accounts)['total_balance'],

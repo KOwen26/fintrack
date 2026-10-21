@@ -5,79 +5,84 @@ namespace App\Http\Controllers;
 use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransactionDetailData;
 use App\Data\Transaction\TransactionFormData;
-use App\Enums\AccountAccessType;
+use App\Data\Transaction\TransactionListCursor;
+use App\Data\Transaction\TransactionListFilters;
 use App\Enums\Category;
 use App\Enums\DatePeriodPreset;
 use App\Enums\TransactionType;
 use App\Http\Requests\SaveTransactionRequest;
-use App\Models\Account;
+use App\Http\Requests\TransactionIndexRequest;
 use App\Models\Transaction;
 use App\Models\User;
-use App\Objects\TransactionCursor;
 use App\Services\AccountService;
+use App\Services\CategoryService;
+use App\Services\TransactionListService;
 use App\Services\TransactionService;
 use App\Services\TransferService;
-use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use InvalidArgumentException;
 
 final class TransactionController extends Controller
 {
+    /**
+     * Deployment pairing for the transaction list's serving mode — must match
+     * the frontend engine ('full' ↔ client, 'paged' ↔ hybrid/server). Never
+     * request-driven: no user or client input selects it.
+     */
+    private const string SERVING_WINDOW = 'full';
+
     public function __construct(
         private readonly TransactionService $transactionService,
+        private readonly TransactionListService $transactionListService,
         private readonly TransferService $transferService,
         private readonly AccountService $accountService,
         #[CurrentUser] private readonly ?User $user
     ) {}
 
-    public function index(Request $request): Response
+    public function index(TransactionIndexRequest $request): Response
     {
         $this->authorize('viewAny', Transaction::class);
 
-        try {
-            $cursor = TransactionCursor::fromWire($request->input('cursor'));
-        } catch (InvalidFormatException | InvalidArgumentException) {
-            abort(400, 'Malformed transaction cursor.');
+        $period = DatePeriodPreset::tryFrom($request->input('period', '')) ?? DatePeriodPreset::default();
+
+        $filters = TransactionListFilters::fromRequest($request);
+
+        // Serving mode is a server-owned deployment constant, not a request
+        // toggle — it pairs 1:1 with the frontend engine choice. 'full' ships
+        // the entire period window (client engine: filtering, sorting and
+        // pagination all run in the browser); 'paged' answers keyset pages
+        // (hybrid/server engines: append via merge).
+        if (self::SERVING_WINDOW === 'full') {
+            return Inertia::render('app/transaction/index', [
+                'period' => $period->value,
+                'summary' => $this->transactionListService->getSummary($this->user, $period),
+                'transactions' => Inertia::defer(fn (): array => $this->transactionListService->getTransactions($this->user, $period)),
+                'accounts' => AccountService::getAccountsByUser($this->user),
+                'categories' => CategoryService::getCategories(),
+            ]);
         }
 
-        // Unknown values fall back to the service default rather than 404ing —
-        // callers pass arbitrary user choice via ?period=.
-        $period = DatePeriodPreset::tryFrom((string) $request->input('period', ''))
-            ?? DatePeriodPreset::Last6Months;
-
-        ['rows' => $transactions, 'total' => $total, 'has_more' => $hasMore] =
-            $this->transactionService->getTransactionsPage($this->user, $cursor, $period);
-
-        $accounts = Account::query()
-            ->notArchived()
-            ->where(function ($query): void {
-                $query->where('owner_id', $this->user->id)
-                    ->orWhere('access_type', AccountAccessType::Joint);
-            })
-            ->get(['id', 'name', 'decorations', 'owner_id', 'access_type']);
-
-        $categories = collect(Category::cases())->map(fn (Category $category): array => [
-            'id' => $category->value,
-            'name' => $category->label(),
-            'decorations' => $category->decorations()->toArray(),
-        ])->all();
+        $cursorTransactions = $this->transactionListService->getTransactionsByCursorPage(
+            $this->user,
+            TransactionListCursor::fromRequest($request, $filters->sort),
+            $period,
+            $filters,
+        );
 
         // Append semantics only apply to load-more: a cursor marks a next-page
-        // append. A period change reloads without a cursor and MUST replace —
-        // a merge label there would graft the new period's rows onto the old
-        // period's pages, so the prop goes out unmerged for those requests.
+        // append. A filter, sort or period change reloads without a cursor and
+        // MUST replace — a merge label there would graft new rows onto the old
+        // query's pages, so the prop goes out unmerged for those requests.
         return Inertia::render('app/transaction/index', [
-            'transactions' => $cursor === null
-                ? $transactions
-                : Inertia::merge($transactions),
-            'transactions_meta' => ['total' => $total, 'has_more' => $hasMore],
-            'summary' => $this->transactionService->getSummary($this->user, $period),
-            'accounts' => $accounts,
-            'categories' => $categories,
+            'transactions' => Inertia::merge($cursorTransactions['transactions']),
+            'transactions_meta' => $cursorTransactions['meta'],
+            'period' => $period->value,
+            'summary' => $this->transactionListService->getSummary($this->user, $period),
+            'accounts' => AccountService::getAccountsByUser($this->user),
+            'categories' => CategoryService::getCategories(),
         ]);
     }
 
@@ -97,7 +102,7 @@ final class TransactionController extends Controller
         $accounts = $this->accountService->getAccountsByUser($this->user);
 
         return Inertia::render('app/transaction/create', [
-            'initialType' => $request->query('type', TransactionType::Expense),
+            'initialType' => $request->query('type', TransactionType::Expense->value),
             'transaction' => TransactionFormData::defaultExpense(),
             'accounts' => $accounts,
         ]);

@@ -196,6 +196,11 @@ export type TransactionFormData = {
     transfer_id: number | null;
 };
 
+export type TransactionListCursor = {
+    readonly value: string;
+    readonly id: number;
+};
+
 export type TransactionListData = {
     id: number;
     type: App.Enums.TransactionType;
@@ -208,8 +213,16 @@ export type TransactionListData = {
     account_id: number;
     transfer_id: number | null;
     destination_account_id: number | null;
-    account: App.Models.Account | null;
+    account: App.Models.Account;
     destination_account: App.Models.Account;
+};
+
+export type TransactionListFilters = {
+    readonly search: string | null;
+    readonly accountIds: number[];
+    readonly categoryIds: string[];
+    readonly types: string[];
+    readonly sort: App.Enums.TransactionSort;
 };
 
 export type TransferData = {

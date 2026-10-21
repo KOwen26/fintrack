@@ -43,6 +43,16 @@ enum DatePeriodPreset: string
 
     case All = 'all';
 
+    /**
+     * The window served when a request carries no `?period=` — the single
+     * named source of the product default. The frontend follows the served
+     * prop instead of mirroring this.
+     */
+    public static function default(): self
+    {
+        return self::Last3Months;
+    }
+
     public function label(): string
     {
         return match ($this) {

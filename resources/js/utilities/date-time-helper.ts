@@ -72,7 +72,7 @@ export default class DateTimeHelper {
      * @example DateTimeHelper.format('2025-01-01T14:30:00', 'date') // "1 Januari 2025"
      */
     static format(
-        value: Date | string | number,
+        value: Date | string | number | null | undefined,
         preset:
             | 'datetime'
             | 'datetime-long'
