@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { TransactionListData } from '@type/generated';
+    import type { App } from '@wayfinder/types';
 
     import { router } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
@@ -12,6 +13,7 @@
     } from '@components/module/transaction/transaction-list-filter.svelte';
     import TransactionList, {
         createTransactionListTable,
+        DEFAULT_PERIOD,
     } from '@components/module/transaction/transaction-list.svelte';
     import TransactionSummaryCard from '@components/module/transaction/transaction-summary-card.svelte';
 
@@ -40,6 +42,9 @@
     /* ── Table (filtering + sorting brain) ───────────────── */
     const table = createTransactionListTable(() => transactions);
 
+    /** The period the server is currently serving the list under. */
+    let period = $state<App.Enums.DatePeriodPreset>(DEFAULT_PERIOD);
+
     const filteredTransactions = $derived(
         table.getFilteredRowModel().rows.map((row) => row.original)
     );
@@ -49,18 +54,38 @@
     const hasActiveFilters = $derived(
         table.atoms.columnFilters.get().length > 0 ||
             Boolean(table.atoms.globalFilter.get()) ||
-            toSortKey(table.atoms.sorting.get()) !== 'newest'
+            toSortKey(table.atoms.sorting.get()) !== 'newest' ||
+            period !== DEFAULT_PERIOD
     );
 
     function resetAllFilters() {
         table.resetGlobalFilter();
         table.resetColumnFilters();
         table.setSorting(SORT_STATE.newest);
+        handlePeriodChange(DEFAULT_PERIOD);
     }
 
-    /* ── Server-side "load more" (append via merge prop) ──── */
+    /* ── Server-side data windows ────────────────────────── */
 
     let loadingMore = $state(false);
+
+    /**
+     * Period has no cursor: the server answers page one of the preset and,
+     * without a merge label (see TransactionController), the prop REPLACES —
+     * cursor resets naturally with the new dataset. Filters/sort survive
+     * because reload keeps state.
+     */
+    function handlePeriodChange(preset: App.Enums.DatePeriodPreset) {
+        if (preset === period) return;
+        period = preset;
+        router.reload({
+            // Explicit empty cursor forces page one server-side (fromWire('')
+            // → null), even if a stale cursor param hid in the URL query.
+            data: { period: preset, cursor: '' },
+            only: ['transactions', 'transactions_meta', 'summary'],
+            preserveUrl: true,
+        });
+    }
 
     function loadMoreAction() {
         if (loadingMore || transactions.length === 0) return;
@@ -68,12 +93,15 @@
          * Cursor = the (transaction_date, id) of the last loaded row. The
          * server appends the next page onto the prop itself (Inertia::merge),
          * so the last element after every fetch is always the loading point.
+         * `preserveUrl` keeps cursor/period out of pushState history — both
+         * always travel explicitly in `data`.
          */
         const { transaction_date, id } = transactions[transactions.length - 1];
         loadingMore = true;
         router.reload({
-            data: { cursor: `${transaction_date}|${id}` },
+            data: { cursor: `${transaction_date}|${id}`, period },
             only: ['transactions', 'transactions_meta'],
+            preserveUrl: true,
             onFinish: () => (loadingMore = false),
         });
     }
@@ -91,7 +119,12 @@
     <div class="filter-sentinel" aria-hidden="true"></div>
     <div
         class="sticky-filter sticky top-0 z-20 -mx-5 border-b border-transparent bg-background px-5 py-2.5">
-        <TransactionListFilter {accounts} {categories} {table} />
+        <TransactionListFilter
+            {accounts}
+            {categories}
+            onPeriodChange={handlePeriodChange}
+            {period}
+            {table} />
     </div>
 
     {#if filteredTransactions.length === 0}

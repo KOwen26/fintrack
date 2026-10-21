@@ -7,6 +7,7 @@ use App\Data\Transaction\TransactionDetailData;
 use App\Data\Transaction\TransactionFormData;
 use App\Enums\AccountAccessType;
 use App\Enums\Category;
+use App\Enums\DatePeriodPreset;
 use App\Enums\TransactionType;
 use App\Http\Requests\SaveTransactionRequest;
 use App\Models\Account;
@@ -43,8 +44,13 @@ final class TransactionController extends Controller
             abort(400, 'Malformed transaction cursor.');
         }
 
+        // Unknown values fall back to the service default rather than 404ing —
+        // callers pass arbitrary user choice via ?period=.
+        $period = DatePeriodPreset::tryFrom((string) $request->input('period', ''))
+            ?? DatePeriodPreset::Last6Months;
+
         ['rows' => $transactions, 'total' => $total, 'has_more' => $hasMore] =
-            $this->transactionService->getTransactionsPage($this->user, $cursor);
+            $this->transactionService->getTransactionsPage($this->user, $cursor, $period);
 
         $accounts = Account::query()
             ->notArchived()
@@ -60,13 +66,16 @@ final class TransactionController extends Controller
             'decorations' => $category->decorations()->toArray(),
         ])->all();
 
-        // Append semantics are carried by the merge prop: a partial reload
-        // with `only: ['transactions', 'transactions_meta']` extends the
-        // client's array instead of replacing it; full visits replace it.
+        // Append semantics only apply to load-more: a cursor marks a next-page
+        // append. A period change reloads without a cursor and MUST replace —
+        // a merge label there would graft the new period's rows onto the old
+        // period's pages, so the prop goes out unmerged for those requests.
         return Inertia::render('app/transaction/index', [
-            'transactions' => Inertia::merge($transactions),
+            'transactions' => $cursor === null
+                ? $transactions
+                : Inertia::merge($transactions),
             'transactions_meta' => ['total' => $total, 'has_more' => $hasMore],
-            'summary' => $this->transactionService->getSummary($this->user),
+            'summary' => $this->transactionService->getSummary($this->user, $period),
             'accounts' => $accounts,
             'categories' => $categories,
         ]);

@@ -1,5 +1,8 @@
 <script lang="ts" module>
     import type { ColumnFiltersState, SortingState } from '@tanstack/svelte-table';
+    import type { App } from '@wayfinder/types';
+
+    import { DatePeriodPresetMeta } from '@wayfinder/App/Enums/DatePeriodPreset';
 
     /** Column ids (on the transaction list table) that this filter drives. */
     export const FILTER_COLUMNS = {
@@ -46,10 +49,10 @@
 
 <script lang="ts">
     import type { TransactionListTable } from './transaction-list.svelte';
-    import type { App } from '@wayfinder/types';
     import type { Snippet } from 'svelte';
 
     import { TYPE_STYLE } from './transaction-list-item.svelte';
+    import { DEFAULT_PERIOD } from './transaction-list.svelte';
 
     import { getDecorationColor } from '@data/decoration-colors';
     import { getDecorationIcon } from '@data/decoration-icons';
@@ -58,6 +61,7 @@
     import { cn } from '@utilities/shadcn';
 
     import DecorationBadge from '@components/module/decoration-badge.svelte';
+    import PeriodPresetSelect from '@components/module/period-preset-select.svelte';
     import Button from '@components/ui/button.svelte';
     import DrawerModal from '@components/ui/drawer-modal.svelte';
     import SearchInput from '@components/ui/forms/search-input.svelte';
@@ -70,17 +74,31 @@
         accounts: {
             id: number;
             name: string;
-            decorations?: { icon?: string | null; color?: string | null };
+            decorations?: { icon?: string | null; color?: string | null } | null;
         }[];
         categories: {
             id: string;
             name: string;
-            decorations?: { icon?: string | null; color?: string | null };
+            decorations?: { icon?: string | null; color?: string | null } | null;
         }[];
         table: TransactionListTable;
+        /** The period the server is serving the list under (server-side filter). */
+        period?: App.Enums.DatePeriodPreset;
+        /** Applies a period change on the server; undefined hides the period section. */
+        onPeriodChange?: (preset: App.Enums.DatePeriodPreset) => void;
     }
 
-    let { accounts: uniqueAccounts, categories: uniqueCategories, table }: Props = $props();
+    let {
+        accounts: uniqueAccounts,
+        categories: uniqueCategories,
+        table,
+        period,
+        onPeriodChange,
+    }: Props = $props();
+
+    const periodActive = $derived(
+        onPeriodChange !== undefined && period !== undefined && period !== DEFAULT_PERIOD
+    );
 
     /* ── Table state (read reactively from the table atoms) ─ */
 
@@ -96,8 +114,8 @@
 
     /* ── State ───────────────────────────────────────────── */
 
-    // Sheet — `settings` groups the transaction-type enum and sort selector
-    // into a single drawer, sectioned per filter (time period slots in later).
+    // Sheet — `settings` groups the server-driven period, the transaction-type
+    // enum and the sort selector into a single drawer, sectioned per filter.
     type SheetKind = 'account' | 'category' | 'settings';
 
     /** Leading badge: an icon or short text on a tinted square (direct CSS). */
@@ -133,10 +151,13 @@
     let sheetTitle = $state('');
 
     // Temp filters (while sheet is open)
+    type PeriodPreset = App.Enums.DatePeriodPreset;
+
     let tAccountIds: number[] = $state([]);
     let tCategoryIds: string[] = $state([]);
     let tTypes: string[] = $state([]);
     let tSort: SortKey = $state('newest');
+    let tPeriod: PeriodPreset | undefined = $state(undefined);
 
     /** Debounced global filter — typing should not hammer the table on every keystroke. */
     const SEARCH_DEBOUNCE_MS = 300;
@@ -201,6 +222,15 @@
                 },
             });
         }
+        if (periodActive) {
+            tags.push({
+                label: DatePeriodPresetMeta[period!].label,
+                icon: 'solar--calendar-mark-bold-duotone',
+                onClear: () => {
+                    onPeriodChange?.(DEFAULT_PERIOD);
+                },
+            });
+        }
         if (sortKey !== 'newest') {
             tags.push({
                 label: SORT_LABELS[sortKey],
@@ -227,6 +257,7 @@
         tCategoryIds = [...categoryIds];
         tTypes = [...types];
         tSort = sortKey;
+        tPeriod = onPeriodChange ? (period ?? DEFAULT_PERIOD) : undefined;
 
         sheetTitle = SHEET_TITLES[kind];
         sheetKind = kind;
@@ -239,6 +270,12 @@
     }
 
     function applyFilter() {
+        // Period is server-side: release it before the client filters so the
+        // reload carrying it lands first.
+        if (onPeriodChange && tPeriod !== undefined && tPeriod !== period) {
+            onPeriodChange(tPeriod);
+        }
+
         setArrayFilter(FILTER_COLUMNS.account_id, tAccountIds);
         setArrayFilter(FILTER_COLUMNS.category_id, tCategoryIds);
         setArrayFilter(FILTER_COLUMNS.type, tTypes);
@@ -395,7 +432,7 @@
         <button
             class={cn(
                 'border-1.5 flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150',
-                sortKey !== 'newest'
+                sortKey !== 'newest' || periodActive
                     ? 'border-primary bg-primary text-primary-content'
                     : 'border-border bg-card text-foreground hover:border-primary'
             )}
@@ -498,6 +535,16 @@
 {#snippet settingContent()}
     <!-- Root: horizontal spacing comes from the drawer wrapper; each element's rhythm from its own wrapper below. -->
     <div class="flex flex-col">
+        {#if onPeriodChange}
+            <div class="py-2">
+                {@render sectionHeading('Period')}
+            </div>
+
+            <PeriodPresetSelect class="w-full" preset="all" bind:value={tPeriod as never} />
+
+            <div class="my-2 border-t border-border"></div>
+        {/if}
+
         <div class="py-2">
             {@render sectionHeading('Transaction Type')}
         </div>

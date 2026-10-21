@@ -9,10 +9,12 @@
         createSortedRowModel,
         createTable,
         filterFn_arrHas,
+        filterFn_inDateRange,
         globalFilteringFeature,
         rowSortingFeature,
         tableFeatures,
     } from '@tanstack/svelte-table';
+    import DatePeriodPreset from '@wayfinder/App/Enums/DatePeriodPreset';
 
     export const transactionListFeatures = tableFeatures({
         rowSortingFeature,
@@ -24,8 +26,15 @@
 
         filterFns: {
             arrayHas: filterFn_arrHas,
+            inDateRange: filterFn_inDateRange,
         },
     });
+
+    /**
+     * The period the list serves without an explicit ?period= — the backend
+     * (TransactionService) applies this window when none is requested.
+     */
+    export const DEFAULT_PERIOD = DatePeriodPreset.Last6Months;
 
     export type TransactionListFeatures = typeof transactionListFeatures;
 
@@ -33,7 +42,7 @@
 
     const transactionListColumns: ColumnDef<TransactionListFeatures, TransactionListData>[] = [
         { accessorKey: 'id', enableGlobalFilter: false },
-        { accessorKey: 'transaction_date', enableGlobalFilter: false },
+        { accessorKey: 'transaction_date', enableGlobalFilter: false, filterFn: 'inDateRange' },
         { accessorKey: 'amount', enableGlobalFilter: true },
         {
             id: 'description',
