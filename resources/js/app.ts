@@ -4,6 +4,7 @@ import type { ResolvedComponent } from '@inertiajs/svelte';
 
 import { createInertiaApp } from '@inertiajs/svelte';
 import { initializeNamedTheme } from '@lib/theme-handler.svelte';
+import { initializeFlashToast } from '@lib/toast-handler.svelte';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
 import { withDirectionalViewTransition } from '@utilities/view-transition';
@@ -37,4 +38,7 @@ createInertiaApp({
 });
 
 initializeNamedTheme();
+
+initializeFlashToast();
+
 // initializeAppearance();

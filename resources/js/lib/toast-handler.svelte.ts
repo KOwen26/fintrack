@@ -1,6 +1,6 @@
 import type { ToastT } from 'svelte-sonner';
 
-import { page, router } from '@inertiajs/svelte';
+import { router } from '@inertiajs/svelte';
 import { toast } from 'svelte-sonner';
 
 export type ToastProps = {
@@ -21,26 +21,20 @@ export const showToast = (data: ToastProps) => {
     }
 };
 
-export function useFlashToast() {
-    $effect(() => {
-        const flash = (page.props as Record<string, any>)?.flash as
-            { type?: string; message?: string } | undefined;
-
-        if (flash?.type && flash?.message) {
-            showToast({ type: flash.type as any, message: flash.message });
-        }
-    });
-}
-
 export function initializeFlashToast(): void {
+    // Legacy method
+    // const page = usePage();
+    // const flash = $derived(page?.flash ?? page?.props?.flash);
+
+    // $effect(() => {
+    //     if (flash?.type && flash?.message) {
+    //         showToast({ type: flash.type, message: flash.message });
+    //     }
+    // });
+
     router.on('flash', ({ detail }) => {
-        const flash = detail?.flash;
-        const data = flash?.toast as ToastProps;
+        const data = detail?.flash;
 
-        if (!data) {
-            return;
-        }
-
-        toast[data.type](data.message);
+        showToast(data);
     });
 }

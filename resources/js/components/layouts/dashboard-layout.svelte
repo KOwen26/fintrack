@@ -7,7 +7,6 @@
     import { page } from '@inertiajs/svelte';
     import { getBreadcrumbItems } from '@lib/global-states.svelte';
     import { IsMobile } from '@lib/is-mobile.svelte';
-    import { useFlashToast } from '@lib/toast-handler.svelte';
 
     import { getTitleFromMenu } from '@utilities/helper.svelte';
 
@@ -37,8 +36,6 @@
     // setLayoutProps({ title }) wins, then the shared meta title, then the active menu.
     const title = $derived(layoutTitle ?? (page.props?.meta?.title || getTitleFromMenu(flatMenu)));
     const appName = import.meta.env.VITE_APP_NAME || page?.props?.meta?.app_name;
-
-    useFlashToast();
 
     // The sidebar shell is desktop-only; mobile renders a plain stacked layout.
     const isMobile = new IsMobile();
