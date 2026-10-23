@@ -59,7 +59,7 @@ final class TransactionController extends Controller
             return Inertia::render('app/transaction/index', [
                 'period' => $period->value,
                 'summary' => $this->transactionListService->getSummary($this->user, $period),
-                'transactions' => Inertia::defer(fn (): array => $this->transactionListService->getTransactions($this->user, $period)),
+                'transactions' => Inertia::defer(fn (): array => $this->transactionListService->getCachedTransactions($this->user, $period)),
                 'accounts' => AccountService::getAccountsByUser($this->user),
                 'categories' => CategoryService::getCategories(),
             ]);

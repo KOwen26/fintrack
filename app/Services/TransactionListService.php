@@ -14,6 +14,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Objects\DatePeriod;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Everything that reads the transaction list's truth — the global window,
@@ -27,6 +28,23 @@ final class TransactionListService
     public const int PAGE_SIZE = 60;
 
     /**
+     * Cache TTL for the full-window list. Writes flush eagerly via
+     * FlushTransactionListCache, so this bounds only backstop staleness
+     * (direct DB writes) and time-relative period rollover.
+     */
+    private const int CACHE_TTL_MINUTES = 15;
+
+    /**
+     * Cache key holding one user's cached full-window lists — a map keyed by
+     * period preset, so a write flushes with a single exact Cache::forget.
+     * The v1 segment orphans entries shaped by an older row mapper on deploy.
+     */
+    public static function cacheKey(int $userId): string
+    {
+        return "transaction-list:user:{$userId}";
+    }
+
+    /**
      * Global list: one row per transfer unit (the outflow row) plus plain
      * rows and fee rows — inflow rows are hidden.
      */
@@ -35,6 +53,28 @@ final class TransactionListService
         $transactions = self::listQuery($user, $period->toPeriod())->get();
 
         return TransactionListData::collectFromTransactions($transactions);
+    }
+
+    /**
+     * Cached variant of getTransactions — the transaction index read path.
+     * Fills one period at a time into the per-user map; each fill refreshes
+     * the map's TTL, which bounds only backstop staleness (direct DB writes)
+     * since writes flush eagerly via FlushTransactionListCache. A concurrent
+     * fill of another period can lose a race — self-healing, it recomputes.
+     */
+    public static function getCachedTransactions(User $user, DatePeriodPreset $period): array
+    {
+        $store = Cache::get(self::cacheKey($user->id), []);
+
+        if (array_key_exists($period->value, $store)) {
+            return $store[$period->value];
+        }
+
+        $store[$period->value] = self::getTransactions($user, $period);
+
+        Cache::put(self::cacheKey($user->id), $store, now()->addMinutes(self::CACHE_TTL_MINUTES));
+
+        return $store[$period->value];
     }
 
     /**
