@@ -29,6 +29,8 @@
         mobileHeaderClass = undefined,
         mobileHeaderScrolledClass = undefined,
         mobileHeaderScrollThreshold = undefined,
+        /** Mobile only: renders no bottom navigation for full-canvas pages. */
+        hideBottomNav = false,
         children,
         ...props
     }: RestProps = $props();
@@ -80,7 +82,7 @@
             <Dock data-slot="bottom-action-bar" position="fixed" variant="float">
                 {@render bottomActionBar.render()}
             </Dock>
-        {:else}
+        {:else if !hideBottomNav}
             <BottomNav />
         {/if}
     </div>

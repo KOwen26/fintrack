@@ -92,6 +92,21 @@
     /* ── Active filter tags ──────────────────────────────── */
     const activeFilters = $derived.by(() => {
         const tags: { label: string; icon?: string; onClear?: () => void }[] = [];
+        // The period is always visible as a status tag, t behaves like a radio, never unset, only replaced from the options
+        tags.push({
+            label: DatePeriodPresetMeta[list.period].label,
+            icon: 'solar--calendar-mark-bold-duotone',
+        });
+
+        if (list.sortKey !== 'newest') {
+            tags.push({
+                label: SORT_LABELS[list.sortKey],
+                icon: 'solar--sort-vertical-line-duotone',
+                onClear: () => {
+                    list.setSort('newest');
+                },
+            });
+        }
 
         for (const id of list.accountFilter) {
             const account = uniqueAccounts.find((x) => x.id === id);
@@ -121,26 +136,11 @@
                 },
             });
         }
-        // The period is always visible as a status tag: its selection behaves
-        // like a radio — it is never unset, only replaced from the settings
-        // sheet — so there is no "clear" concept for it, just the current
-        // effective window.
-        tags.push({
-            label: DatePeriodPresetMeta[list.period].label,
-            icon: 'solar--calendar-mark-bold-duotone',
-        });
-        if (list.sortKey !== 'newest') {
-            tags.push({
-                label: SORT_LABELS[list.sortKey],
-                icon: 'solar--sort-vertical-line-duotone',
-                onClear: () => {
-                    list.setSort('newest');
-                },
-            });
-        }
 
         return tags;
     });
+
+    let activeFiltersFold = $state(false);
 
     /* ── Sheet helpers ───────────────────────────────────── */
 
@@ -292,9 +292,6 @@
                     },
                 ];
             case 'settings':
-                // The whole settings sheet is handed over to the
-                // `settingContent` snippet — type selection (toggle group)
-                // and sort (option rows) live there.
                 return [{ label: null, content: settingContent }];
             default:
                 return [];
@@ -303,29 +300,32 @@
 </script>
 
 <div class="flex flex-col gap-3">
-    <SearchInput
-        onclear={() => {
-            list.clearSearch();
-        }}
-        oninput={handleSearchInput}
-        placeholder="Search transactions"
-        value={list.searchValue} />
+    <div class="flex items-center gap-2">
+        <SearchInput
+            class="flex-1"
+            onclear={() => {
+                list.clearSearch();
+            }}
+            oninput={handleSearchInput}
+            placeholder="Search transactions"
+            value={list.searchValue} />
+
+        <Button
+            class={cn(
+                (list.sortKey !== 'newest' || list.periodActive) &&
+                    'bg-secondary text-secondary-foreground'
+            )}
+            aria-label="Sort"
+            color="secondary"
+            onclick={() => openSheet('settings')}
+            size="icon"
+            variant="outline">
+            <i class="iconify size-5 solar--tuning-3-line-duotone"></i>
+        </Button>
+    </div>
 
     <!-- ── FILTER CHIPS ─────────────────────────────────────── -->
     <div class="flex items-center gap-2">
-        <!-- Sort button (standalone) -->
-        <button
-            class={cn(
-                'border-1.5 flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150',
-                list.sortKey !== 'newest' || list.periodActive
-                    ? 'border-primary bg-primary text-primary-content'
-                    : 'border-border bg-card text-foreground hover:border-primary'
-            )}
-            aria-label="Sort"
-            onclick={() => openSheet('settings')}>
-            <i class="iconify size-4 solar--tuning-3-line-duotone"></i>
-        </button>
-
         <div class="flex flex-1 scrollbar-none gap-1.5 overflow-x-auto">
             {#each filterChips as { kind, label, active }, i (i)}
                 <button
@@ -345,11 +345,33 @@
 
     <!-- ── ACTIVE FILTER TAGS ──────────────────────────────── -->
     {#if activeFilters.length > 0}
-        <div class="flex flex-wrap gap-1.5">
+        <div
+            class={[
+                'flex flex-wrap gap-1.5',
+                activeFiltersFold ? 'max-h-none' : 'max-h-14 overflow-hidden',
+            ]}>
+            {#if activeFilters.length > 5}
+                <button
+                    class="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary/10 text-secondary transition-colors hover:bg-secondary/20"
+                    aria-expanded={activeFiltersFold}
+                    aria-label={activeFiltersFold
+                        ? 'Show fewer filter chips'
+                        : 'Show all filter chips'}
+                    onclick={() => (activeFiltersFold = !activeFiltersFold)}>
+                    <i
+                        class={[
+                            'iconify size-3 transition-transform duration-150',
+                            activeFiltersFold
+                                ? 'solar--alt-arrow-up-line-duotone'
+                                : 'solar--alt-arrow-down-line-duotone',
+                        ]}></i>
+                </button>
+            {/if}
+
             {#each activeFilters as tag, i (i)}
                 <button
                     class={[
-                        'inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-sans text-xs font-semibold text-primary transition-all duration-120 hover:bg-primary/20',
+                        'inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-sans text-xs font-semibold whitespace-nowrap text-primary transition-all duration-120 hover:bg-primary/20',
                         !tag.onClear && 'pointer-events-none',
                     ]}
                     onclick={tag.onClear}>
