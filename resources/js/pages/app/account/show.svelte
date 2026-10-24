@@ -142,7 +142,7 @@
                                 <i class="iconify size-5 text-foreground {row.icon}"></i>
                                 {row.label}
                             </span>
-                            <span class="text-sm font-medium text-foreground">
+                            <span class="text-sm font-medium text-foreground capitalize">
                                 {row.value}
                             </span>
                         </li>

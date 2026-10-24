@@ -6,6 +6,7 @@
     import { router } from '@inertiajs/svelte';
     import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
     import AccountType from '@wayfinder/App/Enums/AccountType';
+    import TransactionType from '@wayfinder/App/Enums/TransactionType';
     import StatisticController from '@wayfinder/App/Http/Controllers/StatisticController';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
@@ -74,14 +75,22 @@
             icon: 'solar--transfer-horizontal-bold-duotone',
             label: 'Transact',
             onclick: () => {
-                router.visit(TransactionController.create.url());
+                router.visit(
+                    TransactionController.create.url({
+                        query: { account_id: account.id },
+                    })
+                );
             },
         },
         transfer: {
             icon: 'solar--arrow-right-up-line-duotone',
             label: 'Transfer',
             onclick: () => {
-                router.visit(TransactionController.create.url());
+                router.visit(
+                    TransactionController.create.url({
+                        query: { type: TransactionType.Transfer, account_id: account.id },
+                    })
+                );
             },
         },
         report: {

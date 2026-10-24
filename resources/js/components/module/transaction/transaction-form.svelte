@@ -33,31 +33,16 @@
         /** Server-folded form payload — covers seeded creates and both edit shapes. */
         transaction: Data.TransactionFormData;
         accounts: App.Models.Account[];
-        /** Query-prefilled type for creates; edits always retain the server payload. */
-        initialType?: App.Enums.TransactionType;
         /** Quick amounts rendered as chips under the hero input. */
         amountPresets?: number[];
     }
 
-    let {
-        transaction,
-        accounts,
-        initialType = 'expense',
-        amountPresets = DEFAULT_AMOUNT_PRESETS,
-    }: Props = $props();
+    let { transaction, accounts, amountPresets = DEFAULT_AMOUNT_PRESETS }: Props = $props();
 
     const isEdit = $derived(transaction.id !== null);
 
     /* Seeded once from the DTO — after mount, the tabs own the type. */
-    function buildInitialType(): App.Enums.TransactionType {
-        if (transaction.id === null && initialType) {
-            return initialType;
-        }
-
-        return transaction.type;
-    }
-
-    let activeType = $state<App.Enums.TransactionType>(buildInitialType());
+    let activeType = $state<App.Enums.TransactionType>(transaction.type);
     let calculatorOpen = $state(false);
     let calculatorValue = $state(0);
 
@@ -110,7 +95,7 @@
 
     function buildInitialData() {
         return {
-            type: buildInitialType(),
+            type: transaction.type,
             amount: transaction.amount !== null ? String(transaction.amount) : '',
             description: transaction.description ?? '',
             account_id: transaction.account_id ?? '',

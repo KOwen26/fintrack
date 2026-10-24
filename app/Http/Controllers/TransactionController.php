@@ -9,7 +9,6 @@ use App\Data\Transaction\TransactionListCursor;
 use App\Data\Transaction\TransactionListFilters;
 use App\Enums\Category;
 use App\Enums\DatePeriodPreset;
-use App\Enums\TransactionType;
 use App\Http\Requests\SaveTransactionRequest;
 use App\Http\Requests\TransactionIndexRequest;
 use App\Models\Transaction;
@@ -99,12 +98,9 @@ final class TransactionController extends Controller
     {
         $this->authorize('create', Transaction::class);
 
-        $accounts = $this->accountService->getAccountsByUser($this->user);
-
         return Inertia::render('app/transaction/create', [
-            'initialType' => $request->query('type', TransactionType::Expense->value),
-            'transaction' => TransactionFormData::defaultExpense(),
-            'accounts' => $accounts,
+            'transaction' => TransactionFormData::defaultFromRequest($request),
+            'accounts' => $this->accountService->getAccountsByUser($this->user),
         ]);
     }
 

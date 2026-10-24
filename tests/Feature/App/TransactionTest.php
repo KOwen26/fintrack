@@ -49,6 +49,24 @@ test('renders the transaction creation page', function (): void {
             ->component('app/transaction/create')
             ->has('accounts')
             ->has('transaction')
+            ->where('transaction.type', TransactionType::Expense->value)
+            ->where('transaction.account_id', null)
+        );
+});
+
+test('seeds the creation page from query type and account', function (): void {
+    [$user, $account] = createAccountForUser();
+
+    $this->actingAs($user)
+        ->get(route('transactions.create', [
+            'type' => TransactionType::Transfer->value,
+            'account_id' => $account->id,
+        ]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('app/transaction/create')
+            ->where('transaction.type', TransactionType::Transfer->value)
+            ->where('transaction.account_id', $account->id)
         );
 });
 
