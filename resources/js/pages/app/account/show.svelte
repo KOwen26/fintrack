@@ -2,7 +2,7 @@
     import type { CategorySpendingReportData } from '@type/generated';
     import type { App } from '@wayfinder/types';
 
-    import { getDecorationColor } from '@data/decoration-colors';
+    import { getDecorationColor } from '@data/decorations';
     import { router, setLayoutProps } from '@inertiajs/svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';

@@ -32,8 +32,6 @@
     import type { TransactionListData } from '@type/generated';
     import type { RestProps } from '@type/index';
 
-    import { getDecorationColor } from '@data/decoration-colors';
-    import { getDecorationIcon } from '@data/decoration-icons';
     import { Link } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
@@ -54,26 +52,17 @@
 
     const typeConfig = $derived(TYPE_STYLE[transaction.type]);
 
-    /* Resolved tile config for <DecorationBadge>: category decoration (with
-       parent/group fallback) wins, then transaction-type styling. */
-    const decoration = $derived.by(() => {
-        const colorSlug =
+    /* Category decoration (with parent/group fallback) — the badge resolves
+       the slugs and wins over the transaction-type styling passed as
+       fallback props. */
+    const iconSlug = $derived(
+        transaction.category?.decorations?.icon ?? transaction.category?.group?.decorations?.icon
+    );
+    const decorations = $derived({
+        icon: iconSlug,
+        color:
             transaction.category?.decorations?.color ??
-            transaction.category?.group?.decorations?.color;
-        const iconSlug =
-            transaction.category?.decorations?.icon ??
-            transaction.category?.group?.decorations?.icon;
-
-        const decoColor = colorSlug ? getDecorationColor(colorSlug)?.hex : undefined;
-        const decoIcon = iconSlug
-            ? (getDecorationIcon(iconSlug)?.value ?? 'solar--tag-bold-duotone')
-            : undefined;
-
-        return {
-            icon: decoIcon ?? typeConfig.icon,
-            background: decoColor ? `${decoColor}20` : typeConfig.bg,
-            color: decoColor ?? typeConfig.color,
-        };
+            transaction.category?.group?.decorations?.color,
     });
 </script>
 
@@ -88,9 +77,10 @@
     <!-- Icon -->
     {#if !hideIcon}
         <DecorationBadge
-            background={decoration.background}
-            color={decoration.color}
-            icon={decoration.icon}
+            background={typeConfig.bg}
+            color={typeConfig.color}
+            {decorations}
+            icon={iconSlug ? 'solar--tag-bold-duotone' : typeConfig.icon}
             size="sm" />
     {/if}
 

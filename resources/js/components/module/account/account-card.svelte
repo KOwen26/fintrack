@@ -2,8 +2,7 @@
     import type { RestProps } from '@type/index';
     import type { App } from '@wayfinder/types';
 
-    import { getDecorationColor } from '@data/decoration-colors';
-    import { getDecorationIcon } from '@data/decoration-icons';
+    import { getDecorationColor, getDecorationIcon } from '@data/decorations';
     import AccountType from '@wayfinder/App/Enums/AccountType';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 

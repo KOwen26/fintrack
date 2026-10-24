@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { App } from '@wayfinder/types';
 
-    import { getDecorationColor } from '@data/decoration-colors';
+    import { getDecorationColor } from '@data/decorations';
 
     import { cn } from '@utilities/shadcn';
 

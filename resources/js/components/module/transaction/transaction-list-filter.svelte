@@ -5,8 +5,6 @@
 
     import { TYPE_STYLE } from './transaction-list-item.svelte';
 
-    import { getDecorationColor } from '@data/decoration-colors';
-    import { getDecorationIcon } from '@data/decoration-icons';
     import { DatePeriodPresetMeta } from '@wayfinder/App/Enums/DatePeriodPreset';
 
     import { cn } from '@utilities/shadcn';
@@ -44,12 +42,18 @@
     // enum and the sort selector into a single drawer, sectioned per filter.
     type SheetKind = 'account' | 'category' | 'settings';
 
-    /** Leading badge: an icon or short text on a tinted square (direct CSS). */
+    /**
+     * Leading badge config forwarded to <DecorationBadge> — direct values
+     * act as the badge's fallbacks; decoration lookups resolve inside the
+     * badge and win over them.
+     */
     interface RowBadge {
         icon?: string;
         text?: string;
-        background: string;
-        color: string;
+        label?: string;
+        decorations?: { icon?: string | null; color?: string | null } | null;
+        background?: string;
+        color?: string;
     }
 
     /** One selectable row inside the active sheet. */
@@ -186,16 +190,6 @@
         return items.includes(item) ? items.filter((x) => x !== item) : [...items, item];
     }
 
-    /** Direct-CSS badge colors from an optional decoration color slug. */
-    function decorationBadgeColors(color?: string | null): { background: string; color: string } {
-        const hex = color ? getDecorationColor(color)?.hex : undefined;
-
-        return {
-            background: hex ? `${hex}20` : 'var(--color-popover)',
-            color: hex ?? 'color-mix(in oklab, var(--color-foreground) 60%, transparent)',
-        };
-    }
-
     /* ── Chip data ─────────────────────────────────────────── */
 
     const filterChips = $derived<{ kind: SheetKind; label: string; active: boolean }[]>([
@@ -243,7 +237,7 @@
                                 selected: tAccountIds.length === 0,
                                 onSelect: () => (tAccountIds = []),
                                 badge: {
-                                    text: 'ALL',
+                                    label: 'ALL',
                                     background:
                                         'color-mix(in oklab, var(--color-primary) 10%, transparent)',
                                     color: 'var(--color-primary)',
@@ -255,9 +249,7 @@
                                 selected: tAccountIds.includes(acct.id),
                                 onSelect: () => (tAccountIds = toggled(tAccountIds, acct.id)),
                                 badge: {
-                                    // icon: 'solar--banknote-2-bold-duotone',
-                                    icon: getDecorationIcon(acct.decorations?.icon)?.value,
-                                    ...decorationBadgeColors(acct.decorations?.color),
+                                    decorations: acct.decorations,
                                 },
                             })),
                         ],
@@ -275,7 +267,6 @@
                                 onSelect: () => (tCategoryIds = []),
                                 badge: {
                                     icon: 'solar--tag-bold-duotone',
-                                    ...decorationBadgeColors(),
                                 },
                             },
                             ...uniqueCategories.map((cat): SheetOption => ({
@@ -284,8 +275,7 @@
                                 selected: tCategoryIds.includes(cat.id),
                                 onSelect: () => (tCategoryIds = toggled(tCategoryIds, cat.id)),
                                 badge: {
-                                    icon: getDecorationIcon(cat.decorations?.icon)?.value,
-                                    ...decorationBadgeColors(cat.decorations?.color),
+                                    decorations: cat.decorations,
                                 },
                             })),
                         ],
@@ -501,14 +491,13 @@
     </div>
 {/snippet}
 
-{#snippet optionBadge(badge)}
+{#snippet optionBadge(badge: RowBadge | undefined)}
     {#if badge}
         <DecorationBadge
             class="size-8 rounded"
             iconClass="size-5"
-            background={badge.background}
-            color={badge.color}
-            icon={badge.icon}
-            text={badge.text} />
+            background="var(--color-popover)"
+            color="color-mix(in oklab, var(--color-foreground) 60%, transparent)"
+            {...badge} />
     {/if}
 {/snippet}

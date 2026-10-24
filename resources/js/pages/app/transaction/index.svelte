@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { TransactionListData } from '@type/generated';
+    import type { CategoryData, TransactionListData } from '@type/generated';
     import type { App } from '@wayfinder/types';
 
     import { setLayoutProps } from '@inertiajs/svelte';
@@ -23,24 +23,13 @@
         period,
         transactions_meta: meta,
     }: {
-        /** Undefined while the deferred window is still in flight. */
-        transactions: TransactionListData[] | undefined;
-        summary: { income: number; expense: number; net: number };
-        accounts: {
-            id: number;
-            name: string;
-            decorations?: { icon?: string | null; color?: string | null } | null;
-        }[];
-        categories: {
-            id: string;
-            name: string;
-            decorations?: { icon?: string | null; color?: string | null } | null;
-        }[];
-        /** The window the server is actually serving — seeds the list state. */
         period: App.Enums.DatePeriodPreset;
-        /** Absent in full-window mode — paging meta is paged-mode only. */
+        transactions: TransactionListData[] | undefined;
         transactions_meta?:
             { total: number | null; has_more: boolean; next_cursor: string | null } | undefined;
+        summary: { income: number; expense: number; net: number };
+        accounts: Pick<App.Models.Account, 'id' | 'name' | 'decorations'>[];
+        categories: CategoryData[];
     } = $props();
 
     /* ── List controller: client engine over the full window ── */

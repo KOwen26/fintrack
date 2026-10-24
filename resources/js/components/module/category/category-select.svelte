@@ -6,13 +6,10 @@
     } from '@components/ui/forms/combobox.svelte';
     import type { Decoration } from '@type/generated';
 
-    import { getDecorationColor } from '@data/decoration-colors';
-    import { getDecorationIcon } from '@data/decoration-icons';
     import { page } from '@inertiajs/svelte';
     import { Combobox as ComboboxPrimitive } from 'bits-ui';
 
     import { cn } from '@utilities/shadcn';
-    import StringHelper from '@utilities/string-helper';
 
     import DecorationBadge from '@components/module/decoration-badge.svelte';
     import Collapsible from '@components/ui/collapsible.svelte';
@@ -250,7 +247,7 @@
 <!-- Trigger row content, shared by all variants. -->
 {#snippet triggerContent()}
     {#if selected}
-        {@render chip(selected.decorations, selected.name, true)}
+        {@render chip(selected.decorations, true)}
         <span class="truncate text-sm font-medium">{selected.name}</span>
     {:else}
         <span class="truncate text-sm text-base-content/35">{placeholder}</span>
@@ -262,7 +259,7 @@
 
 {#snippet comboboxOption({ category }: CategoryComboboxOption)}
     <div class="flex w-full min-w-0 items-center gap-2.5 pr-5">
-        {@render chip(category.decorations, category.name)}
+        {@render chip(category.decorations)}
         <span class="truncate text-sm font-medium">{category.name}</span>
     </div>
 {/snippet}
@@ -286,7 +283,7 @@
         {#if category}
             <span
                 class="pointer-events-none absolute top-1/2 left-2.5 z-10 flex -translate-y-1/2 items-center">
-                {@render chip(category.decorations, category.name)}
+                {@render chip(category.decorations)}
             </span>
         {/if}
 
@@ -390,12 +387,7 @@
         {disabled}
         onclick={() => pick(child)}
         type="button">
-        {@render chip(
-            child.decorations,
-            child.name,
-            active,
-            optionVariant === 'icon' ? 'md' : 'sm'
-        )}
+        {@render chip(child.decorations, active, optionVariant === 'icon' ? 'md' : 'sm')}
         <span
             class={cn(
                 optionVariant === 'icon'
@@ -408,22 +400,12 @@
     </button>
 {/snippet}
 
-<!-- Chip: resolves decoration slugs to icon/hex, falls back to name initials. -->
 {#snippet chip(
     decorations: Decoration | undefined,
-    name: string | undefined,
     active: boolean = false,
     size: DecorationBadgeSize = 'sm'
 )}
-    {@const icon = getDecorationIcon(decorations?.icon)?.value}
-    {@const hex = getDecorationColor(decorations?.color)?.hex}
-    <DecorationBadge
-        class={cn(active && 'ring ring-primary ring-offset-2')}
-        background={hex ? `${hex}20` : undefined}
-        color={hex ?? undefined}
-        {icon}
-        {size}
-        text={icon ? undefined : StringHelper.getInitials(name)} />
+    <DecorationBadge class={cn(active && 'ring ring-primary ring-offset-2')} {decorations} {size} />
 {/snippet}
 
 <style>
