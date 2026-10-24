@@ -30,7 +30,6 @@ enum Category: string
     // Food & Drinks
     case DiningOut = 'dining_out';
     case SnacksAndDrinks = 'snacks_and_drinks';
-    case CoffeeAndDesserts = 'coffee_and_desserts';
     case FoodTakeouts = 'food_takeouts';
     case BuffetFineDining = 'buffet_fine_dining';
 
@@ -115,7 +114,6 @@ enum Category: string
             self::Insurance => 'Insurance',
             self::DiningOut => 'Dining Out',
             self::SnacksAndDrinks => 'Snacks & Drinks',
-            self::CoffeeAndDesserts => 'Coffee & Desserts',
             self::FoodTakeouts => 'Food Takeouts',
             self::BuffetFineDining => 'Buffet / Fine Dining',
             self::Electricity => 'Electricity',
@@ -179,7 +177,6 @@ enum Category: string
 
             self::DiningOut,
             self::SnacksAndDrinks,
-            self::CoffeeAndDesserts,
             self::FoodTakeouts,
             self::BuffetFineDining => CategoryGroup::FoodAndDrinks,
 
@@ -248,7 +245,6 @@ enum Category: string
             self::Insurance => new Decoration(icon: 'shield-check', color: 'green-500'),
             self::DiningOut => new Decoration(icon: 'donut', color: 'red-700'),
             self::SnacksAndDrinks => new Decoration(icon: 'cup-hot', color: 'red-600'),
-            self::CoffeeAndDesserts => new Decoration(icon: 'mug', color: 'red-600'),
             self::FoodTakeouts => new Decoration(icon: 'donut', color: 'red-500'),
             self::BuffetFineDining => new Decoration(icon: 'chef-hat', color: 'red-400'),
             self::Electricity => new Decoration(icon: 'lightning', color: 'amber-600'),
