@@ -13,10 +13,13 @@ enum CategoryGroup: string
     case ServiceAndHousing = 'service_and_housing';
     case Shopping = 'shopping';
     case EntertainmentAndLeisure = 'entertainment_and_leisure';
-    case Transport = 'transport';
+    case TransportTravel = 'transport_travel';
     case HealthAndWellness = 'health_and_wellness';
     case Education = 'education';
-    case Socials = 'socials';
+    case FamilyAndChildren = 'family_and_children';
+    case Pets = 'pets';
+    case SocialsAndGiving = 'socials_and_giving';
+    case Other = 'other';
 
     public function label(): string
     {
@@ -28,10 +31,13 @@ enum CategoryGroup: string
             self::ServiceAndHousing => 'Service & Housing',
             self::Shopping => 'Shopping',
             self::EntertainmentAndLeisure => 'Entertainment & Leisure',
-            self::Transport => 'Transport',
+            self::TransportTravel => 'Transport & Travel',
             self::HealthAndWellness => 'Health & Wellness',
             self::Education => 'Education',
-            self::Socials => 'Socials',
+            self::FamilyAndChildren => 'Family & Children',
+            self::Pets => 'Pets',
+            self::SocialsAndGiving => 'Socials & Giving',
+            self::Other => 'Other',
         };
     }
 
@@ -45,10 +51,13 @@ enum CategoryGroup: string
             self::ServiceAndHousing => new Decoration(icon: 'house', color: 'yellow-600'),
             self::Shopping => new Decoration(icon: 'bag', color: 'sky-600'),
             self::EntertainmentAndLeisure => new Decoration(icon: 'gamepad', color: 'cyan-600'),
-            self::Transport => new Decoration(icon: 'wheel-angle', color: 'slate-900'),
+            self::TransportTravel => new Decoration(icon: 'wheel-angle', color: 'slate-900'),
             self::HealthAndWellness => new Decoration(icon: 'heart-pulse', color: 'rose-700'),
             self::Education => new Decoration(icon: 'square-academic-cap', color: 'lime-700'),
-            self::Socials => new Decoration(icon: 'heart', color: 'violet-700'),
+            self::FamilyAndChildren => new Decoration(icon: 'users-group-two-rounded', color: 'pink-600'),
+            self::Pets => new Decoration(icon: 'paw', color: 'orange-600'),
+            self::SocialsAndGiving => new Decoration(icon: 'heart', color: 'violet-700'),
+            self::Other => new Decoration(icon: 'add-circle', color: 'slate-500'),
         };
     }
 

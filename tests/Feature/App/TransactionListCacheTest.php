@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Category;
 use App\Enums\DatePeriodPreset;
 use App\Enums\TransactionType;
 use App\Models\Account;
@@ -77,7 +78,7 @@ test('creating a transaction invalidates the cached list', function (): void {
         'type' => TransactionType::Income->value,
         'amount' => 5_000_000,
         'transaction_date' => now()->toDateString(),
-        'category_id' => 'salary',
+        'category_id' => Category::Salary->value,
         'description' => 'Fresh row',
     ])->assertRedirectToRoute('transactions.index');
 

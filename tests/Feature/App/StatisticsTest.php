@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Category;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
@@ -80,14 +81,14 @@ test('scopes category spending to the requested month window', function (): void
     $user = User::factory()->create();
     $account = Account::factory()->create(['owner_id' => $user->id]);
 
-    Transaction::factory()->expense()->forCategory('groceries')->create([
+    Transaction::factory()->expense()->forCategory(Category::GeneralShopping)->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
         'amount' => 150_000,
         'transaction_date' => '2026-03-10',
     ]);
 
-    Transaction::factory()->expense()->forCategory('cinema_and_shows')->create([
+    Transaction::factory()->expense()->forCategory(Category::CinemaAndShows)->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
         'amount' => 80_000,
