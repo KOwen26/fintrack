@@ -81,11 +81,11 @@ test('shows the account page for its owner', function (): void {
         ->assertInertia(fn ($page) => $page->component('app/account/show'));
 });
 
-test('shows a joint account to any authenticated user', function (): void {
+test('shows a shareable account to any authenticated user', function (): void {
     $user = User::factory()->create();
-    $jointAccount = Account::factory()->joint()->create();
+    $shareableAccount = Account::factory()->shareable()->create();
 
-    $this->actingAs($user)->get(route('accounts.show', $jointAccount))
+    $this->actingAs($user)->get(route('accounts.show', $shareableAccount))
         ->assertOk();
 });
 

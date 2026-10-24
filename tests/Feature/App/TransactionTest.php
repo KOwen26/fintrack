@@ -143,12 +143,12 @@ test('forbids viewing a transaction created by another user', function (): void 
         ->assertForbidden();
 });
 
-test('shows a transaction on a joint account to any authenticated user', function (): void {
+test('shows a transaction on a shareable account to any authenticated user', function (): void {
     [$user] = createAccountForUser();
-    $jointAccount = Account::factory()->joint()->create(); // another owner, shared
+    $shareableAccount = Account::factory()->shareable()->create(); // another owner, shared
     $transaction = Transaction::factory()->expense()->create([
-        'account_id' => $jointAccount->id,
-        'created_by' => $jointAccount->owner_id,
+        'account_id' => $shareableAccount->id,
+        'created_by' => $shareableAccount->owner_id,
     ]);
 
     $this->actingAs($user)->get(route('transactions.show', $transaction))

@@ -48,10 +48,10 @@ class AccountFactory extends Factory
         ]);
     }
 
-    public function joint(): static
+    public function shareable(): static
     {
         return $this->state([
-            'access_type' => AccountAccessType::Joint,
+            'access_type' => AccountAccessType::Shareable,
         ]);
     }
 

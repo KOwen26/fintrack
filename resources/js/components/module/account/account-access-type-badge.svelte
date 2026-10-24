@@ -24,8 +24,8 @@
             color: 'light',
             icon: 'solar--user-bold-duotone',
         },
-        [AccountAccessType.Joint]: {
-            label: 'Joint',
+        [AccountAccessType.Shareable]: {
+            label: 'Shareable',
             color: 'accent',
             icon: 'solar--users-group-two-rounded-bold-duotone',
         },

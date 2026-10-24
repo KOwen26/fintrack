@@ -47,13 +47,13 @@
         provider,
     };
 
-    const jointWallet: App.Models.Account = {
+    const shareableWallet: App.Models.Account = {
         id: 2,
         owner_id: 1,
         provider_id: null,
         name: 'Family Wallet',
         type: AccountType.CashWallet,
-        access_type: AccountAccessType.Joint,
+        access_type: AccountAccessType.Shareable,
         current_balance: 3_450_000,
         initial_balance: 2_000_000,
         decorations: { icon: 'wallet', color: 'violet-600' },
@@ -80,12 +80,12 @@
             <hr class="mt-2 mb-4" />
             <p class="mb-4 text-sm text-base-content/60">
                 Rendered through the composed AccountCard — decorations drive the hero color and
-                icon, falling back to the type default. Provider and joint access show in the
+                icon, falling back to the type default. Provider and shareable access show in the
                 subtitle row.
             </p>
             <div class="grid gap-5 md:grid-cols-2">
                 <AccountCard account={savingsAccount} />
-                <AccountCard account={jointWallet} />
+                <AccountCard account={shareableWallet} />
             </div>
         </section>
 
@@ -154,13 +154,14 @@
             <h2>Access Type Badge</h2>
             <hr class="mt-2 mb-4" />
             <p class="mb-4 text-sm text-base-content/60">
-                Personal and Joint access — soft variant badges, same icon modes as the type badge.
+                Personal and Shareable access — soft variant badges, same icon modes as the type
+                badge.
             </p>
             <div class="flex flex-wrap items-center gap-3">
                 <AccountAccessTypeBadge type={AccountAccessType.Personal} />
-                <AccountAccessTypeBadge type={AccountAccessType.Joint} />
+                <AccountAccessTypeBadge type={AccountAccessType.Shareable} />
                 <span class="text-base-content/40">|</span>
-                <AccountAccessTypeBadge icon="only" type={AccountAccessType.Joint} />
+                <AccountAccessTypeBadge icon="only" type={AccountAccessType.Shareable} />
             </div>
         </section>
 
@@ -173,10 +174,10 @@
             </p>
             <div class="flex flex-wrap items-center gap-3">
                 <AccountBadge account={savingsAccount} />
-                <AccountBadge account={jointWallet} />
+                <AccountBadge account={shareableWallet} />
                 <span class="text-base-content/40">|</span>
                 <AccountBadge account={savingsAccount} labelOnly />
-                <AccountBadge account={jointWallet} labelOnly />
+                <AccountBadge account={shareableWallet} labelOnly />
             </div>
         </section>
 
@@ -189,7 +190,7 @@
             </p>
             <div class="flex flex-wrap items-start gap-10">
                 <AccountInfo account={savingsAccount} />
-                <AccountInfo account={jointWallet} />
+                <AccountInfo account={shareableWallet} />
                 <AccountInfo account={savingsAccount} reverse />
             </div>
         </section>
@@ -201,7 +202,7 @@
                 Toggleable list/grid of cards linking to the show page, with an empty state and
                 create CTA when no accounts exist.
             </p>
-            <AccountList accounts={[savingsAccount, jointWallet]} />
+            <AccountList accounts={[savingsAccount, shareableWallet]} />
         </section>
 
         <section>

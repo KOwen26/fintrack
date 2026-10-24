@@ -21,6 +21,7 @@
     import type { App } from '@wayfinder/types';
 
     import { getDecorationColor, getDecorationIcon } from '@data/decorations';
+    import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
     import AccountType from '@wayfinder/App/Enums/AccountType';
 
     import DateTimeHelper from '@utilities/date-time-helper';
@@ -180,7 +181,8 @@
             rows.push({
                 icon: 'solar--users-group-two-rounded-bold-duotone',
                 label: 'Access Type',
-                value: account.access_type === 'personal' ? 'Personal' : 'Joint',
+                value:
+                    account.access_type === AccountAccessType.Personal ? 'Personal' : 'Shareable',
                 mono: false,
             });
         }
@@ -495,7 +497,7 @@
     </ResponsiveCard>
 
     <!-- ════════════════════════════════════════════ -->
-    <!--  MEMBERS (joint accounts only)             -->
+    <!--  MEMBERS (shareable accounts only)        -->
     <!-- ════════════════════════════════════════════ -->
     {#if members.length > 0}
         <ResponsiveCard class="space-y-0" contentClass="p-0">

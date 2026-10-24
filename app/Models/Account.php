@@ -63,6 +63,6 @@ final class Account extends Model
     #[Scope]
     protected function shareable(Builder $builder): void
     {
-        $builder->orWhere('access_type', AccountAccessType::Joint);
+        $builder->orWhere('access_type', AccountAccessType::Shareable);
     }
 }
