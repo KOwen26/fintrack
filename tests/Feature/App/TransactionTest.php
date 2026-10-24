@@ -49,6 +49,24 @@ test('renders the transaction creation page', function (): void {
             ->component('app/transaction/create')
             ->has('accounts')
             ->has('transaction')
+            ->where('transaction.type', TransactionType::Expense->value)
+            ->where('transaction.account_id', null)
+        );
+});
+
+test('seeds the creation page from query type and account', function (): void {
+    [$user, $account] = createAccountForUser();
+
+    $this->actingAs($user)
+        ->get(route('transactions.create', [
+            'type' => TransactionType::Transfer->value,
+            'account_id' => $account->id,
+        ]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('app/transaction/create')
+            ->where('transaction.type', TransactionType::Transfer->value)
+            ->where('transaction.account_id', $account->id)
         );
 });
 
@@ -143,12 +161,12 @@ test('forbids viewing a transaction created by another user', function (): void 
         ->assertForbidden();
 });
 
-test('shows a transaction on a joint account to any authenticated user', function (): void {
+test('shows a transaction on a shareable account to any authenticated user', function (): void {
     [$user] = createAccountForUser();
-    $jointAccount = Account::factory()->joint()->create(); // another owner, shared
+    $shareableAccount = Account::factory()->shareable()->create(); // another owner, shared
     $transaction = Transaction::factory()->expense()->create([
-        'account_id' => $jointAccount->id,
-        'created_by' => $jointAccount->owner_id,
+        'account_id' => $shareableAccount->id,
+        'created_by' => $shareableAccount->owner_id,
     ]);
 
     $this->actingAs($user)->get(route('transactions.show', $transaction))

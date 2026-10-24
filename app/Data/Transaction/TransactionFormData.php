@@ -7,6 +7,7 @@ use App\Enums\TransactionType;
 use App\Models\Transaction;
 use App\Models\Transfer;
 use Carbon\CarbonInterface;
+use Illuminate\Http\Request;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -44,16 +45,18 @@ class TransactionFormData extends Data
         public ?int $transfer_id,
     ) {}
 
-    /** Create seed: today's date, the expense tab active, no values. */
-    public static function defaultExpense(): self
+    /**
+     * Default from query params for form initial state / data.
+     */
+    public static function defaultFromRequest(Request $request): self
     {
         return new self(
             id: null,
-            type: TransactionType::Expense,
+            type: TransactionType::tryFrom($request->query('type', '')) ?? TransactionType::Expense,
             amount: null,
             transaction_date: now(),
             description: null,
-            account_id: null,
+            account_id: $request->integer('account_id') ?: null,
             destination_account_id: null,
             category_id: null,
             fee_amount: null,

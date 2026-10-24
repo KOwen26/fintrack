@@ -3,27 +3,28 @@
     import type { App } from '@wayfinder/types';
 
     import { getDecorationColor, getDecorationIcon } from '@data/decorations';
+    import { router } from '@inertiajs/svelte';
+    import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';
     import AccountType from '@wayfinder/App/Enums/AccountType';
-    import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
+    import TransactionType from '@wayfinder/App/Enums/TransactionType';
+    import StatisticController from '@wayfinder/App/Http/Controllers/StatisticController';
+    import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
     import DateTimeHelper from '@utilities/date-time-helper';
 
     import CurrencyAmount from '@components/data/currency-amount.svelte';
     import BaseAccountCard from '@components/module/account/base-account-card.svelte';
     import Badge from '@components/ui/badge.svelte';
-    import Link from '@components/ui/link.svelte';
 
     interface Props extends RestProps {
         account: App.Models.Account;
         hideActions?: boolean;
-        hideEdit?: boolean;
         hideFooter?: boolean;
     }
 
     let {
         account,
         hideActions = false,
-        hideEdit = false,
         hideFooter = false,
         class: _class,
         children,
@@ -60,25 +61,45 @@
     const providerName = $derived<string | undefined>(
         (account.provider as { name?: string } | null)?.name
     );
-    const isJoint = $derived(account.access_type === 'joint');
-
-    // ── Balance visibility ─────────────────────────────────────
-    let balanceHidden = $state(false);
-
-    function toggleBalance(): void {
-        balanceHidden = !balanceHidden;
-    }
+    const isShareable = $derived(account.access_type === AccountAccessType.Shareable);
 
     // ── Quick actions by account type ────────────────────────────
     interface ActionItem {
         icon: string;
         label: string;
+        onclick?: (event: Event) => void;
     }
 
     const actionRegistry: Record<string, ActionItem> = {
-        transact: { icon: 'solar--transfer-horizontal-bold-duotone', label: 'Transact' },
-        transfer: { icon: 'solar--arrow-right-up-line-duotone', label: 'Transfer' },
-        report: { icon: 'solar--chart-2-bold-duotone', label: 'Report' },
+        transact: {
+            icon: 'solar--transfer-horizontal-bold-duotone',
+            label: 'Transact',
+            onclick: () => {
+                router.visit(
+                    TransactionController.create.url({
+                        query: { account_id: account.id },
+                    })
+                );
+            },
+        },
+        transfer: {
+            icon: 'solar--arrow-right-up-line-duotone',
+            label: 'Transfer',
+            onclick: () => {
+                router.visit(
+                    TransactionController.create.url({
+                        query: { type: TransactionType.Transfer, account_id: account.id },
+                    })
+                );
+            },
+        },
+        report: {
+            icon: 'solar--chart-2-bold-duotone',
+            label: 'Report',
+            onclick: () => {
+                router.visit(StatisticController.index.url());
+            },
+        },
         connect: { icon: 'solar--link-bold-duotone', label: 'Connect' },
     };
 
@@ -125,11 +146,11 @@
                 {#if providerName}
                     <span class="hidden @xs/account-card:inline-flex">{providerName}</span>
                 {/if}
-                {#if providerName && isJoint}
+                {#if providerName && isShareable}
                     <span>•</span>
                 {/if}
-                {#if isJoint}
-                    <span>Joint</span>
+                {#if isShareable}
+                    <span>Shareable</span>
                 {/if}
                 <Badge
                     class="hidden bg-white/20 font-semibold text-current uppercase @xs/account-card:inline-flex"
@@ -141,40 +162,23 @@
                 </Badge>
             </div>
         </div>
-        {@render editButton()}
-        <!--
-            <button
-                class="flex size-8 cursor-pointer items-center justify-center rounded-lg border-none bg-white/10 transition-colors hover:bg-white/15"
-                aria-label="Toggle balance visibility"
-                onclick={toggleBalance}>
-                <i
-                    class="iconify size-4 text-white/80 {balanceHidden
-                        ? 'solar--eye-closed-bold-duotone'
-                        : 'solar--eye-bold-duotone'}">
-                </i>
-            </button>
-        -->
     </div>
 
     <!-- Balance -->
     <div class="relative z-1">
-        <div
+        <h6
             class={[
                 'flex items-center gap-1.5 text-sm font-medium tracking-wide text-current/80 uppercase',
                 'hidden @xs/account-card:block',
             ]}>
             Current Balance
-        </div>
+        </h6>
         <p
             class={[
-                'truncate font-bold tracking-tight text-nowrap text-current ',
+                'truncate font-bold tracking-tight text-nowrap text-current',
                 'text-xl @xs/account-card:text-2xl @xs/account-card:md:text-4xl @xs/account-card:lg:text-5xl',
             ]}>
-            {#if balanceHidden}
-                ••••••
-            {:else}
-                <CurrencyAmount value={account.current_balance ?? 0} />
-            {/if}
+            <CurrencyAmount value={account.current_balance ?? 0} />
         </p>
     </div>
 
@@ -187,6 +191,7 @@
                 {#each quickActions as action (action.label)}
                     <button
                         class="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg bg-white/15 px-3.5 py-2 text-sm font-medium text-current transition-colors hover:bg-white/25 md:shrink"
+                        onclick={action?.onclick}
                         type="button">
                         <i class="iconify size-4 {action.icon}"></i>
                         {action.label}
@@ -216,16 +221,5 @@
                 </span>
             {/if}
         </div>
-    {/if}
-{/snippet}
-
-{#snippet editButton()}
-    {#if !hideEdit}
-        <Link
-            class="inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-white/15 text-current transition-colors hover:bg-white/25 md:order-last md:ml-auto"
-            aria-label="Edit account"
-            href={AccountController.edit.url({ account: account.id })}>
-            <i class="iconify size-4 solar--pen-new-square-line-duotone"></i>
-        </Link>
     {/if}
 {/snippet}

@@ -24,8 +24,8 @@ export const accountAccessTypeOptions = [
         icon: 'solar--user-bold-duotone',
     },
     {
-        value: AccountAccessType.Joint,
-        label: 'Joint',
+        value: AccountAccessType.Shareable,
+        label: 'Shareable',
         description: 'Shared access',
         icon: 'solar--users-group-two-rounded-bold-duotone',
     },

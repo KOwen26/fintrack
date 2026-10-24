@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { CategorySpendingReportData } from '@type/generated';
+    import type { CategorySpendingReportData, TransactionListData } from '@type/generated';
     import type { App } from '@wayfinder/types';
 
     import { getDecorationColor } from '@data/decorations';
@@ -26,7 +26,7 @@
         categorySpending,
     }: {
         account: App.Models.Account;
-        transactions: TransactionList[];
+        transactions: TransactionListData[];
         categorySpending: CategorySpendingReportData;
     } = $props();
 
@@ -79,7 +79,7 @@
             rows.push({
                 icon: 'solar--users-group-two-rounded-bold-duotone',
                 label: 'Access Type',
-                value: account.access_type === 'personal' ? 'Personal' : 'Joint',
+                value: account.access_type,
                 mono: false,
             });
         }
@@ -112,7 +112,7 @@
     {/snippet}
 </HeaderContext>
 
-<MobilePageLayout variant="3/5">
+<MobilePageLayout variant="4/5">
     {#snippet hero()}
         <AccountCard {account} hideEdit />
     {/snippet}
@@ -142,7 +142,7 @@
                                 <i class="iconify size-5 text-foreground {row.icon}"></i>
                                 {row.label}
                             </span>
-                            <span class="text-sm font-medium text-foreground">
+                            <span class="text-sm font-medium text-foreground capitalize">
                                 {row.value}
                             </span>
                         </li>
@@ -188,7 +188,7 @@
             <!-- ════════════════════════════════════════════ -->
             {#if categorySpending}
                 <Collapsible.Root bind:open={categoryOpen}>
-                    <ResponsiveCard class=" {!transactionsOpen ? 'gap-0' : ''}">
+                    <ResponsiveCard class=" {!categoryOpen ? 'gap-0' : ''}">
                         {#snippet header()}
                             <Collapsible.Trigger
                                 class="flex w-full cursor-pointer items-center justify-between">
@@ -197,9 +197,10 @@
                                 </p>
                                 <div class="flex items-center gap-2">
                                     <i
-                                        class="iconify size-4 {categoryOpen
-                                            ? 'solar--alt-arrow-up-line-duotone'
-                                            : 'solar--alt-arrow-down-line-duotone'}"></i>
+                                        class={[
+                                            'iconify size-4 transition-transform duration-150 solar--alt-arrow-up-linear',
+                                            !categoryOpen && '-rotate-180',
+                                        ]}></i>
                                 </div>
                             </Collapsible.Trigger>
                         {/snippet}
@@ -211,9 +212,7 @@
                 </Collapsible.Root>
             {/if}
 
-            <!-- ════════════════════════════════════════════ -->
-            <!--  RECENT TRANSACTIONS                         -->
-            <!-- ════════════════════════════════════════════ -->
+            <div class="-mx-5 h-2.5 bg-muted"></div>
 
             <Collapsible.Root bind:open={transactionsOpen}>
                 <ResponsiveCard class=" {!transactionsOpen ? 'gap-0' : ''}">
@@ -224,22 +223,22 @@
                                 Recent Transactions
                             </p>
                             <i
-                                class="iconify size-4 {transactionsOpen
-                                    ? 'solar--alt-arrow-up-line-duotone'
-                                    : 'solar--alt-arrow-down-line-duotone'}"></i>
+                                class={[
+                                    'iconify size-4 transition-transform duration-150 solar--alt-arrow-up-linear',
+                                    !transactionsOpen && '-rotate-180',
+                                ]}></i>
                         </Collapsible.Trigger>
                     {/snippet}
                     <Collapsible.Content>
-                        <div class="space-y-1.5">
-                            {#if transactions.length > 0}
-                                <TransactionList
-                                    loadMoreAction={() =>
-                                        router.visit(TransactionController.index.url())}
-                                    {transactions} />
-                            {:else}
-                                <EmptyItemPlaceholder label="No Transaction Yet" />
-                            {/if}
-                        </div>
+                        {#if transactions.length > 0}
+                            <TransactionList
+                                loadMoreAction={() =>
+                                    router.visit(TransactionController.index.url())}
+                                {transactions}
+                                variant="flat" />
+                        {:else}
+                            <EmptyItemPlaceholder label="No Transaction Yet" />
+                        {/if}
                     </Collapsible.Content>
                 </ResponsiveCard>
             </Collapsible.Root>

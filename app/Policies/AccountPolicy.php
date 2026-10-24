@@ -15,7 +15,7 @@ final class AccountPolicy
 
     public function view(User $user, Account $account): bool
     {
-        return $account->owner_id === $user->id || $account->access_type === AccountAccessType::Joint;
+        return $account->owner_id === $user->id || $account->access_type === AccountAccessType::Shareable;
     }
 
     public function create(User $user): bool
