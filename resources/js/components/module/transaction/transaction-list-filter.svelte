@@ -1,96 +1,59 @@
-<script lang="ts" module>
-    import type { ColumnFiltersState, SortingState } from '@tanstack/svelte-table';
-
-    /** Column ids (on the transaction list table) that this filter drives. */
-    export const FILTER_COLUMNS = {
-        account_id: 'account_id',
-        category_id: 'category_id',
-        type: 'type',
-    } as const;
-
-    /** Friendly sort keys used by the filter UI. */
-    export type SortKey = 'newest' | 'oldest' | 'highest' | 'lowest';
-
-    /** Maps a UI sort key to TanStack `SortingState`. */
-    export const SORT_STATE: Record<SortKey, SortingState> = {
-        newest: [
-            { id: 'transaction_date', desc: true },
-            { id: 'id', desc: true },
-        ],
-        oldest: [
-            { id: 'transaction_date', desc: false },
-            { id: 'id', desc: false },
-        ],
-        highest: [{ id: 'amount', desc: true }],
-        lowest: [{ id: 'amount', desc: false }],
-    };
-
-    /** Reverse-derives the UI sort key from the table's current sorting state. */
-    export function toSortKey(sorting: SortingState): SortKey {
-        const primary = sorting[0];
-
-        if (!primary) return 'newest';
-        if (primary.id === 'transaction_date') return primary.desc ? 'newest' : 'oldest';
-        if (primary.id === 'amount') return primary.desc ? 'highest' : 'lowest';
-
-        return 'newest';
-    }
-
-    /** Reads an array-valued column filter (empty array when the filter is off). */
-    export function getArrayFilter<T>(filters: ColumnFiltersState, columnId: string): T[] {
-        const value = filters.find((filter) => filter.id === columnId)?.value;
-
-        return Array.isArray(value) ? (value as T[]) : [];
-    }
-</script>
-
 <script lang="ts">
-    import type { TransactionListTable } from './transaction-list.svelte';
-    import type { Data } from '@type/type';
+    import type { SortKey, TransactionListHandler } from '@services/transaction-list.svelte';
     import type { App } from '@wayfinder/types';
+    import type { Snippet } from 'svelte';
 
     import { TYPE_STYLE } from './transaction-list-item.svelte';
 
-    import { getDecorationColor } from '@data/decoration-colors';
+    import { DatePeriodPresetMeta } from '@wayfinder/App/Enums/DatePeriodPreset';
 
     import { cn } from '@utilities/shadcn';
+    import { SORT_LABELS, SORT_OPTIONS } from '@services/transaction-list.svelte';
 
     import DecorationBadge from '@components/module/decoration-badge.svelte';
+    import PeriodPresetSelect from '@components/module/period-preset-select.svelte';
     import Button from '@components/ui/button.svelte';
     import DrawerModal from '@components/ui/drawer-modal.svelte';
+    import SearchInput from '@components/ui/forms/search-input.svelte';
+    import ToggleGroupItem from '@components/ui/forms/toggle-group-item.svelte';
+    import ToggleGroup from '@components/ui/forms/toggle-group.svelte';
 
     /* ── Props ───────────────────────────────────────────── */
 
     interface Props {
-        transactions: Data.TransactionListData[];
-        table: TransactionListTable;
+        accounts: {
+            id: number;
+            name: string;
+            decorations?: { icon?: string | null; color?: string | null } | null;
+        }[];
+        categories: {
+            id: string;
+            name: string;
+            decorations?: { icon?: string | null; color?: string | null } | null;
+        }[];
+        list: TransactionListHandler;
     }
 
-    let { transactions, table }: Props = $props();
-
-    /* ── Table state (read reactively from the table atoms) ─ */
-
-    const columnFilters = $derived(table.atoms.columnFilters.get());
-    const search = $derived((table.atoms.globalFilter.get() as string | undefined) ?? '');
-    const sortKey = $derived(toSortKey(table.atoms.sorting.get()));
-
-    const accountIds = $derived(getArrayFilter<number>(columnFilters, FILTER_COLUMNS.account_id));
-    const categoryIds = $derived(getArrayFilter<number>(columnFilters, FILTER_COLUMNS.category_id));
-    const types = $derived(
-        getArrayFilter<App.Enums.TransactionType>(columnFilters, FILTER_COLUMNS.type)
-    );
+    let { accounts: uniqueAccounts, categories: uniqueCategories, list }: Props = $props();
 
     /* ── State ───────────────────────────────────────────── */
 
-    // Sheet
-    type SheetKind = 'account' | 'category' | 'type' | 'sort';
+    // Sheet — `settings` groups the server-driven period, the transaction-type
+    // enum and the sort selector into a single drawer, sectioned per filter.
+    type SheetKind = 'account' | 'category' | 'settings';
 
-    /** Leading badge: an icon or short text on a tinted square (direct CSS). */
+    /**
+     * Leading badge config forwarded to <DecorationBadge> — direct values
+     * act as the badge's fallbacks; decoration lookups resolve inside the
+     * badge and win over them.
+     */
     interface RowBadge {
         icon?: string;
         text?: string;
-        background: string;
-        color: string;
+        label?: string;
+        decorations?: { icon?: string | null; color?: string | null } | null;
+        background?: string;
+        color?: string;
     }
 
     /** One selectable row inside the active sheet. */
@@ -102,89 +65,78 @@
         badge?: RowBadge;
     }
 
+    /**
+     * One sheet section: either generated rows (`options`) or arbitrary
+     * markup (`content` snippet, e.g. a date-range picker) — one of the two.
+     */
+    interface SheetSection {
+        /** Heading rendered above the section; null keeps the sheet header-free. */
+        label: string | null;
+        options?: SheetOption[];
+        content?: Snippet;
+    }
+
     let sheetOpen = $state(false);
     let sheetKind = $state<SheetKind | null>(null);
     let sheetTitle = $state('');
 
     // Temp filters (while sheet is open)
+    type PeriodPreset = App.Enums.DatePeriodPreset;
+
     let tAccountIds: number[] = $state([]);
-    let tCategoryIds: number[] = $state([]);
+    let tCategoryIds: string[] = $state([]);
     let tTypes: App.Enums.TransactionType[] = $state([]);
     let tSort: SortKey = $state('newest');
+    let tPeriod: PeriodPreset | undefined = $state(undefined);
 
-    /* ── Derived options ─────────────────────────────────── */
-
-    const uniqueAccounts = $derived<
-        { id: number; name: string; decorations?: App.Models.Account['decorations'] }[]
-    >([
-        ...new Map(
-            transactions.flatMap((t) => (t.account ? [[t.account.id, t.account]] : []))
-        ).values(),
-    ]);
-
-    const uniqueCategories = $derived<
-        { id: number; name: string; decorations?: App.Models.Category['decorations'] }[]
-    >([
-        ...new Map(
-            transactions.flatMap((t) => (t.category ? [[t.category.id, t.category]] : []))
-        ).values(),
-    ]);
-
-    /* ── Table mutations ─────────────────────────────────── */
-
-    // An empty array must unset the filter, otherwise the in-array filter fn
-    // would reject every row.
-    function setArrayFilter(columnId: string, ids: unknown[]) {
-        table.getColumn(columnId)?.setFilterValue(ids.length ? [...ids] : undefined);
+    function handleSearchInput(value: string) {
+        list.search(value);
     }
 
     /* ── Active filter tags ──────────────────────────────── */
     const activeFilters = $derived.by(() => {
-        const tags: { label: string; icon?: string; onClear: () => void }[] = [];
+        const tags: { label: string; icon?: string; onClear?: () => void }[] = [];
+        // The period is always visible as a status tag, t behaves like a radio, never unset, only replaced from the options
+        tags.push({
+            label: DatePeriodPresetMeta[list.period].label,
+            icon: 'solar--calendar-mark-bold-duotone',
+        });
 
-        for (const id of accountIds) {
+        if (list.sortKey !== 'newest') {
+            tags.push({
+                label: SORT_LABELS[list.sortKey],
+                icon: 'solar--sort-vertical-line-duotone',
+                onClear: () => {
+                    list.setSort('newest');
+                },
+            });
+        }
+
+        for (const id of list.accountFilter) {
             const account = uniqueAccounts.find((x) => x.id === id);
             if (account)
                 tags.push({
                     label: account.name,
                     onClear: () => {
-                        setArrayFilter(
-                            FILTER_COLUMNS.account_id,
-                            accountIds.filter((x) => x !== id)
-                        );
+                        list.setAccountFilter(list.accountFilter.filter((x) => x !== id));
                     },
                 });
         }
-        for (const id of categoryIds) {
+        for (const id of list.categoryFilter) {
             const category = uniqueCategories.find((x) => x.id === id);
             if (category)
                 tags.push({
                     label: category.name,
                     onClear: () => {
-                        setArrayFilter(
-                            FILTER_COLUMNS.category_id,
-                            categoryIds.filter((x) => x !== id)
-                        );
+                        list.setCategoryFilter(list.categoryFilter.filter((x) => x !== id));
                     },
                 });
         }
-        for (const type of types) {
+        for (const type of list.typeFilter) {
             tags.push({
                 label: TYPE_STYLE[type].label,
                 onClear: () => {
-                    setArrayFilter(
-                        FILTER_COLUMNS.type,
-                        types.filter((x) => x !== type)
-                    );
-                },
-            });
-        }
-        if (sortKey !== 'newest') {
-            tags.push({
-                label: SORT_LABELS[sortKey],
-                icon: 'solar--sort-vertical-line-duotone',
-                onClear: () => {
-                    table.setSorting(SORT_STATE.newest);
+                    list.setTypeFilter(list.typeFilter.filter((x) => x !== type));
                 },
             });
         }
@@ -192,20 +144,22 @@
         return tags;
     });
 
+    let activeFiltersFold = $state(false);
+
     /* ── Sheet helpers ───────────────────────────────────── */
 
     const SHEET_TITLES: Record<SheetKind, string> = {
         account: 'Account',
         category: 'Category',
-        type: 'Transaction Type',
-        sort: 'Sort',
+        settings: 'Settings',
     };
 
     function openSheet(kind: SheetKind) {
-        tAccountIds = [...accountIds];
-        tCategoryIds = [...categoryIds];
-        tTypes = [...types];
-        tSort = sortKey;
+        tAccountIds = [...list.accountFilter];
+        tCategoryIds = [...list.categoryFilter];
+        tTypes = [...list.typeFilter];
+        tSort = list.sortKey;
+        tPeriod = list.paginated ? list.period : undefined;
 
         sheetTitle = SHEET_TITLES[kind];
         sheetKind = kind;
@@ -218,153 +172,117 @@
     }
 
     function applyFilter() {
-        setArrayFilter(FILTER_COLUMNS.account_id, tAccountIds);
-        setArrayFilter(FILTER_COLUMNS.category_id, tCategoryIds);
-        setArrayFilter(FILTER_COLUMNS.type, tTypes);
-        table.setSorting(SORT_STATE[tSort]);
+        // Period is server-side: release it before the client filters so the
+        // reload carrying it lands first.
+        if (list.paginated && tPeriod !== undefined && tPeriod !== list.period) {
+            list.setPeriod(tPeriod);
+        }
+
+        list.setAccountFilter(tAccountIds);
+        list.setCategoryFilter(tCategoryIds);
+        list.setTypeFilter(tTypes);
+        list.setSort(tSort);
         closeSheet();
     }
 
     /** Pure toggle — returns a new array with `item` added or removed. */
-    function toggled<T>(list: T[], item: T): T[] {
-        return list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
-    }
-
-    /** Direct-CSS badge colors from an optional decoration color slug. */
-    function decorationBadgeColors(color?: string): { background: string; color: string } {
-        const hex = color ? getDecorationColor(color)?.hex : undefined;
-
-        return {
-            background: hex ? `${hex}20` : 'var(--color-base-300)',
-            color: hex ?? 'color-mix(in oklab, var(--color-base-content) 60%, transparent)',
-        };
+    function toggled<T>(items: T[], item: T): T[] {
+        return items.includes(item) ? items.filter((x) => x !== item) : [...items, item];
     }
 
     /* ── Chip data ─────────────────────────────────────────── */
-
-    /** Single source for sort-key labels — active tags and sheet options. */
-    const SORT_LABELS: Record<SortKey, string> = {
-        newest: 'Newest',
-        oldest: 'Oldest',
-        highest: 'Highest',
-        lowest: 'Lowest',
-    };
-
-    const sortOptions = (Object.entries(SORT_LABELS) as [SortKey, string][]).map(([id, label]) => ({
-        id,
-        label,
-    }));
 
     const filterChips = $derived<{ kind: SheetKind; label: string; active: boolean }[]>([
         {
             kind: 'account',
             label:
-                accountIds.length === 0
+                list.accountFilter.length === 0
                     ? 'All Accounts'
-                    : accountIds.length === 1
-                      ? (uniqueAccounts.find((a) => a.id === accountIds[0])?.name ?? '1 Account')
-                      : `${accountIds.length} Accounts`,
-            active: accountIds.length > 0,
+                    : list.accountFilter.length === 1
+                      ? (uniqueAccounts.find((a) => a.id === list.accountFilter[0])?.name ??
+                        '1 Account')
+                      : `${list.accountFilter.length} Accounts`,
+            active: list.accountFilter.length > 0,
         },
         {
             kind: 'category',
             label:
-                categoryIds.length === 0
+                list.categoryFilter.length === 0
                     ? 'All Categories'
-                    : categoryIds.length === 1
-                      ? (uniqueCategories.find((c) => c.id === categoryIds[0])?.name ??
+                    : list.categoryFilter.length === 1
+                      ? (uniqueCategories.find((c) => c.id === list.categoryFilter[0])?.name ??
                         '1 Category')
-                      : `${categoryIds.length} Categories`,
-            active: categoryIds.length > 0,
-        },
-        {
-            kind: 'type',
-            label:
-                types.length === 0
-                    ? 'All Types'
-                    : types.length === 1
-                      ? TYPE_STYLE[types[0]].label
-                      : `${types.length} Types`,
-            active: types.length > 0,
+                      : `${list.categoryFilter.length} Categories`,
+            active: list.categoryFilter.length > 0,
         },
     ]);
 
     /* ── Sheet content ───────────────────────────────────── */
 
-    /** Normalized option list for the active sheet — the markup stays generic. */
-    const sheetOptions = $derived.by<SheetOption[]>(() => {
+    /**
+     * Normalized option sections for the active sheet — the markup stays
+     * generic. The `settings` sheet renders both filters in order, stacked
+     * as its sections.
+     */
+    const sheetSections = $derived.by<SheetSection[]>(() => {
         switch (sheetKind) {
             case 'account':
                 return [
                     {
-                        key: 'all',
-                        label: 'All Accounts',
-                        selected: tAccountIds.length === 0,
-                        onSelect: () => (tAccountIds = []),
-                        badge: {
-                            text: 'ALL',
-                            background:
-                                'color-mix(in oklab, var(--color-primary) 10%, transparent)',
-                            color: 'var(--color-primary)',
-                        },
+                        label: null,
+                        options: [
+                            {
+                                key: 'all',
+                                label: 'All Accounts',
+                                selected: tAccountIds.length === 0,
+                                onSelect: () => (tAccountIds = []),
+                                badge: {
+                                    label: 'ALL',
+                                    background:
+                                        'color-mix(in oklab, var(--color-primary) 10%, transparent)',
+                                    color: 'var(--color-primary)',
+                                },
+                            },
+                            ...uniqueAccounts.map((acct): SheetOption => ({
+                                key: String(acct.id),
+                                label: acct.name,
+                                selected: tAccountIds.includes(acct.id),
+                                onSelect: () => (tAccountIds = toggled(tAccountIds, acct.id)),
+                                badge: {
+                                    decorations: acct.decorations,
+                                },
+                            })),
+                        ],
                     },
-                    ...uniqueAccounts.map((acct): SheetOption => ({
-                        key: String(acct.id),
-                        label: acct.name,
-                        selected: tAccountIds.includes(acct.id),
-                        onSelect: () => (tAccountIds = toggled(tAccountIds, acct.id)),
-                        badge: {
-                            icon: 'solar--banknote-2-bold-duotone',
-                            ...decorationBadgeColors(acct.decorations?.color),
-                        },
-                    })),
                 ];
             case 'category':
                 return [
                     {
-                        key: 'all',
-                        label: 'All Categories',
-                        selected: tCategoryIds.length === 0,
-                        onSelect: () => (tCategoryIds = []),
-                        badge: {
-                            icon: 'solar--tag-bold-duotone',
-                            ...decorationBadgeColors(),
-                        },
+                        label: null,
+                        options: [
+                            {
+                                key: 'all',
+                                label: 'All Categories',
+                                selected: tCategoryIds.length === 0,
+                                onSelect: () => (tCategoryIds = []),
+                                badge: {
+                                    icon: 'solar--tag-bold-duotone',
+                                },
+                            },
+                            ...uniqueCategories.map((cat): SheetOption => ({
+                                key: String(cat.id),
+                                label: cat.name,
+                                selected: tCategoryIds.includes(cat.id),
+                                onSelect: () => (tCategoryIds = toggled(tCategoryIds, cat.id)),
+                                badge: {
+                                    decorations: cat.decorations,
+                                },
+                            })),
+                        ],
                     },
-                    ...uniqueCategories.map((cat): SheetOption => ({
-                        key: String(cat.id),
-                        label: cat.name,
-                        selected: tCategoryIds.includes(cat.id),
-                        onSelect: () => (tCategoryIds = toggled(tCategoryIds, cat.id)),
-                        badge: {
-                            icon: 'solar--tag-bold-duotone',
-                            ...decorationBadgeColors(cat.decorations?.color),
-                        },
-                    })),
                 ];
-            case 'type':
-                return Object.entries(TYPE_STYLE).map(([key, cfg]): SheetOption => {
-                    const type = key as App.Enums.TransactionType;
-
-                    return {
-                        key,
-                        label: cfg.label,
-                        selected: tTypes.includes(type),
-                        onSelect: () => (tTypes = toggled(tTypes, type)),
-                        badge: {
-                            text: cfg.label.charAt(0),
-                            background: cfg.bg,
-                            color: cfg.color,
-                        },
-                    };
-                });
-            case 'sort':
-                return sortOptions.map((opt): SheetOption => ({
-                    key: opt.id,
-                    label: opt.label,
-                    selected: tSort === opt.id,
-                    onSelect: () => (tSort = opt.id),
-                }));
+            case 'settings':
+                return [{ label: null, content: settingContent }];
             default:
                 return [];
         }
@@ -372,23 +290,28 @@
 </script>
 
 <div class="flex flex-col gap-3">
-    <!-- ── SEARCH ───────────────────────────────────────────── -->
-    <div class="flex items-center gap-2 rounded-xl bg-base-100 px-3.5 py-2.5 shadow-xs">
-        <i class="iconify size-4 shrink-0 text-base-content/40 solar--magnifer-line-duotone"></i>
-        <input
-            class="flex-1 bg-transparent text-sm text-base-content outline-none placeholder:text-base-content/40"
-            oninput={(e) => table.setGlobalFilter(e.currentTarget.value || undefined)}
+    <div class="flex items-center gap-2">
+        <SearchInput
+            class="flex-1"
+            onclear={() => {
+                list.clearSearch();
+            }}
+            oninput={handleSearchInput}
             placeholder="Search transactions"
-            type="text"
-            value={search} />
-        {#if search}
-            <button
-                class="flex items-center justify-center text-base-content/40 hover:text-base-content"
-                aria-label="Clear search"
-                onclick={() => table.setGlobalFilter(undefined)}>
-                <i class="iconify size-4 solar--close-line-duotone"></i>
-            </button>
-        {/if}
+            value={list.searchValue} />
+
+        <Button
+            class={cn(
+                (list.sortKey !== 'newest' || list.periodActive) &&
+                    'bg-secondary text-secondary-foreground'
+            )}
+            aria-label="Sort"
+            color="secondary"
+            onclick={() => openSheet('settings')}
+            size="icon"
+            variant="outline">
+            <i class="iconify size-5 solar--tuning-3-line-duotone"></i>
+        </Button>
     </div>
 
     <!-- ── FILTER CHIPS ─────────────────────────────────────── -->
@@ -400,39 +323,55 @@
                         'border-1.5 inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 font-sans text-xs font-semibold whitespace-nowrap transition-all duration-150',
                         active
                             ? 'border-primary bg-primary text-primary-content'
-                            : 'border-base-content/10 bg-base-100 text-base-content/60 hover:border-primary hover:text-primary'
+                            : 'border-border bg-card text-foreground hover:border-primary hover:text-primary'
                     )}
                     onclick={() => openSheet(kind)}>
                     <span>{label}</span>
-                    <i class="iconify size-2.5 solar--alt-arrow-down-line-duotone"></i>
+                    <i class="iconify size-4 solar--alt-arrow-down-line-duotone"></i>
                 </button>
             {/each}
         </div>
-
-        <!-- Sort button (standalone) -->
-        <button
-            class={cn(
-                'border-1.5 flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150',
-                sortKey !== 'newest'
-                    ? 'border-primary bg-primary text-primary-content'
-                    : 'border-base-content/10 bg-base-100 text-base-content/60 hover:border-primary'
-            )}
-            aria-label="Sort"
-            onclick={() => openSheet('sort')}>
-            <i class="iconify size-3.5 solar--sort-vertical-line-duotone"></i>
-        </button>
     </div>
 
     <!-- ── ACTIVE FILTER TAGS ──────────────────────────────── -->
     {#if activeFilters.length > 0}
-        <div class="flex flex-wrap gap-1.5">
+        <div
+            class={[
+                'flex flex-wrap gap-1.5',
+                activeFiltersFold ? 'max-h-none' : 'max-h-14 overflow-hidden',
+            ]}>
+            {#if activeFilters.length > 5}
+                <button
+                    class="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary/10 text-secondary transition-colors hover:bg-secondary/20"
+                    aria-expanded={activeFiltersFold}
+                    aria-label={activeFiltersFold
+                        ? 'Show fewer filter chips'
+                        : 'Show all filter chips'}
+                    onclick={() => (activeFiltersFold = !activeFiltersFold)}>
+                    <i
+                        class={[
+                            'iconify size-3 transition-transform duration-150',
+                            activeFiltersFold
+                                ? 'solar--alt-arrow-up-line-duotone'
+                                : 'solar--alt-arrow-down-line-duotone',
+                        ]}></i>
+                </button>
+            {/if}
+
             {#each activeFilters as tag, i (i)}
                 <button
-                    class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-sans text-xs font-semibold text-primary transition-all duration-120 hover:bg-primary/20"
+                    class={[
+                        'inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-sans text-xs font-semibold whitespace-nowrap text-primary transition-all duration-120 hover:bg-primary/20',
+                        !tag.onClear && 'pointer-events-none',
+                    ]}
                     onclick={tag.onClear}>
                     {#if tag.icon}<i class="iconify size-3 {tag.icon}"></i>{/if}
                     <span>{tag.label}</span>
-                    <i class="iconify size-3 solar--close-line-duotone"></i>
+                    <i
+                        class={[
+                            'iconify size-3 solar--close-line-duotone',
+                            !tag.onClear && 'hidden',
+                        ]}></i>
                 </button>
             {/each}
         </div>
@@ -444,38 +383,121 @@
         title={sheetTitle}
         bind:open={sheetOpen}>
         {#snippet actionButton()}
-            <Button class="w-full rounded-2xl font-bold normal-case" onclick={applyFilter}>
+            <Button class="w-full rounded-2xl font-semibold normal-case" onclick={applyFilter}>
                 Apply Filters
             </Button>
         {/snippet}
 
-        {#each sheetOptions as option (option.key)}
-            <button
-                class={cn(
-                    'flex w-full items-center gap-3 px-5 py-3 text-left font-sans transition-colors duration-100',
-                    option.selected ? 'bg-info/10' : 'hover:bg-base-200/60'
-                )}
-                onclick={option.onSelect}>
-                {@render optionBadge(option.badge)}
+        {#each sheetSections as section, index (section.label ?? String(index))}
+            {#if index > 0}
+                <div class="mx-5 border-t border-border"></div>
+            {/if}
 
-                <div class="flex-1 text-sm font-medium text-base-content">{option.label}</div>
+            {#if section.label}
+                <div class={cn('px-5 pt-3 pb-1', index > 0 && 'pt-4')}>
+                    {@render sectionHeading(section.label)}
+                </div>
+            {/if}
 
-                {#if option.selected}
-                    <i class="iconify size-5 shrink-0 text-info solar--check-read-line-duotone"></i>
-                {/if}
-            </button>
+            {#if section?.content}
+                <div class="px-5 pt-1 pb-2">
+                    {@render section.content()}
+                </div>
+            {:else if section?.options}
+                {#each section.options as option (option.key)}
+                    {@render optionRow(option)}
+                {/each}
+            {/if}
         {/each}
     </DrawerModal>
 </div>
 
-{#snippet optionBadge(badge)}
+{#snippet optionRow(option: SheetOption)}
+    <button
+        class={cn(
+            'flex w-full items-center gap-3 px-5 py-3 text-left font-sans transition-colors duration-100',
+            option.selected ? 'bg-info/10' : 'hover:bg-card'
+        )}
+        onclick={option.onSelect}>
+        {@render optionBadge(option.badge)}
+
+        <div class="flex-1 text-sm font-medium text-foreground">{option.label}</div>
+
+        {#if option.selected}
+            <i class="iconify size-5 shrink-0 text-info solar--check-read-line-duotone"></i>
+        {/if}
+    </button>
+{/snippet}
+
+{#snippet sectionHeading(label: string)}
+    <!-- Text styling only; spacing is owned by the wrapper rendering it. -->
+    <div class="font-sans text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+        {label}
+    </div>
+{/snippet}
+
+{#snippet settingContent()}
+    <!-- Root: horizontal spacing comes from the drawer wrapper; each element's rhythm from its own wrapper below. -->
+    <div class="flex flex-col">
+        {#if list.paginated}
+            <div class="py-2">
+                {@render sectionHeading('Period')}
+            </div>
+
+            <PeriodPresetSelect
+                class="w-full"
+                preset="rolling"
+                variant="radio"
+                bind:value={tPeriod} />
+
+            <div class="my-2 border-t border-border"></div>
+        {/if}
+
+        <div class="py-2">
+            {@render sectionHeading('Transaction Type')}
+        </div>
+
+        <!-- Multi-select segmented toggle group over the transaction types. -->
+        <div
+            class="inline-flex items-stretch overflow-hidden rounded-md border border-input shadow-xs">
+            <ToggleGroup
+                class="w-full rounded-none"
+                size="sm"
+                type="multiple"
+                variant="default"
+                bind:value={tTypes as never}>
+                {#each Object.entries(TYPE_STYLE) as [typeKey, cfg] (typeKey)}
+                    <ToggleGroupItem class="px-3" value={typeKey}>
+                        {cfg.label}
+                    </ToggleGroupItem>
+                {/each}
+            </ToggleGroup>
+        </div>
+
+        <div class="my-2 border-t border-border"></div>
+
+        <div class="pb-1">
+            {@render sectionHeading('Sort')}
+        </div>
+
+        {#each SORT_OPTIONS as sortOption (sortOption.id)}
+            {@render optionRow({
+                key: sortOption.id,
+                label: sortOption.label,
+                selected: tSort === sortOption.id,
+                onSelect: () => (tSort = sortOption.id),
+            })}
+        {/each}
+    </div>
+{/snippet}
+
+{#snippet optionBadge(badge: RowBadge | undefined)}
     {#if badge}
         <DecorationBadge
             class="size-8 rounded"
             iconClass="size-5"
-            background={badge.background}
-            color={badge.color}
-            icon={badge.icon}
-            text={badge.text} />
+            background="var(--color-popover)"
+            color="color-mix(in oklab, var(--color-foreground) 60%, transparent)"
+            {...badge} />
     {/if}
 {/snippet}

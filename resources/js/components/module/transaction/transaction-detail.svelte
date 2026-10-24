@@ -99,7 +99,7 @@
             title="Date">
             <p
                 class="flex min-h-12 items-center rounded-lg px-4 text-sm font-medium transition-colors">
-                {DateTimeHelper.format(transaction.transaction_date, 'date')}
+                {DateTimeHelper.format(transaction.transaction_date, 'datetime')}
             </p>
         </Field>
 

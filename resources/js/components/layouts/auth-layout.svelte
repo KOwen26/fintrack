@@ -2,8 +2,6 @@
     import type { Snippet } from 'svelte';
     import type { HTMLAttributes } from 'svelte/elements';
 
-    import { useFlashToast } from '@lib/toast-handler.svelte';
-
     import AppIcon from '@components/ui/app-icon.svelte';
     import Toaster from '@components/ui/toaster.svelte';
 
@@ -13,8 +11,6 @@
     };
 
     let { children, reverse = false, ...props }: Props = $props();
-
-    useFlashToast();
 </script>
 
 <Toaster />

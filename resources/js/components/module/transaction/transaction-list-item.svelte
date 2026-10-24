@@ -23,7 +23,7 @@
             label: 'Transfer',
             color: 'var(--color-info)',
             bg: 'color-mix(in oklab, var(--color-info) 12%, transparent)',
-            icon: 'solar--transfer-horizontal-bold-duotone',
+            icon: 'solar--sort-horizontal-line-duotone',
         },
     };
 </script>
@@ -32,8 +32,6 @@
     import type { TransactionListData } from '@type/generated';
     import type { RestProps } from '@type/index';
 
-    import { getDecorationColor } from '@data/decoration-colors';
-    import { getDecorationIcon } from '@data/decoration-icons';
     import { Link } from '@inertiajs/svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
@@ -54,62 +52,63 @@
 
     const typeConfig = $derived(TYPE_STYLE[transaction.type]);
 
-    const signIcon = $derived(
-        transaction.flow === 'inflow' ? 'solar--add-bold-duotone' : 'solar--minus-bold-duotone'
+    /* Category decoration (with parent/group fallback) — the badge resolves
+       the slugs and wins over the transaction-type styling passed as
+       fallback props. */
+    const iconSlug = $derived(
+        transaction.category?.decorations?.icon ?? transaction.category?.group?.decorations?.icon
     );
-
-    /* Category decoration drives the tile; kind styling is the fallback
-       (transfers and uncategorized rows keep the kind-colored tile). */
-    const decoColor = $derived(
-        transaction.category?.decorations?.color
-            ? (getDecorationColor(transaction.category.decorations.color)?.hex ?? undefined)
-            : undefined
-    );
-
-    const decoIcon = $derived(
-        transaction.category?.decorations?.icon
-            ? (getDecorationIcon(transaction.category.decorations.icon)?.value ??
-                  'solar--tag-bold-duotone')
-            : undefined
-    );
-
-    /* Resolved tile config — passed to <DecorationBadge>. */
-    const tileIcon = $derived(decoIcon ?? typeConfig.icon);
-    const tileBackground = $derived(decoColor ? `${decoColor}20` : typeConfig.bg);
-    const tileColor = $derived(decoColor ?? typeConfig.color);
+    const decorations = $derived({
+        icon: iconSlug,
+        color:
+            transaction.category?.decorations?.color ??
+            transaction.category?.group?.decorations?.color,
+    });
 </script>
 
 <Link
     class={cn(
-        'flex items-center gap-2 border-b border-base-content/10 p-3 transition-colors duration-100 last:border-b-0 hover:bg-base-200/40',
+        'flex items-center gap-2 p-2 transition-colors duration-100  hover:bg-card',
+        '-mx-2 rounded-md',
+        // 'border-b border-border last:border-b-0',
         _class
     )}
     href={TransactionController.show.url(transaction)}>
     <!-- Icon -->
     {#if !hideIcon}
-        <DecorationBadge background={tileBackground} color={tileColor} icon={tileIcon} size="sm" />
+        <DecorationBadge
+            background={typeConfig.bg}
+            color={typeConfig.color}
+            {decorations}
+            icon={iconSlug ? 'solar--tag-bold-duotone' : typeConfig.icon}
+            size="sm" />
     {/if}
 
     <div class="min-w-0 flex-1">
-        <div class="truncate text-sm font-medium text-base-content">
-            {transaction.description}
-        </div>
-        <div class="mt-0.5 flex items-center gap-1.5 text-xs">
-            {#if transaction.category}
-                <span class="truncate">{transaction.category.name}</span>
-            {/if}
-            {#if transaction.category && transaction.account}
-                <span class="size-0.5 shrink-0 rounded-full bg-base-content/20"></span>
-            {/if}
-            {#if transaction.account}
-                <span class="truncate">{transaction.account.name}</span>
-            {/if}
-        </div>
-    </div>
+        <div class="flex flex-row items-center justify-between text-sm">
+            <div class="truncate font-heading font-medium text-foreground">
+                {transaction.description}
+            </div>
 
-    <div class="shrink-0 text-right">
-        <div style:color={typeConfig.color} class="text-sm font-semibold">
-            <CurrencyAmount value={transaction.amount} />
+            <CurrencyAmount
+                style="color: {typeConfig.color}"
+                class="inline-block text-sm font-semibold"
+                value={transaction.amount} />
+        </div>
+
+        <div class="flex flex-row items-center justify-between gap-2 text-xs">
+            <span class="inline-flex items-center gap-2">
+                {transaction?.account?.name}
+
+                {#if transaction.type === 'transfer'}
+                    <i style="font-size: 1cap;" class="iconify solar--arrow-right-line-duotone"></i>
+                    {transaction.destination_account?.name}
+                {/if}
+            </span>
+
+            {#if transaction.type !== 'transfer'}
+                <span class="truncate">{transaction?.category?.name}</span>
+            {/if}
         </div>
     </div>
 </Link>

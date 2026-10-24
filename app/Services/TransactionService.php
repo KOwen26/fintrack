@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Data\Transaction\TransactionData;
-use App\Data\Transaction\TransactionListData;
 use App\Enums\Cashflow;
 use App\Enums\Category;
 use App\Enums\DatePeriodPreset;
@@ -16,25 +15,14 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Transaction mutation surface (create/update/delete with their events) plus
+ * the two scoped windows (account, category). The global list's read
+ * subsystem — search, sort, keyset pages, summary — lives in
+ * TransactionListService.
+ */
 final class TransactionService
 {
-    /**
-     * Global list: one row per transfer unit (the outflow row) plus plain
-     * rows and fee rows — inflow rows are hidden.
-     */
-    public static function getTransactions(User $user, DatePeriodPreset $period = DatePeriodPreset::YearOnYear): Collection
-    {
-        $transactions = Transaction::query()
-            ->where('created_by', $user->id)
-            ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', Cashflow::Inflow))
-            ->withinPeriod($period->toPeriod())
-            ->with(['account', 'transfer.transactions.account'])
-            ->latest('transaction_date')
-            ->get();
-
-        return TransactionListData::collectFromTransactions($transactions);
-    }
-
     public static function getAccountTransactions(Account $account, DatePeriodPreset $period = DatePeriodPreset::YearOnYear): Collection
     {
         return Transaction::query()

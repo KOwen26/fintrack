@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { decorationIcons } from '@data/decoration-icons';
+    import { decorationIcons } from '@data/decorations';
 
     import Drawer from '@components/ui/drawer.svelte';
     import Modal from '@components/ui/modals/modal.svelte';

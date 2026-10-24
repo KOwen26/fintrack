@@ -4,7 +4,7 @@
 
     import AccountCard from './account-card.svelte';
 
-    import { getRandomDecorationColor } from '@data/decoration-colors';
+    import { getRandomDecorationColor } from '@data/decorations';
     import { router, useForm } from '@inertiajs/svelte';
     import { DataComposer } from '@lib/data-composer';
     import AccountAccessType from '@wayfinder/App/Enums/AccountAccessType';

@@ -27,7 +27,7 @@ class TransactionFactory extends Factory
             'type' => TransactionType::Expense,
             'flow' => Cashflow::Outflow,
             'transfer_id' => null,
-            'transaction_date' => fake()->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
+            'transaction_date' => fake()->dateTimeBetween('-1 year', 'now')->format('Y-m-d H:i:s'),
             'description' => fake()->optional(0.6)->sentence(),
         ];
     }

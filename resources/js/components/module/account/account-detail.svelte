@@ -20,8 +20,7 @@
 <script lang="ts">
     import type { App } from '@wayfinder/types';
 
-    import { getDecorationColor } from '@data/decoration-colors';
-    import { getDecorationIcon } from '@data/decoration-icons';
+    import { getDecorationColor, getDecorationIcon } from '@data/decorations';
     import AccountType from '@wayfinder/App/Enums/AccountType';
 
     import DateTimeHelper from '@utilities/date-time-helper';

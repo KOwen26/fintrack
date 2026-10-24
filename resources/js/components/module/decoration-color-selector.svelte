@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { getActiveDecorationColors } from '@data/decoration-colors';
+    import { getActiveDecorationColors } from '@data/decorations';
 
     import Drawer from '@components/ui/drawer.svelte';
     import Modal from '@components/ui/modals/modal.svelte';

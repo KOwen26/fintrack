@@ -1,6 +1,5 @@
 <script lang="ts">
     import { useTheme } from '@lib/theme-handler.svelte';
-    import { useFlashToast } from '@lib/toast-handler.svelte';
 
     import BottomNav from '@components/navigation/bottom-nav.svelte';
     import Toaster from '@components/ui/toaster.svelte';
@@ -8,7 +7,6 @@
     let { children } = $props();
 
     useTheme();
-    useFlashToast();
 </script>
 
 <svelte:head>

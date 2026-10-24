@@ -3,6 +3,7 @@
 use App\Http\Controllers\DevController;
 use App\Http\Middleware\OnlyDevelopment;
 use App\Models\DecorationColor;
+use App\Services\TransactionService;
 use Inertia\Inertia;
 
 Route::group([
@@ -10,6 +11,12 @@ Route::group([
     'as' => 'dev.',
     'middleware' => [OnlyDevelopment::class],
 ], function (): void {
+    Route::get('test/transaction', function () {
+        $transactions = TransactionService::getTransactions(auth()->user());
+
+        return compact('transactions');
+    });
+
     Route::get('test', function () {
         $colors = DecorationColor::query()
             ->whereLike('slug', '%-50')

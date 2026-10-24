@@ -17,7 +17,7 @@ return new class extends Migration
             $table->decimal('amount', 15, 2);
             $table->string('type');
             $table->string('flow');
-            $table->date('transaction_date');
+            $table->dateTime('transaction_date')->useCurrent();
             $table->string('description')->nullable();
             $table->timestamps();
             $table->softDeletes();

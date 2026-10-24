@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { CategorySpendingReportData, ParentSpendingItemData } from '@type/generated';
 
-    import { getDecorationColor } from '@data/decoration-colors';
+    import { getDecorationColor } from '@data/decorations';
 
     import Formatter from '@utilities/formatter';
 

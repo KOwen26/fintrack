@@ -5,13 +5,10 @@
     } from '@components/ui/forms/combobox.svelte';
     import type { App } from '@wayfinder/types';
 
-    import { getDecorationColor } from '@data/decoration-colors';
-    import { getDecorationIcon } from '@data/decoration-icons';
     import { page } from '@inertiajs/svelte';
     import { Combobox as ComboboxPrimitive } from 'bits-ui';
 
     import { cn } from '@utilities/shadcn';
-    import StringHelper from '@utilities/string-helper';
 
     import DecorationBadge from '@components/module/decoration-badge.svelte';
     import Combobox from '@components/ui/forms/combobox.svelte';
@@ -43,25 +40,6 @@
         disabled = false,
         class: _class,
     }: Props = $props();
-
-    interface BadgeVisual {
-        icon?: string;
-        text?: string;
-        background?: string;
-        color?: string;
-    }
-
-    function badgeVisual(acct: App.Models.Account): BadgeVisual {
-        const icon = getDecorationIcon(acct.decorations.icon)?.value;
-        const hex = getDecorationColor(acct.decorations.color)?.hex;
-
-        return {
-            icon,
-            text: icon ? undefined : StringHelper.getInitials(acct?.name),
-            background: hex ? `${hex}20` : undefined,
-            color: hex ?? undefined,
-        };
-    }
 
     const resolvedAccounts = $derived(
         accounts.length ? accounts : (page.props?.static?.accounts ?? [])
@@ -122,14 +100,7 @@
     bind:value={getValue, setValue} />
 
 {#snippet chip(account: App.Models.Account)}
-    {const badge = $derived(badgeVisual(account))}
-
-    <DecorationBadge
-        background={badge.background}
-        color={badge.color}
-        icon={badge.icon}
-        size="sm"
-        text={badge.text} />
+    <DecorationBadge decorations={account.decorations} size="sm" />
 {/snippet}
 
 {#snippet option({ account, label }: AccountOption)}

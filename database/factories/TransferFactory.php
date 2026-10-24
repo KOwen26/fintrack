@@ -17,7 +17,7 @@ class TransferFactory extends Factory
             'created_by' => User::factory(),
             'amount' => fake()->randomFloat(2, 10_000, 5_000_000),
             'fee_amount' => null,
-            'transaction_date' => fake()->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
+            'transaction_date' => fake()->dateTimeBetween('-1 year', 'now')->format('Y-m-d H:i:s'),
             'description' => fake()->optional(0.6)->sentence(),
         ];
     }

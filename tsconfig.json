@@ -55,6 +55,9 @@
             "@schema/*": [
                 "./resources/js/schema/*"
             ],
+            "@services/*": [
+                "./resources/js/services/*"
+            ],
             "@type/*": [
                 "./resources/js/types/*"
             ],

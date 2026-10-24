@@ -23,7 +23,8 @@ final readonly class AccountService
             ->where('owner_id', $user->id)
             ->notArchived()
             // ->shareable()
-            ->with('provider')
+            ->with('provider:id,name')
+            ->select(['id', 'owner_id', 'provider_id', 'name', 'type', 'access_type', 'decorations', 'created_at'])
             ->get();
     }
 

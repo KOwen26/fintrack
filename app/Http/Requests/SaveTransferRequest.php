@@ -25,7 +25,7 @@ final class SaveTransferRequest extends FormRequest
             'destination_account_id' => ['required', 'integer', 'exists:accounts,id', 'different:account_id'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'fee_amount' => ['nullable', 'numeric', 'min:0.01'],
-            'transaction_date' => ['required', 'date', 'before_or_equal:today'],
+            'transaction_date' => ['required', 'date', 'before_or_equal:now'],
             'description' => ['nullable', 'string', 'max:500'],
             'type' => ['prohibited'],
             'category_id' => ['prohibited'],
