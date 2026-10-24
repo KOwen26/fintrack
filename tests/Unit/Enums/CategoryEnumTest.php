@@ -15,6 +15,7 @@ it('declares the full preset inventory', function (): void {
 it('resolves metadata for every case without throwing', function (): void {
     foreach (Category::cases() as $category) {
         expect($category->label())->not->toBeEmpty()
+            ->and($category->description())->not->toBeEmpty()
             ->and($category->decorations())->toBeInstanceOf(Decoration::class)
             ->and($category->decorations()->icon)->not->toBeEmpty()
             ->and($category->decorations()->color)->not->toBeEmpty()
