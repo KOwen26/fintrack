@@ -51,7 +51,7 @@ it('creates a transfer unit with an aggregate, source/destination rows, and an o
         ->and($destinationRow->account_id)->toBe($destination->id)
         ->and($feeRow->account_id)->toBe($source->id)
         ->and((float) $feeRow->amount)->toEqual(6_500.0)
-        ->and($feeRow->category_id)->toBe(Category::AdminFees);
+        ->and($feeRow->category_id)->toBe(Category::AdminBankFees);
 });
 
 it('recreates member rows and keeps the transfer id stable on unit edit', function (): void {

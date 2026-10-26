@@ -2,6 +2,7 @@
 
 use App\Data\Report\CategorySpendingItemData;
 use App\Enums\Category;
+use App\Enums\CategoryGroup;
 use App\Enums\DatePeriodPreset;
 use App\Enums\StatisticDataTier;
 use App\Models\Account;
@@ -20,13 +21,11 @@ function createAccountWithOwner(): Account
     return Account::factory()->create(['owner_id' => $user->id]);
 }
 
-function spendingItem(string $categoryId, string $group, float $total, float $percentage): CategorySpendingItemData
+function spendingItem(Category $category, CategoryGroup $group, float $total, float $percentage): CategorySpendingItemData
 {
-    $category = Category::from($categoryId);
-
     return new CategorySpendingItemData(
         category_id: $category->value,
-        group: $group,
+        group: $group->value,
         name: $category->label(),
         color: $category->decorations()->color,
         icon: $category->decorations()->icon,
@@ -38,7 +37,7 @@ function spendingItem(string $categoryId, string $group, float $total, float $pe
 describe('categorySpending', function (): void {
     it('nests category spending under its group', function (): void {
         $account = createAccountWithOwner();
-        Transaction::factory()->expense()->forCategory('groceries')->create([
+        Transaction::factory()->expense()->forCategory(Category::GeneralShopping)->create([
             'account_id' => $account->id,
             'amount' => 200_000,
             'transaction_date' => now()->format('Y-m-d'),
@@ -51,8 +50,8 @@ describe('categorySpending', function (): void {
         );
 
         expect($report->categories)->toHaveCount(1)
-            ->and($report->categories[0])->group->toBe('shopping')->name->toBe('Shopping')->total->toBe(200_000.0)->children->toHaveCount(1)
-            ->and($report->categories[0]->children[0])->category_id->toBe('groceries')->name->toBe('Groceries')->total->toBe(200_000.0);
+            ->and($report->categories[0])->group->toBe(CategoryGroup::Shopping->value)->name->toBe(CategoryGroup::Shopping->label())->total->toBe(200_000.0)->children->toHaveCount(1)
+            ->and($report->categories[0]->children[0])->category_id->toBe(Category::GeneralShopping->value)->name->toBe(Category::GeneralShopping->label())->total->toBe(200_000.0);
     });
 
     it('returns an empty report when no accounts are given', function (): void {
@@ -71,13 +70,13 @@ describe('categorySpending', function (): void {
     it('merges sibling category spending into one group', function (): void {
         $account = createAccountWithOwner();
 
-        Transaction::factory()->expense()->forCategory('fuel')->create([
+        Transaction::factory()->expense()->forCategory(Category::Fuel)->create([
             'account_id' => $account->id,
             'amount' => 300_000,
             'transaction_date' => now()->format('Y-m-d'),
         ]);
 
-        Transaction::factory()->expense()->forCategory('public_transport')->create([
+        Transaction::factory()->expense()->forCategory(Category::PublicTransport)->create([
             'account_id' => $account->id,
             'amount' => 150_000,
             'transaction_date' => now()->format('Y-m-d'),
@@ -90,7 +89,7 @@ describe('categorySpending', function (): void {
         );
 
         expect($report->categories)->toHaveCount(1)
-            ->and($report->categories[0])->group->toBe('transport')->name->toBe('Transport')->total->toBe(450_000.0)
+            ->and($report->categories[0])->group->toBe(CategoryGroup::TransportTravel->value)->name->toBe(CategoryGroup::TransportTravel->label())->total->toBe(450_000.0)
             ->and($report->categories[0]->children)->toHaveCount(2)
             ->and(array_column($report->categories[0]->children, 'total'))->toBe([300_000.0, 150_000.0]);
     });
@@ -98,13 +97,13 @@ describe('categorySpending', function (): void {
     it('orders groups by total descending', function (): void {
         $account = createAccountWithOwner();
 
-        Transaction::factory()->expense()->forCategory('groceries')->create([
+        Transaction::factory()->expense()->forCategory(Category::GeneralShopping)->create([
             'account_id' => $account->id,
             'amount' => 200_000,
             'transaction_date' => now()->format('Y-m-d'),
         ]);
 
-        Transaction::factory()->expense()->forCategory('fuel')->create([
+        Transaction::factory()->expense()->forCategory(Category::Fuel)->create([
             'account_id' => $account->id,
             'amount' => 300_000,
             'transaction_date' => now()->format('Y-m-d'),
@@ -117,8 +116,8 @@ describe('categorySpending', function (): void {
         );
 
         expect($report->categories)->toHaveCount(2)
-            ->and($report->categories[0]->group)->toBe('transport')
-            ->and($report->categories[1]->group)->toBe('shopping');
+            ->and($report->categories[0]->group)->toBe(CategoryGroup::TransportTravel->value)
+            ->and($report->categories[1]->group)->toBe(CategoryGroup::Shopping->value);
     });
 });
 
@@ -134,27 +133,27 @@ describe('rollUpByCategoryGroup', function (): void {
     it('groups a single category under its group without extra nesting', function (): void {
         $service = new SpendingService;
 
-        $items = [spendingItem('dining_out', 'food_and_drinks', 500.0, 50.0)];
+        $items = [spendingItem(Category::DiningOut, CategoryGroup::FoodAndDrinks, 500.0, 50.0)];
 
         $result = $service->rollUpByCategoryGroup($items, 1000);
 
         expect($result)->toHaveCount(1)
-            ->and($result[0])->group->toBe('food_and_drinks')->name->toBe('Food & Drinks')->total->toBe(500.0)->percentage->toBe(50.0)->children->toHaveCount(1)
-            ->and($result[0]->children[0])->category_id->toBe('dining_out')->total->toBe(500.0);
+            ->and($result[0])->group->toBe(CategoryGroup::FoodAndDrinks->value)->name->toBe(CategoryGroup::FoodAndDrinks->label())->total->toBe(500.0)->percentage->toBe(50.0)->children->toHaveCount(1)
+            ->and($result[0]->children[0])->category_id->toBe(Category::DiningOut->value)->total->toBe(500.0);
     });
 
     it('merges sibling categories into one group', function (): void {
         $service = new SpendingService;
 
         $items = [
-            spendingItem('fuel', 'transport', 300.0, 30.0),
-            spendingItem('public_transport', 'transport', 150.0, 15.0),
+            spendingItem(Category::Fuel, CategoryGroup::TransportTravel, 300.0, 30.0),
+            spendingItem(Category::PublicTransport, CategoryGroup::TransportTravel, 150.0, 15.0),
         ];
 
         $result = $service->rollUpByCategoryGroup($items, 1000);
 
         expect($result)->toHaveCount(1)
-            ->and($result[0])->group->toBe('transport')->name->toBe('Transport')->total->toBe(450.0)->percentage->toBe(45.0);
+            ->and($result[0])->group->toBe(CategoryGroup::TransportTravel->value)->name->toBe(CategoryGroup::TransportTravel->label())->total->toBe(450.0)->percentage->toBe(45.0);
 
         // Child percentages are relative to the group subtotal (450)
         expect($result[0]->children)->toHaveCount(2);
@@ -165,16 +164,16 @@ describe('rollUpByCategoryGroup', function (): void {
         $service = new SpendingService;
 
         $items = [
-            spendingItem('fuel', 'transport', 300.0, 30.0),
-            spendingItem('groceries', 'shopping', 500.0, 50.0),
+            spendingItem(Category::Fuel, CategoryGroup::TransportTravel, 300.0, 30.0),
+            spendingItem(Category::GeneralShopping, CategoryGroup::Shopping, 500.0, 50.0),
         ];
 
         $result = $service->rollUpByCategoryGroup($items, 1000);
 
         expect($result)->toHaveCount(2);
         // Shopping comes first (higher total)
-        expect($result[0]->group)->toBe('shopping');
-        expect($result[1]->group)->toBe('transport')
+        expect($result[0]->group)->toBe(CategoryGroup::Shopping->value);
+        expect($result[1]->group)->toBe(CategoryGroup::TransportTravel->value)
             ->and($result[0]->total)->toBe(500.0)
             ->and($result[1]->total)->toBe(300.0);
     });
@@ -183,9 +182,9 @@ describe('rollUpByCategoryGroup', function (): void {
         $service = new SpendingService;
 
         $items = [
-            spendingItem('fuel', 'transport', 300.0, 30.0),
-            spendingItem('public_transport', 'transport', 100.0, 10.0),
-            spendingItem('bus_trains', 'transport', 100.0, 10.0),
+            spendingItem(Category::Fuel, CategoryGroup::TransportTravel, 300.0, 30.0),
+            spendingItem(Category::PublicTransport, CategoryGroup::TransportTravel, 100.0, 10.0),
+            spendingItem(Category::ParkingAndTolls, CategoryGroup::TransportTravel, 100.0, 10.0),
         ];
 
         $result = $service->rollUpByCategoryGroup($items, 1000);

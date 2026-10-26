@@ -82,19 +82,16 @@ All reports are SQL-aggregated and cached per account (past months indefinitely,
 
 ### Current focus
 
-1. Define MVP-ready scope (Account, Transaction, simple spending report)
-2. Improve transaction list
-    - retry another approach for the transaction list page
-3. Transaction Tagging Feature
+1. Transaction Presets Feature
+    - user can create a preset, optionally the preset can be set for some accounts (for quick access)
+    - the preset will have name, and decoration on it for easier management (another meta is accepted)
+    - the preset will be managed from the menu on the settings
+2. Transaction Tagging Feature
     - transaction can be tagged by multiple tags
     - tags are input by user when creating transaction (combobox like with create new value capability)
     - the tag value will be normalized as snake_case (symbols removed) and stored as comma separated string or array, and null on empty.
     - later, in the transaction list will be added filter by the tags
     - in distant feature, there will be tags management per user
-4. Transaction Presets Feature
-    - user can create a preset, optionally the preset can be set for some accounts (for quick access)
-    - the preset will have name, and decoration on it for easier management (another meta is accepted)
-    - the preset will be managed from the menu on the settings
 
 ### Later
 

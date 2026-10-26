@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Data\DataTablePayloadData;
 use App\Helpers\DataTableHelper;
 use App\Models\Transaction;
+use App\Services\CategoryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -32,5 +33,13 @@ final class DevController extends Controller
         $query = Transaction::query()->select(['id', 'transaction_date', 'description', 'amount', 'type']);
 
         return response()->json(DataTableHelper::parse($query, $payload));
+    }
+
+    public function categories(): JsonResponse
+    {
+        return response()->json([
+            'categories' => CategoryService::getCategories(),
+            'grouped' => CategoryService::getGroupedCategories(),
+        ]);
     }
 }

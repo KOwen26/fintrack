@@ -39,4 +39,6 @@ Route::group([
     Route::get('table', [DevController::class, 'table'])->name('table');
 
     Route::get('table/server', [DevController::class, 'tableServer'])->name('table.server');
+
+    Route::get('categories', [DevController::class, 'categories'])->name('categories');
 });

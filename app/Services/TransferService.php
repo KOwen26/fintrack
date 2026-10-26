@@ -119,7 +119,7 @@ final readonly class TransferService
                 type: TransactionType::Expense,
                 amount: $data->fee_amount,
                 transaction_date: $data->transaction_date,
-                category_id: Category::AdminFees,
+                category_id: Category::AdminBankFees,
                 description: 'Transfer fee',
                 flow: Cashflow::Outflow,
                 transfer_id: $transfer->id,

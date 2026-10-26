@@ -17,17 +17,17 @@ class CategoryData extends Data
         public string $name,
         public Cashflow $cashflow,
         public Decoration $decorations,
-        public CategoryGroupData $group,
+        public CategoryGroupData | string $group,
     ) {}
 
-    public static function fromEnum(Category $category): self
+    public static function fromEnum(Category $category, bool $withGroupData = true): self
     {
         return new self(
             id: $category->value,
             name: $category->label(),
             cashflow: $category->group()->flow(),
             decorations: $category->decorations(),
-            group: CategoryGroupData::fromEnum($category->group()),
+            group: $withGroupData ? CategoryGroupData::fromEnum($category->group()) : $category->group()->value,
         );
     }
 }

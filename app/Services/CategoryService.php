@@ -60,10 +60,10 @@ final class CategoryService
             ->filter(fn (CategoryGroup $group): bool => $group->flow() === $cashflow);
     }
 
-    private static function toData(Collection $categories): Collection
+    private static function toData(Collection $categories, bool $withGroupData = true): Collection
     {
         return $categories
-            ->map(fn (Category $category): CategoryData => CategoryData::fromEnum($category))
+            ->map(fn (Category $category): CategoryData => CategoryData::fromEnum($category, $withGroupData))
             ->values();
     }
 
@@ -75,7 +75,7 @@ final class CategoryService
                 'name' => $group->label(),
                 'cashflow' => $group->flow()->value,
                 'decorations' => $group->decorations(),
-                'options' => self::toData(collect($group->children())),
+                'options' => self::toData(collect($group->children()), withGroupData: false),
             ])
             ->values();
     }

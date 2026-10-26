@@ -6,15 +6,16 @@ use App\Enums\CategoryGroup;
 use App\Objects\Decoration;
 
 it('declares the full preset inventory', function (): void {
-    expect(Category::cases())->toHaveCount(56)
-        ->and(CategoryGroup::cases())->toHaveCount(11)
-        ->and(Category::bookable())->toHaveCount(55)
+    expect(Category::cases())->toHaveCount(85)
+        ->and(CategoryGroup::cases())->toHaveCount(14)
+        ->and(Category::bookable())->toHaveCount(84)
         ->and(Category::bookable())->not->toContain(Category::InitialBalance);
 });
 
 it('resolves metadata for every case without throwing', function (): void {
     foreach (Category::cases() as $category) {
         expect($category->label())->not->toBeEmpty()
+            ->and($category->description())->not->toBeEmpty()
             ->and($category->decorations())->toBeInstanceOf(Decoration::class)
             ->and($category->decorations()->icon)->not->toBeEmpty()
             ->and($category->decorations()->color)->not->toBeEmpty()

@@ -78,7 +78,7 @@ test('stores an income transaction', function (): void {
         'type' => TransactionType::Income->value,
         'amount' => 5_000_000,
         'transaction_date' => now()->toDateString(),
-        'category_id' => 'salary',
+        'category_id' => Category::Salary->value,
         'description' => 'Salary',
     ])->assertRedirectToRoute('transactions.index');
 
@@ -93,7 +93,7 @@ test('stores an expense transaction', function (): void {
         'type' => TransactionType::Expense->value,
         'amount' => 150_000,
         'transaction_date' => now()->toDateString(),
-        'category_id' => 'groceries',
+        'category_id' => Category::GeneralShopping->value,
         'description' => 'Groceries',
     ])->assertRedirectToRoute('transactions.index');
 
@@ -113,7 +113,7 @@ test('updates a transaction and redirects to the list', function (): void {
         'type' => TransactionType::Expense->value,
         'amount' => 150_000,
         'transaction_date' => now()->toDateString(),
-        'category_id' => 'groceries',
+        'category_id' => Category::GeneralShopping->value,
         'description' => 'Updated groceries',
     ])->assertRedirectToRoute('transactions.index');
 
@@ -218,7 +218,7 @@ test('books a transfer fee row in the Admin Fees category via POST /transfers', 
 
     expect($feeRow)->not->toBeNull()
         ->and($feeRow->account_id)->toBe($sourceAccount->id)
-        ->and($feeRow->category_id)->toBe(Category::AdminFees)
+        ->and($feeRow->category_id)->toBe(Category::AdminBankFees)
         ->and($feeRow->description)->toBe('Transfer fee')
         ->and((float) $feeRow->amount)->toEqual(6_500.0)
         ->and((float) $transfer->fee_amount)->toEqual(6_500.0);
@@ -232,7 +232,7 @@ test('rejects the legacy transfer pseudo-type on POST /transactions', function (
         'type' => 'transfer',
         'amount' => 1_000,
         'transaction_date' => now()->toDateString(),
-        'category_id' => 'groceries',
+        'category_id' => Category::GeneralShopping->value,
     ])->assertInvalid('type');
 });
 
@@ -253,7 +253,7 @@ test('rejects direct unit-member edits with 422 on PUT /transactions', function 
         'type' => 'expense',
         'amount' => 250_000,
         'transaction_date' => now()->toDateString(),
-        'category_id' => 'groceries',
+        'category_id' => Category::GeneralShopping->value,
     ])->assertUnprocessable();
 });
 
@@ -408,7 +408,7 @@ test('forbids updating a transaction created by another user', function (): void
         'type' => TransactionType::Expense->value,
         'amount' => 150_000,
         'transaction_date' => now()->toDateString(),
-        'category_id' => 'groceries',
+        'category_id' => Category::GeneralShopping->value,
     ])->assertForbidden();
 
     expect((float) $otherTransaction->fresh()->amount)->toBe(200_000.0);
@@ -453,7 +453,7 @@ describe('initial balance guard', function (): void {
             'type' => 'income',
             'amount' => 100_000,
             'transaction_date' => now()->toDateString(),
-            'category_id' => 'salary',
+            'category_id' => Category::Salary->value,
         ])->assertUnprocessable();
     });
 
