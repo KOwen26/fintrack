@@ -70,14 +70,14 @@ class TransactionFactory extends Factory
         ]);
     }
 
-    /** Fee member row of a transfer unit — an expense on the source account, always Admin Fees. */
+    /** Fee member row of a transfer unit — an expense on the source account, always Admin & Bank Fees. */
     public function transferFee(Transfer | int $transfer): static
     {
         return $this->state([
             'type' => TransactionType::Expense,
             'flow' => Cashflow::Outflow,
             'transfer_id' => $transfer instanceof Transfer ? $transfer->id : $transfer,
-            'category_id' => Category::AdminFees,
+            'category_id' => Category::AdminBankFees,
         ]);
     }
 

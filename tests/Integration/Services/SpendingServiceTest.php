@@ -184,7 +184,7 @@ describe('rollUpByCategoryGroup', function (): void {
         $items = [
             spendingItem(Category::Fuel, CategoryGroup::TransportTravel, 300.0, 30.0),
             spendingItem(Category::PublicTransport, CategoryGroup::TransportTravel, 100.0, 10.0),
-            spendingItem(Category::ParkingTolls, CategoryGroup::TransportTravel, 100.0, 10.0),
+            spendingItem(Category::ParkingAndTolls, CategoryGroup::TransportTravel, 100.0, 10.0),
         ];
 
         $result = $service->rollUpByCategoryGroup($items, 1000);

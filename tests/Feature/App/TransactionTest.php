@@ -218,7 +218,7 @@ test('books a transfer fee row in the Admin Fees category via POST /transfers', 
 
     expect($feeRow)->not->toBeNull()
         ->and($feeRow->account_id)->toBe($sourceAccount->id)
-        ->and($feeRow->category_id)->toBe(Category::AdminFees)
+        ->and($feeRow->category_id)->toBe(Category::AdminBankFees)
         ->and($feeRow->description)->toBe('Transfer fee')
         ->and((float) $feeRow->amount)->toEqual(6_500.0)
         ->and((float) $transfer->fee_amount)->toEqual(6_500.0);
