@@ -171,13 +171,19 @@
             <Field title="Basic Select / Auto Complete">
                 <Select
                     name="select_input"
-                    items={['Items 1', 'Items 2', 'Items 3', 'Items 4', 'Items 5']}
+                    options={[
+                        { value: 'Items 1', label: 'Items 1' },
+                        { value: 'Items 2', label: 'Items 2' },
+                        { value: 'Items 3', label: 'Items 3' },
+                        { value: 'Items 4', label: 'Items 4' },
+                        { value: 'Items 5', label: 'Items 5' },
+                    ]}
                     bind:value={form.select_basic_input} />
             </Field>
             <Field title="Select / Auto Complete">
                 <Select
                     name="select_input"
-                    items={[
+                    options={[
                         { label: 'Items 1', value: 1 },
                         { label: 'Items 2', value: 2 },
                         { label: 'Items 3', value: 3 },
@@ -188,22 +194,10 @@
             <Field title="Advanced Select / Auto Complete">
                 <Select
                     name="select_input"
-                    items={[
-                        {
-                            label: 'Items 1',
-                            value: 1,
-                            description: 'Items 1 is lorem lorem lorem lorem lorem',
-                        },
-                        {
-                            label: 'Items 2',
-                            value: 2,
-                            description: 'Items 2 is lorem lorem lorem lorem lorem',
-                        },
-                        {
-                            label: 'Items 3',
-                            value: 3,
-                            description: 'Items 3 is lorem lorem lorem lorem lorem',
-                        },
+                    options={[
+                        { value: 1, label: 'Items 1' },
+                        { value: 2, label: 'Items 2' },
+                        { value: 3, label: 'Items 3', disabled: true },
                     ]}
                     bind:value={form.select_advance_input} />
             </Field>

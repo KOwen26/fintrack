@@ -2,16 +2,6 @@
 :root[data-theme='electric'] {
     color-scheme: light;
 
-    /* Surfaces */
-    --background: oklch(0.985 0.001 288.5);
-    --foreground: oklch(0.301 0 23.7);
-    --card: oklch(0.97 0.003 265.4);
-    --card-foreground: var(--foreground);
-    --popover: var(--card);
-    --popover-foreground: var(--foreground);
-    --muted: oklch(0.949 0.005 275.4);
-    --muted-foreground: color-mix(in oklab, var(--foreground) 50%, transparent);
-
     /* Brand */
     --primary: oklch(0.779 0.126 173.5);
     --primary-foreground: oklch(0.288 0.05 265.9);
@@ -34,8 +24,27 @@
     --error: oklch(0.58 0.16 25);
     --error-foreground: oklch(0.97 0.01 288);
 
+    /* Surfaces */
+    /* --background: oklch(0.985 0.001 288.5);
+    --foreground: oklch(0.301 0 23.7); */
+    /* --card: oklch(0.97 0.003 265.4);
+    --card-foreground: var(--foreground); */
+    /* --popover: var(--card);
+    --popover-foreground: var(--foreground); */
+    /* --muted: oklch(0.949 0.005 275.4);
+    --muted-foreground: color-mix(in oklab, var(--foreground) 50%, transparent); */
+
+    --background: oklch(0.97 0.003 288.5);
+    --foreground: oklch(0.22 0.003 288.5);
+    --card: oklch(0.985 0.001 288.5);
+    --card-foreground: oklch(0.235 0.001 288.5);
+    --popover: oklch(0.995 0.001 288.5);
+    --popover-foreground: oklch(0.245 0.001 288.5);
+    --muted: oklch(0.94 0.003 288.5);
+    --muted-foreground: oklch(0.52 0.003 288.5);
+
     /* Structure */
-    --border: oklch(0.949 0.005 275.4);
-    --input: var(--border);
+    --border: oklch(0.9 0.003 288.5);
+    --input: color-mix(in oklab, var(--muted-foreground) 40%, transparent);
     --ring: var(--primary);
 }

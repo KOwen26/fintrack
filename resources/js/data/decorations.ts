@@ -20,12 +20,8 @@ function activeOf<T extends DecorationRecord>(records: readonly T[]): T[] {
     return records.filter((record) => record.status === 'Active');
 }
 
-function randomFrom<T extends DecorationRecord>(records: readonly T[]): T | undefined {
+function randomFrom<T extends DecorationRecord>(records: readonly T[]): T {
     const active = activeOf(records);
-
-    if (!active.length) {
-        return undefined;
-    }
 
     return active[Math.floor(Math.random() * active.length)];
 }
@@ -73,9 +69,9 @@ export function getActiveDecorationIcons(): DecorationIcon[] {
 /**
  * Get a random active decoration icon.
  *
- * @returns {DecorationIcon | undefined} A random active DecorationIcon, or undefined when none exist.
+ * @returns {DecorationIcon} A random active DecorationIcon.
  */
-export function getRandomDecorationIcon(): DecorationIcon | undefined {
+export function getRandomDecorationIcon(): DecorationIcon {
     return randomFrom(decorationIcons);
 }
 
@@ -124,9 +120,9 @@ export function getActiveDecorationColors(): DecorationColor[] {
 /**
  * Get a random active decoration color.
  *
- * @returns {DecorationColor | undefined} A random active DecorationColor, or undefined when none exist.
+ * @returns {DecorationColor} A random active DecorationColor.
  */
-export function getRandomDecorationColor(): DecorationColor | undefined {
+export function getRandomDecorationColor(): DecorationColor {
     return randomFrom(decorationColors);
 }
 

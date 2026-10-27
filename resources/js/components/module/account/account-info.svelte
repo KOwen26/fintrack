@@ -45,7 +45,7 @@
             decorations={account?.decorations}
             icon={typeIcons[account?.type ?? ''] ?? 'solar--banknote-2-bold-duotone'} />
         <div class="grow">
-            <h6 class="text-sm font-medium tracking-wide text-base-content/80">
+            <h6 class="text-sm font-medium tracking-wide text-foreground/70">
                 {AccountTypeMeta?.[account.type]?.label}
             </h6>
             <p class="text-sm font-bold">

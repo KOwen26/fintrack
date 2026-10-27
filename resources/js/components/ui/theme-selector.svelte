@@ -11,17 +11,17 @@
 
     const { theme, updateTheme } = themeState();
 
-    const items = THEME_OPTIONS.map(({ value, label }) => ({ value, label }));
+    const options = THEME_OPTIONS.map(({ value, label }) => ({ value, label }));
 
     const getSelected = (): string => theme.value;
 
-    const setSelected = (value: string | string[] | number | number[]): void => {
-        if (typeof value === 'string' && value) {
+    const setSelected = (value: string): void => {
+        if (value) {
             updateTheme(value);
         }
     };
 </script>
 
 <div class={_class}>
-    <Select clearable={false} {items} placeholder="Theme" bind:value={getSelected, setSelected} />
+    <Select {options} placeholder="Theme" bind:value={getSelected, setSelected} />
 </div>

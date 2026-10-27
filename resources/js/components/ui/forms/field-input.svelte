@@ -21,7 +21,7 @@
     import PhoneInput from './phone-input.svelte';
     import RadioGroupItem from './radio-group-item.svelte';
     import RadioGroup from './radio-group.svelte';
-    import Select from './select-input.svelte';
+    import Select from './select.svelte';
     import Switch from './switch.svelte';
     import Textarea from './textarea.svelte';
 

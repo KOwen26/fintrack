@@ -53,7 +53,7 @@
             <Dialog.Title>
                 {@render header?.(headerCloseButton)}
             </Dialog.Title>
-            <div class={['overflow-y-auto px-5', props.class]}>
+            <div class={['overflow-y-auto px-5', props.class]} data-slot="overlay-scroll">
                 {@render children?.()}
             </div>
             {@render footer?.(footerCloseButton)}

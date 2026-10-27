@@ -18,6 +18,8 @@
         iconForAccountType,
     } from '@schema/account.schema';
 
+    import { cn } from '@utilities/shadcn';
+
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import DecorationColorSelector from '@components/module/decoration-color-selector.svelte';
     import DecorationIconSelector from '@components/module/decoration-icon-selector.svelte';
@@ -49,10 +51,10 @@
                     form: () => ({ type: 'select', name: 'provider_id', options: providerOptions }),
                 },
             })
-            .toFormGenerator(account ?? {})
+            .toFormGenerator(account)
     );
 
-    let form = useForm({
+    let form = useForm(() => ({
         ...formSchema.data,
         type: account?.type ?? AccountType.DebitAccount,
         access_type: account?.access_type ?? AccountAccessType.Personal,
@@ -62,7 +64,7 @@
                 iconForAccountType(account?.type ?? AccountType.DebitAccount),
             color: account?.decorations?.color ?? getRandomDecorationColor().slug,
         },
-    });
+    }));
 
     // Keep the decoration icon in sync with the selected account type.
     $effect(() => {
@@ -105,33 +107,33 @@
         <AccountCard class="w-full" account={previewAccount} hideActions hideEdit hideFooter />
     {/snippet}
 
-    <Form
-        id="account-form"
-        class="space-y-5"
-        {...account
-            ? AccountController.update.form({ account: account.id })
-            : AccountController.store.form()}
-        {form}>
-        <ResponsiveCard>
+    <ResponsiveCard>
+        <Form
+            id="account-form"
+            class="space-y-5"
+            {...account
+                ? AccountController.update.form({ account: account.id })
+                : AccountController.store.form()}
+            {form}>
             <Field title="Account Type">
-                <div class="flex gap-1 rounded-md bg-base-300 p-1">
+                <div class="flex gap-1 rounded-lg border border-border bg-muted p-1">
                     {#each accountTypeOptions as opt (opt.value)}
                         <button
-                            class="type-btn flex flex-1 flex-col items-center gap-1 rounded-md py-2 text-[0.6rem] font-medium transition
-                                {form.type === opt.value
-                                ? 'bg-primary text-primary-content'
-                                : 'text-base-content/60 hover:bg-base-200'}"
+                            class={cn(
+                                'flex flex-1 flex-col items-center gap-1 rounded-md py-2 text-xs font-medium transition',
+                                form.type === opt.value
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'text-muted-foreground hover:bg-muted-foreground/10'
+                            )}
                             onclick={() => (form.type = opt.value)}
                             type="button">
-                            <i class="iconify {opt.icon} text-lg"></i>
-                            <span>{opt.label}</span>
+                            <i class="iconify {opt.icon} size-6"></i>
+                            <span class="h-fit leading-none">{opt.label}</span>
                         </button>
                     {/each}
                 </div>
             </Field>
-        </ResponsiveCard>
 
-        <ResponsiveCard>
             <div class="grid grid-cols-2 gap-5">
                 <Field title="Card Color">
                     <DecorationColorSelector rows={1} bind:value={form.decorations.color} />
@@ -141,9 +143,7 @@
                     <DecorationIconSelector rows={1} bind:value={form.decorations.icon} />
                 </Field>
             </div>
-        </ResponsiveCard>
 
-        <ResponsiveCard>
             <div class="space-y-5">
                 <FieldInput
                     {...formSchema.fields.name}
@@ -153,23 +153,27 @@
                 <Field title="Access Type">
                     <div class="grid grid-cols-2 gap-3">
                         {#each accountAccessTypeOptions as opt (opt.value)}
+                            {@const selected = form.access_type === opt.value}
                             <button
-                                class="flex items-center gap-3 rounded-lg border-2 p-3 text-left transition
-                                {form.access_type === opt.value
-                                    ? 'border-primary bg-primary/5'
-                                    : 'border-base-300 hover:border-base-content/20'}"
+                                class={cn([
+                                    'flex items-center gap-3 rounded-lg border border-transparent bg-card p-3 text-left transition',
+                                    selected
+                                        ? 'border-primary'
+                                        : 'border-border hover:border-border',
+                                    'hover:border-primary',
+                                ])}
                                 onclick={() => (form.access_type = opt.value)}
                                 type="button">
                                 <div
                                     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg
-                                    {form.access_type === opt.value
-                                        ? 'bg-primary text-primary-content'
-                                        : 'bg-base-200 text-base-content/60'}">
+                                        {selected
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'bg-muted text-muted-foreground'}">
                                     <i class="iconify {opt.icon} text-lg"></i>
                                 </div>
                                 <div class="min-w-0">
                                     <p class="text-sm font-medium">{opt.label}</p>
-                                    <p class="text-xs text-base-content/50">{opt.description}</p>
+                                    <p class="text-xs text-muted-foreground">{opt.description}</p>
                                 </div>
                             </button>
                         {/each}
@@ -186,10 +190,10 @@
                     error={form.errors.initial_balance}
                     bind:value={form.initial_balance} />
             </div>
-        </ResponsiveCard>
 
-        <FormAction class="hidden md:flex" {...formActionProps} />
-    </Form>
+            <FormAction class="hidden md:flex" {...formActionProps} />
+        </Form>
+    </ResponsiveCard>
 
     {#if children}
         {@render children()}

@@ -53,6 +53,7 @@
 
 <script generics="T extends SelectOption" lang="ts">
     import { useHttp } from '@inertiajs/svelte';
+    import { IsMobile } from '@lib/is-mobile.svelte';
     import { Combobox, mergeProps } from 'bits-ui';
     import { onMount } from 'svelte';
 
@@ -77,6 +78,9 @@
     }: ComboboxProps<T> = $props();
 
     let inputRef = $state<HTMLInputElement | null>(null);
+
+    const isMobile = new IsMobile();
+    let keyboardOn = $state(false);
 
     const type = $derived(multiple ? 'multiple' : 'single');
 
@@ -162,7 +166,25 @@
         }
     }
 
+    // Mobile keyboards rise on deliberate intent only: the opening tap stays
+    // keyboardless (inputmode="none"), and a second tap on the already-open input
+    // re-focuses it with typing enabled. Desktop is unaffected — inputmode only
+    // controls the virtual keyboard, and the summon is gated behind isMobile.
+    function handleInputPointerdown() {
+        if (!isMobile.current || !open || keyboardOn) {
+            return;
+        }
+
+        keyboardOn = true;
+
+        // Some mobile browsers re-read `inputmode` only on a focus cycle.
+        inputRef?.blur();
+        inputRef?.focus();
+    }
+
     function handleOpenChange(newOpen: boolean) {
+        keyboardOn = false;
+
         if (!newOpen) {
             searchValue = '';
         }
@@ -228,7 +250,17 @@
         })
     );
     const mergedInputProps = $derived(
-        mergeProps(inputProps, { oninput: handleInput, onkeydown: handleInputKeydown })
+        mergeProps(
+            // Keyboard suppression on mobile: the attribute is only set when the
+            // viewport is mobile; desktop spreads no inputmode at all.
+            { inputmode: isMobile.current ? (keyboardOn ? 'text' : 'none') : undefined },
+            inputProps,
+            {
+                oninput: handleInput,
+                onkeydown: handleInputKeydown,
+                onpointerdown: handleInputPointerdown,
+            }
+        )
     );
 
     const mergedContentProps = $derived(
@@ -400,7 +432,7 @@
 
             <Combobox.Trigger
                 class="ml-auto shrink-0 text-muted-foreground hover:text-foreground disabled:opacity-50">
-                <i class="iconify size-4 solar--alt-arrow-down-outline"></i>
+                <i class="iconify size-4 solar--alt-arrow-down-linear"></i>
             </Combobox.Trigger>
         </div>
     {:else}
@@ -416,7 +448,7 @@
 
             <Combobox.Trigger
                 class="absolute end-0 top-0 flex h-8 w-8 items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-50">
-                <i class="iconify size-4 shrink-0 solar--alt-arrow-down-outline"></i>
+                <i class="iconify size-4 shrink-0 solar--alt-arrow-down-linear"></i>
             </Combobox.Trigger>
         </div>
     {/if}

@@ -1,82 +1,62 @@
 <script lang="ts" module>
-    import type { RestProps } from '@type/index';
+    import type { ComponentProps } from 'svelte';
 
-    import { config } from 'svelecte';
-
-    export type SvelecteProps = typeof config;
-
-    export type SelectItem = {
+    export interface SelectOption {
         value: string | number;
         label: string;
-        description?: string;
-        $disabled?: boolean;
-    };
+        disabled?: boolean;
+    }
 
-    export interface SelectProps extends Partial<SvelecteProps> {
-        items: Array<number | string | SelectItem>;
-        value: string | string[] | number | number[];
+    export interface SelectProps {
+        options: SelectOption[];
+        value?: string;
+        name?: string;
+        type?: ComponentProps<typeof Select>['type'];
+        placeholder?: string;
+        disabled?: boolean;
+        required?: boolean;
+        loading?: boolean;
+        invalid?: boolean;
+        class?: string;
     }
 </script>
 
 <script lang="ts">
-    import Svelecte from 'svelecte';
+    import { Select, SelectContent, SelectItem, SelectTrigger } from '@components/ui/forms/select';
+    import Skeleton from '@components/ui/skeleton.svelte';
 
     let {
-        valueField = 'value',
-        placeholder = 'Pilih',
-        items,
+        options,
         value = $bindable(),
+        name,
+        type = 'single',
+        placeholder = 'Select...',
+        loading = false,
+        invalid = false,
+        class: className,
         ...props
-    }: SelectProps & RestProps = $props();
+    }: SelectProps = $props();
+
+    const selectedLabel = $derived(options?.find((o) => String(o.value) === String(value))?.label);
 </script>
 
-<Svelecte
-    clearable
-    labelField="label"
-    options={items}
-    {placeholder}
-    {valueField}
-    bind:value
-    {...props} />
-
-<style lang="css">
-    :global(:root) {
-        --sv-min-height: calc(var(--spacing) * 10);
-        --sv-bg: var(--color-base-100);
-        --sv-disabled-bg: #eee;
-
-        --sv-border: 1px solid var(--color-border);
-        --sv-border-radius: calc(var(--spacing) * 1);
-        --sv-general-padding: calc(var(--spacing) * 1) calc(var(--spacing) * 3);
-        --sv-control-bg: var(--sv-bg);
-
-        --sv-item-wrap-padding: 3px 3px 3px 6px;
-        --sv-item-selected-bg: #efefef;
-        --sv-item-btn-color: #000;
-        --sv-item-btn-color-hover: var(--color-primary); /* same as icon-color-hover */
-        --sv-item-btn-bg: #efefef;
-        --sv-item-btn-bg-hover: #ddd;
-
-        --sv-icon-color: #bbb;
-        --sv-icon-color-hover: var(--color-primary);
-        --sv-icon-bg: transparent;
-        --sv-icon-size: 20px;
-        --sv-separator-bg: var(--color-border);
-        --sv-btn-border: 0;
-        --sv-placeholder-color: #ccccd6;
-
-        --sv-dropdown-bg: var(--sv-bg);
-        --sv-dropdown-offset: 1px;
-        --sv-dropdown-border: 1px solid rgba(0, 0, 0, 0.15);
-        --sv-dropdown-width: auto;
-        --sv-dropdown-shadow: 0 6px 12px #0000002d;
-        --sv-dropdown-height: 240px;
-        --sv-dropdown-active-bg: #f2f5f8;
-        --sv-dropdown-selected-bg: #ecf3f9;
-
-        --sv-create-kbd-border: 1px solid #efefef;
-        --sv-create-kbd-bg: #fff;
-        --sv-create-disabled-bg: #fcbaba;
-        --sv-loader-border: 2px solid var(--color-border);
-    }
-</style>
+{#if loading}
+    <Skeleton class="h-8 w-full {className ?? ''}" />
+{:else}
+    <Select {name} {type} bind:value {...props}>
+        <SelectTrigger class="w-full {className ?? ''}" aria-invalid={invalid}>
+            {#if selectedLabel}
+                {selectedLabel}
+            {:else}
+                <span class="text-muted-foreground">{placeholder}</span>
+            {/if}
+        </SelectTrigger>
+        <SelectContent>
+            {#each options as opt (opt.value)}
+                <SelectItem disabled={opt.disabled} value={String(opt.value)}>
+                    {opt.label}
+                </SelectItem>
+            {/each}
+        </SelectContent>
+    </Select>
+{/if}

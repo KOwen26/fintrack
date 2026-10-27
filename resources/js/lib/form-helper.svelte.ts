@@ -102,7 +102,7 @@ interface FileInputFieldProps extends BaseInputFieldProps {
 interface SelectInputFieldProps extends BaseInputFieldProps {
     type: 'select';
     options: InputValueOption;
-    inputProps?: WithoutValue<Omit<SelectProps, 'items'>>;
+    inputProps?: WithoutValue<Omit<SelectProps, 'options' | 'value'>>;
 }
 
 interface CheckboxInputFieldProps extends BaseInputFieldProps {

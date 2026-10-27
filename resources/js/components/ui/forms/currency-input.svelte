@@ -40,12 +40,12 @@
 <div
     class={cn(
         inputGroupClasses,
-        'px-3 tabular-nums focus-within:bg-base-content/5 hover:bg-base-content/5',
+        'px-3 tabular-nums',
         disabled && 'cursor-not-allowed opacity-50',
         _class
     )}>
     <span
-        class="me-1 flex items-center self-stretch border-r border-input pe-3 text-sm font-medium whitespace-nowrap select-none">
+        class="me-3 flex items-center self-stretch border-r border-input pe-3 text-sm font-medium whitespace-nowrap select-none">
         {currency}
     </span>
     <MaskedInput
@@ -53,6 +53,7 @@
         class={inputClass}
         defaultClass="h-full w-full bg-transparent text-base outline-none md:text-sm"
         {disabled}
+        inputmode="decimal"
         maskPreset="currency"
         {required}
         bind:value

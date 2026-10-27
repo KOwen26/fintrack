@@ -83,7 +83,9 @@
             {:else}
                 {@render defaultHeader(headerCloseButton)}
             {/if}
-            <div class={cn('min-h-0 flex-1 overflow-y-auto', props.class)}>
+            <div
+                data-slot="overlay-scroll"
+                class={cn('min-h-0 flex-1 overflow-y-auto', props.class)}>
                 {@render children?.()}
             </div>
             {#if footer}
@@ -128,7 +130,7 @@
 {#snippet defaultHeader(closeButton: Snippet)}
     {#if title}
         <DrawerHeader class="flex-row items-center justify-between px-5 py-3">
-            <DrawerTitle>{title}</DrawerTitle>
+            <DrawerTitle class="text-lg">{title}</DrawerTitle>
             {@render closeButton?.()}
         </DrawerHeader>
     {/if}

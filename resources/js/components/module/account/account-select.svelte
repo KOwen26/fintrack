@@ -90,7 +90,7 @@
     contentProps={{ sideOffset: 10 }}
     {disabled}
     inputProps={{
-        class: 'placeholder:text-base-content/35',
+        class: 'placeholder:text-muted-foreground',
         'aria-required': required || undefined,
     }}
     {option}
@@ -122,8 +122,8 @@
         {...triggerProps}
         class={cn(
             inputGroupClasses,
-            'relative px-3 hover:bg-base-content/5',
-            'disabled:border-input disabled:bg-base-content/10',
+            'relative px-3',
+            'disabled:border-input disabled:bg-input',
             _class
         )}>
         {#if account}
@@ -136,7 +136,7 @@
         <ComboboxPrimitive.Input
             {...inputProps}
             class={cn(
-                'h-full w-full bg-transparent text-sm font-medium outline-none placeholder:text-base-content/80',
+                'h-full w-full bg-transparent text-sm font-medium outline-none placeholder:text-muted-foreground',
                 account ? 'pr-16 pl-10' : ''
             )}
             aria-label={placeholder}
@@ -145,7 +145,7 @@
 
         {#if clearable && account}
             <button
-                class="absolute top-1/2 right-9 z-10 flex size-6 -translate-y-1/2 items-center justify-center rounded-full text-base-content/60 hover:bg-base-content/10 hover:text-base-content"
+                class="absolute top-1/2 right-9 z-10 flex size-6 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:bg-input hover:text-foreground"
                 aria-label="Hapus akun"
                 onclick={() => setValue('')}
                 onpointerdown={(e) => e.stopPropagation()}
@@ -155,7 +155,7 @@
         {/if}
 
         <i
-            class="pointer-events-none absolute top-1/2 right-2.5 iconify flex size-4 -translate-y-1/2 items-center text-base-content solar--alt-arrow-down-linear"
+            class="pointer-events-none absolute top-1/2 right-2.5 iconify flex size-4 -translate-y-1/2 items-center text-foreground solar--alt-arrow-down-linear"
             class:rotate-180={open}></i>
     </ComboboxPrimitive.Trigger>
 {/snippet}

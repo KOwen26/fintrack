@@ -9,8 +9,8 @@ import Formatter from '@utilities/formatter';
 
 // ── Static options — single source of truth for schema forms & custom pickers ──
 export const accountTypeOptions = [
-    { value: AccountType.DebitAccount, label: 'Debit', icon: 'solar--buildings-bold-duotone' },
-    { value: AccountType.CreditCard, label: 'Credit', icon: 'solar--wallet-bold-duotone' },
+    { value: AccountType.DebitAccount, label: 'Debit', icon: 'solar--card-2-bold-duotone' },
+    { value: AccountType.CreditCard, label: 'Credit', icon: 'solar--dollar-bold-duotone' },
     { value: AccountType.CashWallet, label: 'Cash', icon: 'solar--wallet-money-bold-duotone' },
     { value: AccountType.EWallet, label: 'E-Wallet', icon: 'solar--smartphone-bold-duotone' },
     { value: AccountType.Investment, label: 'Invest', icon: 'solar--chart-bold-duotone' },
@@ -49,7 +49,7 @@ export const accountSchema: DataSchema<App.Models.Account> = {
             name: 'name',
             required: true,
             inputProps: {
-                placeholder: 'e.g. BCA Savings',
+                placeholder: 'e.g. Savings',
                 autocorrect: 'off',
                 autocomplete: 'off',
             },
@@ -95,6 +95,7 @@ export const accountSchema: DataSchema<App.Models.Account> = {
         form: () => ({
             type: 'currency-input',
             name: 'initial_balance',
+            placeholder: '0',
         }),
     },
     archived_at: {
