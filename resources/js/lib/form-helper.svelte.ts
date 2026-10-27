@@ -9,7 +9,7 @@ import type { PasswordInputProps } from '@components/ui/forms/password-input.sve
 import type { PhoneInputProps } from '@components/ui/forms/phone-input.svelte';
 import type { RadioGroupItemProps } from '@components/ui/forms/radio-group-item.svelte';
 import type { RadioGroupProps } from '@components/ui/forms/radio-group.svelte';
-import type { SelectProps } from '@components/ui/forms/select.svelte';
+import type { SelectInputProps } from '@components/ui/forms/select-input.svelte';
 import type { SwitchProps } from '@components/ui/forms/switch.svelte';
 import type { TextareaProps } from '@components/ui/forms/textarea.svelte';
 import type { AnyRecord, PickAndWrapOthers, WithoutValue } from '@type/index';
@@ -102,7 +102,7 @@ interface FileInputFieldProps extends BaseInputFieldProps {
 interface SelectInputFieldProps extends BaseInputFieldProps {
     type: 'select';
     options: InputValueOption;
-    inputProps?: WithoutValue<Omit<SelectProps, 'items'>>;
+    inputProps?: WithoutValue<Omit<SelectInputProps, 'options' | 'value'>>;
 }
 
 interface CheckboxInputFieldProps extends BaseInputFieldProps {

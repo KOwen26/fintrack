@@ -1,7 +1,7 @@
 <script lang="ts">
     import { THEME_OPTIONS, themeState } from '@lib/theme-handler.svelte';
 
-    import Select from '@components/ui/forms/select.svelte';
+    import Select from '@components/ui/forms/select-input.svelte';
 
     interface Props {
         class?: string;
@@ -11,17 +11,17 @@
 
     const { theme, updateTheme } = themeState();
 
-    const items = THEME_OPTIONS.map(({ value, label }) => ({ value, label }));
+    const options = THEME_OPTIONS.map(({ value, label }) => ({ value, label }));
 
     const getSelected = (): string => theme.value;
 
-    const setSelected = (value: string | string[] | number | number[]): void => {
-        if (typeof value === 'string' && value) {
+    const setSelected = (value: string): void => {
+        if (value) {
             updateTheme(value);
         }
     };
 </script>
 
 <div class={_class}>
-    <Select clearable={false} {items} placeholder="Theme" bind:value={getSelected, setSelected} />
+    <Select {options} placeholder="Theme" bind:value={getSelected, setSelected} />
 </div>
