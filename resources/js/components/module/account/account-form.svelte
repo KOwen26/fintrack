@@ -119,14 +119,16 @@
                 <div class="flex gap-1 rounded-lg border border-border bg-muted p-1">
                     {#each accountTypeOptions as opt (opt.value)}
                         <button
-                            class="flex flex-1 flex-col items-center gap-1 rounded-md py-2 text-2xs font-medium transition
-                                    {form.type === opt.value
-                                ? 'bg-primary text-primary-foreground'
-                                : 'text-muted-foreground hover:bg-muted-foreground/10'}"
+                            class={cn(
+                                'flex flex-1 flex-col items-center gap-1 rounded-md py-2 text-xs font-medium transition',
+                                form.type === opt.value
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'text-muted-foreground hover:bg-muted-foreground/10'
+                            )}
                             onclick={() => (form.type = opt.value)}
                             type="button">
                             <i class="iconify {opt.icon} size-6"></i>
-                            <span>{opt.label}</span>
+                            <span class="h-fit leading-none">{opt.label}</span>
                         </button>
                     {/each}
                 </div>
