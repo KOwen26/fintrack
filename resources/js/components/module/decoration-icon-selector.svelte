@@ -1,8 +1,7 @@
 <script lang="ts">
     import { decorationIcons } from '@data/decorations';
 
-    import Drawer from '@components/ui/drawer.svelte';
-    import Modal from '@components/ui/modals/modal.svelte';
+    import DrawerModal from '@components/ui/drawer-modal.svelte';
     import Popover from '@components/ui/popover.svelte';
     import ScrollArea from '@components/ui/scroll-area.svelte';
 
@@ -10,10 +9,10 @@
         value?: string;
         onchange?: (slug: string) => void;
         rows?: number;
-        variant?: 'modal' | 'popover' | 'drawer';
+        variant?: 'drawer-modal' | 'popover';
     }
 
-    let { value = $bindable(''), onchange, rows = 2, variant = 'modal' }: Props = $props();
+    let { value = $bindable(''), onchange, rows = 2, variant = 'drawer-modal' }: Props = $props();
 
     let open = $state(false);
     let gridEl: HTMLDivElement | undefined;
@@ -57,48 +56,20 @@
         bind:this={gridEl}
         class="grid grid-cols-4 gap-2 @sm:grid-cols-8 @md:grid-cols-10 @xl:grid-cols-12 @3xl:grid-cols-24">
         {#if hasSelection && selectedItem}
-            <button
-                class="flex size-10 items-center justify-center rounded-md border border-base-content/15 bg-primary/10 text-base-content ring-2 ring-primary"
-                aria-label={selectedItem.label}
-                aria-pressed={true}
-                onclick={() => select(selectedItem.slug)}
-                type="button">
-                <i class="iconify {selectedItem.value} text-lg"></i>
-            </button>
+            {@render item(selectedItem)}
         {:else}
             <div
-                class="size-10 rounded-md border border-dashed border-base-content/20"
+                class="size-10 rounded-md border border-dashed border-foreground/20"
                 aria-hidden="true">
             </div>
         {/if}
 
         {#each visible as icon (icon.slug)}
-            <button
-                class="flex size-10 items-center justify-center rounded-md border border-base-content/15 text-base-content transition hover:scale-110 {value ===
-                icon.slug
-                    ? 'bg-primary/10 ring-2 ring-primary'
-                    : ''}"
-                aria-label={icon.label}
-                aria-pressed={value === icon.slug}
-                onclick={() => select(icon.slug)}
-                type="button">
-                <i class="iconify {icon.value} text-lg"></i>
-            </button>
+            {@render item(icon)}
         {/each}
 
         {#if seeMoreNeeded}
-            {#if variant === 'drawer'}
-                <Drawer
-                    triggerClass="flex size-10 items-center justify-center rounded-md border border-dashed border-base-content/30 text-xs font-semibold text-base-content/60 transition hover:bg-base-200"
-                    title="Pilih Ikon"
-                    bind:open>
-                    {#snippet trigger()}
-                        +{remaining}
-                    {/snippet}
-
-                    {@render fullGrid()}
-                </Drawer>
-            {:else if variant === 'popover'}
+            {#if variant === 'popover'}
                 <Popover
                     class="w-100 p-2"
                     align="end"
@@ -109,11 +80,11 @@
                         +{remaining}
                     {/snippet}
 
-                    {@render fullGrid()}
+                    {@render itemGrid()}
                 </Popover>
             {:else}
                 <button
-                    class="flex size-10 items-center justify-center rounded-md border border-dashed border-base-content/30 text-xs font-semibold text-base-content/60 transition hover:bg-base-200"
+                    class="flex size-10 items-center justify-center rounded-md border border-dashed border-input/50 text-xs font-semibold text-foreground/70 transition hover:bg-card"
                     aria-label="See more"
                     onclick={() => (open = true)}
                     type="button">
@@ -124,27 +95,33 @@
     </div>
 </div>
 
-{#if variant === 'modal'}
-    <Modal title="Pilih Ikon" bind:open>
-        {@render fullGrid()}
-    </Modal>
+{#if variant === 'drawer-modal'}
+    <DrawerModal title="Select Icon" bind:open>
+        <div class="px-4 pb-5">
+            {@render itemGrid()}
+        </div>
+    </DrawerModal>
 {/if}
 
-{#snippet fullGrid()}
-    <ScrollArea rootClass="max-h-[60vh] w-full rounded-lg @container">
+{#snippet item(icon)}
+    <button
+        class={[
+            'flex size-10 items-center justify-center rounded-md border border-input/50 text-foreground transition hover:scale-105 ',
+            value === icon.slug ? 'border-transparent bg-primary/20 ring-[1.5px] ring-primary' : '',
+        ]}
+        aria-label={icon.label}
+        aria-pressed={value === icon.slug}
+        onclick={() => select(icon.slug)}
+        type="button">
+        <i class="iconify {icon.value} size-6"></i>
+    </button>
+{/snippet}
+
+{#snippet itemGrid()}
+    <ScrollArea rootClass="max-h-[60vh] w-full @container">
         <div class="grid grid-cols-8 gap-2 p-1 @md:grid-cols-10 @xl:grid-cols-12">
             {#each decorationIcons as icon (icon.slug)}
-                <button
-                    class="flex size-10 items-center justify-center rounded-md border border-base-content/15 text-base-content transition hover:scale-110 {value ===
-                    icon.slug
-                        ? 'bg-primary/10 ring-2 ring-primary'
-                        : ''}"
-                    aria-label={icon.label}
-                    aria-pressed={value === icon.slug}
-                    onclick={() => select(icon.slug)}
-                    type="button">
-                    <i class="iconify {icon.value} text-lg"></i>
-                </button>
+                {@render item(icon)}
             {/each}
         </div>
     </ScrollArea>

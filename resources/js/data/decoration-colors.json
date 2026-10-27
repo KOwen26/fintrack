@@ -97,7 +97,7 @@
         "hex": "#0f172a",
         "oklch": "oklch(20.8% 0.042 265.755)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "slate-950",
@@ -207,7 +207,7 @@
         "hex": "#111827",
         "oklch": "oklch(21% 0.034 264.665)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "gray-950",
@@ -317,7 +317,7 @@
         "hex": "#18181b",
         "oklch": "oklch(21% 0.006 285.885)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "zinc-950",
@@ -427,7 +427,7 @@
         "hex": "#171717",
         "oklch": "oklch(20.5% 0 0)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "neutral-950",
@@ -537,7 +537,7 @@
         "hex": "#1c1917",
         "oklch": "oklch(21.6% 0.006 56.043)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "stone-950",
@@ -647,7 +647,7 @@
         "hex": "#7f1d1d",
         "oklch": "oklch(39.6% 0.141 25.723)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "red-950",
@@ -757,7 +757,7 @@
         "hex": "#7c2d12",
         "oklch": "oklch(40.8% 0.123 38.172)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "orange-950",
@@ -867,7 +867,7 @@
         "hex": "#78350f",
         "oklch": "oklch(41.4% 0.112 45.904)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "amber-950",
@@ -977,7 +977,7 @@
         "hex": "#713f12",
         "oklch": "oklch(42.1% 0.095 57.708)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "yellow-950",
@@ -1087,7 +1087,7 @@
         "hex": "#365314",
         "oklch": "oklch(40.5% 0.101 131.063)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "lime-950",
@@ -1197,7 +1197,7 @@
         "hex": "#14532d",
         "oklch": "oklch(39.3% 0.095 152.535)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "green-950",
@@ -1307,7 +1307,7 @@
         "hex": "#064e3b",
         "oklch": "oklch(37.8% 0.077 168.94)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "emerald-950",
@@ -1417,7 +1417,7 @@
         "hex": "#134e4a",
         "oklch": "oklch(38.6% 0.063 188.416)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "teal-950",
@@ -1527,7 +1527,7 @@
         "hex": "#164e63",
         "oklch": "oklch(39.8% 0.07 227.392)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "cyan-950",
@@ -1637,7 +1637,7 @@
         "hex": "#0c4a6e",
         "oklch": "oklch(39.1% 0.09 240.876)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "sky-950",
@@ -1706,7 +1706,7 @@
         "label": "Blue 500",
         "hex": "#3b82f6",
         "oklch": "oklch(62.3% 0.214 259.815)",
-        "text_color": "#000000",
+        "text_color": "#ffffff",
         "status": "Active"
     },
     {
@@ -1747,7 +1747,7 @@
         "hex": "#1e3a8a",
         "oklch": "oklch(37.9% 0.146 265.522)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "blue-950",
@@ -1857,7 +1857,7 @@
         "hex": "#312e81",
         "oklch": "oklch(35.9% 0.144 278.697)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "indigo-950",
@@ -1967,7 +1967,7 @@
         "hex": "#4c1d95",
         "oklch": "oklch(38% 0.189 293.745)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "violet-950",
@@ -2077,7 +2077,7 @@
         "hex": "#581c87",
         "oklch": "oklch(38.1% 0.176 304.987)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "purple-950",
@@ -2187,7 +2187,7 @@
         "hex": "#701a75",
         "oklch": "oklch(40.1% 0.17 325.612)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "fuchsia-950",
@@ -2297,7 +2297,7 @@
         "hex": "#831843",
         "oklch": "oklch(40.8% 0.153 2.432)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "pink-950",
@@ -2407,7 +2407,7 @@
         "hex": "#881337",
         "oklch": "oklch(41% 0.159 10.272)",
         "text_color": "#ffffff",
-        "status": "Inactive"
+        "status": "Active"
     },
     {
         "slug": "rose-950",

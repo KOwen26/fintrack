@@ -1,6 +1,8 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
 
+    import { buttonClassVariants } from './button.svelte';
+
     import {
         Drawer,
         DrawerClose,
@@ -44,8 +46,12 @@
             <DrawerHeader class="flex-row items-center justify-between">
                 <DrawerTitle>{title}</DrawerTitle>
                 <DrawerClose
-                    class="rounded-md border border-base-content/20 p-1.5 text-base-content transition hover:bg-base-200">
-                    <i class="iconify text-lg solar--close-line-duotone"></i>
+                    class={buttonClassVariants({
+                        variant: 'outline',
+                        color: 'light',
+                        size: 'icon',
+                    })}>
+                    <i class="iconify size-6 solar--close-linear"></i>
                 </DrawerClose>
             </DrawerHeader>
         {/if}
