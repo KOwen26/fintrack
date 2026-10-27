@@ -19,7 +19,7 @@
     import PhoneInput from '@components/ui/forms/phone-input.svelte';
     import RadioItem from '@components/ui/forms/radio-group-item.svelte';
     import RadioGroup from '@components/ui/forms/radio-group.svelte';
-    import Select from '@components/ui/forms/select-input.svelte';
+    import Select from '@components/ui/forms/select.svelte';
     import SubmitButton from '@components/ui/forms/submit-button.svelte';
     import Switch from '@components/ui/forms/switch.svelte';
     import Textarea from '@components/ui/forms/textarea.svelte';

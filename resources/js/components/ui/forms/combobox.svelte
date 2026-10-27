@@ -432,7 +432,7 @@
 
             <Combobox.Trigger
                 class="ml-auto shrink-0 text-muted-foreground hover:text-foreground disabled:opacity-50">
-                <i class="iconify size-4 solar--alt-arrow-down-outline"></i>
+                <i class="iconify size-4 solar--alt-arrow-down-linear"></i>
             </Combobox.Trigger>
         </div>
     {:else}
@@ -448,7 +448,7 @@
 
             <Combobox.Trigger
                 class="absolute end-0 top-0 flex h-8 w-8 items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-50">
-                <i class="iconify size-4 shrink-0 solar--alt-arrow-down-outline"></i>
+                <i class="iconify size-4 shrink-0 solar--alt-arrow-down-linear"></i>
             </Combobox.Trigger>
         </div>
     {/if}

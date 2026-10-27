@@ -1,14 +1,17 @@
 <script lang="ts" module>
+    import type { ComponentProps } from 'svelte';
+
     export interface SelectOption {
         value: string | number;
         label: string;
         disabled?: boolean;
     }
 
-    export interface SelectInputProps {
+    export interface SelectProps {
         options: SelectOption[];
         value?: string;
         name?: string;
+        type?: ComponentProps<typeof Select>['type'];
         placeholder?: string;
         disabled?: boolean;
         required?: boolean;
@@ -26,13 +29,13 @@
         options,
         value = $bindable(),
         name,
+        type = 'single',
         placeholder = 'Select...',
-        disabled = false,
-        required = false,
         loading = false,
         invalid = false,
         class: className,
-    }: SelectInputProps = $props();
+        ...props
+    }: SelectProps = $props();
 
     const selectedLabel = $derived(options?.find((o) => String(o.value) === String(value))?.label);
 </script>
@@ -40,7 +43,7 @@
 {#if loading}
     <Skeleton class="h-8 w-full {className ?? ''}" />
 {:else}
-    <Select {name} {disabled} {required} type="single" bind:value>
+    <Select {name} {type} bind:value {...props}>
         <SelectTrigger class="w-full {className ?? ''}" aria-invalid={invalid}>
             {#if selectedLabel}
                 {selectedLabel}

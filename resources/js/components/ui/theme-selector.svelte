@@ -1,7 +1,7 @@
 <script lang="ts">
     import { THEME_OPTIONS, themeState } from '@lib/theme-handler.svelte';
 
-    import Select from '@components/ui/forms/select-input.svelte';
+    import Select from '@components/ui/forms/select.svelte';
 
     interface Props {
         class?: string;
