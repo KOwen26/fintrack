@@ -63,9 +63,6 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.5(esbuild@0.27.4)(jiti@2.7.0)(yaml@2.8.3))
-      '@tanstack/table-core':
-        specifier: ^8.21.3
-        version: 8.21.3
       '@types/d3-scale':
         specifier: ^4.0.9
         version: 4.0.9
@@ -120,9 +117,6 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.8.1
         version: 0.8.1(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.9.10))(prettier-plugin-svelte@4.1.1(prettier@3.9.10)(svelte@5.57.2(@typescript-eslint/types@8.72.0)))(prettier@3.9.10)
-      svelecte:
-        specifier: ^5.4.0
-        version: 5.4.0(svelte@5.57.2(@typescript-eslint/types@8.72.0))
       svelte:
         specifier: ^5.57.2
         version: 5.57.2(@typescript-eslint/types@8.72.0)
@@ -784,10 +778,6 @@ packages:
     engines: {node: '>=20'}
     peerDependencies:
       svelte: ^5.0.0
-
-  '@tanstack/table-core@8.21.3':
-    resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
-    engines: {node: '>=12'}
 
   '@tanstack/table-core@9.3.1':
     resolution: {integrity: sha512-zQvlxSNi2qGM3L4jh85Z6hqMfdIR5qOfD9KHOU32nuKFJGN0RlJ7UvV1lsPb1fPVhpFYI0VP3jJGxLdLDpTKjQ==}
@@ -2108,11 +2098,6 @@ packages:
     resolution: {integrity: sha512-SS+jx45GF1QjgEXQx4NJZV9ImqmO2NPz5FNsIHrsDjh2YsHnawpan7SNQ1o8NuhrbHZy9AZhIoCUiCeaW/C80g==}
     engines: {node: '>=18'}
 
-  svelecte@5.4.0:
-    resolution: {integrity: sha512-on7GHoXkov+7kJSmiAcfK99R0OhXrWoGGyMZStUT/d3RSu9aqckqL/3uzJ4aHX72koEgSSwcX9s7GnQYiCiTwA==}
-    peerDependencies:
-      svelte: ^5.2.7
-
   svelte-check@4.7.7:
     resolution: {integrity: sha512-Ge2IMdeTpbJuzNFGRiiMg0RWgbScysKQu7xwcyFJ22+DU9F5nPX51+Q3gHmGqRxYQMx2knreVWt5oCtfe0vf2g==}
     engines: {node: '>= 18.0.0'}
@@ -2842,8 +2827,6 @@ snapshots:
       '@tanstack/svelte-store': 0.12.3(svelte@5.57.2(@typescript-eslint/types@8.72.0))
       '@tanstack/table-core': 9.3.1
       svelte: 5.57.2(@typescript-eslint/types@8.72.0)
-
-  '@tanstack/table-core@8.21.3': {}
 
   '@tanstack/table-core@9.3.1':
     dependencies:
@@ -4090,10 +4073,6 @@ snapshots:
       inline-style-parser: 0.2.7
 
   supports-color@10.2.2: {}
-
-  svelecte@5.4.0(svelte@5.57.2(@typescript-eslint/types@8.72.0)):
-    dependencies:
-      svelte: 5.57.2(@typescript-eslint/types@8.72.0)
 
   svelte-check@4.7.7(picomatch@4.0.7)(svelte@5.57.2(@typescript-eslint/types@8.72.0))(typescript@6.0.3):
     dependencies:

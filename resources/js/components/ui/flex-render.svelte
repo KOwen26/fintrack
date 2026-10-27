@@ -1,35 +1,28 @@
-<script
-    generics="TData, TValue, TContext extends HeaderContext<TData, TValue> | CellContext<TData, TValue>"
-    lang="ts">
-    import type { CellContext, ColumnDefTemplate, HeaderContext } from '@tanstack/table-core';
-
+<script generics="TContext = unknown" lang="ts">
     import { RenderComponentConfig, RenderSnippetConfig } from '@utilities/render-helper';
 
-    type Props = {
-        /** The cell or header field of the current cell's column definition. */
-        content?: TContext extends HeaderContext<TData, TValue>
-            ? ColumnDefTemplate<HeaderContext<TData, TValue>>
-            : TContext extends CellContext<TData, TValue>
-              ? ColumnDefTemplate<CellContext<TData, TValue>>
-              : never;
-        /** The result of the `getContext()` function of the header or cell */
-        context: TContext | any;
-    };
+    interface Props {
+        /** Static text, or a function of `context` returning text, a `RenderComponentConfig`, or a `RenderSnippetConfig`. */
+        content?: string | ((context: TContext) => unknown);
+        /** The value handed to the content function. Only needed when `content` is a function. */
+        context?: TContext;
+    }
 
-    let { content, context }: Props = $props();
+    let { content, context = {} as TContext }: Props = $props();
 </script>
 
 {#if typeof content === 'string'}
     <span>{content}</span>
 {:else if content instanceof Function}
-    <!-- It's unlikely that a CellContext will be passed to a Header -->
-    <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
-    {@const result = content(context as any)}
+    {@const result = content(context)}
+
     {#if result instanceof RenderComponentConfig}
         {@const { component: Component, props } = result}
+
         <Component {...props} />
     {:else if result instanceof RenderSnippetConfig}
         {@const { snippet, params } = result}
+
         {@render snippet(params)}
     {:else}
         <span>{result}</span>
