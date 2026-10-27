@@ -53,6 +53,7 @@
         class={inputClass}
         defaultClass="h-full w-full bg-transparent text-base outline-none md:text-sm"
         {disabled}
+        inputmode="decimal"
         maskPreset="currency"
         {required}
         bind:value

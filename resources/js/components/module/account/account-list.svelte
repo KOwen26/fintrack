@@ -37,7 +37,7 @@
 {:else}
     {#if !hideActions}
         <ToggleableGrid class="mb-3" bind:mode>
-            <h6 class="text-sm font-medium text-base-content/60">
+            <h6 class="text-sm font-medium">
                 {accounts.length} Account{accounts.length !== 1 ? 's' : ''}
             </h6>
         </ToggleableGrid>

@@ -206,7 +206,7 @@
     {#if !hideFooter}
         <!-- Detail badges row — white background -->
         <div
-            class="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-base-300 bg-card px-5 py-3 text-xs">
+            class="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-border bg-card px-5 py-3 text-xs">
             <!-- {#if account?.account_number}
                 <span class="flex items-center gap-1">
                     <i class="iconify size-4 text-foreground/70 solar--user-id-line-duotone"></i>

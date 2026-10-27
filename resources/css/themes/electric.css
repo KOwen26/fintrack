@@ -45,6 +45,6 @@
 
     /* Structure */
     --border: oklch(0.9 0.003 288.5);
-    --input: var(--border);
+    --input: color-mix(in oklab, var(--muted-foreground) 40%, transparent);
     --ring: var(--primary);
 }

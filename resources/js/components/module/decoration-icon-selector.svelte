@@ -84,7 +84,7 @@
                 </Popover>
             {:else}
                 <button
-                    class="flex size-10 items-center justify-center rounded-md border border-dashed border-input/50 text-xs font-semibold text-foreground/70 transition hover:bg-card"
+                    class="flex size-10 items-center justify-center rounded-md border border-dashed border-input text-xs font-semibold text-foreground/70 transition hover:bg-card"
                     aria-label="See more"
                     onclick={() => (open = true)}
                     type="button">
@@ -106,8 +106,8 @@
 {#snippet item(icon)}
     <button
         class={[
-            'flex size-10 items-center justify-center rounded-md border border-input/50 text-foreground transition hover:scale-105 ',
-            value === icon.slug ? 'border-transparent bg-primary/20 ring-[1.5px] ring-primary' : '',
+            'flex size-10 items-center justify-center rounded-md border border-input text-foreground transition hover:scale-105 ',
+            value === icon.slug ? 'border-transparent bg-primary/20 ring-1 ring-primary' : '',
         ]}
         aria-label={icon.label}
         aria-pressed={value === icon.slug}

@@ -85,7 +85,7 @@
                 </Popover>
             {:else}
                 <button
-                    class="flex size-10 items-center justify-center rounded-full border border-dashed border-input/50 text-xs font-semibold text-foreground/70 transition hover:bg-card"
+                    class="flex size-10 items-center justify-center rounded-full border border-dashed border-input text-xs font-semibold text-foreground/70 transition hover:bg-card"
                     aria-label="See more"
                     onclick={() => (open = true)}
                     type="button">
@@ -109,7 +109,7 @@
         style="background-color: {color.oklch};"
         class={[
             'size-10 rounded-full transition hover:scale-105',
-            value === color.slug ? 'ring-2 ring-primary ring-offset-2' : '',
+            value === color.slug ? 'ring-1 ring-primary ring-offset-2' : '',
         ]}
         aria-label={color.label}
         aria-pressed={value === color.slug}
