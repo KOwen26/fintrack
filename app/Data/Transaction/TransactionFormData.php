@@ -5,6 +5,7 @@ namespace App\Data\Transaction;
 use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Models\Transaction;
+use App\Models\TransactionTemplate;
 use App\Models\Transfer;
 use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
@@ -95,6 +96,34 @@ class TransactionFormData extends Data
             category_id: null,
             fee_amount: $transfer->fee_amount !== null ? (float) $transfer->fee_amount : null,
             transfer_id: $transfer->id,
+        );
+    }
+
+    /**
+     * Fold a transaction template into create-form defaults. Pruned input
+     * expected (TransactionTemplateService::getTemplateById) so unselectable
+     * accounts never reach the form. The context account — an explicit
+     * account_id query param — wins over the template's default; a
+     * destination equal to the resolved source is dropped rather than
+     * tripping the form's different-account rule.
+     */
+    public static function fromTemplate(TransactionTemplate $template, ?int $contextAccountId = null): self
+    {
+        $accountId = $contextAccountId ?? $template->account_id;
+
+        return new self(
+            id: null,
+            type: $template->type,
+            amount: (float) $template->amount,
+            transaction_date: now(),
+            description: $template->description,
+            account_id: $accountId,
+            destination_account_id: $template->type === TransactionType::Transfer && $template->destination_account_id !== $accountId
+                ? $template->destination_account_id
+                : null,
+            category_id: $template->category_id,
+            fee_amount: $template->fee_amount !== null ? (float) $template->fee_amount : null,
+            transfer_id: null,
         );
     }
 }

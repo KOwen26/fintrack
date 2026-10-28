@@ -17,6 +17,7 @@ use App\Services\AccountService;
 use App\Services\CategoryService;
 use App\Services\TransactionListService;
 use App\Services\TransactionService;
+use App\Services\TransactionTemplateService;
 use App\Services\TransferService;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
@@ -98,9 +99,14 @@ final class TransactionController extends Controller
     {
         $this->authorize('create', Transaction::class);
 
+        $template = TransactionTemplateService::getTemplateById($this->user, $request->integer('template'));
+
         return Inertia::render('app/transaction/create', [
-            'transaction' => TransactionFormData::defaultFromRequest($request),
+            'transaction' => $template !== null
+                ? TransactionFormData::fromTemplate($template, $request->integer('account_id') ?: null)
+                : TransactionFormData::defaultFromRequest($request),
             'accounts' => $this->accountService->getAccountsByUser($this->user),
+            'templates' => TransactionTemplateService::getQuickAccessTemplates($this->user),
         ]);
     }
 
