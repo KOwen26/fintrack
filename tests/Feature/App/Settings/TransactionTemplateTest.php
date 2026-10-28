@@ -30,7 +30,6 @@ test('renders the empty template form', function (): void {
             ->component('app/settings/transaction-templates/form')
             ->where('template', null)
             ->has('accounts')
-            ->has('categories')
         );
 });
 
@@ -44,7 +43,6 @@ test('renders the edit form with the template', function (): void {
             ->component('app/settings/transaction-templates/form')
             ->where('template.id', $template->id)
             ->has('accounts')
-            ->has('categories')
         );
 });
 

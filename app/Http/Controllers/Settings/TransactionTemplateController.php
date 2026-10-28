@@ -38,7 +38,6 @@ final class TransactionTemplateController extends Controller
         return Inertia::render('app/settings/transaction-templates/form', [
             'template' => null,
             'accounts' => AccountService::getAccountsByUser($this->user),
-            'categories' => CategoryService::getCategories(),
         ]);
     }
 
@@ -66,7 +65,6 @@ final class TransactionTemplateController extends Controller
         return Inertia::render('app/settings/transaction-templates/form', [
             'template' => $template,
             'accounts' => AccountService::getAccountsByUser($this->user),
-            'categories' => CategoryService::getCategories(),
         ]);
     }
 

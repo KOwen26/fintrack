@@ -21,6 +21,9 @@
 - The settings form is a **plain form**: no hero, no type tabs, standard `Select` inputs; `template-form.svelte` is the form part only and exposes `form` via `bind:form`; the page hosts the `Card` and the `FormAction` inside a `BottomActionBar`. Delete lives on the show page only.
 - `template.schema.ts` is display-only — no `form()` factories.
 - `template-select` chips never apply client-side: they visit `?template=` (+ current `account_id` as context).
+- Post-execution: `template-select` was restructured into a **variant-based select** (the category-select pattern) — `inline` chip row / `combobox` (searchable; the create form's default, rendered as a "Templates" field gated to the active type) / `drawer` (trigger + bottom-sheet list). Offered templates filter by the `activeType` prop, account-matching first; picking navigates server-side and the picker holds no persistent selection.
+- Serialized relation keys are **snake_case** (Laravel `$snakeAttributes`): read `destination_account` from props, never `destinationAccount` — this matches the generated Wayfinder types (compare `Transfer`'s `source_transaction?`).
+- Post-execution corrections (verified against real siblings): the plain `Select` atom takes `options={…}` (not `items`), and category props were removed from the form chain — `CategorySelect` self-serves from the shared `static.categories` page prop (controller create/edit pass only `template` + `accounts`). Decoration icon/color default to random active values on create (`getRandomDecorationIcon().slug` / `getRandomDecorationColor().slug` from `@data/decorations`), preserved from the template on edit.
 
 ## File Structure
 
@@ -47,7 +50,7 @@
 
 No JS test suite exists in this project (quality tooling is Pest/Pint/Rector/ESLint/Prettier) — no test step for frontend tasks, matching house convention.
 
-- [ ] **Step 1: Write `resources/js/schema/template.schema.ts`**
+- [x] **Step 1: Write `resources/js/schema/template.schema.ts`**
 
 ```ts
 import type { DataSchema } from '@lib/data-composer';
@@ -73,7 +76,7 @@ export const templateSubtitle = (
     categories: App.Data.CategoryData[]
 ): string => {
     if (template.type === TransactionType.Transfer) {
-        return `${labelForType(template.type)} → ${template.destinationAccount?.name ?? 'Pick destination'}`;
+        return `${labelForType(template.type)} → ${template.destination_account?.name ?? 'Pick destination'}`;
     }
 
     const category = categories.find((c) => c.id === template.category_id)?.name ?? template.category_id ?? '—';
@@ -97,7 +100,7 @@ export const templateSchema: DataSchema<App.Models.TransactionTemplate> = {
     destination_account_id: {
         label: 'Destination Account',
         show: (data) => data.type === TransactionType.Transfer,
-        value: (data) => data.destinationAccount?.name ?? '—',
+        value: (data) => data.destination_account?.name ?? '—',
     },
     fee_amount: {
         label: 'Transfer Fee',
@@ -110,7 +113,7 @@ export const templateSchema: DataSchema<App.Models.TransactionTemplate> = {
 
 (If `CurrencyAmount` ends up unused in this file, drop that import — it is used by `template-list.svelte` below.)
 
-- [ ] **Step 2: Add the settings menu entry**
+- [x] **Step 2: Add the settings menu entry**
 
 In `resources/js/data/menu.ts`, extend the `settingsMenu.menus` object (after `appearance`) and add the named-route import alongside the existing ones:
 
@@ -124,12 +127,12 @@ import transactionTemplates from '@wayfinder/routes/transaction-templates';
             url: transactionTemplates.index().url,
             route: 'transaction-templates.index',
             active: 'transaction-templates.*',
-            icon: 'iconify solar--repeat-line-duotone',
+            icon: 'iconify solar--notes-line-duotone',
             type: 'menu',
         },
 ```
 
-- [ ] **Step 3: Write `resources/js/components/module/template/template-list.svelte`**
+- [x] **Step 3: Write `resources/js/components/module/template/template-list.svelte`**
 
 ```svelte
 <script lang="ts">
@@ -138,6 +141,7 @@ import transactionTemplates from '@wayfinder/routes/transaction-templates';
     import TransactionTemplateController from '@wayfinder/App/Http/Controllers/Settings/TransactionTemplateController';
 
     import CurrencyAmount from '@components/data/currency-amount.svelte';
+    import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
     import DecorationBadge from '@components/module/decoration-badge.svelte';
     import { templateSubtitle } from '@schema/template.schema';
 
@@ -152,6 +156,13 @@ import transactionTemplates from '@wayfinder/routes/transaction-templates';
     } = $props();
 </script>
 
+{#if templates.length === 0}
+    <EmptyItemPlaceholder
+        ctaLabel="Create your first template"
+        ctaUrl={TransactionTemplateController.create.url()}
+        icon="solar--notes-line-duotone"
+        label="No templates yet" />
+{:else}
 <ul class="space-y-1">
     {#each templates as template (template.id)}
         <li>
@@ -177,9 +188,10 @@ import transactionTemplates from '@wayfinder/routes/transaction-templates';
         </li>
     {/each}
 </ul>
+{/if}
 ```
 
-- [ ] **Step 4: Write `resources/js/pages/app/settings/transaction-templates/index.svelte`**
+- [x] **Step 4: Write `resources/js/pages/app/settings/transaction-templates/index.svelte`**
 
 ```svelte
 <script lang="ts">
@@ -215,13 +227,7 @@ import transactionTemplates from '@wayfinder/routes/transaction-templates';
     </div>
 
     <div class="mt-4">
-        {#if templates.length}
-            <TemplateList {categories} {templates} />
-        {:else}
-            <p class="px-3 py-8 text-center text-sm text-base-content/60">
-                No templates yet — create one to prefill transactions in one tap.
-            </p>
-        {/if}
+        <TemplateList {categories} {templates} />
     </div>
 </MobilePageLayout>
 ```
@@ -237,13 +243,13 @@ import transactionTemplates from '@wayfinder/routes/transaction-templates';
 - Create: `resources/js/pages/app/settings/transaction-templates/form.svelte`
 
 **Interfaces:**
-- Consumes: component — `DecorationIconSelector` / `DecorationColorSelector` (`value` bindable slug string), the plain `Select` atom (verify its exact path and prop names against how `FormGenerator` renders `type: 'select'`), `CurrencyInput`, `Field`, `Form`, `Input`, `Textarea`; page — `Card`, `FormAction` (`form`, `formId`, `labelCancel`, `labelSubmit`, `onCancel`, `cancelClass`, `submitClass`), `BottomActionBar`.
+- Consumes: component — `DecorationIconSelector` / `DecorationColorSelector` (`value` bindable slug string), the plain `Select` atom (verify its exact path and prop names against how `FormGenerator` renders `type: 'select'`), `CurrencyInput`, `Field`, `Form`, `Input`, `Textarea`, `Card` (`title`, `description`); page — `FormAction` (`form`, `formId`, `labelCancel`, `labelSubmit`, `onCancel`, `cancelClass`, `submitClass`), `BottomActionBar`.
 
-    This is deliberately a **plain settings form**: no hero, no type tabs — standard inputs, conditional transfer fields via `{#if}`. The component is the **form part only** (the `<Form>` with its fields) and exposes its `useForm` instance via `bind:form`; the page hosts the `Card` wrapper and the `FormAction` inside a `BottomActionBar` (the account-form pattern). Delete lives on the show page only, per spec — the form has no delete. `template.schema.ts` stays display-only; no `form()` factories.
+    This is deliberately a **plain settings form**: no hero, no type tabs — standard inputs, conditional transfer fields via `{#if}`. The domain split is explicit in the layout: two titled Cards — **Template** (name, icon, color — the template's own identity) and **Transaction Defaults** (type, category or destination + fee, amount, default source account, note — the prefilled values). The component renders the `<Form>` including both section Cards and exposes its `useForm` instance via `bind:form`; the page hosts the layout and the `FormAction` inside a `BottomActionBar` (the account-form pattern). Delete lives on the show page only, per spec — the form has no delete. `template.schema.ts` stays display-only; no `form()` factories.
 
 - Produces: the create/edit form used by both routes; `form.svelte` page props `{ template?: App.Models.TransactionTemplate | null; accounts: App.Models.Account[]; categories: App.Data.CategoryData[] }`.
 
-- [ ] **Step 1: Write `resources/js/components/module/template/template-form.svelte`**
+- [x] **Step 1: Write `resources/js/components/module/template/template-form.svelte`**
 
 ```svelte
 <script lang="ts">
@@ -261,6 +267,7 @@ import transactionTemplates from '@wayfinder/routes/transaction-templates';
     import Input from '@components/ui/forms/input.svelte';
     import Select from '@components/ui/forms/select.svelte';
     import Textarea from '@components/ui/forms/textarea.svelte';
+    import Card from '@components/ui/card.svelte';
 
     interface Props {
         template?: App.Models.TransactionTemplate | null;
@@ -354,58 +361,68 @@ import transactionTemplates from '@wayfinder/routes/transaction-templates';
 
 </script>
 
-<Form class="space-y-4" id="transaction-template-form" {...action} {form}>
-        <Field error={form.errors.name} required title="Name">
-            <Input placeholder="e.g. Netflix" bind:value={form.name} />
-        </Field>
+<Form class="space-y-6" id="transaction-template-form" {...action} {form}>
+        <Card description="How this template appears in your list." title="Template">
+            <div class="space-y-4">
+                <Field error={form.errors.name} required title="Name">
+                    <Input placeholder="e.g. Netflix" bind:value={form.name} />
+                </Field>
 
-        <Field error={form.errors.type} required title="Type">
-            <Select items={typeOptions} bind:value={form.type} />
-        </Field>
+                <div class="grid grid-cols-2 gap-4">
+                    <Field title="Icon">
+                        <DecorationIconSelector rows={1} bind:value={form.decorations.icon} />
+                    </Field>
 
-        {#if !isTransfer}
-            <Field error={form.errors.category_id} required title="Category">
-                <Select items={categoryOptions} bind:value={form.category_id} />
-            </Field>
-        {:else}
-            <Field error={form.errors.destination_account_id} required title="Destination Account">
-                <Select items={accountOptions} bind:value={form.destination_account_id} />
-            </Field>
+                    <Field title="Color">
+                        <DecorationColorSelector rows={1} bind:value={form.decorations.color} />
+                    </Field>
+                </div>
+            </div>
+        </Card>
 
-            <Field error={form.errors.fee_amount} title="Transfer Fee (optional)">
-                <CurrencyInput inputmode="numeric" placeholder="0" bind:value={form.fee_amount} />
-            </Field>
-        {/if}
+        <Card
+            description="Values prefilled when this template is applied."
+            title="Transaction Defaults">
+            <div class="space-y-4">
+                <Field error={form.errors.type} required title="Type">
+                    <Select items={typeOptions} bind:value={form.type} />
+                </Field>
 
-        <Field error={form.errors.amount} required title="Amount">
-            <CurrencyInput inputmode="numeric" placeholder="0" bind:value={form.amount} />
-        </Field>
+                {#if !isTransfer}
+                    <Field error={form.errors.category_id} required title="Category">
+                        <Select items={categoryOptions} bind:value={form.category_id} />
+                    </Field>
+                {:else}
+                    <Field error={form.errors.destination_account_id} required title="Destination Account">
+                        <Select items={accountOptions} bind:value={form.destination_account_id} />
+                    </Field>
 
-        <Field error={form.errors.account_id} title="Default Source Account (optional)">
-            <Select
-                items={[{ value: '', label: 'No default account' }, ...accountOptions]}
-                bind:value={form.account_id} />
-        </Field>
+                    <Field error={form.errors.fee_amount} title="Transfer Fee (optional)">
+                        <CurrencyInput inputmode="numeric" placeholder="0" bind:value={form.fee_amount} />
+                    </Field>
+                {/if}
 
-        <div class="grid grid-cols-2 gap-4">
-            <Field title="Icon">
-                <DecorationIconSelector rows={1} bind:value={form.decorations.icon} />
-            </Field>
+                <Field error={form.errors.amount} required title="Amount">
+                    <CurrencyInput inputmode="numeric" placeholder="0" bind:value={form.amount} />
+                </Field>
 
-            <Field title="Color">
-                <DecorationColorSelector rows={1} bind:value={form.decorations.color} />
-            </Field>
-        </div>
+                <Field error={form.errors.account_id} title="Default Source Account (optional)">
+                    <Select
+                        items={[{ value: '', label: 'No default account' }, ...accountOptions]}
+                        bind:value={form.account_id} />
+                </Field>
 
-        <Field error={form.errors.description} title="Note">
-            <Textarea class="min-h-20" placeholder="Optional note or memo" bind:value={form.description} />
-        </Field>
+                <Field error={form.errors.description} title="Note">
+                    <Textarea class="min-h-20" placeholder="Optional note or memo" bind:value={form.description} />
+                </Field>
+            </div>
+        </Card>
     </Form>
 ```
 
 If the `Select` atom's API differs (e.g. `items` vs `options`, or `onValueChange` instead of `bind:value`), follow exactly how `form-generator.svelte` renders its `type: 'select'` fields — do not invent props.
 
-- [ ] **Step 2: Write `resources/js/pages/app/settings/transaction-templates/form.svelte`**
+- [x] **Step 2: Write `resources/js/pages/app/settings/transaction-templates/form.svelte`**
 
 ```svelte
 <script lang="ts">
@@ -417,7 +434,6 @@ If the `Select` atom's API differs (e.g. `items` vs `options`, or `onValueChange
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import TemplateForm from '@components/module/template/template-form.svelte';
     import BottomActionBar from '@components/navigation/bottom-action-bar.svelte';
-    import Card from '@components/ui/card.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';
 
     let {
@@ -467,9 +483,7 @@ If the `Select` atom's API differs (e.g. `items` vs `options`, or `onValueChange
 
 <!-- variant="full" is the plain settings chrome (profile/security pattern): no hero. -->
 <MobilePageLayout variant="full">
-    <Card>
-        <TemplateForm {accounts} bind:form {categories} {template} />
-    </Card>
+    <TemplateForm {accounts} bind:form {categories} {template} />
 </MobilePageLayout>
 
 {#if formActionProps}
@@ -492,7 +506,7 @@ If the `Select` atom's API differs (e.g. `items` vs `options`, or `onValueChange
 - Consumes: `templateSchema` (Task 1), `DataComposer.from(schema).toDataDisplay(data)`, `DataList` (`@components/data/data-list.svelte` - verify the exact filename against siblings; `account-detail.svelte` imports it), `ConfirmationModal`, `Button`.
 - Produces: the show page used by `transaction-templates.show`.
 
-- [ ] **Step 1: Write `resources/js/components/module/template/template-detail.svelte`**
+- [x] **Step 1: Write `resources/js/components/module/template/template-detail.svelte`**
 
 ```svelte
 <script lang="ts">
@@ -513,7 +527,7 @@ If the `Select` atom's API differs (e.g. `items` vs `options`, or `onValueChange
 
 (If `account-detail.svelte` resolves account names differently — e.g. it consumes an `accounts` prop — follow its exact pattern for the DataList composition; the schema already reads `data.account?.name` from the eager-loaded relation, so no `accounts` prop should be needed here.)
 
-- [ ] **Step 2: Write `resources/js/pages/app/settings/transaction-templates/show.svelte`**
+- [x] **Step 2: Write `resources/js/pages/app/settings/transaction-templates/show.svelte`**
 
 ```svelte
 <script lang="ts">
@@ -589,7 +603,7 @@ If the `Select` atom's API differs (e.g. `items` vs `options`, or `onValueChange
 - Consumes: `templates` prop (backend Task 4's `getQuickAccessTemplates`), `TransactionController.create.url({ query })`, `DecorationBadge`, `CurrencyAmount`.
 - Produces: the complete quick-access surface; nothing downstream.
 
-- [ ] **Step 1: Write `resources/js/components/module/template/template-select.svelte`**
+- [x] **Step 1: Write `resources/js/components/module/template/template-select.svelte`**
 
 ```svelte
 <script lang="ts">
@@ -651,7 +665,7 @@ If the `Select` atom's API differs (e.g. `items` vs `options`, or `onValueChange
 </div>
 ```
 
-- [ ] **Step 2: Forward the prop in `resources/js/pages/app/transaction/create.svelte`**
+- [x] **Step 2: Forward the prop in `resources/js/pages/app/transaction/create.svelte`**
 
 ```svelte
 <script lang="ts">
@@ -679,7 +693,7 @@ If the `Select` atom's API differs (e.g. `items` vs `options`, or `onValueChange
 <TransactionForm {accounts} {templates} {transaction} />
 ```
 
-- [ ] **Step 3: Render the select in `resources/js/components/module/transaction/transaction-form.svelte`**
+- [x] **Step 3: Render the select in `resources/js/components/module/transaction/transaction-form.svelte`**
 
 Add to the imports: `import TemplateSelect from '@components/module/template/template-select.svelte';`
 
@@ -704,7 +718,7 @@ Render directly under the type `Tabs` block, still inside the `<Form>`, gated to
         {/if}
 ```
 
-- [ ] **Step 4: Reword the README roadmap**
+- [x] **Step 4: Reword the README roadmap**
 
 In `README.md` → `## Roadmap` → `### Current focus`: delete the "Transaction Presets Feature" block (its three bullets) and leave "Transaction Tagging Feature" as the remaining current-focus item. In `### Later`, reword the scheduled-transaction entry to template vocabulary:
 

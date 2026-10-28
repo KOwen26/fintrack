@@ -11,6 +11,7 @@
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountSelect from '@components/module/account/account-select.svelte';
     import CategorySelect from '@components/module/category/category-select.svelte';
+    import TemplateSelect from '@components/module/template/template-select.svelte';
     import BottomActionBar from '@components/navigation/bottom-action-bar.svelte';
     import TabsList from '@components/ui/atoms/tabs/tabs-list.svelte';
     import TabsTrigger from '@components/ui/atoms/tabs/tabs-trigger.svelte';
@@ -35,9 +36,16 @@
         accounts: App.Models.Account[];
         /** Quick amounts rendered as chips under the hero input. */
         amountPresets?: number[];
+        /** Quick-access templates — create surface only. */
+        templates?: App.Models.TransactionTemplate[];
     }
 
-    let { transaction, accounts, amountPresets = DEFAULT_AMOUNT_PRESETS }: Props = $props();
+    let {
+        transaction,
+        accounts,
+        templates = [],
+        amountPresets = DEFAULT_AMOUNT_PRESETS,
+    }: Props = $props();
 
     const isEdit = $derived(transaction.id !== null);
 
@@ -336,6 +344,16 @@
                     placeholder={isTransfer ? 'e.g. Monthly allowance' : 'e.g. Warteg Bu Sri'}
                     bind:value={form.description} />
             </Field>
+
+            {#if !isEdit && templates.some((template) => template.type === activeType)}
+                <Field title="Templates">
+                    <TemplateSelect
+                        {activeType}
+                        selectedAccountId={form.account_id}
+                        {templates}
+                        variant="inline" />
+                </Field>
+            {/if}
         </div>
     </Form>
 </MobilePageLayout>
