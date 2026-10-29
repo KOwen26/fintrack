@@ -1,16 +1,17 @@
 <script lang="ts">
-    import { setLayoutProps, useForm } from '@inertiajs/svelte';
+    import { useForm } from '@inertiajs/svelte';
+    import { pageLayoutProps } from '@lib/navigation-helper.svelte';
     import security from '@wayfinder/routes/security';
     import settings from '@wayfinder/routes/settings';
 
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
-    import Card from '@components/ui/card.svelte';
+    import Card from '@components/ui/cards/card.svelte';
     import Field from '@components/ui/forms/field.svelte';
     import PasswordInput from '@components/ui/forms/password-input.svelte';
     import SubmitButton from '@components/ui/forms/submit-button.svelte';
     import Separator from '@components/ui/separator.svelte';
 
-    setLayoutProps({ title: 'Security', backUrl: settings.index.url() });
+    pageLayoutProps({ title: 'Security', backUrl: settings.index.url() });
 
     const form = useForm({
         current_password: '',

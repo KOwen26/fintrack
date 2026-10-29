@@ -68,9 +68,8 @@
 
 <Link
     class={cn(
-        'flex items-center gap-2 p-2 transition-colors duration-100  hover:bg-card',
+        'flex items-center gap-2 p-2 transition-colors duration-100 hover:bg-muted/50',
         '-mx-2 rounded-md',
-        // 'border-b border-border last:border-b-0',
         _class
     )}
     href={TransactionController.show.url(transaction)}>
@@ -85,9 +84,9 @@
     {/if}
 
     <div class="min-w-0 flex-1">
-        <div class="flex flex-row items-center justify-between text-sm">
+        <div class="flex flex-row items-center justify-between gap-2 text-sm">
             <div class="truncate font-heading font-medium text-foreground">
-                {transaction.description}
+                {transaction.description || transaction?.category?.name}
             </div>
 
             <CurrencyAmount
@@ -106,7 +105,7 @@
                 {/if}
             </span>
 
-            {#if transaction.type !== 'transfer'}
+            {#if transaction.type !== 'transfer' && transaction.description?.length}
                 <span class="truncate">{transaction?.category?.name}</span>
             {/if}
         </div>

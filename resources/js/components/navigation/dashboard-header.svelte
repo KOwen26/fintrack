@@ -8,7 +8,7 @@
     import Separator from '@components/ui/separator.svelte';
 
     interface Props {
-        backUrl?: string;
+        backUrl?: string | (() => void);
         breadcrumbs?: BreadcrumbItem[];
         headerContext?: HeaderContext;
     }
@@ -25,7 +25,13 @@
         </div>
 
         {#if backUrl}
-            <Button color="secondary" href={backUrl} size="icon" variant="ghost">
+            <!-- A plain URL navigates to that URL; a function is the page's own back handler. -->
+            <Button
+                color="secondary"
+                size="icon"
+                variant="ghost"
+                href={typeof backUrl === 'string' ? backUrl : undefined}
+                onclick={typeof backUrl === 'function' ? backUrl : undefined}>
                 <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
             </Button>
         {/if}

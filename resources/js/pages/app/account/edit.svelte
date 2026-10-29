@@ -1,7 +1,8 @@
 <script lang="ts">
     import type { App } from '@wayfinder/types';
 
-    import { router, setLayoutProps } from '@inertiajs/svelte';
+    import { router } from '@inertiajs/svelte';
+    import { pageLayoutProps } from '@lib/navigation-helper.svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
 
     import AccountForm from '@components/module/account/account-form.svelte';
@@ -13,7 +14,7 @@
     let { account, providers }: { account: App.Models.Account; providers: App.Models.Provider[] } =
         $props();
 
-    setLayoutProps({
+    pageLayoutProps({
         title: 'Edit Account',
         backUrl: AccountController.show.url({ account: account.id }),
     });

@@ -2,7 +2,7 @@
     import type { CategoryData, TransactionListData } from '@type/generated';
     import type { App } from '@wayfinder/types';
 
-    import { setLayoutProps } from '@inertiajs/svelte';
+    import { pageLayoutProps } from '@lib/navigation-helper.svelte';
     import DashboardController from '@wayfinder/App/Http/Controllers/DashboardController';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
@@ -40,7 +40,7 @@
         engine: 'client',
     });
 
-    setLayoutProps({
+    pageLayoutProps({
         backUrl: DashboardController.index.url(),
         title: 'Transactions',
         mobileHeaderClass: 'sticky top-0 z-30 bg-background',

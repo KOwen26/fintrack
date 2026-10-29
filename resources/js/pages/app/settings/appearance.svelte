@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { setLayoutProps } from '@inertiajs/svelte';
+    import { pageLayoutProps } from '@lib/navigation-helper.svelte';
     import settings from '@wayfinder/routes/settings';
 
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import ThemeSelector from '@components/ui/theme-selector.svelte';
 
-    setLayoutProps({ title: 'Appearance', backUrl: settings.index.url() });
+    pageLayoutProps({ title: 'Appearance', backUrl: settings.index.url() });
 </script>
 
 <MobilePageLayout variant="full">

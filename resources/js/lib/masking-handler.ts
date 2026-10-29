@@ -65,7 +65,7 @@ export default class MaskingHelper {
             phone: ['+', '(', ')', '-'],
             'mask-all': [],
         };
-        const whitelist = whitelist_presets[preset] || whitelist_presets.default;
+        const whitelist = preset ? whitelist_presets[preset] : whitelist_presets.default;
 
         let words = value.split(preset === 'email' ? '@' : ' ');
         if (preset === 'email') {

@@ -8,7 +8,7 @@
 
     import { cn } from '@utilities/shadcn';
 
-    import Card from '@components/ui/card.svelte';
+    import Card from '@components/ui/cards/card.svelte';
 
     interface ResponsiveCard extends ComponentProps<typeof Card> {
         onMobileStyle?: 'card' | 'none';

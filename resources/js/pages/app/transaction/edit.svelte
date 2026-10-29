@@ -2,7 +2,8 @@
     import type { Data } from '@type/type';
     import type { App } from '@wayfinder/types';
 
-    import { router, setLayoutProps } from '@inertiajs/svelte';
+    import { router } from '@inertiajs/svelte';
+    import { pageLayoutProps } from '@lib/navigation-helper.svelte';
     import TransactionType from '@wayfinder/App/Enums/TransactionType';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
 
@@ -38,7 +39,7 @@
 
     const backUrl = TransactionController.index.url();
 
-    setLayoutProps({
+    pageLayoutProps({
         title: isTransfer ? 'Edit Transfer' : 'Edit Transaction',
         backUrl,
     });

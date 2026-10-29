@@ -6,7 +6,7 @@
     import { SvelteDate } from 'svelte/reactivity';
 
     import Button from '@components/ui/button.svelte';
-    import Card from '@components/ui/card.svelte';
+    import Card from '@components/ui/cards/card.svelte';
     import CalculatorInput from '@components/ui/forms/calculator-input.svelte';
     import CheckboxGroup from '@components/ui/forms/checkbox-group.svelte';
     import Checkbox from '@components/ui/forms/checkbox.svelte';
