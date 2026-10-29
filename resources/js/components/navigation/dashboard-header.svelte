@@ -2,18 +2,28 @@
     import type { BreadcrumbItem } from '@components/ui/breadcrumbs.svelte';
     import type { HeaderContext } from '@type/header-context';
 
+    import { backOrRedirectTo } from '@lib/navigation-helper.svelte';
+
     import * as Sidebar from '@components/ui/atoms/sidebar';
     import Breadcrumbs from '@components/ui/breadcrumbs.svelte';
     import Button from '@components/ui/button.svelte';
     import Separator from '@components/ui/separator.svelte';
 
     interface Props {
-        backUrl?: string;
+        backUrl?: string | (() => void);
         breadcrumbs?: BreadcrumbItem[];
         headerContext?: HeaderContext;
     }
 
     let { backUrl = undefined, breadcrumbs = [], headerContext = undefined }: Props = $props();
+
+    // A function backUrl is the page's own handler; a plain URL gets the shared
+    // smart-back behavior (history when an in-app page sits behind).
+    const onBack = $derived.by(() => {
+        if (backUrl === undefined) return undefined;
+
+        return typeof backUrl === 'function' ? backUrl : backOrRedirectTo(backUrl);
+    });
 </script>
 
 <header
@@ -24,8 +34,8 @@
             <Separator orientation="vertical" />
         </div>
 
-        {#if backUrl}
-            <Button color="secondary" href={backUrl} size="icon" variant="ghost">
+        {#if onBack}
+            <Button color="secondary" onclick={() => onBack?.()} size="icon" variant="ghost">
                 <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
             </Button>
         {/if}

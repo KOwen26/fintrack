@@ -3,6 +3,7 @@ import './bootstrap';
 import type { ResolvedComponent } from '@inertiajs/svelte';
 
 import { createInertiaApp } from '@inertiajs/svelte';
+import { initializeBackNavigation } from '@lib/navigation-helper.svelte';
 import { initializeNamedTheme } from '@lib/theme-handler.svelte';
 import { initializeFlashToast } from '@lib/toast-handler.svelte';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -40,5 +41,7 @@ createInertiaApp({
 initializeNamedTheme();
 
 initializeFlashToast();
+
+initializeBackNavigation();
 
 // initializeAppearance();

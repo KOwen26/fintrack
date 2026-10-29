@@ -38,10 +38,10 @@
 <HeaderContext>
     {#snippet actions()}
         <Button
-            size="icon"
             aria-label={isTransferRow ? 'Delete transfer' : 'Delete transaction'}
             color="error"
             onclick={() => (showDeleteConfirm = true)}
+            size="icon"
             variant="ghost">
             <i class="iconify size-6 solar--trash-bin-2-line-duotone"></i>
         </Button>

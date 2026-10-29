@@ -2,6 +2,7 @@
 
 namespace App\Data\Transaction;
 
+use App\Data\Category\CategoryData;
 use App\Enums\Cashflow;
 use App\Enums\Category;
 use App\Enums\TransactionType;
@@ -42,6 +43,8 @@ class TransactionDetailData extends Data
 
         public ?Category $category_id,
 
+        public ?CategoryData $category,
+
         #[TypeScriptModel(Account::class)]
         public ?Account $account,
 
@@ -67,6 +70,8 @@ class TransactionDetailData extends Data
                 : $transfer->sourceTransaction;
         }
 
+        $category = $transaction->category_id;
+
         return new self(
             id: $transaction->id,
             type: $transaction->type,
@@ -77,7 +82,8 @@ class TransactionDetailData extends Data
             description: $transaction->description,
             account_id: $transaction->account_id,
             destination_account_id: $counterpart?->account_id,
-            category_id: $transaction->category_id,
+            category_id: $category,
+            category: $category !== null ? CategoryData::fromEnum($category) : null,
             account: $transaction->relationLoaded('account') ? $transaction->account : null,
             destination_account: $counterpart?->account,
         );
