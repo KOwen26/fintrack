@@ -30,12 +30,12 @@
 
     const variantClass: Record<DockVariant, { dock: string; content: string }> = {
         flat: {
-            dock: tw`bottom-0 border-t-[0.5px] border-base-content/5 bg-popover rounded-t-2xl`,
+            dock: tw`bottom-0 border-t-[0.5px] border-border/80 bg-popover rounded-t-2xl`,
             content: tw`h-[calc(4rem+env(safe-area-inset-bottom))] px-2 pt-2 pb-[env(safe-area-inset-bottom)]`,
         },
         float: {
             dock: tw`bottom-[env(safe-area-inset-bottom)] p-4 overflow-clip`,
-            content: tw`min-h-16 rounded-xl border border-base-content/10 bg-popover p-3`,
+            content: tw`min-h-16 rounded-xl border border-border/10 bg-popover p-3`,
         },
     };
 

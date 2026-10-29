@@ -107,3 +107,44 @@ test('deleting a transaction invalidates the cached list', function (): void {
     expect(Cache::has($key))->toBeFalse()
         ->and(listedIds($user))->not->toContain($doomed->id);
 });
+
+test('getTransactionsByAccount returns only that account rows regardless of creator', function (): void {
+    $user = User::factory()->create();
+    $account = Account::factory()->create(['owner_id' => $user->id]);
+    $otherAccount = Account::factory()->create(['owner_id' => $user->id]);
+    $otherUser = User::factory()->create();
+
+    Transaction::factory()->create([
+        'account_id' => $account->id,
+        'created_by' => $user->id,
+        'transaction_date' => now(),
+        'description' => 'Own row',
+    ]);
+
+    // Shared-account truth: a row another user created on the account still lists.
+    Transaction::factory()->create([
+        'account_id' => $account->id,
+        'created_by' => $otherUser->id,
+        'transaction_date' => now(),
+        'description' => 'Shared row',
+    ]);
+
+    Transaction::factory()->create([
+        'account_id' => $otherAccount->id,
+        'created_by' => $user->id,
+        'transaction_date' => now(),
+        'description' => 'Other account row',
+    ]);
+
+    $rows = TransactionListService::getTransactionsByAccount($account, listPeriod());
+
+    $descriptions = array_map(
+        fn (array $row): string => $row['description'],
+        $rows,
+    );
+
+    expect($rows)->toHaveCount(2)
+        ->and($descriptions)->toBe(['Own row', 'Shared row'])
+        // The mapper's eager loads must be satisfied — account rows arrive loaded.
+        ->and($rows[0]['account']->name)->toBe($account->name);
+});

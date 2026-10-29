@@ -134,7 +134,7 @@ final class TransactionController extends Controller
     {
         $this->transactionService->create($this->user, TransactionData::from($request->validated()));
 
-        return to_route('transactions.index')->flash('Transaction saved.');
+        return to_route('dashboard')->flash('Transaction saved.');
     }
 
     public function update(SaveTransactionRequest $request, Transaction $transaction): RedirectResponse

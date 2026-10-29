@@ -8,7 +8,7 @@
         WeekdayPatternReportData,
     } from '@type/generated';
 
-    import { setLayoutProps } from '@inertiajs/svelte';
+    import { pageLayoutProps } from '@lib/navigation-helper.svelte';
 
     import CurrencyAmount from '@components/data/currency-amount.svelte';
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
@@ -40,7 +40,7 @@
         categorySpending?: CategorySpendingReportData;
     } = $props();
 
-    setLayoutProps({
+    pageLayoutProps({
         title: 'Statistics',
     });
 </script>

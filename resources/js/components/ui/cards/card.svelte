@@ -4,14 +4,14 @@
     import type { HTMLAttributes } from 'svelte/elements';
 
     import {
+        Card,
         CardAction,
         CardContent,
         CardDescription,
         CardFooter,
         CardHeader,
         CardTitle,
-        Root,
-    } from './atoms/card';
+    } from '../atoms/card';
 
     import { cn } from '@utilities/shadcn';
 
@@ -64,7 +64,7 @@
     }: Props = $props();
 </script>
 
-<Root class={cn('@container/card', _class)} {...wrapperProps}>
+<Card class={_class} {...wrapperProps}>
     {#if title || header || headerAction || description}
         <CardHeader class={headerClass} {...headerProps}>
             {#if typeof title === 'function'}
@@ -102,4 +102,4 @@
             {@render footer()}
         </CardFooter>
     {/if}
-</Root>
+</Card>

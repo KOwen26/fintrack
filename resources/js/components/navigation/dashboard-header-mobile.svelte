@@ -6,7 +6,7 @@
     import Button from '@components/ui/button.svelte';
 
     interface Props {
-        backUrl?: string;
+        backUrl?: string | (() => void);
         headerContext?: HeaderContext;
         title?: string;
         class?: string;
@@ -59,7 +59,13 @@
         </div>
     {:else}
         {#if backUrl}
-            <Button color="primary" href={backUrl} size="icon" variant="ghost">
+            <!-- A plain URL navigates to that URL; a function is the page's own back handler. -->
+            <Button
+                color="primary"
+                size="icon"
+                variant="ghost"
+                href={typeof backUrl === 'string' ? backUrl : undefined}
+                onclick={typeof backUrl === 'function' ? backUrl : undefined}>
                 <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
             </Button>
         {/if}

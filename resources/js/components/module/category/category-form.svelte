@@ -8,7 +8,7 @@
     import { categorySchema } from '@schema/category.schema';
 
     import Button from '@components/ui/button.svelte';
-    import Card from '@components/ui/card.svelte';
+    import Card from '@components/ui/cards/card.svelte';
     import FormAction from '@components/ui/forms/form-action.svelte';
     import FormGenerator from '@components/ui/forms/form-generator.svelte';
 

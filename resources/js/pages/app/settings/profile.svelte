@@ -1,14 +1,15 @@
 <script lang="ts">
     import type { Page } from '@type/inertia';
 
-    import { router, setLayoutProps, useForm } from '@inertiajs/svelte';
+    import { router, useForm } from '@inertiajs/svelte';
+    import { pageLayoutProps } from '@lib/navigation-helper.svelte';
     import authVerification from '@wayfinder/routes/auth/verification';
     import profile from '@wayfinder/routes/profile';
     import settings from '@wayfinder/routes/settings';
 
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import Button from '@components/ui/button.svelte';
-    import Card from '@components/ui/card.svelte';
+    import Card from '@components/ui/cards/card.svelte';
     import Field from '@components/ui/forms/field.svelte';
     import Input from '@components/ui/forms/input.svelte';
     import PasswordInput from '@components/ui/forms/password-input.svelte';
@@ -24,7 +25,7 @@
         auth: Page['auth'];
     } = $props();
 
-    setLayoutProps({ title: 'Profile', backUrl: settings.index.url() });
+    pageLayoutProps({ title: 'Profile', backUrl: settings.index.url() });
 
     const profileForm = useForm({
         name: auth?.user?.name ?? '',

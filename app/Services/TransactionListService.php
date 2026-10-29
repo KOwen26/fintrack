@@ -10,6 +10,7 @@ use App\Enums\Category;
 use App\Enums\DatePeriodPreset;
 use App\Enums\TransactionSort;
 use App\Enums\TransactionType;
+use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Objects\DatePeriod;
@@ -51,6 +52,19 @@ final class TransactionListService
     public static function getTransactions(User $user, DatePeriodPreset $period): array
     {
         $transactions = self::listQuery($user, $period->toPeriod())->get();
+
+        return TransactionListData::collectFromTransactions($transactions);
+    }
+
+    /**
+     * Account variant of getTransactions — one account's rows as list data.
+     * Deliberately not scoped to a creator: an account's list is the
+     * account's truth, including rows other users created on shared
+     * accounts (matching TransactionService::getAccountTransactions).
+     */
+    public static function getTransactionsByAccount(Account $account, DatePeriodPreset $period): array
+    {
+        $transactions = self::accountListQuery($account, $period->toPeriod())->get();
 
         return TransactionListData::collectFromTransactions($transactions);
     }
@@ -240,6 +254,26 @@ final class TransactionListService
     private static function listQuery(User $user, DatePeriod $period): Builder
     {
         return self::loadedQuery($user, $period)
+            ->latest('transaction_date')
+            ->orderByDesc('id');
+    }
+
+    /**
+     * The account view's list query — like listQuery but narrowed to the
+     * account's rows with no creator scope (shared-account truth); transfer
+     * inflow rows stay hidden, an outgoing transfer appears once with its
+     * destination.
+     */
+    private static function accountListQuery(Account $account, DatePeriod $period): Builder
+    {
+        return Transaction::query()
+            ->where('account_id', $account->id)
+            ->whereNot(fn ($query) => $query->where('type', TransactionType::Transfer)->where('flow', Cashflow::Inflow))
+            ->withinPeriod($period)
+            ->with([
+                'account:id,name',
+                'transfer.destinationTransaction.account:id,name',
+            ])
             ->latest('transaction_date')
             ->orderByDesc('id');
     }
