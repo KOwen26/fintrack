@@ -1,8 +1,6 @@
 <script lang="ts">
     import type { HeaderContext } from '@type/header-context';
 
-    import { backOrRedirectTo } from '@lib/navigation-helper.svelte';
-
     import { cn } from '@utilities/shadcn';
 
     import Button from '@components/ui/button.svelte';
@@ -24,14 +22,6 @@
         scrolledClass = undefined,
         scrollThreshold = 12,
     }: Props = $props();
-
-    // A function backUrl is the page's own handler; a plain URL gets the shared
-    // smart-back behavior (history when an in-app page sits behind).
-    const onBack = $derived.by(() => {
-        if (backUrl === undefined) return undefined;
-
-        return typeof backUrl === 'function' ? backUrl : backOrRedirectTo(backUrl);
-    });
 
     /* Scroll-aware styling: the header stays bare (e.g. transparent) until the
        page scrolls past the threshold, then the scrolled classes fade in. */
@@ -68,8 +58,14 @@
             {@render headerContext.render()}
         </div>
     {:else}
-        {#if onBack}
-            <Button color="primary" onclick={() => onBack?.()} size="icon" variant="ghost">
+        {#if backUrl}
+            <!-- A plain URL navigates to that URL; a function is the page's own back handler. -->
+            <Button
+                color="primary"
+                size="icon"
+                variant="ghost"
+                href={typeof backUrl === 'string' ? backUrl : undefined}
+                onclick={typeof backUrl === 'function' ? backUrl : undefined}>
                 <i class="iconify size-6 solar--arrow-left-line-duotone"></i>
             </Button>
         {/if}

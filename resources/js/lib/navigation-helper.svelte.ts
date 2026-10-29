@@ -1,67 +1,4 @@
-import type { BreadcrumbItem } from '@components/ui/breadcrumbs.svelte';
-import type { Menu, MenuGroup, Submenu } from '@data/menu';
-
-import { router } from '@inertiajs/svelte';
-import { useUrlHandler } from '@lib/url-handler.svelte';
-
-/**
- * @deprecated
- *
- *  WARNING: This function is still POC
- *
- * Transforms a specific MenuGroup into a sequence of BreadcrumbItems
- * by finding the active path based on current URL.
- */
-export const transformMenuToBreadcrumbs = (
-    group: MenuGroup,
-    extras: BreadcrumbItem[] = []
-): BreadcrumbItem[] => {
-    const items: BreadcrumbItem[] = [];
-    const { currentUrl, isCurrentUrl, isCurrentOrParentUrl } = useUrlHandler();
-
-    // 1. Root: Add the Group Label (e.g., "Data Siswa")
-    // if (group.name) {
-    //     items.push({
-    //         title: group.name,
-    //         // Labels usually aren't clickable links
-    //     });
-    // }
-
-    // 2. Hierarchical Search: Find the active path
-    const findActivePath = (list: (Menu | Submenu)[]): BreadcrumbItem[] => {
-        for (const item of list) {
-            const isActive =
-                item.url &&
-                (item.active?.endsWith('.*')
-                    ? isCurrentOrParentUrl(item.url, currentUrl)
-                    : isCurrentUrl(item.url, currentUrl));
-            if (isActive) {
-                const breadcrumb: BreadcrumbItem = {
-                    title: item.name,
-                    href: item.route,
-                    // Map icon - Breadcrumbs.svelte handles strings (iconify) and snippets
-                    // icon: typeof (item as Menu).icon === 'string' ? (item as Menu).icon : undefined,
-                };
-                // Recurse into submenus to find deeper active matches
-                if (item.submenu) {
-                    const subPath = findActivePath(item.submenu);
-                    if (subPath.length > 0) {
-                        return [breadcrumb, ...subPath];
-                    }
-                }
-
-                return [breadcrumb];
-            }
-        }
-
-        return [];
-    };
-
-    console.log({ items, active: findActivePath(group.menus), extras });
-
-    // 3. Combine Group + Active Path + Optional Page Extras
-    return [...items, ...findActivePath(group.menus), ...extras];
-};
+import { router, setLayoutProps } from '@inertiajs/svelte';
 
 /**
  * Wires the client-side navigation tracker that `backOrRedirectTo()` reads.
@@ -77,6 +14,10 @@ let previousUrl: string | null = null;
 let currentUrl: string | null = null;
 
 export function initializeBackNavigation(): () => void {
+    if (typeof window === 'undefined') {
+        return () => {};
+    }
+
     currentUrl = window.location.pathname + window.location.search;
 
     return router.on('navigate', (event) => {
@@ -103,10 +44,41 @@ export function backOrRedirectTo(fallbackUrl: Parameters<(typeof router)['visit'
     return () => {
         if (previousUrl === null) {
             router.visit(fallbackUrl);
+
             return;
         }
 
         previousUrl = null;
         history.back();
     };
+}
+
+/**
+ * Page-level `setLayoutProps()` with automatic cleanup on unmount.
+ *
+ * Inertia resets layout props automatically on navigation — except when
+ * `preserveState` is enabled, which includes every form submission
+ * (`router.post/put/patch/delete` default to it). The store also merges
+ * instead of replacing, so props from the outgoing page leak into the next
+ * page after those visits.
+ *
+ * The props are set inside `$effect` (not synchronously at init) and cleared
+ * in its cleanup — the same set-then-clear convention the layout-slot
+ * components (header context, bottom action bar, mobile page layout) follow.
+ * Both halves are required: Svelte's BranchManager creates the incoming page
+ * branch before destroying the outgoing one, so a synchronous init-time set
+ * would be wiped by the outgoing page's cleanup one step later, while the
+ * `$effect` body runs after that teardown — after the wipe, before the
+ * layout renders.
+ *
+ * Must be called synchronously during page component initialization.
+ */
+export function pageLayoutProps(props: Record<string, unknown>): void {
+    $effect(() => {
+        setLayoutProps(props);
+
+        return () => {
+            setLayoutProps(Object.fromEntries(Object.keys(props).map((key) => [key, undefined])));
+        };
+    });
 }

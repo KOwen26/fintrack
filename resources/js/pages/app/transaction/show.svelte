@@ -1,7 +1,8 @@
 <script lang="ts">
     import type { Data } from '@type/type';
 
-    import { router, setLayoutProps } from '@inertiajs/svelte';
+    import { router } from '@inertiajs/svelte';
+    import { pageLayoutProps } from '@lib/navigation-helper.svelte';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
     import TransferController from '@wayfinder/App/Http/Controllers/TransferController';
 
@@ -29,7 +30,7 @@
 
     const backUrl = TransactionController.index.url();
 
-    setLayoutProps({
+    pageLayoutProps({
         title: isTransferRow ? 'Transfer Detail' : 'Transaction Detail',
         backUrl,
     });

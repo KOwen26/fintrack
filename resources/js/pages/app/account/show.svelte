@@ -3,7 +3,8 @@
     import type { App } from '@wayfinder/types';
 
     import { getDecorationColor } from '@data/decorations';
-    import { router, setLayoutProps } from '@inertiajs/svelte';
+    import { router } from '@inertiajs/svelte';
+    import { pageLayoutProps } from '@lib/navigation-helper.svelte';
     import AccountController from '@wayfinder/App/Http/Controllers/AccountController';
     import TransactionController from '@wayfinder/App/Http/Controllers/TransactionController';
     import { Collapsible } from 'bits-ui';
@@ -30,7 +31,7 @@
         categorySpending: CategorySpendingReportData;
     } = $props();
 
-    setLayoutProps({ title: account?.name, backUrl: AccountController.index.url() });
+    pageLayoutProps({ title: account?.name, backUrl: AccountController.index.url() });
 
     let showDetail = $state(false);
     let transactionsOpen = $state(true);

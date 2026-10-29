@@ -69,7 +69,7 @@ final class AccountController extends Controller
     {
         $account = $this->accountService->create($this->user, $request->validated());
 
-        return to_route('accounts.show', $account)->flash('Account created.');
+        return to_route('accounts.index', $account)->flash('Account created.');
     }
 
     public function edit(Account $account): Response

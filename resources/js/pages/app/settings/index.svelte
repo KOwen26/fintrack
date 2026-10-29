@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { router, setLayoutProps } from '@inertiajs/svelte';
+    import { router } from '@inertiajs/svelte';
+    import { pageLayoutProps } from '@lib/navigation-helper.svelte';
     import { dashboard } from '@wayfinder/routes';
     import auth from '@wayfinder/routes/auth';
 
@@ -7,7 +8,7 @@
     import SettingsMenu from '@components/module/settings/settings-menu.svelte';
     import Button from '@components/ui/button.svelte';
 
-    setLayoutProps({ backUrl: dashboard.url(), title: 'Settings' });
+    pageLayoutProps({ backUrl: dashboard.url(), title: 'Settings' });
 </script>
 
 <MobilePageLayout variant="4/5">
