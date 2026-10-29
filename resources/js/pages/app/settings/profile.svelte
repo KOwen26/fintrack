@@ -9,7 +9,7 @@
 
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import Button from '@components/ui/button.svelte';
-    import Card from '@components/ui/card.svelte';
+    import Card from '@components/ui/cards/card.svelte';
     import Field from '@components/ui/forms/field.svelte';
     import Input from '@components/ui/forms/input.svelte';
     import PasswordInput from '@components/ui/forms/password-input.svelte';

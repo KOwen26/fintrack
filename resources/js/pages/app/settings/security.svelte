@@ -5,7 +5,7 @@
     import settings from '@wayfinder/routes/settings';
 
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
-    import Card from '@components/ui/card.svelte';
+    import Card from '@components/ui/cards/card.svelte';
     import Field from '@components/ui/forms/field.svelte';
     import PasswordInput from '@components/ui/forms/password-input.svelte';
     import SubmitButton from '@components/ui/forms/submit-button.svelte';

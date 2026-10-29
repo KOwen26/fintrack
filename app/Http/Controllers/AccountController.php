@@ -10,7 +10,7 @@ use App\Models\Provider;
 use App\Models\User;
 use App\Services\AccountService;
 use App\Services\SpendingService;
-use App\Services\TransactionService;
+use App\Services\TransactionListService;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,7 +39,7 @@ final class AccountController extends Controller
         ]);
     }
 
-    public function show(Request $request, Account $account, TransactionService $transactionService, SpendingService $spendingService): Response
+    public function show(Request $request, Account $account, SpendingService $spendingService): Response
     {
         $this->authorize('view', $account);
 
@@ -47,7 +47,7 @@ final class AccountController extends Controller
 
         $period = DatePeriodPreset::ThisMonth;
 
-        $transactions = $transactionService->getAccountTransactions($account, $period);
+        $transactions = TransactionListService::getTransactionsByAccount($account, $period);
 
         $categorySpending = $spendingService->categorySpendingForAccount($account, $period);
 
