@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Models\TransactionTemplate;
+use App\Services\TagService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -46,6 +47,8 @@ final class SaveTransactionTemplateRequest extends FormRequest
                 : ['required', 'string', Rule::enum(Category::class)->except(Category::InitialBalance)],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'description' => ['nullable', 'string', 'max:500'],
+            'tags' => ['nullable', 'array', 'max:' . TagService::MAX_TAGS],
+            'tags.*' => ['string', 'max:' . TagService::MAX_RAW_LENGTH],
             'account_id' => ['nullable', 'integer', $ownedAccount()],
             'destination_account_id' => $isTransfer
                 ? ['required', 'integer', $ownedAccount()]

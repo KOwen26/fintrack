@@ -148,3 +148,20 @@ test('getTransactionsByAccount returns only that account rows regardless of crea
         // The mapper's eager loads must be satisfied — account rows arrive loaded.
         ->and($rows[0]['account']->name)->toBe($account->name);
 });
+
+test('serves the tags-bearing row shape under the versioned cache key', function (): void {
+    $user = User::factory()->create();
+
+    expect(TransactionListService::cacheKey($user->id))->toBe('transaction-list:user:' . $user->id);
+
+    Transaction::factory()->create([
+        'created_by' => $user->id,
+        'transaction_date' => now(),
+        'tags' => ['cached'],
+    ]);
+
+    $rows = TransactionListService::getCachedTransactions($user, listPeriod());
+
+    expect(collect($rows)->every(fn (array $row): bool => array_key_exists('tags', $row)))->toBeTrue()
+        ->and(collect($rows)->firstWhere('tags', ['cached']))->not->toBeNull();
+});

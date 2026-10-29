@@ -5,6 +5,7 @@ use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\TransactionTemplate;
 use App\Models\User;
+use App\Services\TagService;
 
 test('lists only the authenticated user templates with categories', function (): void {
     $user = User::factory()->create();
@@ -165,6 +166,35 @@ test('rejects the initial balance category', function (): void {
         'category_id' => Category::InitialBalance->value,
         'amount' => 1_000,
     ])->assertInvalid(['category_id']);
+});
+
+test('stores template tags normalized', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->post(route('transaction-templates.store'), [
+        'name' => 'Netflix',
+        'type' => TransactionType::Expense->value,
+        'category_id' => Category::Streaming->value,
+        'amount' => 54_000,
+        'tags' => ['Bills & Rent!', 'food!'],
+    ])->assertRedirectToRoute('transaction-templates.index');
+
+    expect(TransactionTemplate::query()->where('name', 'Netflix')->first()->tags?->toArray())
+        ->toBe(['bills_rent', 'food']);
+});
+
+test('rejects template tags over the cap', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->post(route('transaction-templates.store'), [
+        'name' => 'Netflix',
+        'type' => TransactionType::Expense->value,
+        'category_id' => Category::Streaming->value,
+        'amount' => 54_000,
+        'tags' => array_fill(0, TagService::MAX_TAGS + 1, 'x'),
+    ])->assertInvalid(['tags']);
+
+    expect(TransactionTemplate::query()->where('name', 'Netflix')->exists())->toBeFalse();
 });
 
 test('another user cannot view, update, or delete a template', function (): void {

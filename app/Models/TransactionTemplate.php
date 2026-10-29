@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Objects\Decoration;
+use App\Objects\Tags;
 use Database\Factories\TransactionTemplateFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,7 @@ final class TransactionTemplate extends Model
             'amount' => 'decimal:2',
             'fee_amount' => 'decimal:2',
             'decorations' => Decoration::class,
+            'tags' => Tags::class,
         ];
     }
 

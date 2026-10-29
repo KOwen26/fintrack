@@ -8,6 +8,7 @@ use App\Models\TransactionTemplate;
 use App\Models\User;
 use App\Services\AccountService;
 use App\Services\CategoryService;
+use App\Services\TagService;
 use App\Services\TransactionTemplateService;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
@@ -38,6 +39,7 @@ final class TransactionTemplateController extends Controller
         return Inertia::render('app/settings/transaction-templates/form', [
             'template' => null,
             'accounts' => AccountService::getAccountsByUser($this->user),
+            'tags' => TagService::getUniqueTags($this->user),
         ]);
     }
 
@@ -65,6 +67,7 @@ final class TransactionTemplateController extends Controller
         return Inertia::render('app/settings/transaction-templates/form', [
             'template' => $template,
             'accounts' => AccountService::getAccountsByUser($this->user),
+            'tags' => TagService::getUniqueTags($this->user),
         ]);
     }
 

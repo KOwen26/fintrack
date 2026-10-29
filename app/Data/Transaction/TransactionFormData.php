@@ -44,6 +44,9 @@ class TransactionFormData extends Data
         public ?float $fee_amount,
 
         public ?int $transfer_id,
+
+        /** @var list<string>|null */
+        public ?array $tags = null,
     ) {}
 
     /**
@@ -62,6 +65,7 @@ class TransactionFormData extends Data
             category_id: null,
             fee_amount: null,
             transfer_id: null,
+            tags: null,
         );
     }
 
@@ -78,6 +82,7 @@ class TransactionFormData extends Data
             category_id: $transaction->category_id,
             fee_amount: null,
             transfer_id: null,
+            tags: $transaction->tags?->toArray(),
         );
     }
 
@@ -96,6 +101,7 @@ class TransactionFormData extends Data
             category_id: null,
             fee_amount: $transfer->fee_amount !== null ? (float) $transfer->fee_amount : null,
             transfer_id: $transfer->id,
+            tags: $transfer->sourceTransaction?->tags?->toArray(),
         );
     }
 
@@ -124,6 +130,7 @@ class TransactionFormData extends Data
             category_id: $template->category_id,
             fee_amount: $template->fee_amount !== null ? (float) $template->fee_amount : null,
             transfer_id: null,
+            tags: $template->tags?->toArray(),
         );
     }
 }

@@ -26,5 +26,8 @@ class TransferData extends Data
         public ?float $fee_amount = null,
 
         public ?string $description = null,
+
+        /** @var list<string>|null */
+        public ?array $tags = null,
     ) {}
 }

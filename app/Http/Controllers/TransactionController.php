@@ -15,6 +15,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Services\AccountService;
 use App\Services\CategoryService;
+use App\Services\TagService;
 use App\Services\TransactionListService;
 use App\Services\TransactionService;
 use App\Services\TransactionTemplateService;
@@ -107,6 +108,7 @@ final class TransactionController extends Controller
                 : TransactionFormData::defaultFromRequest($request),
             'accounts' => $this->accountService->getAccountsByUser($this->user),
             'templates' => TransactionTemplateService::getQuickAccessTemplates($this->user),
+            'tags' => TagService::getUniqueTags($this->user),
         ]);
     }
 
@@ -127,6 +129,7 @@ final class TransactionController extends Controller
         return Inertia::render('app/transaction/edit', [
             'accounts' => $accounts,
             'transaction' => TransactionFormData::fromTransaction($transaction),
+            'tags' => TagService::getUniqueTags($this->user),
         ]);
     }
 

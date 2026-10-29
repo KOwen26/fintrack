@@ -77,6 +77,21 @@ test('a transfer destination equal to the resolved context source is dropped', f
     );
 });
 
+test('prefills the create form with the template’s tags', function (): void {
+    $user = User::factory()->create();
+    $template = TransactionTemplate::factory()->create([
+        'user_id' => $user->id,
+        'tags' => ['food'],
+    ]);
+
+    $this->actingAs($user)->get(route('transactions.create', ['template' => $template->id]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('app/transaction/create')
+            ->where('transaction.tags', ['food'])
+        );
+});
+
 test('a foreign or missing template id is silently ignored', function (): void {
     $user = User::factory()->create();
     $foreign = TransactionTemplate::factory()->create();
