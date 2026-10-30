@@ -4,6 +4,7 @@ use App\Data\Transaction\TransactionListData;
 use App\Data\Transaction\TransferData;
 use App\Enums\Cashflow;
 use App\Enums\Category;
+use App\Enums\DatePeriodPreset;
 use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Transaction;
@@ -154,8 +155,10 @@ it('hides inflow rows from the global list but shows fee and outflow rows', func
     [$user, $source, $destination] = createTransferAccounts();
     resolve(TransferService::class)->create($user, unitData($source, $destination, 1_000.0));
 
-    $global = TransactionListService::getTransactions($user);
+    $global = TransactionListService::getTransactions($user, DatePeriodPreset::Last14Days);
 
-    expect($global->where('flow', Cashflow::Inflow))->toBeEmpty()
+    $flows = array_map(fn (array $row): string => $row['flow'], $global);
+
+    expect($flows)->not->toContain(Cashflow::Inflow->value)
         ->and($global)->toHaveCount(2); // outflow row + fee row
 });

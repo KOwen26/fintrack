@@ -53,7 +53,7 @@ final readonly class Tags implements Castable
 
             public function set(Model $model, string $key, mixed $value, array $attributes): ?string
             {
-                if ($value === null) {
+                if ($value === null || $value === []) {
                     return null;
                 }
 
