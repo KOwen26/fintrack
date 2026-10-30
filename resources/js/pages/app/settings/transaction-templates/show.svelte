@@ -7,7 +7,7 @@
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import TemplateDetail from '@components/module/template/template-detail.svelte';
     import Button from '@components/ui/button.svelte';
-    import Card from '@components/ui/card.svelte';
+    import Card from '@components/ui/cards/card.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
     let { template }: { template: App.Models.TransactionTemplate } = $props();
@@ -45,11 +45,11 @@
 </MobilePageLayout>
 
 <ConfirmationModal
-    title="Delete Template"
-    confirmText="Delete"
     cancelText="Cancel"
     confirmButtonProps={{ color: 'error' }}
+    confirmText="Delete"
     onConfirm={destroy}
+    title="Delete Template"
     bind:open={showDeleteConfirm}>
     This will permanently delete the template. It cannot be undone.
 </ConfirmationModal>

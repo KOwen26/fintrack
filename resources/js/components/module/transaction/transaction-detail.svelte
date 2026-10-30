@@ -52,9 +52,9 @@
         <div class="w-full px-5">
             <div class="text-center">
                 <CurrencyAmount
-                    class="mt-1 font-medium tracking-tight text-secondary-content tabular-nums {amountClass}"
+                    class="mt-1 font-medium tracking-tight text-secondary-foreground tabular-nums {amountClass}"
                     amountClass="leading-none"
-                    symbolClass="text-lg text-secondary-content/50"
+                    symbolClass="text-lg text-secondary-foreground/50"
                     value={transaction.amount} />
             </div>
         </div>
@@ -76,7 +76,7 @@
         {#if isTransfer}
             <div class="flex justify-center">
                 <div
-                    class="flex size-8 items-center justify-center rounded-full border border-base-content/15 text-muted-foreground">
+                    class="flex size-8 items-center justify-center rounded-full border border-border text-muted-foreground">
                     <i class="iconify size-4 solar--transfer-vertical-line-duotone"></i>
                 </div>
             </div>

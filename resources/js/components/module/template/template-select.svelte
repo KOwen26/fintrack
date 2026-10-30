@@ -104,12 +104,12 @@
         <div class={cn('-mx-5 flex gap-2 overflow-x-auto px-5 pb-1', _class)}>
             {#each offered as template (template.id)}
                 <button
-                    class="flex shrink-0 items-center gap-2 rounded-full border border-base-content/15 bg-base-100 px-3 py-1.5 transition-colors hover:border-base-content/35"
+                    class="flex shrink-0 items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 transition-colors hover:border-input"
                     onclick={() => apply(template)}
                     type="button">
                     <DecorationBadge decorations={template.decorations} size="sm" />
                     <span class="text-sm font-medium whitespace-nowrap">{template.name}</span>
-                    <span class="text-xs whitespace-nowrap text-base-content/50">
+                    <span class="text-xs whitespace-nowrap text-muted-foreground">
                         <CurrencyAmount value={Number(template.amount)} />
                     </span>
                 </button>
@@ -118,7 +118,7 @@
     {:else if variant === 'combobox'}
         <Combobox
             contentProps={{ sideOffset: 10 }}
-            inputProps={{ class: 'placeholder:text-base-content/35' }}
+            inputProps={{ class: 'placeholder:text-muted-foreground' }}
             {option}
             options={comboboxOptions}
             {placeholder}
@@ -135,14 +135,14 @@
             <div class="space-y-1 p-1">
                 {#each offered as template (template.id)}
                     <button
-                        class="flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left transition-colors hover:bg-base-200"
+                        class="flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left transition-colors hover:bg-card"
                         onclick={() => apply(template)}
                         type="button">
                         <DecorationBadge decorations={template.decorations} />
 
                         <span class="min-w-0 grow">
                             <span class="block truncate text-sm font-medium">{template.name}</span>
-                            <span class="block truncate text-xs text-base-content/60">
+                            <span class="block truncate text-xs text-foreground/70">
                                 <CurrencyAmount value={Number(template.amount)} />
                             </span>
                         </span>
@@ -161,7 +161,7 @@
     <div class="flex w-full min-w-0 items-center gap-2.5 pr-5">
         <DecorationBadge decorations={template.decorations} size="sm" />
         <span class="truncate text-sm font-medium">{template.name}</span>
-        <span class="ml-auto text-xs whitespace-nowrap text-base-content/50">
+        <span class="ml-auto text-xs whitespace-nowrap text-muted-foreground">
             <CurrencyAmount value={Number(template.amount)} />
         </span>
     </div>
@@ -170,15 +170,15 @@
 {#snippet trigger({ inputProps, triggerProps }: ComboboxTriggerContext<TemplateOption>)}
     <ComboboxPrimitive.Trigger
         {...triggerProps}
-        class={cn(inputGroupClasses, 'relative px-3 hover:bg-base-content/5', _class)}>
+        class={cn(inputGroupClasses, 'relative px-3 hover:bg-foreground/5', _class)}>
         <ComboboxPrimitive.Input
             {...inputProps}
-            class="h-full w-full bg-transparent text-sm font-medium outline-none placeholder:text-base-content/80"
+            class="h-full w-full bg-transparent text-sm font-medium outline-none placeholder:text-foreground/70"
             aria-label={placeholder}
             autocomplete="off" />
 
         <i
-            class="pointer-events-none absolute top-1/2 right-2.5 iconify flex size-4 -translate-y-1/2 items-center text-base-content solar--alt-arrow-down-linear"
+            class="pointer-events-none absolute top-1/2 right-2.5 iconify flex size-4 -translate-y-1/2 items-center text-foreground solar--alt-arrow-down-linear"
             class:rotate-180={comboboxOpen}></i>
     </ComboboxPrimitive.Trigger>
 {/snippet}

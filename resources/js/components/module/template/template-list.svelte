@@ -9,7 +9,7 @@
     import CurrencyAmount from '@components/data/currency-amount.svelte';
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
     import DecorationBadge from '@components/module/decoration-badge.svelte';
-    import Card from '@components/ui/card.svelte';
+    import Card from '@components/ui/cards/card.svelte';
     import Link from '@components/ui/link.svelte';
 
     let {

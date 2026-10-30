@@ -194,10 +194,10 @@
         <div class="w-full px-5">
             <div class="text-center">
                 <div class="mt-1 flex items-center justify-center gap-1.5">
-                    <span class="text-lg font-medium text-secondary-content/50">Rp</span>
+                    <span class="text-lg font-medium text-secondary-foreground/50">Rp</span>
                     <MaskedInput
                         class={[
-                            'field-sizing-content min-w-0 border-none bg-transparent text-center leading-none font-medium tracking-tight text-secondary-content tabular-nums transition-all outline-none',
+                            'field-sizing-content min-w-0 border-none bg-transparent text-center leading-none font-medium tracking-tight text-secondary-foreground tabular-nums transition-all outline-none',
                             form?.amount?.toString().length > 10
                                 ? 'text-[--spacing(10)]'
                                 : 'text-5xl',
@@ -222,8 +222,8 @@
 
                         <button
                             class="rounded-full border px-3 py-1.5 text-sm font-medium transition-colors {selected
-                                ? 'border-secondary-content/60 bg-secondary-content/15 text-secondary-content'
-                                : 'border-secondary-content/25 text-secondary-content/60 hover:border-secondary-content/45 hover:text-secondary-content'}"
+                                ? 'border-secondary-foreground/60 bg-secondary-foreground/15 text-secondary-foreground'
+                                : 'border-secondary-foreground/25 text-secondary-foreground/60 hover:border-secondary-foreground/45 hover:text-secondary-foreground'}"
                             aria-pressed={selected}
                             onclick={() => (form.amount = preset.toString())}
                             type="button">
@@ -243,13 +243,13 @@
             <Tabs onchange={handleTypeChange} bind:value={activeType}>
                 <TabsList class="w-full bg-secondary">
                     <TabsTrigger
-                        class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-content"
+                        class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-foreground"
                         value={TransactionType.Income}>Income</TabsTrigger>
                     <TabsTrigger
-                        class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-content"
+                        class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-foreground"
                         value={TransactionType.Expense}>Expense</TabsTrigger>
                     <TabsTrigger
-                        class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-content"
+                        class="data-[state=active]:text-secondary data-[state=inactive]:text-secondary-foreground"
                         disabled={isEdit}
                         value={TransactionType.Transfer}>Transfer</TabsTrigger>
                 </TabsList>
@@ -258,7 +258,7 @@
 
         <div class="mt-5 space-y-4">
             <Field
-                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
                 error={form.errors.account_id}
                 required
                 title="Account">
@@ -273,7 +273,7 @@
             {#if isTransfer}
                 <div class="flex justify-center">
                     <button
-                        class="flex items-center gap-1.5 rounded-full border border-base-content/15 px-3 py-1 text-xs font-medium text-base-content/50 transition-colors hover:border-base-content/30 hover:text-base-content disabled:cursor-not-allowed disabled:opacity-40"
+                        class="flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
                         disabled={!form.account_id || !form.destination_account_id}
                         onclick={swapTransferAccounts}
                         type="button">
@@ -283,7 +283,7 @@
                 </div>
 
                 <Field
-                    titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                    titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
                     error={form.errors.destination_account_id}
                     required
                     title="Destination Account">
@@ -297,7 +297,7 @@
             {:else}
                 <!-- 3 · Category — income / expense -->
                 <Field
-                    titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                    titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
                     error={form.errors.category_id}
                     required
                     title="Category">
@@ -310,7 +310,7 @@
 
             <!-- 4 · Tags — all types -->
             <Field
-                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
                 error={form.errors.tags}
                 title="Tags">
                 <TagsInput bind:value={form.tags} {tags} placeholder="Add tags…" />
@@ -319,7 +319,7 @@
             <!-- 5 · Date & Time -->
             <Field
                 id="transaction-date"
-                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
                 error={form.errors.transaction_date}
                 required
                 title="Date & Time">
@@ -334,7 +334,7 @@
             {#if isTransfer}
                 <Field
                     id="transfer-fee"
-                    titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                    titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
                     error={form.errors.fee_amount}
                     title="Transfer fee">
                     <CurrencyInput
@@ -348,7 +348,7 @@
             <!-- 7 · Notes -->
             <Field
                 id="transaction-notes"
-                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
                 error={form.errors.description}
                 title="Notes">
                 <Textarea

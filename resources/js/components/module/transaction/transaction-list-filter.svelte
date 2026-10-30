@@ -322,7 +322,7 @@
                     class={cn(
                         'border-1.5 inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 font-sans text-xs font-semibold whitespace-nowrap transition-all duration-150',
                         active
-                            ? 'border-primary bg-primary text-primary-content'
+                            ? 'border-primary bg-primary text-primary-foreground'
                             : 'border-border bg-card text-foreground hover:border-primary hover:text-primary'
                     )}
                     onclick={() => openSheet(kind)}>

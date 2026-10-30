@@ -9,7 +9,7 @@
     import CategorySelect from '@components/module/category/category-select.svelte';
     import DecorationColorSelector from '@components/module/decoration-color-selector.svelte';
     import DecorationIconSelector from '@components/module/decoration-icon-selector.svelte';
-    import Card from '@components/ui/card.svelte';
+    import Card from '@components/ui/cards/card.svelte';
     import CurrencyInput from '@components/ui/forms/currency-input.svelte';
     import Field from '@components/ui/forms/field.svelte';
     import Form from '@components/ui/forms/form.svelte';
@@ -181,7 +181,7 @@
             </Field>
 
             <Field error={form.errors.tags} title="Tags">
-                <TagsInput bind:value={form.tags} {tags} placeholder="Add tags…" />
+                <TagsInput placeholder="Add tags…" {tags} bind:value={form.tags} />
             </Field>
         </div>
     </Card>
