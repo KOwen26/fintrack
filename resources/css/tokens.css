@@ -60,19 +60,19 @@
     --color-chart-5: var(--info);
 
     /* ── Sidebar — derived defaults (parity: ring follows border, the old adapter mapped it to base-300, not primary) ─────────────────── */
-    --color-sidebar: var(--background);
-    --color-sidebar-foreground: var(--foreground);
+    --color-sidebar: var(--secondary);
+    --color-sidebar-foreground: var(--secondary-foreground);
     --color-sidebar-primary: var(--primary);
     --color-sidebar-primary-foreground: var(--primary-foreground);
-    --color-sidebar-accent: var(--accent);
-    --color-sidebar-accent-foreground: var(--accent-foreground);
+    --color-sidebar-accent: var(--primary);
+    --color-sidebar-accent-foreground: var(--primary-foreground);
     --color-sidebar-border: var(--border);
     --color-sidebar-ring: var(--border);
 
     /* ═══ DaisyUI-vocabulary compatibility — DELETE when the name migration completes (text-base-content → text-foreground, …) ═══ */
     --color-base-100: var(--background);
     --color-base-200: var(--card);
-    --color-base-300: var(--border);
+    --color-base-300: var(--popover);
     --color-base-content: var(--foreground);
     --color-primary-content: var(--primary-foreground);
     --color-secondary-content: var(--secondary-foreground);
