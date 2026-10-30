@@ -63,6 +63,7 @@ final class TransactionController extends Controller
                 'transactions' => Inertia::defer(fn (): array => $this->transactionListService->getCachedTransactions($this->user, $period)),
                 'accounts' => AccountService::getAccountsByUser($this->user),
                 'categories' => CategoryService::getCategories(),
+                'tags' => TagService::getUniqueTags($this->user),
             ]);
         }
 
@@ -84,6 +85,7 @@ final class TransactionController extends Controller
             'summary' => $this->transactionListService->getSummary($this->user, $period),
             'accounts' => AccountService::getAccountsByUser($this->user),
             'categories' => CategoryService::getCategories(),
+            'tags' => TagService::getUniqueTags($this->user),
         ]);
     }
 

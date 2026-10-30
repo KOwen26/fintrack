@@ -14,18 +14,13 @@ use Illuminate\Validation\Rule;
  */
 class TransactionIndexRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     /** @return array<string, list<mixed>> */
     public function rules(): array
     {
         return [
             'global_filter' => ['nullable', 'string', 'max:100'],
             'filters' => ['nullable', 'array', 'max:10'],
-            'filters.*.id' => ['required', 'string', Rule::in(['account_id', 'category_id', 'type'])],
+            'filters.*.id' => ['required', 'string', Rule::in(['account_id', 'category_id', 'type', 'tags'])],
             'filters.*.value' => ['required', 'array', 'min:1'],
             'filters.*.value.*' => ['integer|string'],
             'sorting' => ['nullable', 'array', 'max:1'],

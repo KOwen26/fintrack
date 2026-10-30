@@ -22,6 +22,7 @@
         summary,
         accounts,
         categories,
+        tags,
         period,
         transactions_meta: meta,
     }: {
@@ -32,6 +33,7 @@
         summary: { income: number; expense: number; net: number };
         accounts: Pick<App.Models.Account, 'id' | 'name' | 'decorations'>[];
         categories: CategoryData[];
+        tags: string[];
     } = $props();
 
     /* ── List controller: client engine over the full window ── */
@@ -74,7 +76,7 @@
     <!-- adjust the top value based on the header  -->
     <div
         class="sticky-filter sticky top-14 z-20 -mx-5 border-b border-transparent bg-background p-5 pt-2.5">
-        <TransactionListFilter {accounts} {categories} {list} />
+        <TransactionListFilter {accounts} {categories} {tags} {list} />
     </div>
 
     {#if transactions === undefined}

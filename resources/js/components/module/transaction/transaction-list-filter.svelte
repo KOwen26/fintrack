@@ -8,6 +8,7 @@
     import { DatePeriodPresetMeta } from '@wayfinder/App/Enums/DatePeriodPreset';
 
     import { cn } from '@utilities/shadcn';
+    import StringHelper from '@utilities/string-helper';
     import { SORT_LABELS, SORT_OPTIONS } from '@services/transaction-list.svelte';
 
     import DecorationBadge from '@components/module/decoration-badge.svelte';
@@ -31,16 +32,23 @@
             name: string;
             decorations?: { icon?: string | null; color?: string | null } | null;
         }[];
+        /** Distinct tag slugs for the tags filter sheet. */
+        tags: string[];
         list: TransactionListHandler;
     }
 
-    let { accounts: uniqueAccounts, categories: uniqueCategories, list }: Props = $props();
+    let {
+        accounts: uniqueAccounts,
+        categories: uniqueCategories,
+        tags: uniqueTags,
+        list,
+    }: Props = $props();
 
     /* ── State ───────────────────────────────────────────── */
 
     // Sheet — `settings` groups the server-driven period, the transaction-type
     // enum and the sort selector into a single drawer, sectioned per filter.
-    type SheetKind = 'account' | 'category' | 'settings';
+    type SheetKind = 'account' | 'category' | 'tags' | 'settings';
 
     /**
      * Leading badge config forwarded to <DecorationBadge> — direct values
@@ -86,6 +94,7 @@
     let tAccountIds: number[] = $state([]);
     let tCategoryIds: string[] = $state([]);
     let tTypes: App.Enums.TransactionType[] = $state([]);
+    let tTags: string[] = $state([]);
     let tSort: SortKey = $state('newest');
     let tPeriod: PeriodPreset | undefined = $state(undefined);
 
@@ -140,6 +149,15 @@
                 },
             });
         }
+        for (const tag of list.tagFilter) {
+            tags.push({
+                label: StringHelper.snakeToTitle(tag),
+                icon: 'solar--tag-bold-duotone',
+                onClear: () => {
+                    list.setTagFilter(list.tagFilter.filter((x) => x !== tag));
+                },
+            });
+        }
 
         return tags;
     });
@@ -151,6 +169,7 @@
     const SHEET_TITLES: Record<SheetKind, string> = {
         account: 'Account',
         category: 'Category',
+        tags: 'Tags',
         settings: 'Settings',
     };
 
@@ -158,6 +177,7 @@
         tAccountIds = [...list.accountFilter];
         tCategoryIds = [...list.categoryFilter];
         tTypes = [...list.typeFilter];
+        tTags = [...list.tagFilter];
         tSort = list.sortKey;
         tPeriod = list.paginated ? list.period : undefined;
 
@@ -181,6 +201,7 @@
         list.setAccountFilter(tAccountIds);
         list.setCategoryFilter(tCategoryIds);
         list.setTypeFilter(tTypes);
+        list.setTagFilter(tTags);
         list.setSort(tSort);
         closeSheet();
     }
@@ -214,6 +235,16 @@
                         '1 Category')
                       : `${list.categoryFilter.length} Categories`,
             active: list.categoryFilter.length > 0,
+        },
+        {
+            kind: 'tags',
+            label:
+                list.tagFilter.length === 0
+                    ? 'All Tags'
+                    : list.tagFilter.length === 1
+                      ? StringHelper.snakeToTitle(list.tagFilter[0] ?? '')
+                      : `${list.tagFilter.length} Tags`,
+            active: list.tagFilter.length > 0,
         },
     ]);
 
@@ -276,6 +307,32 @@
                                 onSelect: () => (tCategoryIds = toggled(tCategoryIds, cat.id)),
                                 badge: {
                                     decorations: cat.decorations,
+                                },
+                            })),
+                        ],
+                    },
+                ];
+            case 'tags':
+                return [
+                    {
+                        label: null,
+                        options: [
+                            {
+                                key: 'all',
+                                label: 'All Tags',
+                                selected: tTags.length === 0,
+                                onSelect: () => (tTags = []),
+                                badge: {
+                                    icon: 'solar--tag-bold-duotone',
+                                },
+                            },
+                            ...uniqueTags.map((slug): SheetOption => ({
+                                key: slug,
+                                label: StringHelper.snakeToTitle(slug),
+                                selected: tTags.includes(slug),
+                                onSelect: () => (tTags = toggled(tTags, slug)),
+                                badge: {
+                                    icon: 'solar--tag-bold-duotone',
                                 },
                             })),
                         ],
