@@ -50,6 +50,9 @@ class TransactionDetailData extends Data
 
         #[TypeScriptModel(Account::class)]
         public ?Account $destination_account,
+
+        /** @var list<string>|null */
+        public ?array $tags = null,
     ) {}
 
     public static function fromTransaction(Transaction $transaction): self
@@ -86,6 +89,7 @@ class TransactionDetailData extends Data
             category: $category !== null ? CategoryData::fromEnum($category) : null,
             account: $transaction->relationLoaded('account') ? $transaction->account : null,
             destination_account: $counterpart?->account,
+            tags: $transaction->tags?->toArray(),
         );
     }
 }

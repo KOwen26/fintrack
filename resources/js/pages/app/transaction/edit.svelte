@@ -15,9 +15,11 @@
     let {
         transaction,
         accounts = [],
+        tags = [],
     }: {
         transaction: Data.TransactionFormData;
         accounts?: App.Models.Account[];
+        tags?: string[];
     } = $props();
 
     // The DTO collapses both edit shapes — a plain row and a transfer unit —
@@ -58,7 +60,7 @@
     {/snippet}
 </HeaderContext>
 
-<TransactionForm {accounts} {transaction} />
+<TransactionForm {accounts} {tags} {transaction} />
 
 <ConfirmationModal
     cancelText="Cancel"

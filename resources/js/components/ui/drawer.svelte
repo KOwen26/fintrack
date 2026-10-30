@@ -41,7 +41,7 @@
             {@render trigger?.()}
         </DrawerTrigger>
     {/if}
-    <DrawerContent class="border-muted drop-shadow-2xl/50" {overlay}>
+    <DrawerContent class="border-border drop-shadow-2xl/50" {overlay}>
         {#if title}
             <DrawerHeader class="flex-row items-center justify-between">
                 <DrawerTitle>{title}</DrawerTitle>

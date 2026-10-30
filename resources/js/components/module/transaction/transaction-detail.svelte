@@ -2,11 +2,13 @@
     import type { Data } from '@type/type';
 
     import DateTimeHelper from '@utilities/date-time-helper';
+    import StringHelper from '@utilities/string-helper';
 
     import CurrencyAmount from '@components/data/currency-amount.svelte';
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountInfo from '@components/module/account/account-info.svelte';
     import CategoryInfo from '@components/module/category/category-info.svelte';
+    import Badge from '@components/ui/badge.svelte';
     import Field from '@components/ui/forms/field.svelte';
 
     interface Props {
@@ -50,10 +52,10 @@
         <div class="w-full px-5">
             <div class="text-center">
                 <CurrencyAmount
-                    value={transaction.amount}
-                    class="mt-1 font-medium tracking-tight text-secondary-content tabular-nums {amountClass}"
-                    symbolClass="text-lg text-secondary-content/50"
-                    amountClass="leading-none" />
+                    class="mt-1 font-medium tracking-tight text-secondary-foreground tabular-nums {amountClass}"
+                    amountClass="leading-none"
+                    symbolClass="text-lg text-secondary-foreground/50"
+                    value={transaction.amount} />
             </div>
         </div>
     {/snippet}
@@ -65,7 +67,7 @@
     <div class="mt-5 space-y-4">
         <!-- 1 · Source account (the row's own side for outflows / plain rows) -->
         <Field
-            titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+            titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
             title="Account">
             <AccountInfo account={sourceAccount} />
         </Field>
@@ -74,20 +76,20 @@
         {#if isTransfer}
             <div class="flex justify-center">
                 <div
-                    class="flex size-8 items-center justify-center rounded-full border border-base-content/15 text-base-content/50">
+                    class="flex size-8 items-center justify-center rounded-full border border-border text-muted-foreground">
                     <i class="iconify size-4 solar--transfer-vertical-line-duotone"></i>
                 </div>
             </div>
 
             <Field
-                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
                 title="Destination Account">
                 <AccountInfo account={destinationAccount} />
             </Field>
         {:else}
             <!-- 3 · Category — income / expense -->
             <Field
-                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
                 title="Category">
                 <CategoryInfo category={transaction.category} />
             </Field>
@@ -95,22 +97,34 @@
 
         <!-- 4 · Date -->
         <Field
-            titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+            titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
             title="Date">
-            <p
-                class="flex min-h-12 items-center rounded-lg px-4 text-sm font-medium transition-colors">
+            <p class="flex min-h-12 text-sm font-medium transition-colors">
                 {DateTimeHelper.format(transaction.transaction_date, 'datetime')}
             </p>
         </Field>
 
         <!-- 5 · Notes -->
-        {#if transaction.description}
+        <Field
+            titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
+            title="Notes">
+            <p class="min-h-12 text-sm leading-relaxed font-medium text-pretty">
+                {transaction.description ?? '-'}
+            </p>
+        </Field>
+
+        <!-- 6 · Tags -->
+        {#if transaction.tags?.length}
             <Field
-                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
-                title="Notes">
-                <p class="min-h-12 px-4 py-2 text-sm leading-relaxed font-medium text-pretty">
-                    {transaction.description}
-                </p>
+                titleClass="uppercase text-muted-foreground tracking-wide font-bold text-xs"
+                title="Tags">
+                <div class="flex min-h-12 flex-wrap gap-1.5">
+                    {#each transaction.tags as tag (tag)}
+                        <Badge color="secondary" shape="pill" size="sm">
+                            {StringHelper.snakeToTitle(tag)}
+                        </Badge>
+                    {/each}
+                </div>
             </Field>
         {/if}
     </div>

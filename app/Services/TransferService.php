@@ -99,6 +99,7 @@ final readonly class TransferService
             amount: $data->amount,
             transaction_date: $data->transaction_date,
             description: $data->description,
+            tags: $data->tags,
             flow: Cashflow::Outflow,
             transfer_id: $transfer->id,
         ));

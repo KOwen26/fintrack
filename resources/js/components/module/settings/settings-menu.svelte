@@ -5,6 +5,7 @@
     import { useUrlHandler } from '@lib/url-handler.svelte';
 
     import Link from '@components/ui/link.svelte';
+    import Separator from '@components/ui/separator.svelte';
 
     let { menus = settingsMenu }: { menus?: MenuGroup } = $props();
 
@@ -18,7 +19,7 @@
         {#each Object.values(menus.menus) as menu (menu.route ?? menu.name)}
             {@render menuItem(menu)}
 
-            <hr class="my-1 border-border last:hidden" />
+            <Separator class="my-1 last:hidden" />
         {/each}
     </ul>
 </div>

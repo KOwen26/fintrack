@@ -39,6 +39,10 @@ A user owns multiple financial accounts, each optionally linked to a provider (i
 - **Editing** updates the aggregate in place, soft-deletes all member rows (observers reverse their balance effects) and re-creates them from the updated payload — atomically in one transaction.
 - **Deleting any member deletes the whole unit** — aggregate and every member row, including the fee. The pairing is app-enforced.
 
+### Template
+
+- **Templates**: user-private transaction form presets (name, decoration, type, category or transfer destination, amount, optional default source account), managed under Settings and applied server-side to prefill the create form via `?template=`.
+
 ### Category
 
 - Two-level tree (parent → children). Type: `input` (income) or `output` (spending). Manual sort order. `is_fixed_cost` marks fixed recurring costs.
@@ -82,11 +86,7 @@ All reports are SQL-aggregated and cached per account (past months indefinitely,
 
 ### Current focus
 
-1. Transaction Presets Feature
-    - user can create a preset, optionally the preset can be set for some accounts (for quick access)
-    - the preset will have name, and decoration on it for easier management (another meta is accepted)
-    - the preset will be managed from the menu on the settings
-2. Transaction Tagging Feature
+1. Transaction Tagging Feature
     - transaction can be tagged by multiple tags
     - tags are input by user when creating transaction (combobox like with create new value capability)
     - the tag value will be normalized as snake_case (symbols removed) and stored as comma separated string or array, and null on empty.
@@ -96,8 +96,8 @@ All reports are SQL-aggregated and cached per account (past months indefinitely,
 ### Later
 
 - Implement / rework budgeting
-- Scheduled Transaction (Preset Improvement)
-  - from the transaction preset user can set it as an scheduled transaction, either require confirmation or not
+- Scheduled Transaction (Template improvement)
+  - from a transaction template the user can set it as a scheduled transaction, either requiring confirmation or not
 - Household / shared-account membership — shareable accounts are currently visible to all users as a placeholder until membership exists
 - Deeper Provider integration (provider data is metadata-only today)
 

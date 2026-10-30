@@ -9,6 +9,7 @@ import dev from '@wayfinder/routes/dev';
 import profile from '@wayfinder/routes/profile';
 import security from '@wayfinder/routes/security';
 import statistics from '@wayfinder/routes/statistics';
+import transactionTemplates from '@wayfinder/routes/transaction-templates';
 import transactions from '@wayfinder/routes/transactions';
 
 export type MenuType = 'group-label' | 'menu' | 'submenu-1' | 'submenu-2';
@@ -134,6 +135,14 @@ export const settingsMenu = {
     name: 'Settings',
     type: 'collapsible',
     menus: {
+        transaction_templates: {
+            name: 'Transaction Templates',
+            url: transactionTemplates.index().url,
+            route: 'transaction-templates.index',
+            active: 'transaction-templates.*',
+            icon: 'iconify solar--notes-line-duotone',
+            type: 'menu',
+        },
         profile: {
             name: 'Profile',
             url: profile.edit().url,

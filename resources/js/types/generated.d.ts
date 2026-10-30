@@ -34,7 +34,7 @@ export type CategoryData = {
     name: string;
     cashflow: App.Enums.Cashflow;
     decorations: Decoration;
-    group: CategoryGroupData;
+    group: CategoryGroupData | string;
 };
 
 export type CategoryGroupData = {
@@ -164,6 +164,7 @@ export type TransactionData = {
     transaction_date: string;
     category_id: App.Enums.Category | null;
     description: string | null;
+    tags: string[] | null;
     flow: App.Enums.Cashflow | null;
     transfer_id: number | null;
 };
@@ -179,8 +180,10 @@ export type TransactionDetailData = {
     account_id: number | null;
     destination_account_id: number | null;
     category_id: App.Enums.Category | null;
+    category: CategoryData | null;
     account: App.Models.Account;
     destination_account: App.Models.Account;
+    tags: string[] | null;
 };
 
 export type TransactionFormData = {
@@ -194,6 +197,7 @@ export type TransactionFormData = {
     category_id: App.Enums.Category | null;
     fee_amount: number | null;
     transfer_id: number | null;
+    tags: string[] | null;
 };
 
 export type TransactionListCursor = {
@@ -215,6 +219,7 @@ export type TransactionListData = {
     destination_account_id: number | null;
     account: App.Models.Account;
     destination_account: App.Models.Account;
+    tags: string[] | null;
 };
 
 export type TransactionListFilters = {
@@ -232,6 +237,7 @@ export type TransferData = {
     transaction_date: string;
     fee_amount: number | null;
     description: string | null;
+    tags: string[] | null;
 };
 
 export type WeekdayCashflow = {

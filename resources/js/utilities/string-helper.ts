@@ -25,4 +25,25 @@ export default class StringHelper {
             .slice(0, 2)
             .toUpperCase();
     }
+
+    /**
+     * Lowercase, collapse every non letter/number run to a single
+     * underscore, and trim underscores from both ends.
+     */
+    public static toSnakeCase(value: string): string {
+        return value
+            .toLowerCase()
+            .replace(/[^\p{L}\p{N}]+/gu, '_')
+            .replace(/^_+|_+$/g, '');
+    }
+
+    /**
+     * Convert a snake_case string to Title Case words — "bills_rent" → "Bills Rent".
+     */
+    public static snakeToTitle(value: string): string {
+        return value
+            .split('_')
+            .map((word) => (word ? word.charAt(0).toUpperCase() + word.slice(1) : word))
+            .join(' ');
+    }
 }

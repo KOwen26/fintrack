@@ -15,7 +15,10 @@
 <div
     bind:this={ref}
     data-slot="card-action"
-    class={cn('col-start-2 row-span-2 row-start-1 self-start justify-self-end', className)}
+    class={cn(
+        'has-data-[slot=card-description]/card-header:row-span-2 has-data-[slot=card-description]/card-header:self-start col-start-2 row-start-1 self-center justify-self-end',
+        className
+    )}
     {...restProps}>
     {@render children?.()}
 </div>
