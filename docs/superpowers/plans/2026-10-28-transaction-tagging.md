@@ -698,7 +698,7 @@ export function normalizeTags(raw: string[]): string[] {
 
 **Interfaces:**
 - Consumes: `normalizeTags` / `normalizeTag` / `MAX_TAGS` (Task 7), `combobox.svelte` wrapper (bits-ui, `type="multiple"`), chip markup conventions.
-- Produces: `<TagsInput bind:value suggestions placeholder />` — `value: string[]` (selected slugs, bindable), `suggestions?: string[]` (defaults `[]`), `placeholder?: string`. Tasks 9, 10 consume. View-only component, no JS test runner — no test.
+- Produces: `<TagsInput bind:value tags placeholder />` — `value: string[]` (selected slugs, bindable), `tags?: string[]` (suggestion slugs, defaults `[]`), `placeholder?: string`. Tasks 9, 10 consume. View-only component, no JS test runner — no test.
 
 - [ ] **Step 1: Implement the component** — Svelte 5 runes; block order `<script>` → markup → snippets; bits-ui Combobox `type="multiple"` with a custom trigger snippet following the `category-select.svelte` pattern (`ComboboxTriggerContext`, `ComboboxPrimitive.Trigger` + `ComboboxPrimitive.Input`, `bind:open`). Script sketch:
 
@@ -776,7 +776,7 @@ Markup: chips inline before the input, styled with shadcn tokens — `rounded-fu
     titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
     error={form.errors.tags}
     title="Tags">
-    <TagsInput bind:value={form.tags} suggestions={tags} placeholder="Add tags…" />
+    <TagsInput bind:value={form.tags} {tags} placeholder="Add tags…" />
 </Field>
 ```
 

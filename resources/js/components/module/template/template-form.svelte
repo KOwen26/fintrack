@@ -15,16 +15,19 @@
     import Form from '@components/ui/forms/form.svelte';
     import Input from '@components/ui/forms/input.svelte';
     import Select from '@components/ui/forms/select.svelte';
+    import TagsInput from '@components/ui/forms/tags-input.svelte';
     import Textarea from '@components/ui/forms/textarea.svelte';
 
     interface Props {
         template?: App.Models.TransactionTemplate | null;
         accounts: App.Models.Account[];
+        /** Existing tag slugs offered as combobox suggestions. */
+        tags?: string[];
         /** Exposed to the page for its external FormAction — the `bind:form` pattern. */
         form?: ReturnType<typeof useForm>;
     }
 
-    let { template = null, accounts, form = $bindable() }: Props = $props();
+    let { template = null, accounts, tags = [], form = $bindable() }: Props = $props();
 
     const isEdit = $derived(template !== null);
 
@@ -60,6 +63,7 @@
             icon: template?.decorations?.icon ?? getRandomDecorationIcon().slug,
             color: template?.decorations?.color ?? getRandomDecorationColor().slug,
         },
+        tags: template?.tags ?? [],
     }));
 
     const isTransfer = $derived(form.type === TransactionType.Transfer);
@@ -174,6 +178,10 @@
                     class="min-h-20"
                     placeholder="Optional note or memo"
                     bind:value={form.description} />
+            </Field>
+
+            <Field error={form.errors.tags} title="Tags">
+                <TagsInput bind:value={form.tags} {tags} placeholder="Add tags…" />
             </Field>
         </div>
     </Card>

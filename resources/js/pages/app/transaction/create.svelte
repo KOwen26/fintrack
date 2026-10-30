@@ -11,13 +11,15 @@
         transaction,
         accounts,
         templates = [],
+        tags = [],
     }: {
         transaction: Data.TransactionFormData;
         accounts: Models.Account[];
         templates?: App.Models.TransactionTemplate[];
+        tags?: string[];
     } = $props();
 
     pageLayoutProps({ title: 'Add New Transaction', backUrl: TransactionController.index.url() });
 </script>
 
-<TransactionForm {accounts} {templates} {transaction} />
+<TransactionForm {accounts} {tags} {templates} {transaction} />

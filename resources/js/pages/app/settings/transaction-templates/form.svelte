@@ -12,9 +12,11 @@
     let {
         template = null,
         accounts,
+        tags = [],
     }: {
         template?: App.Models.TransactionTemplate | null;
         accounts: App.Models.Account[];
+        tags?: string[];
     } = $props();
 
     setLayoutProps({
@@ -53,7 +55,7 @@
 </script>
 
 <MobilePageLayout variant="full">
-    <TemplateForm {accounts} {template} bind:form />
+    <TemplateForm {accounts} {tags} {template} bind:form />
 </MobilePageLayout>
 
 {#if formActionProps}

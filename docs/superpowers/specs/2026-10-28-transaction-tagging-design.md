@@ -42,7 +42,7 @@ submit  tags: ["bills_rent"] ── POST/PUT ──> FormRequest  (count ≤ MAX
 - **Edit (plain)** — the tags array is **replaced wholesale** (no merge with prior tags).
 - **Edit (transfer)** — the unit edit soft-deletes and recreates all member rows from the updated `TransferData`; the recreated source row carries the tags again.
 - **Apply via template** — a template's tags prefill the create form through `TransactionFormData::fromTemplate`; they stay editable like every prefilled value.
-- **Display** — global transaction list shows up to 2 chip slugs + `+n`; the transaction detail shows the full chip row; template detail shows the template's chips.
+- **Display** — the transaction detail shows the full chip row; template detail shows the template's chips; the transaction list shows no tags (descoped).
 - **Degrade** — nothing to degrade: tags have no references, no decorations, no side effects. A stored slug can only become *unused*, never broken.
 - **Extend (future)** — list filter (own spec), per-user tag management (rename/merge/delete, or pivot migration).
 
@@ -156,9 +156,9 @@ public static function getUniqueTags(User $user): array
 
 ### 8. Display
 
-- `transaction-list-item.svelte` — soft mini-chips under/next to the description, **max 2 slugs + `+n`** overflow, muted styling for list density.
 - Transaction detail (`transaction-detail.svelte`) — the full chip row from the detail DTO.
 - Template detail (`template-detail.svelte`) — the template's chip row.
+- The transaction **list item shows no tags** (descoped decision, 2026-10-30) — tags surface on detail surfaces only.
 - Other transaction surfaces (account/category scoped lists) reuse the same chips opportunistically; not a scope requirement.
 
 ### 9. Testing (Pest)

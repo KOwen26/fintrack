@@ -25,6 +25,7 @@
     import Form from '@components/ui/forms/form.svelte';
     import MaskedInput from '@components/ui/forms/masked-input.svelte';
     import SubmitButton from '@components/ui/forms/submit-button.svelte';
+    import TagsInput from '@components/ui/forms/tags-input.svelte';
     import Textarea from '@components/ui/forms/textarea.svelte';
 
     /** Common quick-entry amounts (IDR) when the parent supplies none. */
@@ -38,12 +39,15 @@
         amountPresets?: number[];
         /** Quick-access templates — create surface only. */
         templates?: App.Models.TransactionTemplate[];
+        /** Existing tag slugs offered as combobox suggestions. */
+        tags?: string[];
     }
 
     let {
         transaction,
         accounts,
         templates = [],
+        tags = [],
         amountPresets = DEFAULT_AMOUNT_PRESETS,
     }: Props = $props();
 
@@ -111,6 +115,7 @@
             fee_amount: transaction.fee_amount !== null ? String(transaction.fee_amount) : '',
             category_id: transaction.category_id ?? '',
             transaction_date: transaction.transaction_date ?? '',
+            tags: transaction.tags ?? [],
         };
     }
 
@@ -303,7 +308,15 @@
                 </Field>
             {/if}
 
-            <!-- 4 · Date & Time -->
+            <!-- 4 · Tags — all types -->
+            <Field
+                titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
+                error={form.errors.tags}
+                title="Tags">
+                <TagsInput bind:value={form.tags} {tags} placeholder="Add tags…" />
+            </Field>
+
+            <!-- 5 · Date & Time -->
             <Field
                 id="transaction-date"
                 titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
@@ -317,7 +330,7 @@
                     bind:value={form.transaction_date} />
             </Field>
 
-            <!-- 5 · Fee — transfer only -->
+            <!-- 6 · Fee — transfer only -->
             {#if isTransfer}
                 <Field
                     id="transfer-fee"
@@ -332,7 +345,7 @@
                 </Field>
             {/if}
 
-            <!-- 6 · Notes -->
+            <!-- 7 · Notes -->
             <Field
                 id="transaction-notes"
                 titleClass="uppercase text-base-content/50 tracking-wide font-bold text-xs"
