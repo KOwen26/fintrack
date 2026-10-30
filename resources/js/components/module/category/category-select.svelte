@@ -18,6 +18,7 @@
     import Modal from '@components/ui/modals/modal.svelte';
     import Popover from '@components/ui/popover.svelte';
     import ScrollArea from '@components/ui/scroll-area.svelte';
+    import Separator from '@components/ui/separator.svelte';
 
     type Cashflow = 'inflow' | 'outflow';
 
@@ -238,7 +239,8 @@
                 {@render categoryList()}
             </Modal>
         {:else if open}
-            <hr class="mt-1 border-base-content/10" />
+            <Separator class="mt-1" />
+
             {@render categoryList()}
         {/if}
     {/if}
@@ -319,7 +321,7 @@
     <ScrollArea rootClass="max-h-150 space-y-0.5 overflow-y-auto">
         {#each groups as group, index (group.id)}
             {#if index > 0}
-                <hr class="my-1 border-base-content/10" />
+                <Separator class="mt-1" />
             {/if}
 
             {#if group.children.length && groupVariant === 'collapsible'}
