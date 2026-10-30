@@ -103,16 +103,14 @@
     {#if variant === 'inline'}
         <div class={cn('-mx-5 flex gap-2 overflow-x-auto px-5 pb-1', _class)}>
             {#each offered as template (template.id)}
-                <button
-                    class="flex shrink-0 items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 transition-colors hover:border-input"
+                <Button
+                    class="min-h-12 w-fit p-2"
+                    color="light"
                     onclick={() => apply(template)}
-                    type="button">
+                    variant="outline">
                     <DecorationBadge decorations={template.decorations} size="sm" />
                     <span class="text-sm font-medium whitespace-nowrap">{template.name}</span>
-                    <span class="text-xs whitespace-nowrap text-muted-foreground">
-                        <CurrencyAmount value={Number(template.amount)} />
-                    </span>
-                </button>
+                </Button>
             {/each}
         </div>
     {:else if variant === 'combobox'}
