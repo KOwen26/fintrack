@@ -19,12 +19,10 @@ function listPeriod(): DatePeriodPreset
 /** Creates a user with one in-window transaction and primes the list cache. */
 function primeTransactionListCache(): array
 {
-    $user = User::factory()->create();
-    $account = Account::factory()->create(['owner_id' => $user->id]);
-    Transaction::factory()->create([
+    [$user, $account] = userWithAccount();
+    Transaction::factory()->recent()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
-        'transaction_date' => now(),
         'description' => 'Cached row',
     ]);
 
@@ -91,10 +89,9 @@ test('creating a transaction invalidates the cached list', function (): void {
 test('deleting a transaction invalidates the cached list', function (): void {
     [$user, $account, $key] = primeTransactionListCache();
 
-    $doomed = Transaction::factory()->create([
+    $doomed = Transaction::factory()->recent()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
-        'transaction_date' => now(),
         'description' => 'Doomed row',
     ]);
 
@@ -109,30 +106,26 @@ test('deleting a transaction invalidates the cached list', function (): void {
 });
 
 test('getTransactionsByAccount returns only that account rows regardless of creator', function (): void {
-    $user = User::factory()->create();
-    $account = Account::factory()->create(['owner_id' => $user->id]);
-    $otherAccount = Account::factory()->create(['owner_id' => $user->id]);
+    [$user, $account] = userWithAccount();
+    $otherAccount = Account::factory()->for($user, 'owner')->create();
     $otherUser = User::factory()->create();
 
-    Transaction::factory()->create([
+    Transaction::factory()->recent()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
-        'transaction_date' => now(),
         'description' => 'Own row',
     ]);
 
     // Shared-account truth: a row another user created on the account still lists.
-    Transaction::factory()->create([
+    Transaction::factory()->recent()->create([
         'account_id' => $account->id,
         'created_by' => $otherUser->id,
-        'transaction_date' => now(),
         'description' => 'Shared row',
     ]);
 
-    Transaction::factory()->create([
+    Transaction::factory()->recent()->create([
         'account_id' => $otherAccount->id,
         'created_by' => $user->id,
-        'transaction_date' => now(),
         'description' => 'Other account row',
     ]);
 
@@ -156,9 +149,8 @@ test('serves the tags-bearing row shape under the versioned cache key', function
 
     expect(TransactionListService::cacheKey($user->id))->toBe('transaction-list:user:' . $user->id);
 
-    Transaction::factory()->create([
+    Transaction::factory()->recent()->create([
         'created_by' => $user->id,
-        'transaction_date' => now(),
         'tags' => ['cached'],
     ]);
 

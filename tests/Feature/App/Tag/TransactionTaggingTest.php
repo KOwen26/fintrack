@@ -8,18 +8,9 @@ use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\Transfer;
-use App\Models\User;
 use App\Services\TagService;
 use App\Services\TransactionListService;
 use Illuminate\Http\Request;
-
-function createTaggingAccount(): array
-{
-    $user = User::factory()->create();
-    $account = Account::factory()->create(['owner_id' => $user->id]);
-
-    return [$user, $account];
-}
 
 function taggingExpensePayload(Account $account): array
 {
@@ -33,7 +24,7 @@ function taggingExpensePayload(Account $account): array
 }
 
 test('stores normalized tags on a plain transaction', function (): void {
-    [$user, $account] = createTaggingAccount();
+    [$user, $account] = userWithAccount();
 
     $this->actingAs($user)->post(route('transactions.store'), [
         ...taggingExpensePayload($account),
@@ -46,7 +37,7 @@ test('stores normalized tags on a plain transaction', function (): void {
 });
 
 test('stores null when tags are omitted or all-dropped', function (array $extra): void {
-    [$user, $account] = createTaggingAccount();
+    [$user, $account] = userWithAccount();
 
     $this->actingAs($user)->post(route('transactions.store'), [
         ...taggingExpensePayload($account),
@@ -60,7 +51,7 @@ test('stores null when tags are omitted or all-dropped', function (array $extra)
 ]);
 
 test('rejects more than MAX_TAGS tags without persisting', function (): void {
-    [$user, $account] = createTaggingAccount();
+    [$user, $account] = userWithAccount();
 
     $this->actingAs($user)->post(route('transactions.store'), [
         ...taggingExpensePayload($account),
@@ -71,7 +62,7 @@ test('rejects more than MAX_TAGS tags without persisting', function (): void {
 });
 
 test('rejects a raw tag over MAX_RAW_LENGTH without persisting', function (): void {
-    [$user, $account] = createTaggingAccount();
+    [$user, $account] = userWithAccount();
 
     $this->actingAs($user)->post(route('transactions.store'), [
         ...taggingExpensePayload($account),
@@ -82,7 +73,7 @@ test('rejects a raw tag over MAX_RAW_LENGTH without persisting', function (): vo
 });
 
 test('replaces tags wholesale on update', function (): void {
-    [$user, $account] = createTaggingAccount();
+    [$user, $account] = userWithAccount();
     $transaction = Transaction::factory()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
@@ -98,18 +89,16 @@ test('replaces tags wholesale on update', function (): void {
 });
 
 test('exposes tags on list rows and the detail DTO', function (): void {
-    [$user, $account] = createTaggingAccount();
+    [$user, $account] = userWithAccount();
 
-    $tagged = Transaction::factory()->create([
+    $tagged = Transaction::factory()->recent()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
-        'transaction_date' => now()->subDay()->format('Y-m-d H:i:s'),
         'tags' => ['food'],
     ]);
-    $untagged = Transaction::factory()->create([
+    $untagged = Transaction::factory()->recent()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
-        'transaction_date' => now()->subDay()->format('Y-m-d H:i:s'),
     ]);
 
     $rows = TransactionListService::getTransactions($user, DatePeriodPreset::YearOnYear);
@@ -122,8 +111,8 @@ test('exposes tags on list rows and the detail DTO', function (): void {
 });
 
 test('seeds the edit form from the row — transfers from the source row', function (): void {
-    [$user, $account] = createTaggingAccount();
-    $destination = Account::factory()->create(['owner_id' => $user->id]);
+    [$user, $account] = userWithAccount();
+    $destination = Account::factory()->for($user, 'owner')->create();
 
     $tagged = Transaction::factory()->create([
         'account_id' => $account->id,
@@ -131,16 +120,9 @@ test('seeds the edit form from the row — transfers from the source row', funct
         'tags' => ['food'],
     ]);
 
-    $transfer = Transfer::factory()->create(['created_by' => $user->id]);
-    Transaction::factory()->transferOutflow($transfer)->create([
-        'account_id' => $account->id,
-        'created_by' => $user->id,
-        'tags' => ['savings'],
-    ]);
-    Transaction::factory()->transferInflow($transfer)->create([
-        'account_id' => $destination->id,
-        'created_by' => $user->id,
-    ]);
+    $transfer = Transfer::factory()
+        ->withMembers($account, $destination, sourceTags: ['savings'])
+        ->create(['created_by' => $user->id]);
 
     expect(TransactionFormData::fromTransaction($tagged)->tags)->toBe(['food'])
         ->and(TransactionFormData::fromTransfer($transfer)->tags)->toBe(['savings'])
@@ -148,7 +130,7 @@ test('seeds the edit form from the row — transfers from the source row', funct
 });
 
 test('passes the tags prop on the create page', function (): void {
-    [$user, $account] = createTaggingAccount();
+    [$user, $account] = userWithAccount();
     Transaction::factory()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
@@ -164,7 +146,7 @@ test('passes the tags prop on the create page', function (): void {
 });
 
 test('passes the tags prop on the edit page', function (): void {
-    [$user, $account] = createTaggingAccount();
+    [$user, $account] = userWithAccount();
     Transaction::factory()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,

@@ -3,6 +3,9 @@
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
+// Shared cross-file test helpers (scenario pairs, page-id extraction).
+require __DIR__ . '/Support/helpers.php';
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -29,6 +32,34 @@ pest()->group('unit')->in('Unit');
 
 pest()->group('feature:auth')->in('Feature/Auth');
 pest()->group('feature:app')->in('Feature/App');
+
+/*
+ * Module groups — the relevance axis for "I changed X, run its tests".
+ * A module label spans suites: --group=module:transfer runs the feature
+ * tests AND TransferServiceTest. Feature files map by module directory;
+ * integration files map per file.
+ */
+pest()->group('module:auth')->in('Feature/Auth');
+pest()->group('module:account')->in('Feature/App/Account');
+pest()->group('module:transaction')->in('Feature/App/Transaction');
+pest()->group('module:transfer')->in('Feature/App/Transfer');
+pest()->group('module:tag')->in('Feature/App/Tag');
+pest()->group('module:template')->in('Feature/App/Template');
+pest()->group('module:dashboard')->in('Feature/App/Dashboard');
+pest()->group('module:statistics')->in('Feature/App/Statistics');
+pest()->group('module:settings')->in('Feature/App/Settings');
+
+pest()->group('module:transfer')->in('Integration/Services/TransferServiceTest.php');
+pest()->group('module:tag')->in('Integration/Services/TagServiceTest.php', 'Integration/Models/TagsTest.php');
+pest()->group('module:transaction')->in('Integration/Observers/TransactionObserverTest.php');
+pest()->group('module:account')->in(
+    'Integration/Services/AccountServiceTest.php',
+    'Integration/Services/BalanceServiceTest.php',
+    'Integration/Services/InitialBalanceSyncTest.php',
+);
+pest()->group('module:statistics')->in('Integration/Services/SpendingServiceTest.php');
+pest()->group('module:template')->in('Integration/Services/TransactionTemplateServiceTest.php');
+pest()->group('module:decorations')->in('Integration/Models/DecorationsTest.php');
 
 /*
 |--------------------------------------------------------------------------

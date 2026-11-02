@@ -5,22 +5,7 @@ use App\Enums\DatePeriodPreset;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\Transfer;
-use App\Models\User;
 use App\Services\TransactionListService;
-
-function tagFilterAccountForUser(): array
-{
-    $user = User::factory()->create();
-    $account = Account::factory()->create(['owner_id' => $user->id]);
-
-    return [$user, $account];
-}
-
-/** Rows of a service page keyed by id — locally owned, globally unique. */
-function tagFilterPageIds(array $page): array
-{
-    return array_map(fn (array $row): int => $row['id'], $page['transactions']);
-}
 
 /** A plain recent-dated row inside the default list window. */
 function tagFilterRowAttributes(int $account_id, int $created_by): array
@@ -28,12 +13,12 @@ function tagFilterRowAttributes(int $account_id, int $created_by): array
     return [
         'account_id' => $account_id,
         'created_by' => $created_by,
-        'transaction_date' => fake()->dateTimeBetween('-5 months', 'now')->format('Y-m-d H:i:s'),
+        'transaction_date' => fake()->dateTimeBetween('-2 months', 'now')->format('Y-m-d H:i:s'),
     ];
 }
 
 test('filters rows by a single tag', function (): void {
-    [$user, $account] = tagFilterAccountForUser();
+    [$user, $account] = userWithAccount();
 
     $tagged = Transaction::factory()->create([
         ...tagFilterRowAttributes($account->id, $user->id),
@@ -49,11 +34,11 @@ test('filters rows by a single tag', function (): void {
         new TransactionListFilters(tags: ['food']),
     );
 
-    expect(tagFilterPageIds($page))->toBe([$tagged->id]);
+    expect(pageIds($page))->toBe([$tagged->id]);
 });
 
 test('multiple selected tags match with OR semantics', function (): void {
-    [$user, $account] = tagFilterAccountForUser();
+    [$user, $account] = userWithAccount();
 
     $food = Transaction::factory()->create([...tagFilterRowAttributes($account->id, $user->id), 'tags' => ['food']]);
     $bills = Transaction::factory()->create([...tagFilterRowAttributes($account->id, $user->id), 'tags' => ['bills']]);
@@ -66,21 +51,16 @@ test('multiple selected tags match with OR semantics', function (): void {
         new TransactionListFilters(tags: ['food', 'bills']),
     );
 
-    expect(tagFilterPageIds($page))->toEqualCanonicalizing([$food->id, $bills->id]);
+    expect(pageIds($page))->toEqualCanonicalizing([$food->id, $bills->id]);
 });
 
 test('a tagged transfer unit surfaces exactly once — its outflow representative', function (): void {
-    [$user, $account] = tagFilterAccountForUser();
-    $destination = Account::factory()->create(['owner_id' => $user->id]);
+    [$user, $account] = userWithAccount();
+    $destination = Account::factory()->for($user, 'owner')->create();
 
-    $transfer = Transfer::factory()->create(['created_by' => $user->id]);
-
-    Transaction::factory()->transferOutflow($transfer)->create([
-        ...tagFilterRowAttributes($account->id, $user->id),
-        'tags' => ['monthly_sweep'],
-    ]);
-    Transaction::factory()->transferInflow($transfer)->create(tagFilterRowAttributes($destination->id, $user->id));
-    Transaction::factory()->transferFee($transfer)->create(tagFilterRowAttributes($account->id, $user->id));
+    Transfer::factory()
+        ->withMembers($account, $destination, fee: 2_500.0, sourceTags: ['monthly_sweep'])
+        ->create(['created_by' => $user->id]);
 
     $page = TransactionListService::getTransactionsByCursorPage(
         $user,
@@ -89,14 +69,14 @@ test('a tagged transfer unit surfaces exactly once — its outflow representativ
         new TransactionListFilters(tags: ['monthly_sweep']),
     );
 
-    $ids = tagFilterPageIds($page);
+    $ids = pageIds($page);
 
     expect($ids)->toHaveCount(1)
         ->and(Transaction::query()->find($ids[0])->flow->value)->toBe('outflow');
 });
 
 test('rejects malformed tag filter values without rendering', function (): void {
-    [$user] = tagFilterAccountForUser();
+    [$user] = userWithAccount();
 
     $this->actingAs($user)->get(route('transactions.index', [
         'filters' => [['id' => 'tags', 'value' => ['Not A Slug!']]],
@@ -104,7 +84,7 @@ test('rejects malformed tag filter values without rendering', function (): void 
 });
 
 test('accepts the tags filter id with valid slugs', function (): void {
-    [$user] = tagFilterAccountForUser();
+    [$user] = userWithAccount();
 
     $this->withoutExceptionHandling()->actingAs($user)->get(route('transactions.index', [
         'filters' => [['id' => 'tags', 'value' => ['food']]],
@@ -112,7 +92,7 @@ test('accepts the tags filter id with valid slugs', function (): void {
 });
 
 test('global search matches stored tags', function (): void {
-    [$user, $account] = tagFilterAccountForUser();
+    [$user, $account] = userWithAccount();
 
     $tagged = Transaction::factory()->create([
         ...tagFilterRowAttributes($account->id, $user->id),
@@ -128,11 +108,11 @@ test('global search matches stored tags', function (): void {
         new TransactionListFilters(search: 'starbucks'),
     );
 
-    expect(tagFilterPageIds($page))->toBe([$tagged->id]);
+    expect(pageIds($page))->toBe([$tagged->id]);
 });
 
 test('passes the tags prop on the transaction index', function (): void {
-    [$user, $account] = tagFilterAccountForUser();
+    [$user, $account] = userWithAccount();
     Transaction::factory()->create([...tagFilterRowAttributes($account->id, $user->id), 'tags' => ['food']]);
 
     $this->actingAs($user)->get(route('transactions.index'))

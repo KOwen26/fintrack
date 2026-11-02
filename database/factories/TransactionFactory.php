@@ -48,6 +48,21 @@ class TransactionFactory extends Factory
         ]);
     }
 
+    /**
+     * Dated inside the default list window (Last3Months) — the definition's
+     * random one-year span can fall outside every windowed list read.
+     */
+    public function recent(): static
+    {
+        return $this->state(['transaction_date' => now()->subDays(10)->format('Y-m-d H:i:s')]);
+    }
+
+    /** Dated beyond the default list window (Last3Months) — for window-boundary assertions. */
+    public function outsideWindow(): static
+    {
+        return $this->state(['transaction_date' => now()->subMonths(4)->format('Y-m-d H:i:s')]);
+    }
+
     /** Outflow member row of a transfer unit — booked on the source account. */
     public function transferOutflow(Transfer | int $transfer): static
     {
