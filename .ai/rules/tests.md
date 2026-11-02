@@ -40,14 +40,34 @@ file. Group related cases with `describe()` blocks in alphabetical sections; use
 check — guests are never re-tested per route. `Feature/App` holds the authenticated
 surface: every test there acts as a logged-in user.
 
+## Module groups
+
+`tests/Feature/App` is organized one directory per module (account, transaction,
+transfer, tag, template, dashboard, statistics, settings), and `tests/Pest.php`
+maps each directory — plus per-file entries for `tests/Integration` — to a
+`module:{name}` group. A new module needs its directory mapped, or
+`tests/Architecture/ModuleGroupMapTest.php` fails. Run a feature's full relevance
+across suites with `vendor/bin/pest --group=module:{name}`.
+
 ## Test data
 
 Build all test data via model factories with named states; never invoke seeders or
 insert rows directly. Use file-local plain functions for per-file setup and payload
-builders, with globally unique names; shared scenarios go in `tests/Pest.php`. Pin
-`transaction_date` explicitly whenever an assertion depends on a period window — the
-factory default is random within the last year. Freeze the clock with
-`$this->travelTo()` when behavior depends on time.
+builders, with globally unique names; shared helpers (`userWithAccount()`,
+`pageIds()`) live in `tests/Support/helpers.php` — required once from `Pest.php`,
+never re-declared per test file. Any read through a period window uses
+`Transaction::factory()->recent()` / `->outsideWindow()` rather than an explicit
+date — the factory default is random within the last year and silently falls
+outside list windows. Transfer units come from
+`Transfer::factory()->withMembers($source, $destination, fee:, sourceTags:)`,
+never hand-composed member rows. Freeze the clock with `$this->travelTo()` when
+behavior depends on time.
+
+## Shape vs behavior
+
+Scenario factories pin fixture shape. When the scenario itself is the behavior
+under test (booking, editing, or deleting a transfer unit), go through the real
+service — `resolve(TransferService::class)` — never a factory composition.
 
 ## HTTP assertions
 

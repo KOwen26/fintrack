@@ -19,6 +19,7 @@
 - Parsers declare their provider's **pinned layout** as private constants — delimiter, skipped preamble rows (`HEADER_ROWS`), and column indexes. No header matching, no delimiter sniffing.
 - Two failure tiers, always: file-level unreadable layout → throw `ImportFileException`; row-level problems → `ParsedRow::$errors`, never dropped rows.
 - Unit tests live in `tests/Unit/` (no Laravel TestCase binding there — keep it that way), fixtures in `tests/Fixtures/Imports/`.
+- Cross-file test helpers live in `tests/Support/helpers.php` (required by `tests/Pest.php`, so loaded for every suite). **Never define the same helper function in two test files** — PHP fatal redeclaration. Add shared helpers to `Support/helpers.php` instead.
 
 ## File Structure
 
@@ -47,6 +48,7 @@
 - Create: `tests/Fixtures/Imports/mandiri-basic.csv`
 - Create: `tests/Fixtures/Imports/mandiri-dirty.csv`
 - Create: `tests/Fixtures/Imports/mandiri-unrecognized.csv`
+- Modify: `tests/Support/helpers.php` (add the shared `fixture()` helper)
 - Test: `tests/Unit/Services/Import/MandiriCsvParserTest.php`
 
 **Interfaces:**
@@ -84,7 +86,17 @@ foo;bar;baz
 1;2;3
 ```
 
-Create `tests/Unit/Services/Import/MandiriCsvParserTest.php` (Unit — no Laravel app needed):
+First, add the shared fixture loader to `tests/Support/helpers.php` (both parser test files — and the staging plan's tests — call it; defining it per file would fatal on redeclaration):
+
+```php
+/** Raw contents of a statement import fixture, e.g. `import_fixture('mandiri-basic.csv')`. */
+function import_fixture(string $name): string
+{
+    return file_get_contents(__DIR__ . '/../Fixtures/Imports/' . $name);
+}
+```
+
+Then create `tests/Unit/Services/Import/MandiriCsvParserTest.php` (Unit — no Laravel app needed; the helper above is global):
 
 ```php
 <?php
@@ -93,13 +105,8 @@ use App\Enums\Cashflow;
 use App\Services\Import\ImportFileException;
 use App\Services\Import\Parsers\MandiriCsvParser;
 
-function fixture(string $name): string
-{
-    return file_get_contents(dirname(__DIR__, 3) . '/Fixtures/Imports/' . $name);
-}
-
 test('parses a well-formed statement by pinned columns', function (): void {
-    $statement = (new MandiriCsvParser())->parse(fixture('mandiri-basic.csv'));
+    $statement = (new MandiriCsvParser())->parse(import_fixture('mandiri-basic.csv'));
 
     expect($statement->rows)->toHaveCount(3);
 
@@ -116,7 +123,7 @@ test('parses a well-formed statement by pinned columns', function (): void {
 });
 
 test('stages rows with field errors instead of dropping them', function (): void {
-    $statement = (new MandiriCsvParser())->parse(fixture('mandiri-dirty.csv'));
+    $statement = (new MandiriCsvParser())->parse(import_fixture('mandiri-dirty.csv'));
 
     expect($statement->rows)->toHaveCount(3)
         ->and($statement->rows[0]->errors)->toBe([])
@@ -127,14 +134,14 @@ test('stages rows with field errors instead of dropping them', function (): void
 });
 
 test('ignores a UTF-8 BOM ahead of the header row', function (): void {
-    $statement = (new MandiriCsvParser())->parse("\u{FEFF}" . fixture('mandiri-basic.csv'));
+    $statement = (new MandiriCsvParser())->parse("\u{FEFF}" . import_fixture('mandiri-basic.csv'));
 
     expect($statement->rows)->toHaveCount(3)
         ->and($statement->rows[0]->errors)->toBe([]);
 });
 
 test('throws when no row matches the pinned layout', function (): void {
-    (new MandiriCsvParser())->parse(fixture('mandiri-unrecognized.csv'));
+    (new MandiriCsvParser())->parse(import_fixture('mandiri-unrecognized.csv'));
 })->throws(ImportFileException::class, 'The statement does not match the expected Mandiri layout.');
 
 test('throws on a header-only statement', function (): void {
@@ -442,7 +449,7 @@ composer require maatwebsite/excel --no-interaction
 
 - [ ] **Step 2: Write the failing tests**
 
-Create `tests/Unit/Services/Import/MandiriExcelParserTest.php` — the same fixture suite as Task 1, run against the Excel-backed parser. Note: these tests boot no Laravel app either; `Excel::toArray` on a local path needs no facades beyond the package's own autoloading. If the facade requires the container in your version, add `uses(Illuminate\Foundation\Testing\TestCase::class)` or move the file to `tests/Integration/Services/Import/` — the assertions are identical either way.
+Create `tests/Unit/Services/Import/MandiriExcelParserTest.php` — the same fixture suite as Task 1, run against the Excel-backed parser, reusing the shared `import_fixture()` helper from `tests/Support/helpers.php` (never redefine it here — redeclaration is fatal). Note: these tests boot no Laravel app either; `Excel::toArray` on a local path needs no facades beyond the package's own autoloading. If the facade requires the container in your version, add `uses(Illuminate\Foundation\Testing\TestCase::class)` or move the file to `tests/Integration/Services/Import/` — the assertions are identical either way.
 
 ```php
 <?php
@@ -451,13 +458,8 @@ use App\Enums\Cashflow;
 use App\Services\Import\ImportFileException;
 use App\Services\Import\Parsers\MandiriExcelParser;
 
-function fixture(string $name): string
-{
-    return file_get_contents(dirname(__DIR__, 3) . '/Fixtures/Imports/' . $name);
-}
-
 test('parses a well-formed statement by pinned columns', function (): void {
-    $statement = (new MandiriExcelParser())->parse(fixture('mandiri-basic.csv'));
+    $statement = (new MandiriExcelParser())->parse(import_fixture('mandiri-basic.csv'));
 
     expect($statement->rows)->toHaveCount(3);
 
@@ -474,7 +476,7 @@ test('parses a well-formed statement by pinned columns', function (): void {
 });
 
 test('stages rows with field errors instead of dropping them', function (): void {
-    $statement = (new MandiriExcelParser())->parse(fixture('mandiri-dirty.csv'));
+    $statement = (new MandiriExcelParser())->parse(import_fixture('mandiri-dirty.csv'));
 
     expect($statement->rows)->toHaveCount(3)
         ->and($statement->rows[0]->errors)->toBe([])
@@ -485,7 +487,7 @@ test('stages rows with field errors instead of dropping them', function (): void
 });
 
 test('throws when no row matches the pinned layout', function (): void {
-    (new MandiriExcelParser())->parse(fixture('mandiri-unrecognized.csv'));
+    (new MandiriExcelParser())->parse(import_fixture('mandiri-unrecognized.csv'));
 })->throws(ImportFileException::class, 'The statement does not match the expected Mandiri layout.');
 
 test('throws on a header-only statement', function (): void {

@@ -22,7 +22,7 @@
 - Migration column order: `id()` → relation FKs → core data columns → status/JSON columns → `timestamps()`. Explicit indexes on every FK and every column used in WHERE/ORDER BY.
 - Business logic in `app/Services/` (thin controllers, one service call per action), validation in `app/Http/Requests/`, authorization via Policies + `$this->authorize()`.
 - Amounts: `decimal(15, 2)` columns, whole-rupiah values in practice.
-- Pest tests: create with `php artisan make:test --pest {Name}` (no directory in name), then move to the target directory; integration tests in `tests/Integration/`, feature tests in `tests/Feature/App/`; run narrowest set via `php artisan test --compact --filter=...`.
+- Pest tests: create with `php artisan make:test --pest {Name}` (no directory in name), then move to the target directory. Feature tests live in module directories — `tests/Feature/App/Import/ImportTest.php` (matching `Account/AccountTest.php` etc.); integration tests in `tests/Integration/`. Register module groups in `tests/Pest.php`: feature tests map by directory (`pest()->group('module:import')->in('Feature/App/Import')`), integration files map per file. Cross-file helpers go in `tests/Support/helpers.php` (e.g. `userWithAccount()`), never redefined per file. Run narrowest set via `php artisan test --compact --filter=...` or `--group=module:import`.
 - Import rows never become "uncategorized": plain rows default to `Category::OtherIncome` / `Category::OtherExpenses` by flow; transfer-marked rows are the documented exception.
 
 ## File Structure
@@ -37,7 +37,7 @@
 - Create: `app/Http/Controllers/ImportController.php`
 - Create: `app/Policies/ImportBatchPolicy.php`
 - Modify: `routes/web.php`, `app/Http/Controllers/AccountController.php` (`show`), `app/Models/Account.php` (one relation)
-- Create tests: `tests/Integration/Models/ImportRowCastsTest.php`, `tests/Unit/Services/Import/ImportFingerprintTest.php`, `tests/Integration/Services/ImportServiceTest.php`, `tests/Feature/App/ImportTest.php`
+- Create tests: `tests/Integration/Models/ImportRowCastsTest.php`, `tests/Unit/Services/Import/ImportFingerprintTest.php`, `tests/Integration/Services/ImportServiceTest.php`, `tests/Feature/App/Import/ImportTest.php`
 
 ---
 
@@ -53,6 +53,7 @@
 - Create: `app/Models/ImportRow.php`
 - Create: `database/factories/ImportBatchFactory.php`
 - Create: `database/factories/ImportRowFactory.php`
+- Modify: `tests/Pest.php` (register the `module:import` group for the integration test files)
 - Test: `tests/Integration/Models/ImportRowCastsTest.php`
 
 **Interfaces:**
@@ -405,6 +406,12 @@ test('casts batch status and datetimes', function (): void {
 });
 ```
 
+Then register the module group in `tests/Pest.php` — integration files map per file, so add this alongside the existing `Integration/Models` mapping:
+
+```php
+pest()->group('module:import')->in('Integration/Models/ImportRowCastsTest.php');
+```
+
 ---
 
 ### Task 2: Import fingerprint
@@ -487,6 +494,8 @@ final class ImportFingerprint
 **Files:**
 - Create: `app/Services/ImportService.php`
 - Modify: `app/Models/Account.php` (add `importBatches()` relation)
+- Modify: `tests/Support/helpers.php` (add the shared `statementFile()` helper)
+- Modify: `tests/Pest.php` (extend the `module:import` mapping for the service test file)
 - Test: `tests/Integration/Services/ImportServiceTest.php`
 
 **Interfaces:**
@@ -496,6 +505,18 @@ final class ImportFingerprint
 - [ ] **Step 1: Write the failing tests**
 
 `php artisan make:test --pest ImportServiceTest`, move to `tests/Integration/Services/ImportServiceTest.php`:
+
+First, add the shared upload-fixture helper to `tests/Support/helpers.php` (used by this file and the Task 6 feature tests — with `use Illuminate\Http\UploadedFile;` added to the top of the file):
+
+```php
+/** A fake statement upload built from an import fixture — `statementFile('mandiri-dirty.csv')`. */
+function statementFile(string $name = 'mandiri-basic.csv'): UploadedFile
+{
+    return UploadedFile::fake()->createWithContent('mutasi.csv', import_fixture($name));
+}
+```
+
+Then create `tests/Integration/Services/ImportServiceTest.php` (`statementFile()` is global from Support; `importableAccount()` is only used in this file, so it stays local, styled with the `for()` relation):
 
 ```php
 <?php
@@ -511,7 +532,6 @@ use App\Models\Provider;
 use App\Models\User;
 use App\Services\ImportService;
 use App\Services\TransactionService;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\ValidationException;
 
 function importableAccount(User $user): Account
@@ -522,18 +542,9 @@ function importableAccount(User $user): Account
         'type' => ProviderType::Bank,
     ]);
 
-    return Account::factory()->create([
-        'owner_id' => $user->id,
-        'provider_id' => $provider->id,
-    ]);
-}
-
-function statementFile(string $name = 'mandiri-basic.csv'): UploadedFile
-{
-    return UploadedFile::fake()->createWithContent(
-        'mutasi.csv',
-        file_get_contents(base_path('tests/Fixtures/Imports/' . $name))
-    );
+    return Account::factory()
+        ->for($user, 'owner')
+        ->create(['provider_id' => $provider->id]);
 }
 
 test('uploads a statement and stages rows with category defaults', function (): void {
@@ -580,7 +591,7 @@ test('flags duplicates against existing transactions and within the file', funct
 
 test('rejects upload when the provider has no parser', function (): void {
     $user = User::factory()->create();
-    $account = Account::factory()->create(['owner_id' => $user->id]); // no provider
+    $account = Account::factory()->for($user, 'owner')->create(); // no provider
 
     app(ImportService::class)->upload($user, $account, statementFile());
 })->throws(ValidationException::class);
@@ -598,6 +609,15 @@ test('maps parser file failures to validation errors and creates nothing', funct
 
     expect(\App\Models\ImportBatch::count())->toBe(0);
 });
+```
+
+Then extend the `module:import` mapping in `tests/Pest.php` (integration files map per file — Task 1 registered the casts test; add the service test next to it):
+
+```php
+pest()->group('module:import')->in(
+    'Integration/Models/ImportRowCastsTest.php',
+    'Integration/Services/ImportServiceTest.php',
+);
 ```
 
 - [ ] **Step 2: Implement `ImportService::upload`**
@@ -897,7 +917,7 @@ test('approves included rows into real transactions and updates the balance', fu
 test('approve materializes a transfer-marked row as an aggregate with a mirrored member', function (): void {
     $user = User::factory()->create();
     $account = importableAccount($user);
-    $destination = Account::factory()->create(['owner_id' => $user->id]);
+    $destination = Account::factory()->for($user, 'owner')->create();
     $destinationBefore = $destination->current_balance;
 
     $batch = app(ImportService::class)->upload($user, $account, statementFile());
@@ -1091,7 +1111,8 @@ Append to `ImportService` (imports to add: `App\Data\Transaction\TransactionData
 - Create: `app/Http/Controllers/ImportController.php`
 - Modify: `routes/web.php`
 - Modify: `app/Http/Controllers/AccountController.php` (`show`)
-- Test: `tests/Feature/App/ImportTest.php`
+- Modify: `tests/Pest.php` (register the `module:import` group for the feature directory)
+- Test: `tests/Feature/App/Import/ImportTest.php`
 
 **Interfaces:**
 - Consumes: `ImportService` (Tasks 3–5), `ParserRegistry` (parsing plan Task 2), `CategoryService::getCategories()`, `AccountService::getAccountsByUser(User)` (existing).
@@ -1099,7 +1120,7 @@ Append to `ImportService` (imports to add: `App\Data\Transaction\TransactionData
 
 - [ ] **Step 1: Write the failing feature tests**
 
-`php artisan make:test --pest ImportTest`, move to `tests/Feature/App/ImportTest.php`:
+`php artisan make:test --pest ImportTest`, then move it to the module directory as `tests/Feature/App/Import/ImportTest.php` (matching `Account/AccountTest.php`, `Transfer/TransferTest.php`) and write:
 
 ```php
 <?php
@@ -1113,31 +1134,20 @@ use App\Models\ImportRow;
 use App\Models\Provider;
 use App\Models\User;
 use App\Services\ImportService;
-use Illuminate\Http\UploadedFile;
 
 beforeEach(function (): void {
-    $this->user = User::factory()->create();
-
     $this->provider = Provider::factory()->create([
         'name' => 'Mandiri',
         'slug' => 'mandiri',
         'type' => ProviderType::Bank,
     ]);
 
-    $this->account = Account::factory()->create([
-        'owner_id' => $this->user->id,
-        'provider_id' => $this->provider->id,
-    ]);
+    [$this->user, $this->account] = userWithAccount(['provider_id' => $this->provider->id]);
 });
 
 function stagedBatch(User $user, Account $account): ImportBatch
 {
-    $file = UploadedFile::fake()->createWithContent(
-        'mutasi.csv',
-        file_get_contents(base_path('tests/Fixtures/Imports/mandiri-basic.csv'))
-    );
-
-    return app(ImportService::class)->upload($user, $account, $file);
+    return app(ImportService::class)->upload($user, $account, statementFile());
 }
 
 test('renders the upload page for the account owner', function (): void {
@@ -1152,10 +1162,10 @@ test('renders the upload page for the account owner', function (): void {
 });
 
 test('forbids the upload page for non-owners even when shareable', function (): void {
-    $shareable = Account::factory()->shareable()->create([
-        'owner_id' => $this->user->id,
-        'provider_id' => $this->provider->id,
-    ]);
+    $shareable = Account::factory()
+        ->shareable()
+        ->for($this->user, 'owner')
+        ->create(['provider_id' => $this->provider->id]);
 
     $this->actingAs(User::factory()->create())
         ->get(route('imports.create', $shareable))
@@ -1163,20 +1173,15 @@ test('forbids the upload page for non-owners even when shareable', function (): 
 });
 
 test('stores an upload and redirects to the review page', function (): void {
-    $file = UploadedFile::fake()->createWithContent(
-        'mutasi.csv',
-        file_get_contents(base_path('tests/Fixtures/Imports/mandiri-basic.csv'))
-    );
-
     $this->actingAs($this->user)
-        ->post(route('imports.store', $this->account), ['statement' => $file])
+        ->post(route('imports.store', $this->account), ['statement' => statementFile()])
         ->assertRedirectToRoute('imports.show', ['batch' => ImportBatch::query()->sole()->id]);
 
     expect(ImportRow::count())->toBe(3);
 });
 
 test('rejects non-csv uploads', function (): void {
-    $file = UploadedFile::fake()->create('statement.pdf', 100, 'application/pdf');
+    $file = \Illuminate\Http\UploadedFile::fake()->create('statement.pdf', 100, 'application/pdf');
 
     $this->actingAs($this->user)
         ->post(route('imports.store', $this->account), ['statement' => $file])
@@ -1253,7 +1258,7 @@ test('forbids every surface for a stranger', function (): void {
 });
 
 test('account show exposes import support', function (): void {
-    $unsupported = Account::factory()->create(['owner_id' => $this->user->id]);
+    $unsupported = Account::factory()->for($this->user, 'owner')->create();
 
     $this->actingAs($this->user)->get(route('accounts.show', $this->account))
         ->assertOk()
@@ -1264,6 +1269,14 @@ test('account show exposes import support', function (): void {
         ->assertInertia(fn ($page) => $page->where('import_supported', false));
 });
 ```
+
+Finally, register the feature module group in `tests/Pest.php` — feature tests map by directory, so add this alongside the existing `module:*` directory mappings:
+
+```php
+pest()->group('module:import')->in('Feature/App/Import');
+```
+
+(Run the whole module's tests later with `php artisan test --compact --group=module:import`.)
 
 - [ ] **Step 2: Create the policy**
 

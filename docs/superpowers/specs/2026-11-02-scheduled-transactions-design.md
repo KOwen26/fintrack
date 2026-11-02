@@ -246,7 +246,8 @@ public function nextOccurrence(CarbonInterface $after, CarbonInterface $startDat
 - `tests/Integration/Services/ScheduleProcessorTest.php` — auto-post with occurrence-date transaction; pending creation; grace auto-skip (boundary: `today == occurrence + 7` still pending, `+8` skips); catch-up batch; all three completion causes; unavailable-account skip in both modes; transfer path; idempotent double-process; paused schedules excluded; cancel flips pendings.
 - `tests/Integration/Services/TransactionScheduleServiceTest.php` — CRUD, next-run recompute on every write, pause/resume semantics, reactivation of a canceled row.
 - `tests/Feature/App/Settings/TransactionScheduleTest.php` — route matrix owner-only (403s), validation matrix (per-frequency params, Feb-30 rejection, schedulability rejection, `ends_at` ordering), redirect + flash targets.
-- `tests/Feature/App/TransactionScheduleRunTest.php` — confirm/skip endpoints with policy; middleware materializes on an authed GET; dashboard `scheduled` prop shapes (pending + upcoming).
+- `tests/Feature/App/Schedule/ScheduleMaterializationTest.php` — middleware materializes on an authed GET (and stays quiet for guests/clean accounts); `schedules:process` covers every user.
+- `tests/Feature/App/Schedule/TransactionScheduleRunTest.php` — confirm/skip endpoints with policy; dashboard `scheduled` prop shapes (pending + upcoming). Domain-owned placement (the `Feature/App/Template/` precedent) with a `module:schedule` group registered in `tests/Pest.php`.
 - Factories for both models (states: paused, canceled, completed; frequency states); follow the `testing-best-practices` skill.
 
 ## Out of scope

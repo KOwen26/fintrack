@@ -47,9 +47,9 @@ use App\Enums\ScheduleFrequency;
 use Carbon\CarbonImmutable;
 
 it('returns the start date for once when still ahead, null once past', function (string $today, ?string $expected): void {
-    $startDate = CarbonImmutable::parse('2026-12-01');
+    $startDate = new CarbonImmutable('2026-12-01');
 
-    $result = ScheduleFrequency::Once->nextOccurrence(CarbonImmutable::parse($today), $startDate);
+    $result = ScheduleFrequency::Once->nextOccurrence(new CarbonImmutable($today), $startDate);
 
     expect($result?->toDateString())->toBe($expected);
 })->with([
@@ -59,39 +59,39 @@ it('returns the start date for once when still ahead, null once past', function 
 ]);
 
 it('advances daily one day at a time, never before the start date', function (): void {
-    $startDate = CarbonImmutable::parse('2026-11-10');
+    $startDate = new CarbonImmutable('2026-11-10');
 
-    expect(ScheduleFrequency::Daily->nextOccurrence(CarbonImmutable::parse('2026-11-25'), $startDate)?->toDateString())->toBe('2026-11-26')
-        ->and(ScheduleFrequency::Daily->nextOccurrence(CarbonImmutable::parse('2026-11-05'), $startDate)?->toDateString())->toBe('2026-11-10');
+    expect(ScheduleFrequency::Daily->nextOccurrence(new CarbonImmutable('2026-11-25'), $startDate)?->toDateString())->toBe('2026-11-26')
+        ->and(ScheduleFrequency::Daily->nextOccurrence(new CarbonImmutable('2026-11-05'), $startDate)?->toDateString())->toBe('2026-11-10');
 });
 
 it('picks the next selected weekday for weekly', function (): void {
-    $startDate = CarbonImmutable::parse('2026-11-04'); // Wednesday
+    $startDate = new CarbonImmutable('2026-11-04'); // Wednesday
     $params = ['days_of_week' => [1, 5], 'interval' => 1]; // Mon + Fri
 
     // 2026-11-05 is Thursday → next is Friday 06
-    expect(ScheduleFrequency::Weekly->nextOccurrence(CarbonImmutable::parse('2026-11-05'), $startDate, $params)?->toDateString())->toBe('2026-11-06')
+    expect(ScheduleFrequency::Weekly->nextOccurrence(new CarbonImmutable('2026-11-05'), $startDate, $params)?->toDateString())->toBe('2026-11-06')
         // from Friday 06 → Monday 09
-        ->and(ScheduleFrequency::Weekly->nextOccurrence(CarbonImmutable::parse('2026-11-06'), $startDate, $params)?->toDateString())->toBe('2026-11-09');
+        ->and(ScheduleFrequency::Weekly->nextOccurrence(new CarbonImmutable('2026-11-06'), $startDate, $params)?->toDateString())->toBe('2026-11-09');
 });
 
 it('honours the fortnight phase anchored on the start week for interval 2', function (): void {
     // Start Monday 2026-11-02 → "on" weeks begin 11-02, 11-16, 11-30
-    $startDate = CarbonImmutable::parse('2026-11-02');
+    $startDate = new CarbonImmutable('2026-11-02');
     $params = ['days_of_week' => [5], 'interval' => 2]; // Fridays
 
     // Friday 11-06 falls in the anchor week → on
-    expect(ScheduleFrequency::Weekly->nextOccurrence(CarbonImmutable::parse('2026-11-05'), $startDate, $params)?->toDateString())->toBe('2026-11-06')
+    expect(ScheduleFrequency::Weekly->nextOccurrence(new CarbonImmutable('2026-11-05'), $startDate, $params)?->toDateString())->toBe('2026-11-06')
         // Friday 11-13 is an "off" week → jumps to 11-20
-        ->and(ScheduleFrequency::Weekly->nextOccurrence(CarbonImmutable::parse('2026-11-13'), $startDate, $params)?->toDateString())->toBe('2026-11-20')
+        ->and(ScheduleFrequency::Weekly->nextOccurrence(new CarbonImmutable('2026-11-13'), $startDate, $params)?->toDateString())->toBe('2026-11-20')
         // crossing a month boundary keeps the phase: after 11-20 → 12-04
-        ->and(ScheduleFrequency::Weekly->nextOccurrence(CarbonImmutable::parse('2026-11-20'), $startDate, $params)?->toDateString())->toBe('2026-12-04');
+        ->and(ScheduleFrequency::Weekly->nextOccurrence(new CarbonImmutable('2026-11-20'), $startDate, $params)?->toDateString())->toBe('2026-12-04');
 });
 
 it('clamps the monthly day to the months last day', function (string $after, string $expected): void {
-    $startDate = CarbonImmutable::parse('2026-01-31');
+    $startDate = new CarbonImmutable('2026-01-31');
 
-    expect(ScheduleFrequency::Monthly->nextOccurrence(CarbonImmutable::parse($after), $startDate, ['day_of_month' => 31])?->toDateString())->toBe($expected);
+    expect(ScheduleFrequency::Monthly->nextOccurrence(new CarbonImmutable($after), $startDate, ['day_of_month' => 31])?->toDateString())->toBe($expected);
 })->with([
     'jan 31 → feb 28 (2027 non-leap path 2026)' => ['2026-01-31', '2026-02-28'],
     'feb 28 → mar 31'                          => ['2026-02-28', '2026-03-31'],
@@ -99,19 +99,19 @@ it('clamps the monthly day to the months last day', function (string $after, str
 ]);
 
 it('picks the soonest of the selected days each month for monthly on dates', function (): void {
-    $startDate = CarbonImmutable::parse('2026-11-01');
+    $startDate = new CarbonImmutable('2026-11-01');
     $params = ['days_of_month' => [1, 15]];
 
-    expect(ScheduleFrequency::MonthlyOnDates->nextOccurrence(CarbonImmutable::parse('2026-11-07'), $startDate, $params)?->toDateString())->toBe('2026-11-15')
-        ->and(ScheduleFrequency::MonthlyOnDates->nextOccurrence(CarbonImmutable::parse('2026-11-15'), $startDate, $params)?->toDateString())->toBe('2026-12-01');
+    expect(ScheduleFrequency::MonthlyOnDates->nextOccurrence(new CarbonImmutable('2026-11-07'), $startDate, $params)?->toDateString())->toBe('2026-11-15')
+        ->and(ScheduleFrequency::MonthlyOnDates->nextOccurrence(new CarbonImmutable('2026-11-15'), $startDate, $params)?->toDateString())->toBe('2026-12-01');
 });
 
 it('walks to the next yearly date and clamps feb 29 off-leap', function (): void {
-    $startDate = CarbonImmutable::parse('2024-02-29'); // leap start
+    $startDate = new CarbonImmutable('2024-02-29'); // leap start
 
-    expect(ScheduleFrequency::Yearly->nextOccurrence(CarbonImmutable::parse('2024-02-29'), $startDate, ['month' => 2, 'day' => 29])?->toDateString())->toBe('2025-02-28')
-        ->and(ScheduleFrequency::Yearly->nextOccurrence(CarbonImmutable::parse('2025-03-01'), $startDate, ['month' => 2, 'day' => 29])?->toDateString())->toBe('2026-02-28')
-        ->and(ScheduleFrequency::Yearly->nextOccurrence(CarbonImmutable::parse('2027-12-31'), $startDate, ['month' => 2, 'day' => 29])?->toDateString())->toBe('2028-02-29');
+    expect(ScheduleFrequency::Yearly->nextOccurrence(new CarbonImmutable('2024-02-29'), $startDate, ['month' => 2, 'day' => 29])?->toDateString())->toBe('2025-02-28')
+        ->and(ScheduleFrequency::Yearly->nextOccurrence(new CarbonImmutable('2025-03-01'), $startDate, ['month' => 2, 'day' => 29])?->toDateString())->toBe('2026-02-28')
+        ->and(ScheduleFrequency::Yearly->nextOccurrence(new CarbonImmutable('2027-12-31'), $startDate, ['month' => 2, 'day' => 29])?->toDateString())->toBe('2028-02-29');
 });
 ```
 
@@ -1141,7 +1141,7 @@ use App\Services\ScheduleProcessor;
 use Carbon\CarbonImmutable;
 
 beforeEach(function (): void {
-    CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-11-10')->startOfDay());
+    CarbonImmutable::setTestNow(new CarbonImmutable('2026-11-10')->startOfDay());
 });
 
 afterEach(function (): void {
@@ -1604,7 +1604,8 @@ final readonly class ScheduleProcessor
 **Files:**
 - Create: `app/Console/Commands/ProcessDueSchedulesCommand.php`, `app/Http/Middleware/ProcessDueSchedules.php`
 - Modify: `routes/console.php` (register on Schedule), `bootstrap/app.php` (append middleware)
-- Test: `tests/Feature/App/ScheduleMaterializationTest.php`
+- Modify: `tests/Pest.php` (register the `module:schedule` groups)
+- Test: `tests/Feature/App/Schedule/ScheduleMaterializationTest.php` (new domain dir, the `Feature/App/Template/` precedent)
 
 **Interfaces:**
 - Consumes: `ScheduleProcessor::processDue(?User $user): array{posted, pending, skipped}` (Task 4).
@@ -1761,6 +1762,18 @@ Schedule::command('schedules:process')->everyMinute()->withoutOverlapping();
 ```
 
 with `use App\Http\Middleware\ProcessDueSchedules;` added to the imports.
+
+- [ ] **Step 5: Register the schedule module groups**
+
+In `tests/Pest.php`, after the existing `module:` integration mappings (all referenced files exist by this task), add:
+
+```php
+pest()->group('module:schedule')->in('Feature/App/Schedule');
+pest()->group('module:schedule')->in(
+    'Integration/Services/TransactionScheduleServiceTest.php',
+    'Integration/Services/ScheduleProcessorTest.php',
+);
+```
 
 ---
 
@@ -2298,7 +2311,7 @@ In `routes/settings.php`, inside the `auth` group after the transaction-template
 **Files:**
 - Create: `app/Policies/TransactionScheduleRunPolicy.php`, `app/Http/Controllers/TransactionScheduleRunController.php`
 - Modify: `routes/web.php` (run action routes, inside the auth+verified group), `app/Http/Controllers/DashboardController.php` (`scheduled` prop)
-- Test: `tests/Feature/App/TransactionScheduleRunTest.php`
+- Test: `tests/Feature/App/Schedule/TransactionScheduleRunTest.php` (domain dir — the dashboard `scheduled` prop is schedule-domain even though its surface is the dashboard, the seeding-test precedent)
 
 **Interfaces:**
 - Consumes: `ScheduleProcessor::postRun(run, RunStatus)` (Task 4), `TransactionScheduleService::getPendingRuns/getUpcomingOccurrences` (Task 3).
@@ -2339,7 +2352,6 @@ it('rejects a foreign users run', function (): void {
 
 it('flashes a warning when the template accounts became unavailable', function (): void {
     $user = User::factory()->create();
-    $template = $user->ownedTemplates()->first(); // unused — see arrange below
 
     $schedule = TransactionSchedule::factory()->forUser($user->id)->confirmation()->create();
     $schedule->template->update(['account_id' => null]); // template edited live — no source anymore
@@ -2386,8 +2398,6 @@ it('ships pending and upcoming on the dashboard', function (): void {
     Carbon\CarbonImmutable::setTestNow();
 });
 ```
-
-(Drop the stray `$template` line in the third test before saving — arrange is just the schedule + template update.)
 
 - [ ] **Step 2: Implement the run policy**
 
@@ -2537,7 +2547,7 @@ Expected: `resources/js/wayfinder/` now mirrors `ScheduleFrequency`, `ScheduleSt
 
 ## Self-Review
 
-1. **Spec coverage** — §1 schema (Task 2), §2 engine (Task 1), §3 models (Task 2), §4 policy (Tasks 6–7), §5 validation (Task 6), §6 services + triggers (Tasks 3–5), §7 lifecycle (Tasks 3–4), §8 controllers/routes/dashboard (Tasks 6–7 + 8), §12 linkage (run `transaction_id`, Task 4), §14 tests (Tasks 1, 3, 4, 5, 6, 7). §9–§10 (frontend) and §13's README move belong to the frontend plan. No gaps.
+1. **Spec coverage** — §1 schema (Task 2), §2 engine (Task 1), §3 models (Task 2), §4 policy (Tasks 6–7), §5 validation (Task 6), §6 services + triggers (Tasks 3–5), §7 lifecycle (Tasks 3–4), §8 controllers/routes/dashboard (Tasks 6–7 + 8), §12 linkage (run `transaction_id`, Task 4), §14 tests (Tasks 1, 3, 4, 5, 6, 7). §9–§10 (frontend) and §13's README move belong to the frontend plan. No gaps. Test placement follows the restructured suite: domain-owned `Feature/App/Schedule/` for run/materialization/dashboard-prop tests (the `Feature/App/Template/` precedent), Settings-surface CRUD in `Feature/App/Settings/`, and `module:schedule` groups registered in `tests/Pest.php` (Task 5).
 2. **Placeholders** — none; every step carries complete code or an exact edit. The one verified-at-execution note (flash macro arity, Task 7) states both fallback forms.
 3. **Type consistency** — `advanceNextRun(CarbonInterface, ?int)` matches across model/service/processor; `postRun(run, RunStatus)` matches between Tasks 4 and 7; `schedulePayload()` keys match `TransactionScheduleService::create/update` `$data` shape; factory state names (`forUser`, `forTemplate`, `due`, `startsInPast`, `confirmation`, `forAccountOf`, `transferFor`) are each defined in the task that first uses them.
 4. **Workflow mode** — `direct`: no run/verify/commit steps in any task; no final verification task. Wayfinder regen (Task 8) is codegen, not verification.
