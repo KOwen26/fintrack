@@ -92,12 +92,14 @@ All reports are SQL-aggregated and cached per account (past months indefinitely,
     - the tag value will be normalized as snake_case (symbols removed) and stored as comma separated string or array, and null on empty.
     - later, in the transaction list will be added filter by the tags
     - in distant feature, there will be tags management per user
+2. Scheduled/Recurring Transaction (Template improvement)
+    - user can set a scheduled / recurring transaction by using a template.
+    - those transaction might requiring a confirmation or not
+    - the recurring can be daily, weekly, monthly, yearly, or every selected date.
 
 ### Later
 
 - Implement / rework budgeting
-- Scheduled Transaction (Template improvement)
-  - from a transaction template the user can set it as a scheduled transaction, either requiring confirmation or not
 - Household / shared-account membership — shareable accounts are currently visible to all users as a placeholder until membership exists
 - Deeper Provider integration (provider data is metadata-only today)
 
