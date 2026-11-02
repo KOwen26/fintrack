@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Transaction;
+use App\Services\TagService;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -27,6 +28,8 @@ final class SaveTransferRequest extends FormRequest
             'fee_amount' => ['nullable', 'numeric', 'min:0.01'],
             'transaction_date' => ['required', 'date', 'before_or_equal:now'],
             'description' => ['nullable', 'string', 'max:500'],
+            'tags' => ['nullable', 'array', 'max:' . TagService::MAX_TAGS],
+            'tags.*' => ['string', 'max:' . TagService::MAX_RAW_LENGTH],
             'type' => ['prohibited'],
             'category_id' => ['prohibited'],
         ];

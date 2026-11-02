@@ -36,6 +36,9 @@
 
         class?: string;
         contentClass?: string;
+
+        size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+        variant?: 'default' | 'flat';
     }
 
     let {
@@ -59,12 +62,14 @@
 
         contentClass,
         class: _class,
+        size = 'md',
+        variant = 'default',
         children,
         ...props
     }: Props = $props();
 </script>
 
-<Card class={_class} {...wrapperProps}>
+<Card class={_class} {size} {variant} {...wrapperProps}>
     {#if title || header || headerAction || description}
         <CardHeader class={headerClass} {...headerProps}>
             {#if typeof title === 'function'}

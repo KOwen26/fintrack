@@ -57,6 +57,7 @@ final class TransactionService
             'transaction_date' => $data->transaction_date,
             'category_id' => $data->category_id,
             'description' => $data->description,
+            'tags' => $data->tags,
         ]);
 
         TransactionSaved::dispatch($transaction);
@@ -78,6 +79,7 @@ final class TransactionService
             'transaction_date' => $data->transaction_date,
             'category_id' => $data->category_id,
             'description' => $data->description,
+            'tags' => $data->tags,
         ]);
 
         TransactionSaved::dispatch($transaction->fresh());

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Settings\TransactionTemplateController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function (): void {
@@ -17,5 +18,17 @@ Route::middleware('auth')->group(function (): void {
 
         // Theme
         Route::put('settings/theme', 'updateTheme')->name('settings.theme.update');
+    });
+
+    Route::prefix('settings/transaction-templates')->name('transaction-templates.')->group(function (): void {
+        Route::controller(TransactionTemplateController::class)->group(function (): void {
+            Route::get('', 'index')->name('index');
+            Route::get('create', 'create')->name('create');
+            Route::post('', 'store')->name('store');
+            Route::get('{template}', 'show')->name('show');
+            Route::get('{template}/edit', 'edit')->name('edit');
+            Route::put('{template}', 'update')->name('update');
+            Route::delete('{template}', 'destroy')->name('destroy');
+        });
     });
 });

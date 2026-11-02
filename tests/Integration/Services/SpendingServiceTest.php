@@ -650,19 +650,20 @@ describe('weekdayPattern', function (): void {
             ->and($report->baseline_to->toDateString())->toBe('2026-10-31')
             ->and($report->data)->toHaveCount(7)
             ->and($report->total_expense)->toBe(250_000.0)
-            // Peaks answer different questions: Friday is heaviest outright,
-            // Tuesday is the one running hottest against its baseline
-            // (Friday has no baseline, so its deviation is a non-peak 0).
+            // Peaks answer different questions: Friday is heaviest outright, and
+            // also the deviation peak — the trailing window contains the current
+            // week, so Friday's own 150k sits in its baseline (+1200%), outrunning
+            // Tuesday's +333%.
             ->and($report->peak_weekday)->toBe(5)
-            ->and($report->peak_deviation_weekday)->toBe(2)
+            ->and($report->peak_deviation_weekday)->toBe(5)
             // Tuesday: spent this week, above its 3-mo average.
             ->and($byWeekday[2]->current)->toBe(100_000.0)
-            ->and($byWeekday[2]->baseline)->toBe(15_384.62)  // 200_000 / 13
-            ->and($byWeekday[2]->deviation)->toBe(550.0)
-            // Friday: today — heaviest, but no baseline to deviate from.
+            ->and($byWeekday[2]->baseline)->toBe(23_076.92)  // 300_000 / 13
+            ->and($byWeekday[2]->deviation)->toBe(333.33)
+            // Friday: today — heaviest, with its own spend inside the baseline.
             ->and($byWeekday[5]->current)->toBe(150_000.0)
-            ->and($byWeekday[5]->baseline)->toBe(0.0)
-            ->and($byWeekday[5]->deviation)->toBe(0.0)
+            ->and($byWeekday[5]->baseline)->toBe(11_538.46)  // 150_000 / 13
+            ->and($byWeekday[5]->deviation)->toBe(1200.0)
             // Tiers ride the server's rank: the two heaviest spending days
             // step up the ladder, everything else — including zero-current
             // days — stays muted.

@@ -1,8 +1,6 @@
 <script lang="ts">
     import type { ComponentProps } from 'svelte';
 
-    import FlatCard from './flat-card.svelte';
-
     import { IsMobile } from '@lib/is-mobile.svelte';
     import { mergeProps } from 'bits-ui';
 
@@ -21,6 +19,7 @@
     const mergedProps = $derived(
         mergeProps({
             ...props,
+            class: _class,
             headerClass: cn('px-0', props.headerClass),
             titleClass: cn('font-semibold', props.titleClass),
             contentClass: cn('px-0', props.contentClass),
@@ -28,16 +27,6 @@
     );
 </script>
 
-{#if mobile.current && onMobileStyle === 'none'}
-    <FlatCard {...mergedProps}>
-        {@render children?.()}
-    </FlatCard>
-{:else}
-    <Card
-        {...mergedProps}
-        class={cn('md:py-6', 'border-x-none rounded-none border-y md:rounded-md md:border', _class)}
-        headerClass="px-8 md:px-6"
-        titleClass="grow">
-        {@render children?.()}
-    </Card>
-{/if}
+<Card variant={mobile.current && onMobileStyle === 'none' ? 'flat' : 'default'} {...mergedProps}>
+    {@render children?.()}
+</Card>

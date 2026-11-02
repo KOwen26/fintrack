@@ -50,6 +50,12 @@ final class DummyDataSeeder extends Seeder
         int $incomePerMonthMax = 15,
         int $transfersPerMonth = 5,
     ): void {
+        if (! app()->environment('local')) {
+            $this->command?->info('DummyDataSeeder skipped: dummy data is local-only.');
+
+            return;
+        }
+
         DB::disableQueryLog();
 
         DB::transaction(function () use (

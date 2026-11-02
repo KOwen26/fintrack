@@ -136,6 +136,8 @@ export interface TransactionListHandler {
     readonly categoryFilter: string[];
     /** Transaction types currently included by the type filter. */
     readonly typeFilter: App.Enums.TransactionType[];
+    /** Tag slugs currently included by the tags filter. */
+    readonly tagFilter: string[];
     /** UI view of the current sort. */
     readonly sortKey: SortKey;
     /** Current search text ('' when unset). */
@@ -150,6 +152,8 @@ export interface TransactionListHandler {
     setCategoryFilter(ids: string[]): void;
     /** Replaces the type filter; an empty array unsets it. */
     setTypeFilter(types: App.Enums.TransactionType[]): void;
+    /** Replaces the tags filter; an empty array unsets it. */
+    setTagFilter(tags: string[]): void;
     /** Applies a UI sort key. */
     setSort(key: SortKey): void;
 
@@ -275,6 +279,9 @@ export function transactionListHandler({
         get typeFilter() {
             return handler.typeFilter;
         },
+        get tagFilter() {
+            return handler.tagFilter;
+        },
         get sortKey() {
             return handler.sortKey;
         },
@@ -289,6 +296,7 @@ export function transactionListHandler({
         setAccountFilter: handler.setAccountFilter,
         setCategoryFilter: handler.setCategoryFilter,
         setTypeFilter: handler.setTypeFilter,
+        setTagFilter: handler.setTagFilter,
         setSort: handler.setSort,
 
         get paginated() {

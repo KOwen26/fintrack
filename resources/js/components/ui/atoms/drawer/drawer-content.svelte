@@ -26,7 +26,7 @@
     <DrawerPrimitive.Content
         data-slot="drawer-content"
         class={cn(
-            'group/drawer-content fixed z-50 flex h-auto flex-col bg-background',
+            'group/drawer-content fixed z-50 flex h-auto flex-col bg-card',
             // Direction top
             'data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-2xl data-[vaul-drawer-direction=top]:border-b',
             // Direction bottom

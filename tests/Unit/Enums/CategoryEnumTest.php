@@ -6,9 +6,9 @@ use App\Enums\CategoryGroup;
 use App\Objects\Decoration;
 
 it('declares the full preset inventory', function (): void {
-    expect(Category::cases())->toHaveCount(85)
+    expect(Category::cases())->toHaveCount(79)
         ->and(CategoryGroup::cases())->toHaveCount(14)
-        ->and(Category::bookable())->toHaveCount(84)
+        ->and(Category::bookable())->toHaveCount(78)
         ->and(Category::bookable())->not->toContain(Category::InitialBalance);
 });
 

@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Models\Transaction;
+use App\Services\TagService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -31,6 +32,8 @@ final class SaveTransactionRequest extends FormRequest
             'transaction_date' => ['required', 'date', 'before_or_equal:now'],
             'category_id' => ['required', Rule::enum(Category::class)->except(Category::InitialBalance)],
             'description' => ['nullable', 'string', 'max:500'],
+            'tags' => ['nullable', 'array', 'max:' . TagService::MAX_TAGS],
+            'tags.*' => ['string', 'max:' . TagService::MAX_RAW_LENGTH],
             'destination_account_id' => ['prohibited'],
             'fee_amount' => ['prohibited'],
         ];

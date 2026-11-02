@@ -21,18 +21,17 @@ test('renders the statistics page with deferred report props', function (): void
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('app/statistics/index')
+            ->has('weekdayPattern')
             // Deferred props are not part of the initial paint.
             ->missing('monthlyCashflow')
             ->missing('cashflowTrend')
             ->missing('balanceTrend')
-            ->missing('weekdayPattern')
             ->missing('categorySpending')
             ->loadDeferredProps(fn ($page) => $page
                 ->has('monthlyCashflow')
                 ->has('monthlyCashflow.data', 1)
                 ->has('cashflowTrend')
                 ->has('balanceTrend')
-                ->has('weekdayPattern')
                 ->has('categorySpending')
             )
         );
@@ -45,12 +44,12 @@ test('renders the statistics page for a user without accounts', function (): voi
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('app/statistics/index')
+            ->has('weekdayPattern.data', 7)
             ->loadDeferredProps(fn ($page) => $page
                 ->has('monthlyCashflow')
                 ->has('monthlyCashflow.data', 0)
                 ->has('cashflowTrend.data', 6)
                 ->has('balanceTrend.data', 6)
-                ->has('weekdayPattern.data', 7)
             )
         );
 });
@@ -102,7 +101,7 @@ test('scopes category spending to the requested month window', function (): void
             ->loadDeferredProps(fn ($page) => $page
                 ->where('categorySpending.from', '2026-03-01')
                 ->where('categorySpending.to', '2026-03-31')
-                ->where('categorySpending.total_expense', 150_000.0)
+                ->where('categorySpending.total_expense', 150_000)
                 ->has('categorySpending.categories', 1)
             )
         );
@@ -245,7 +244,7 @@ test('bounds the All Time trend at the earliest transaction', function (): void 
         );
 });
 
-test('projects the current week to a full week spending run-rate', function (): void {
+test('returns the week-to-date average expense amount', function (): void {
     $this->travelTo(new CarbonImmutable('2026-10-15'));
 
     $user = User::factory()->create();
@@ -257,12 +256,18 @@ test('projects the current week to a full week spending run-rate', function (): 
         'transaction_date' => '2026-10-13',
     ]);
 
+    Transaction::factory()->expense()->create([
+        'account_id' => $account->id,
+        'amount' => 100_000,
+        'transaction_date' => '2026-10-14',
+    ]);
+
     $this->actingAs($user)->get(route('statistics.index'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->loadDeferredProps(fn ($page) => $page
-                // 200_000 / 4 elapsed days × 7 = 350_000 exactly.
-                ->where('weeklySpendingAverage', 350_000.0)
-            )
+            // (200_000 + 100_000) / 2 — average single expense, week-to-date.
+            // Inertia encodes whole floats as ints across the wire.
+            ->where('weeklySpendingAverage', 150_000)
+            ->loadDeferredProps(fn ($page) => $page)
         );
 });

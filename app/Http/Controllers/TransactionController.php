@@ -15,8 +15,10 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Services\AccountService;
 use App\Services\CategoryService;
+use App\Services\TagService;
 use App\Services\TransactionListService;
 use App\Services\TransactionService;
+use App\Services\TransactionTemplateService;
 use App\Services\TransferService;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
@@ -61,6 +63,7 @@ final class TransactionController extends Controller
                 'transactions' => Inertia::defer(fn (): array => $this->transactionListService->getCachedTransactions($this->user, $period)),
                 'accounts' => AccountService::getAccountsByUser($this->user),
                 'categories' => CategoryService::getCategories(),
+                'tags' => TagService::getUniqueTags($this->user),
             ]);
         }
 
@@ -82,6 +85,7 @@ final class TransactionController extends Controller
             'summary' => $this->transactionListService->getSummary($this->user, $period),
             'accounts' => AccountService::getAccountsByUser($this->user),
             'categories' => CategoryService::getCategories(),
+            'tags' => TagService::getUniqueTags($this->user),
         ]);
     }
 
@@ -98,9 +102,15 @@ final class TransactionController extends Controller
     {
         $this->authorize('create', Transaction::class);
 
+        $template = TransactionTemplateService::getTemplateById($this->user, $request->integer('template'));
+
         return Inertia::render('app/transaction/create', [
-            'transaction' => TransactionFormData::defaultFromRequest($request),
+            'transaction' => $template !== null
+                ? TransactionFormData::fromTemplate($template, $request->integer('account_id') ?: null)
+                : TransactionFormData::defaultFromRequest($request),
             'accounts' => $this->accountService->getAccountsByUser($this->user),
+            'templates' => TransactionTemplateService::getQuickAccessTemplates($this->user),
+            'tags' => TagService::getUniqueTags($this->user),
         ]);
     }
 
@@ -121,6 +131,7 @@ final class TransactionController extends Controller
         return Inertia::render('app/transaction/edit', [
             'accounts' => $accounts,
             'transaction' => TransactionFormData::fromTransaction($transaction),
+            'tags' => TagService::getUniqueTags($this->user),
         ]);
     }
 

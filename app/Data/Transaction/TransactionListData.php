@@ -45,6 +45,9 @@ final class TransactionListData extends Data
 
         #[TypeScriptModel(Account::class)]
         public ?Account $destination_account,
+
+        /** @var list<string>|null */
+        public ?array $tags = null,
     ) {}
 
     /**
@@ -87,6 +90,7 @@ final class TransactionListData extends Data
             destination_account_id: $counterpart?->account_id,
             destination_account: $counterpart?->account,
             account: $transaction->relationLoaded('account') ? $transaction->account : null,
+            tags: $transaction->tags?->toArray(),
         );
     }
 
@@ -115,7 +119,8 @@ final class TransactionListData extends Data
                 account: $transaction->account,
                 transfer_id: $transaction?->transfer_id,
                 destination_account_id: $destinationAccount?->id,
-                destination_account: $destinationAccount
+                destination_account: $destinationAccount,
+                tags: $transaction?->tags?->toArray(),
             )->toArray();
         })->toArray();
 
@@ -146,6 +151,7 @@ final class TransactionListData extends Data
      *     destination_account_id: ?int,
      *     account: ?array<string, mixed>,
      *     destination_account: ?array<string, mixed>,
+     *     tags: ?list<string>,
      * }
      */
     public static function toListRow(Transaction $transaction): array
@@ -238,6 +244,7 @@ final class TransactionListData extends Data
      *     destination_account_id: ?int,
      *     account: ?array<string, mixed>,
      *     destination_account: ?array<string, mixed>,
+     *     tags: ?list<string>,
      * }
      */
     private static function row(
@@ -261,6 +268,7 @@ final class TransactionListData extends Data
             'destination_account_id' => $counterpart?->account_id,
             'destination_account' => $destinationAccountRow,
             'account' => $accountRow,
+            'tags' => $transaction->tags?->toArray(),
         ];
     }
 

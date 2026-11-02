@@ -19,6 +19,7 @@
     import SavingsRateChart from '@components/module/statistics/savings-rate-chart.svelte';
     import WeekdayPatternChart from '@components/module/statistics/weekday-pattern-chart.svelte';
     import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
+    import Separator from '@components/ui/separator.svelte';
     import Skeleton from '@components/ui/skeleton.svelte';
 
     // All report props are deferred — undefined while they stream in.
@@ -65,25 +66,25 @@
             <MonthlyCalendarChart {monthlyCashflow} />
         </ResponsiveCard>
 
-        {@render separator?.()}
+        <Separator class="-mx-5 w-auto!" variant="thick" />
 
         <ResponsiveCard title="Savings Rate">
             <SavingsRateChart report={savingsRate} />
         </ResponsiveCard>
 
-        {@render separator?.()}
+        <Separator class="-mx-5 w-auto!" variant="thick" />
 
         <ResponsiveCard title="Income vs Expense">
             <CashflowTrendChart trend={cashflowTrend} />
         </ResponsiveCard>
 
-        {@render separator?.()}
+        <Separator class="-mx-5 w-auto!" variant="thick" />
 
         <ResponsiveCard title="Balance Trend">
             <BalanceTrendChart trend={balanceTrend} />
         </ResponsiveCard>
 
-        {@render separator?.()}
+        <Separator class="-mx-5 w-auto!" variant="thick" />
 
         <ResponsiveCard title="Spending By Category">
             {#if categorySpending}
@@ -94,12 +95,8 @@
             {/if}
         </ResponsiveCard>
 
-        {@render separator?.()}
+        <Separator class="-mx-5 w-auto!" variant="thick" />
 
         <div></div>
     </div>
 </MobilePageLayout>
-
-{#snippet separator()}
-    <div class="-mx-5 h-2.5 bg-muted"></div>
-{/snippet}

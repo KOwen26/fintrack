@@ -12,33 +12,20 @@ use App\Services\TransactionListService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-function paginationAccountForUser(): array
-{
-    $user = User::factory()->create();
-    $account = Account::factory()->create(['owner_id' => $user->id]);
-
-    return [$user, $account];
-}
-
-/** Rows of a service page keyed by id for overlap checks. */
-function pageIds(array $page): array
-{
-    return array_map(fn (array $row): int => $row['id'], $page['transactions']);
-}
-
 /** Attributes shaping a plain recent-dated row for the paged-account tests. */
 function pagedRowAttributes(int $account_id, int $created_by): array
 {
     return [
         'account_id' => $account_id,
         'created_by' => $created_by,
-        // The default list period is the last 6 months — stay inside it.
-        'transaction_date' => fake()->dateTimeBetween('-5 months', 'now')->format('Y-m-d H:i:s'),
+        // Inside the queried Last3Months window — older rows would legitimately
+        // fall outside it.
+        'transaction_date' => fake()->dateTimeBetween('-2 months', 'now')->format('Y-m-d H:i:s'),
     ];
 }
 
 test('returns the first page limited to PAGE_SIZE with totals', function (): void {
-    [$user, $account] = paginationAccountForUser();
+    [$user, $account] = userWithAccount();
     Transaction::factory()->count(65)->create(pagedRowAttributes($account->id, $user->id));
 
     // Another user's rows must not leak into pages or totals.
@@ -57,7 +44,7 @@ test('returns the first page limited to PAGE_SIZE with totals', function (): voi
 });
 
 test('cursor continues after the last row without overlap or skipping', function (): void {
-    [$user, $account] = paginationAccountForUser();
+    [$user, $account] = userWithAccount();
     Transaction::factory()->count(65)->create(pagedRowAttributes($account->id, $user->id));
 
     $first = TransactionListService::getTransactionsByCursorPage($user, null, DatePeriodPreset::Last3Months);
@@ -77,7 +64,7 @@ test('cursor continues after the last row without overlap or skipping', function
 });
 
 test('same-day rows split by id, not date', function (): void {
-    [$user, $account] = paginationAccountForUser();
+    [$user, $account] = userWithAccount();
 
     // 65 rows share one exact datetime: a date-only comparison would deliver
     // them all in page 1; the id tiebreaker must carry the boundary.
@@ -104,7 +91,7 @@ test('same-day rows split by id, not date', function (): void {
 });
 
 test('amount sort walks the full window in order via amount cursors', function (): void {
-    [$user, $account] = paginationAccountForUser();
+    [$user, $account] = userWithAccount();
 
     // Amounts 1..65 (unique) — 'highest' must walk them descending with no
     // dupes or skips, proving the amount-flavor keyset carries the boundary.
@@ -144,7 +131,7 @@ test('amount sort walks the full window in order via amount cursors', function (
 });
 
 test('filters narrow rows and totals', function (): void {
-    [$user, $account] = paginationAccountForUser();
+    [$user, $account] = userWithAccount();
     $other = Account::factory()->create(['owner_id' => $user->id]);
 
     Transaction::factory()->count(4)->create(pagedRowAttributes($account->id, $user->id));
@@ -175,7 +162,7 @@ test('filters narrow rows and totals', function (): void {
 });
 
 test('search matches description, amount, account and category names', function (): void {
-    [$user, $account] = paginationAccountForUser();
+    [$user, $account] = userWithAccount();
 
     Transaction::factory()->create([
         ...pagedRowAttributes($account->id, $user->id),
@@ -233,12 +220,13 @@ test('search matches description, amount, account and category names', function 
 });
 
 test('oldest sort walks ascending with ascending cursors', function (): void {
-    [$user, $account] = paginationAccountForUser();
+    [$user, $account] = userWithAccount();
 
     foreach (range(1, 65) as $i) {
         Transaction::factory()->create([
             ...pagedRowAttributes($account->id, $user->id),
-            'transaction_date' => now()->subMonths(5)->addDays($i)->format('Y-m-d H:i:s'),
+            // All 65 rows inside Last3Months: two full keyset pages, ascending.
+            'transaction_date' => now()->subDays(70)->addDays($i)->format('Y-m-d H:i:s'),
         ]);
     }
 
@@ -267,7 +255,7 @@ test('oldest sort walks ascending with ascending cursors', function (): void {
 });
 
 test('a cursor cut under another sort is rejected', function (): void {
-    [$user, $account] = paginationAccountForUser();
+    [$user, $account] = userWithAccount();
     Transaction::factory()->count(2)->create(pagedRowAttributes($account->id, $user->id));
 
     // A date-flavored cursor is stale under an amount ordering.
@@ -282,12 +270,11 @@ test('a cursor cut under another sort is rejected', function (): void {
 });
 
 test('transfer inflow rows are excluded from pages and totals', function (): void {
-    [$user, $account] = paginationAccountForUser();
-    $destination = Account::factory()->create(['owner_id' => $user->id]);
-    $transfer = Transfer::factory()->create(['created_by' => $user->id]);
+    [$user, $account] = userWithAccount();
+    $destination = Account::factory()->for($user, 'owner')->create();
+
+    Transfer::factory()->withMembers($account, $destination)->create(['created_by' => $user->id]);
     Transaction::factory()->count(10)->create(pagedRowAttributes($account->id, $user->id));
-    Transaction::factory()->transferOutflow($transfer->id)->create(pagedRowAttributes($account->id, $user->id));
-    Transaction::factory()->transferInflow($transfer->id)->create(pagedRowAttributes($destination->id, $user->id));
 
     $page = TransactionListService::getTransactionsByCursorPage($user, null, DatePeriodPreset::Last3Months);
 
@@ -305,7 +292,7 @@ test('transfer inflow rows are excluded from pages and totals', function (): voi
 });
 
 test('getTransactions stays unpaginated for other consumers', function (): void {
-    [$user, $account] = paginationAccountForUser();
+    [$user, $account] = userWithAccount();
     Transaction::factory()->count(TransactionListService::PAGE_SIZE + 5)->create(pagedRowAttributes($account->id, $user->id));
 
     expect(TransactionListService::getTransactions($user, DatePeriodPreset::Last6Months))->toHaveCount(TransactionListService::PAGE_SIZE + 5);

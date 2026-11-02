@@ -14,6 +14,7 @@ import {
     createSortedRowModel,
     createTable,
     filterFn_arrHas,
+    filterFn_arrIncludesSome,
     globalFilteringFeature,
     rowSortingFeature,
     tableFeatures,
@@ -46,6 +47,7 @@ export interface TransactionListEngineImpl {
     readonly accountFilter: number[];
     readonly categoryFilter: string[];
     readonly typeFilter: App.Enums.TransactionType[];
+    readonly tagFilter: string[];
     readonly sortKey: SortKey;
     readonly searchValue: string;
     /** True when engine-local filters/sort are active — period excluded. */
@@ -57,6 +59,7 @@ export interface TransactionListEngineImpl {
     setAccountFilter(ids: number[]): void;
     setCategoryFilter(ids: string[]): void;
     setTypeFilter(types: App.Enums.TransactionType[]): void;
+    setTagFilter(tags: string[]): void;
     setSort(key: SortKey): void;
     resetLocalFilters(): void;
 
@@ -90,6 +93,7 @@ export const FILTER_COLUMNS = {
     account_id: 'account_id',
     category_id: 'category_id',
     type: 'type',
+    tags: 'tags',
 } as const;
 
 /** UI sort key — exported publicly through the facade. */
@@ -139,6 +143,7 @@ const transactionListFeatures = tableFeatures({
 
     filterFns: {
         arrayHas: filterFn_arrHas,
+        arrIncludesSome: filterFn_arrIncludesSome,
     },
 });
 
@@ -183,6 +188,15 @@ const transactionListColumns: ColumnDef<TransactionListFeatures, TransactionList
         filterFn: 'arrayHas',
         enableGlobalFilter: false,
     },
+    {
+        // Set-intersection: a row qualifies when its tags carry ANY selected
+        // slug — deliberately distinct from arrayHas (membership of the row
+        // value in the selected list).
+        id: FILTER_COLUMNS.tags,
+        accessorFn: (row) => row.tags ?? [],
+        filterFn: 'arrIncludesSome',
+        enableGlobalFilter: false,
+    },
 ];
 
 /** Creates the filterable/sortable table instance behind a transaction list. */
@@ -206,6 +220,7 @@ export interface TableBrain {
     readonly accountFilter: number[];
     readonly categoryFilter: string[];
     readonly typeFilter: App.Enums.TransactionType[];
+    readonly tagFilter: string[];
     readonly sortKey: SortKey;
     readonly searchValue: string;
     /** True when any local filter, search, or sort override is active. */
@@ -220,6 +235,7 @@ export interface TableBrain {
     setAccountFilter(ids: number[]): void;
     setCategoryFilter(ids: string[]): void;
     setTypeFilter(types: App.Enums.TransactionType[]): void;
+    setTagFilter(tags: string[]): void;
     setSort(key: SortKey): void;
     resetLocalFilters(): void;
 }
@@ -246,6 +262,7 @@ export function createTableBrain(transactions: () => TransactionListData[]): Tab
     const typeFilter = $derived(
         getArrayFilter<App.Enums.TransactionType>(columnFilters, FILTER_COLUMNS.type)
     );
+    const tagFilter = $derived(getArrayFilter<string>(columnFilters, FILTER_COLUMNS.tags));
     const sortKey = $derived(toSortKey(table.atoms.sorting.get()));
     const searchValue = $derived((table.atoms.globalFilter.get() as string | undefined) ?? '');
     const hasLocalFilters = $derived(
@@ -291,6 +308,9 @@ export function createTableBrain(transactions: () => TransactionListData[]): Tab
         get typeFilter() {
             return typeFilter;
         },
+        get tagFilter() {
+            return tagFilter;
+        },
         get sortKey() {
             return sortKey;
         },
@@ -307,6 +327,7 @@ export function createTableBrain(transactions: () => TransactionListData[]): Tab
         setCategoryFilter: (ids: string[]): void => setArrayFilter(FILTER_COLUMNS.category_id, ids),
         setTypeFilter: (types: App.Enums.TransactionType[]): void =>
             setArrayFilter(FILTER_COLUMNS.type, types),
+        setTagFilter: (tags: string[]): void => setArrayFilter(FILTER_COLUMNS.tags, tags),
         setSort: (key: SortKey): void => table.setSorting(SORT_STATE[key]),
         resetLocalFilters: (): void => {
             table.resetGlobalFilter();

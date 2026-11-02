@@ -6,6 +6,7 @@ use App\Enums\Category;
 use App\Enums\TransactionSort;
 use App\Enums\TransactionType;
 use App\Http\Requests\TransactionIndexRequest;
+use App\Services\TagService;
 use BackedEnum;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
@@ -26,12 +27,14 @@ final class TransactionListFilters extends Data
      * @param  list<int>  $accountIds
      * @param  list<string>  $categoryIds
      * @param  list<string>  $types
+     * @param  list<string>  $tags
      */
     public function __construct(
         public readonly ?string $search = null,
         public readonly array $accountIds = [],
         public readonly array $categoryIds = [],
         public readonly array $types = [],
+        public readonly array $tags = [],
         public readonly TransactionSort $sort = TransactionSort::Newest,
     ) {}
 
@@ -53,6 +56,7 @@ final class TransactionListFilters extends Data
             $accountIds = [];
             $categoryIds = [];
             $types = [];
+            $tags = [];
 
             foreach ((array) ($state['filters'] ?? []) as $filter) {
                 $values = array_values((array) ($filter['value'] ?? []));
@@ -61,6 +65,7 @@ final class TransactionListFilters extends Data
                     'account_id' => $accountIds = array_map(intval(...), $values),
                     'category_id' => $categoryIds = self::enumValues($values, Category::class),
                     'type' => $types = self::enumValues($values, TransactionType::class),
+                    'tags' => $tags = self::tagValues($values),
                     default => throw new InvalidArgumentException(
                         "Unknown transaction filter column [{$filter['id']}]."
                     ),
@@ -74,6 +79,7 @@ final class TransactionListFilters extends Data
                 accountIds: $accountIds,
                 categoryIds: $categoryIds,
                 types: $types,
+                tags: $tags,
                 sort: self::sortFrom($state['sorting'] ?? []),
             );
         } catch (InvalidArgumentException) {
@@ -104,6 +110,28 @@ final class TransactionListFilters extends Data
             $descriptor['id'] === 'amount' && $descriptor['desc'] => TransactionSort::Highest,
             default => TransactionSort::Lowest,
         };
+    }
+
+    /**
+     * Asserts every value is a normalized tag slug and returns the strings.
+     *
+     * @param  list<mixed>  $values
+     *
+     * @return list<string>
+     *
+     * @throws InvalidArgumentException when a value is not a slug
+     */
+    private static function tagValues(array $values): array
+    {
+        $values = array_map(strval(...), $values);
+
+        foreach ($values as $value) {
+            if (preg_match('/^[a-z0-9_]+$/', $value) !== 1 || mb_strlen($value) > TagService::MAX_TAG_LENGTH) {
+                throw new InvalidArgumentException("Value [{$value}] is not a normalized tag slug.");
+            }
+        }
+
+        return array_values($values);
     }
 
     /**

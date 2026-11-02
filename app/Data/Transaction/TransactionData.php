@@ -31,6 +31,9 @@ class TransactionData extends Data
 
         public ?string $description = null,
 
+        /** @var list<string>|null */
+        public ?array $tags = null,
+
         /** Service-internal only — derived from type, never client-sent. */
         public ?Cashflow $flow = null,
 

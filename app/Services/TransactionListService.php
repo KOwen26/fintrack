@@ -171,6 +171,12 @@ final class TransactionListService
             $list->whereIn('type', $filters->types);
         }
 
+        // OR-match: a row carrying any selected tag qualifies. JSON columns
+        // take no index; the window is already user + period bounded.
+        if ($filters->tags !== []) {
+            $list->whereRaw('JSON_OVERLAPS(tags, ?)', [json_encode($filters->tags)]);
+        }
+
         $search = $filters->search;
 
         if ($search === null || $search === '') {
@@ -196,7 +202,9 @@ final class TransactionListService
                 ->orWhereHas(
                     'transfer.destinationTransaction.account',
                     fn (Builder $account) => $account->where('name', 'like', $like),
-                );
+                )
+                // Stored form is JSON text (["food", ...]) — a plain substring match; multi-word terms won't match underscored slugs.
+                ->orWhereRaw('tags like ?', [$like]);
 
             if ($categoryIds !== []) {
                 $query->orWhereIn('category_id', $categoryIds);

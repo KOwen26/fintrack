@@ -67,6 +67,9 @@ export function createClientEngine(deps: EngineDeps): TransactionListEngineImpl 
         get typeFilter() {
             return brain.typeFilter;
         },
+        get tagFilter() {
+            return brain.tagFilter;
+        },
         get sortKey() {
             return brain.sortKey;
         },
@@ -82,6 +85,7 @@ export function createClientEngine(deps: EngineDeps): TransactionListEngineImpl 
         setAccountFilter: brain.setAccountFilter,
         setCategoryFilter: brain.setCategoryFilter,
         setTypeFilter: brain.setTypeFilter,
+        setTagFilter: brain.setTagFilter,
         setSort: brain.setSort,
         resetLocalFilters: brain.resetLocalFilters,
 

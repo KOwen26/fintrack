@@ -19,12 +19,10 @@ function listPeriod(): DatePeriodPreset
 /** Creates a user with one in-window transaction and primes the list cache. */
 function primeTransactionListCache(): array
 {
-    $user = User::factory()->create();
-    $account = Account::factory()->create(['owner_id' => $user->id]);
-    Transaction::factory()->create([
+    [$user, $account] = userWithAccount();
+    Transaction::factory()->recent()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
-        'transaction_date' => now(),
         'description' => 'Cached row',
     ]);
 
@@ -80,7 +78,7 @@ test('creating a transaction invalidates the cached list', function (): void {
         'transaction_date' => now()->toDateString(),
         'category_id' => Category::Salary->value,
         'description' => 'Fresh row',
-    ])->assertRedirectToRoute('transactions.index');
+    ])->assertRedirectToRoute('dashboard');
 
     $freshId = Transaction::where('description', 'Fresh row')->value('id');
 
@@ -91,10 +89,9 @@ test('creating a transaction invalidates the cached list', function (): void {
 test('deleting a transaction invalidates the cached list', function (): void {
     [$user, $account, $key] = primeTransactionListCache();
 
-    $doomed = Transaction::factory()->create([
+    $doomed = Transaction::factory()->recent()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
-        'transaction_date' => now(),
         'description' => 'Doomed row',
     ]);
 
@@ -109,30 +106,26 @@ test('deleting a transaction invalidates the cached list', function (): void {
 });
 
 test('getTransactionsByAccount returns only that account rows regardless of creator', function (): void {
-    $user = User::factory()->create();
-    $account = Account::factory()->create(['owner_id' => $user->id]);
-    $otherAccount = Account::factory()->create(['owner_id' => $user->id]);
+    [$user, $account] = userWithAccount();
+    $otherAccount = Account::factory()->for($user, 'owner')->create();
     $otherUser = User::factory()->create();
 
-    Transaction::factory()->create([
+    Transaction::factory()->recent()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,
-        'transaction_date' => now(),
         'description' => 'Own row',
     ]);
 
     // Shared-account truth: a row another user created on the account still lists.
-    Transaction::factory()->create([
+    Transaction::factory()->recent()->create([
         'account_id' => $account->id,
         'created_by' => $otherUser->id,
-        'transaction_date' => now(),
         'description' => 'Shared row',
     ]);
 
-    Transaction::factory()->create([
+    Transaction::factory()->recent()->create([
         'account_id' => $otherAccount->id,
         'created_by' => $user->id,
-        'transaction_date' => now(),
         'description' => 'Other account row',
     ]);
 
@@ -142,9 +135,27 @@ test('getTransactionsByAccount returns only that account rows regardless of crea
         fn (array $row): string => $row['description'],
         $rows,
     );
+    // Both rows share a date — keyset order falls to id, so sort before comparing.
+    sort($descriptions);
 
     expect($rows)->toHaveCount(2)
         ->and($descriptions)->toBe(['Own row', 'Shared row'])
         // The mapper's eager loads must be satisfied — account rows arrive loaded.
-        ->and($rows[0]['account']->name)->toBe($account->name);
+        ->and($rows[0]['account']['name'])->toBe($account->name);
+});
+
+test('serves the tags-bearing row shape under the versioned cache key', function (): void {
+    $user = User::factory()->create();
+
+    expect(TransactionListService::cacheKey($user->id))->toBe('transaction-list:user:' . $user->id);
+
+    Transaction::factory()->recent()->create([
+        'created_by' => $user->id,
+        'tags' => ['cached'],
+    ]);
+
+    $rows = TransactionListService::getCachedTransactions($user, listPeriod());
+
+    expect(collect($rows)->every(fn (array $row): bool => array_key_exists('tags', $row)))->toBeTrue()
+        ->and(collect($rows)->firstWhere('tags', ['cached']))->not->toBeNull();
 });

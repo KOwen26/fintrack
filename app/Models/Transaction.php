@@ -6,6 +6,7 @@ use App\Enums\Cashflow;
 use App\Enums\Category;
 use App\Enums\TransactionType;
 use App\Objects\DatePeriod;
+use App\Objects\Tags;
 use App\Observers\TransactionObserver;
 use Database\Factories\TransactionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -33,6 +34,7 @@ final class Transaction extends Model
             'flow' => Cashflow::class,
             'amount' => 'integer',
             'transaction_date' => 'datetime',
+            'tags' => Tags::class,
         ];
     }
 

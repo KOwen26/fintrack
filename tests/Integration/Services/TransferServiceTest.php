@@ -4,6 +4,7 @@ use App\Data\Transaction\TransactionListData;
 use App\Data\Transaction\TransferData;
 use App\Enums\Cashflow;
 use App\Enums\Category;
+use App\Enums\DatePeriodPreset;
 use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Transaction;
@@ -21,7 +22,7 @@ function createTransferAccounts(): array
     return [$user, $source, $destination];
 }
 
-function unitData(Account $source, Account $destination, ?float $fee = null): TransferData
+function unitData(Account $source, Account $destination, ?float $fee = null, ?array $tags = null): TransferData
 {
     return new TransferData(
         account_id: $source->id,
@@ -30,6 +31,7 @@ function unitData(Account $source, Account $destination, ?float $fee = null): Tr
         transaction_date: now()->toDateString(),
         fee_amount: $fee,
         description: 'Savings move',
+        tags: $tags,
     );
 }
 
@@ -81,6 +83,45 @@ it('recreates member rows and keeps the transfer id stable on unit edit', functi
     expect(Transaction::withTrashed()->where('transfer_id', $edited->id)->count())->toBe(4);
 });
 
+it('puts transfer tags on the source row only', function (): void {
+    [$user, $source, $destination] = createTransferAccounts();
+
+    $transfer = resolve(TransferService::class)->create($user, unitData($source, $destination, 2_500.0, ['monthly_sweep']));
+
+    $rows = $transfer->transactions()->get();
+    $sourceRow = $rows->first(fn ($row): bool => $row->type === TransactionType::Transfer && $row->flow === Cashflow::Outflow);
+    $destinationRow = $rows->first(fn ($row): bool => $row->type === TransactionType::Transfer && $row->flow === Cashflow::Inflow);
+    $feeRow = $rows->firstWhere('type', TransactionType::Expense);
+
+    expect($sourceRow->tags?->toArray())->toBe(['monthly_sweep'])
+        ->and($destinationRow->tags)->toBeNull()
+        ->and($feeRow->tags)->toBeNull();
+});
+
+it('keeps tags on the source row across unit edit-recreate', function (): void {
+    [$user, $source, $destination] = createTransferAccounts();
+    $service = resolve(TransferService::class);
+
+    $transfer = $service->create($user, unitData($source, $destination, null, ['a']));
+
+    $edited = $service->update($transfer, new TransferData(
+        account_id: $source->id,
+        destination_account_id: $destination->id,
+        amount: 700_000,
+        transaction_date: now()->toDateString(),
+        fee_amount: null,
+        description: 'Edited',
+        tags: ['b'],
+    ));
+
+    $liveRows = $edited->transactions()->get();
+    $sourceRow = $liveRows->first(fn ($row): bool => $row->type === TransactionType::Transfer && $row->flow === Cashflow::Outflow);
+    $destinationRow = $liveRows->first(fn ($row): bool => $row->type === TransactionType::Transfer && $row->flow === Cashflow::Inflow);
+
+    expect($sourceRow->tags?->toArray())->toBe(['b'])
+        ->and($destinationRow->tags)->toBeNull();
+});
+
 it('soft-deletes the aggregate and every member row (fee included) from any member', function (): void {
     [$user, $source, $destination] = createTransferAccounts();
     $service = resolve(TransferService::class);
@@ -114,8 +155,10 @@ it('hides inflow rows from the global list but shows fee and outflow rows', func
     [$user, $source, $destination] = createTransferAccounts();
     resolve(TransferService::class)->create($user, unitData($source, $destination, 1_000.0));
 
-    $global = TransactionListService::getTransactions($user);
+    $global = TransactionListService::getTransactions($user, DatePeriodPreset::Last14Days);
 
-    expect($global->where('flow', Cashflow::Inflow))->toBeEmpty()
+    $flows = array_map(fn (array $row): string => $row['flow'], $global);
+
+    expect($flows)->not->toContain(Cashflow::Inflow->value)
         ->and($global)->toHaveCount(2); // outflow row + fee row
 });

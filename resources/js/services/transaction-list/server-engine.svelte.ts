@@ -50,6 +50,9 @@ export function createServerEngine(deps: EngineDeps): TransactionListEngineImpl 
             ...(brain.typeFilter.length
                 ? [{ id: FILTER_COLUMNS.type, value: brain.typeFilter }]
                 : []),
+            ...(brain.tagFilter.length
+                ? [{ id: FILTER_COLUMNS.tags, value: brain.tagFilter }]
+                : []),
         ];
 
         router.reload({
@@ -109,6 +112,9 @@ export function createServerEngine(deps: EngineDeps): TransactionListEngineImpl 
         get typeFilter() {
             return brain.typeFilter;
         },
+        get tagFilter() {
+            return brain.tagFilter;
+        },
         get sortKey() {
             return brain.sortKey;
         },
@@ -138,6 +144,10 @@ export function createServerEngine(deps: EngineDeps): TransactionListEngineImpl 
         },
         setTypeFilter(types: App.Enums.TransactionType[]): void {
             brain.setTypeFilter(types);
+            scheduleFlush();
+        },
+        setTagFilter(tags: string[]): void {
+            brain.setTagFilter(tags);
             scheduleFlush();
         },
         setSort(key: SortKey): void {

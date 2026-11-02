@@ -57,7 +57,7 @@
         <Skeleton class="h-56 w-full" />
     </div>
 {:else if pattern.total_expense === 0}
-    <div class="flex flex-col items-center justify-center py-10 text-base-content/40">
+    <div class="flex flex-col items-center justify-center py-10">
         <i class="mb-2 iconify size-8 solar--calendar-bold-duotone"></i>
         <p class="text-sm">No expense data this week</p>
     </div>

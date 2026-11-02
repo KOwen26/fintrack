@@ -6,7 +6,7 @@
      * background), with a lettermark fallback when no decoration icon is
      * available. Not a DaisyUI `Badge` (content-hugging text pill).
      */
-    export type DecorationBadgeSize = 'sm' | 'md' | 'lg';
+    export type DecorationBadgeSize = 'xs' | 'sm' | 'md' | 'lg';
 
     interface DecorationBadgeProps extends RestProps {
         /**
@@ -51,7 +51,7 @@
         color: colorFallback,
         class: _class,
         size = 'md',
-        iconClass = 'size-5',
+        iconClass = '',
         ...restProps
     }: DecorationBadgeProps = $props();
 
@@ -76,9 +76,14 @@
             textClass: string;
         }
     > = {
+        xs: {
+            class: 'size-6 rounded-md',
+            iconClass: 'size-4',
+            textClass: '',
+        },
         sm: {
             class: 'size-8 rounded-md',
-            iconClass: 'size-4',
+            iconClass: 'size-5',
             textClass: '',
         },
         md: {

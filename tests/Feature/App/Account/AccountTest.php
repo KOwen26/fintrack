@@ -29,7 +29,7 @@ test('renders the account creation page', function (): void {
         );
 });
 
-test('stores a new account and redirects to its page', function (): void {
+test('stores a new account and redirects to lists', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->post(route('accounts.store'), [
@@ -51,7 +51,7 @@ test('stores a new account and redirects to its page', function (): void {
             'color' => 'green-500',
         ]);
 
-    $response->assertRedirectToRoute('accounts.show', ['account' => $account]);
+    $response->assertRedirectToRoute('accounts.index');
 });
 
 test('updates an account and redirects to its page', function (): void {
