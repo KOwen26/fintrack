@@ -36,7 +36,10 @@ test('lists transactions for the authenticated user', function (): void {
     $this->actingAs($user)->get(route('transactions.index'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->has('transactions', 3)
+            ->missing('transactions')
+            ->loadDeferredProps(fn ($page) => $page
+                ->has('transactions', 3)
+            )
         );
 });
 
@@ -80,7 +83,7 @@ test('stores an income transaction', function (): void {
         'transaction_date' => now()->toDateString(),
         'category_id' => Category::Salary->value,
         'description' => 'Salary',
-    ])->assertRedirectToRoute('transactions.index');
+    ])->assertRedirectToRoute('dashboard');
 
     expect(Transaction::where('account_id', $account->id)->where('type', TransactionType::Income->value)->exists())->toBeTrue();
 });
@@ -95,7 +98,7 @@ test('stores an expense transaction', function (): void {
         'transaction_date' => now()->toDateString(),
         'category_id' => Category::GeneralShopping->value,
         'description' => 'Groceries',
-    ])->assertRedirectToRoute('transactions.index');
+    ])->assertRedirectToRoute('dashboard');
 
     expect(Transaction::where('account_id', $account->id)->where('type', TransactionType::Expense->value)->exists())->toBeTrue();
 });

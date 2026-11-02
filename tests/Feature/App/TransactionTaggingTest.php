@@ -38,28 +38,26 @@ test('stores normalized tags on a plain transaction', function (): void {
     $this->actingAs($user)->post(route('transactions.store'), [
         ...taggingExpensePayload($account),
         'tags' => ['Bills & Rent!', 'food!'],
-    ])->assertRedirectToRoute('transactions.index');
+    ])->assertRedirectToRoute('dashboard');
 
     $stored = Transaction::query()->where('account_id', $account->id)->first();
 
     expect($stored->tags?->toArray())->toBe(['bills_rent', 'food']);
 });
 
-test('stores null when tags are omitted or all-dropped', function (): void {
+test('stores null when tags are omitted or all-dropped', function (array $extra): void {
     [$user, $account] = createTaggingAccount();
 
-    $this->actingAs($user)->post(route('transactions.store'), taggingExpensePayload($account));
     $this->actingAs($user)->post(route('transactions.store'), [
         ...taggingExpensePayload($account),
-        'tags' => ['!!!'],
-    ]);
+        ...$extra,
+    ])->assertRedirectToRoute('dashboard');
 
-    $rows = Transaction::query()->where('account_id', $account->id)->orderBy('id')->get();
-
-    expect($rows)->toHaveCount(2)
-        ->and($rows[0]->tags)->toBeNull()
-        ->and($rows[1]->tags)->toBeNull();
-});
+    expect(Transaction::query()->where('account_id', $account->id)->first()->tags)->toBeNull();
+})->with([
+    'tags omitted' => [[]],
+    'all-dropped' => [['tags' => ['!!!']]],
+]);
 
 test('rejects more than MAX_TAGS tags without persisting', function (): void {
     [$user, $account] = createTaggingAccount();
@@ -149,7 +147,7 @@ test('seeds the edit form from the row — transfers from the source row', funct
         ->and(TransactionFormData::defaultFromRequest(new Request([]))->tags)->toBeNull();
 });
 
-test('passes the tags prop on the create and edit pages', function (): void {
+test('passes the tags prop on the create page', function (): void {
     [$user, $account] = createTaggingAccount();
     Transaction::factory()->create([
         'account_id' => $account->id,
@@ -163,7 +161,15 @@ test('passes the tags prop on the create and edit pages', function (): void {
             ->component('app/transaction/create')
             ->where('tags', ['food'])
         );
+});
 
+test('passes the tags prop on the edit page', function (): void {
+    [$user, $account] = createTaggingAccount();
+    Transaction::factory()->create([
+        'account_id' => $account->id,
+        'created_by' => $user->id,
+        'tags' => ['food'],
+    ]);
     $transaction = Transaction::factory()->create([
         'account_id' => $account->id,
         'created_by' => $user->id,

@@ -80,7 +80,7 @@ test('creating a transaction invalidates the cached list', function (): void {
         'transaction_date' => now()->toDateString(),
         'category_id' => Category::Salary->value,
         'description' => 'Fresh row',
-    ])->assertRedirectToRoute('transactions.index');
+    ])->assertRedirectToRoute('dashboard');
 
     $freshId = Transaction::where('description', 'Fresh row')->value('id');
 
@@ -142,11 +142,13 @@ test('getTransactionsByAccount returns only that account rows regardless of crea
         fn (array $row): string => $row['description'],
         $rows,
     );
+    // Both rows share a date — keyset order falls to id, so sort before comparing.
+    sort($descriptions);
 
     expect($rows)->toHaveCount(2)
         ->and($descriptions)->toBe(['Own row', 'Shared row'])
         // The mapper's eager loads must be satisfied — account rows arrive loaded.
-        ->and($rows[0]['account']->name)->toBe($account->name);
+        ->and($rows[0]['account']['name'])->toBe($account->name);
 });
 
 test('serves the tags-bearing row shape under the versioned cache key', function (): void {

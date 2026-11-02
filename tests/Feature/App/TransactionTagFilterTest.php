@@ -106,7 +106,7 @@ test('rejects malformed tag filter values without rendering', function (): void 
 test('accepts the tags filter id with valid slugs', function (): void {
     [$user] = tagFilterAccountForUser();
 
-    $this->actingAs($user)->get(route('transactions.index', [
+    $this->withoutExceptionHandling()->actingAs($user)->get(route('transactions.index', [
         'filters' => [['id' => 'tags', 'value' => ['food']]],
     ]))->assertOk();
 });

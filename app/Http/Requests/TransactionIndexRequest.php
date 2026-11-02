@@ -22,7 +22,11 @@ class TransactionIndexRequest extends FormRequest
             'filters' => ['nullable', 'array', 'max:10'],
             'filters.*.id' => ['required', 'string', Rule::in(['account_id', 'category_id', 'type', 'tags'])],
             'filters.*.value' => ['required', 'array', 'min:1'],
-            'filters.*.value.*' => ['integer|string'],
+            'filters.*.value.*' => [function ($attribute, $value, $fail): void {
+                if (! is_string($value) && ! is_int($value)) {
+                    $fail("The {$attribute} must be either a string or an integer.");
+                }
+            }],
             'sorting' => ['nullable', 'array', 'max:1'],
             'sorting.0.id' => ['required_with:sorting', 'string', Rule::in(['transaction_date', 'amount'])],
             'sorting.0.desc' => ['required_with:sorting', 'boolean'],

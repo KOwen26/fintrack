@@ -48,24 +48,26 @@ final readonly class Tags implements Castable
 
                 $decoded = json_decode($value, true);
 
-                return is_array($decoded) ? new Tags(TagService::normalize($decoded)) : null;
+                // Route through fromArray so hydration enforces the same
+                // nullable contract as writes: empty/normalizes-to-empty
+                // stored json reads back as null, never an empty Tags.
+                return is_array($decoded) ? Tags::fromArray($decoded) : null;
             }
 
             public function set(Model $model, string $key, mixed $value, array $attributes): ?string
             {
-                if ($value === null || $value === []) {
-                    return null;
-                }
+                // Normalize first so an empty Tags instance, an empty array, and
+                // null all take the same "drop the column" path as writes.
+                $slugs = match (true) {
+                    $value === null => null,
+                    $value instanceof Tags => $value->toArray(),
+                    is_array($value) => $value,
+                    default => throw new InvalidArgumentException('Tags value must be null, an array, or a Tags instance.'),
+                };
 
-                if ($value instanceof Tags) {
-                    return json_encode($value->toArray());
-                }
+                $normalized = $slugs === null ? null : TagService::normalizeToNullable($slugs);
 
-                if (is_array($value)) {
-                    return json_encode(TagService::normalize($value));
-                }
-
-                throw new InvalidArgumentException('Tags value must be null, an array, or a Tags instance.');
+                return $normalized === null ? null : json_encode($normalized);
             }
         };
     }

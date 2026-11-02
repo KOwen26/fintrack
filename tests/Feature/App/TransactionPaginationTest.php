@@ -32,8 +32,9 @@ function pagedRowAttributes(int $account_id, int $created_by): array
     return [
         'account_id' => $account_id,
         'created_by' => $created_by,
-        // The default list period is the last 6 months — stay inside it.
-        'transaction_date' => fake()->dateTimeBetween('-5 months', 'now')->format('Y-m-d H:i:s'),
+        // Inside the queried Last3Months window — older rows would legitimately
+        // fall outside it.
+        'transaction_date' => fake()->dateTimeBetween('-2 months', 'now')->format('Y-m-d H:i:s'),
     ];
 }
 
@@ -238,7 +239,8 @@ test('oldest sort walks ascending with ascending cursors', function (): void {
     foreach (range(1, 65) as $i) {
         Transaction::factory()->create([
             ...pagedRowAttributes($account->id, $user->id),
-            'transaction_date' => now()->subMonths(5)->addDays($i)->format('Y-m-d H:i:s'),
+            // All 65 rows inside Last3Months: two full keyset pages, ascending.
+            'transaction_date' => now()->subDays(70)->addDays($i)->format('Y-m-d H:i:s'),
         ]);
     }
 
