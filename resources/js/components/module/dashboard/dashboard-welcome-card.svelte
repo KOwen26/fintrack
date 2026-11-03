@@ -1,6 +1,8 @@
 <script lang="ts">
     import type { RestProps } from '@type/index';
 
+    import { APP_NAME } from '@data/constants';
+
     import { cn } from '@utilities/shadcn';
 
     import AppIcon from '@components/ui/app-icon.svelte';
@@ -22,7 +24,7 @@
         <AppIcon class="size-40" />
     </div>
 
-    <h3 class="mb-2 text-xl font-semibold text-foreground">Welcome to FinTrack</h3>
+    <h3 class="mb-2 text-xl font-semibold text-foreground">Welcome to {APP_NAME}</h3>
     <p class="mb-6 max-w-sm text-sm text-foreground/70">
         Get started by creating your first account. Track your spending, set budgets, and stay on
         top of your finances.

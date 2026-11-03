@@ -72,7 +72,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
           source: build-assets.tar.gz
-          target: /tmp/fintrack-deploy/
+          target: /tmp/deploy/
 
       - name: Deploy on server
         uses: appleboy/ssh-action@v1.2.5
@@ -109,8 +109,8 @@ jobs:
             # ── 4. Replace build assets ────────────────────────────────────
             rm -rf public/build
             mkdir -p public/build
-            tar -xzf /tmp/fintrack-deploy/build-assets.tar.gz -C public/build
-            rm -f /tmp/fintrack-deploy/build-assets.tar.gz
+            tar -xzf /tmp/deploy/build-assets.tar.gz -C public/build
+            rm -f /tmp/deploy/build-assets.tar.gz
 
             php artisan optimize
             php artisan up

@@ -12,7 +12,7 @@ import { withDirectionalViewTransition } from '@utilities/view-transition';
 
 import DashboardLayout from '@components/layouts/dashboard-layout.svelte';
 
-const appName = import.meta.env?.VITE_APP_NAME || 'Fintrack';
+const appName = import.meta.env?.VITE_APP_NAME || 'Money Mate';
 
 createInertiaApp({
     progress: {

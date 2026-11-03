@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { APP_NAME } from '@data/constants';
     import { useTheme } from '@lib/theme-handler.svelte';
 
     import BottomNav from '@components/navigation/bottom-nav.svelte';
@@ -10,7 +11,7 @@
 </script>
 
 <svelte:head>
-    <title>{import.meta.env.VITE_APP_NAME || 'FinTrack'}</title>
+    <title>{import.meta.env.VITE_APP_NAME || APP_NAME}</title>
 </svelte:head>
 
 <Toaster />

@@ -1,4 +1,4 @@
-# FinTrack
+# Money Mate
 
 Personal finance tracker for the Indonesian market. Track balances across bank accounts, digital banks, e-wallets, cash wallets and investments; record income, expenses and transfers; organize spending in a two-level category tree; and review activity through monthly reports. Shareable accounts are supported.
 

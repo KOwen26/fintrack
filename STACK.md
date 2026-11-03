@@ -1,6 +1,6 @@
 # Stack & Tooling
 
-Operational documentation for FinTrack: project structure, commands, and the
+Operational documentation for Money Mate: project structure, commands, and the
 packages behind each layer. The application's domain lives in
 [`README.md`](README.md); engineering conventions live in `.ai/guidelines/` and
 `.ai/rules/`.

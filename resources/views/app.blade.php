@@ -34,7 +34,7 @@
     {{-- First-paint theme boot — mirrors theme-handler.svelte.ts (the cookie mirrors localStorage). --}}
     <script>
         (function() {
-            const theme = /(?:^|;\s*)fintrack-theme=([^;]+)/.exec(document.cookie);
+            const theme = /(?:^|;\s*)money-mate-theme=([^;]+)/.exec(document.cookie);
             const themeValue = theme ? decodeURIComponent(theme[1]) : '';
 
             document.documentElement.dataset.theme = themeValue || 'electric';
