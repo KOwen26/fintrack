@@ -10,7 +10,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
 import { withDirectionalViewTransition } from '@utilities/view-transition';
 
-import DashboardLayout from '@components/layouts/dashboard-layout.svelte';
+import AppLayout from '@components/layouts/app-layout.svelte';
 
 const appName = import.meta.env?.VITE_APP_NAME || 'Money Mate';
 
@@ -33,7 +33,7 @@ createInertiaApp({
                 return null;
 
             default:
-                return DashboardLayout;
+                return AppLayout;
         }
     },
 });
@@ -43,5 +43,3 @@ initializeNamedTheme();
 initializeFlashToast();
 
 initializeBackNavigation();
-
-// initializeAppearance();
