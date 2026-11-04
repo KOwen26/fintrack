@@ -2,11 +2,14 @@
 
 use App\Http\Controllers\DevController;
 use App\Http\Middleware\OnlyDevelopment;
+use App\Models\Account;
 use App\Models\DecorationColor;
+use App\Models\ImportRow;
 use App\Services\Import\ImportFileException;
 use App\Services\Import\ParsedRow;
 use App\Services\Import\Parsers\MandiriStatementParser;
 use App\Services\Import\StatementFileReader;
+use App\Services\ImportService;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -53,7 +56,7 @@ Route::group([
 
     Route::get('categories', [DevController::class, 'categories'])->name('categories');
 
-    Route::get('import', function (Request $request) {
+    Route::get('import-parse', function (Request $request) {
         $path = storage_path('app/private/statement-dummy.xlsx');
         $file = new UploadedFile($path, basename($path));
         $raw = StatementFileReader::rows($file);
@@ -86,4 +89,61 @@ Route::group([
             ], array_slice($statement->rows, 0, (int) $request->query('rows', 50))),
         ]);
     })->name('import');
+
+    // Statement import emulation: runs the REAL ImportService lifecycle (registry
+    // resolve → parse → fingerprint → stage) on the dummy statement for a
+    // throwaway account with the Mandiri provider — the exact path the upload
+    // flow takes. Optional &approve=1 also materializes the staged rows into
+    // transactions/transfers and reports the balance delta.
+    Route::get('import', function (Request $request) {
+        $path = storage_path('app/private/statement-dummy.xlsx');
+        $file = new UploadedFile($path, basename($path));
+
+        $account = Account::where('provider_id', 2)->first();
+        $provider = $account->provider;
+        $user = $account->owner;
+
+        $service = resolve(ImportService::class);
+        $batch = $service->upload($user, $account, $file);
+
+        $rows = $batch->rows()->orderBy('row_number')->get();
+
+        $response = [
+            'account' => ['id' => $account->id, 'provider' => $provider->slug],
+            'batch' => [
+                'id' => $batch->id,
+                'status' => $batch->status->value,
+                'total_rows' => $batch->total_rows,
+                'source' => $file->getClientOriginalName(),
+            ],
+            'summary' => [
+                'staged' => $rows->count(),
+                'included' => $rows->where('is_included', true)->count(),
+                'duplicates' => $rows->where('is_duplicate', true)->count(),
+                'with_errors' => $rows->whereNotNull('parse_errors')->count(),
+            ],
+            'rows' => $rows->take((int) $request->query('rows', 20))->map(fn (ImportRow $row): array => [
+                'row' => $row->row_number,
+                'date' => $row->transaction_date?->toDateTimeString(),
+                'description' => $row->description,
+                'amount' => $row->amount,
+                'flow' => $row->flow?->value,
+                'category' => $row->category_id?->value,
+                'included' => $row->is_included,
+                'duplicate' => $row->is_duplicate,
+                'errors' => (object) ($row->parse_errors ?? []),
+            ])->all(),
+        ];
+
+        if ($request->boolean('approve')) {
+            $imported = $service->approve($batch);
+
+            $response['approved'] = [
+                'imported' => $imported,
+                'balance' => $account->fresh()->current_balance,
+            ];
+        }
+
+        return response()->json($response);
+    })->name('import-run');
 });

@@ -2,6 +2,7 @@
 
 use App\Models\Account;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 
 /** A user with one owned account — the common feature-test arrangement pair. */
 function userWithAccount(array $accountAttributes = []): array
@@ -21,4 +22,10 @@ function pageIds(array $page): array
 function import_fixture(string $name): string
 {
     return file_get_contents(__DIR__ . '/../Fixtures/Imports/' . $name);
+}
+
+/** A fake statement upload built from an import fixture — `statementFile('mandiri-dirty.xlsx')`. */
+function statementFile(string $name = 'mandiri-basic.xlsx'): UploadedFile
+{
+    return UploadedFile::fake()->createWithContent('mutasi.xlsx', import_fixture($name));
 }

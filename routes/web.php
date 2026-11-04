@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\StatisticController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransferController;
@@ -49,6 +50,16 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
             Route::get('{transfer}/edit', 'edit')->name('edit');
             Route::put('{transfer}', 'update')->name('update');
         });
+    });
+
+    // Statement imports (per-account upload; staging review; bulk approve)
+    Route::controller(ImportController::class)->group(function (): void {
+        Route::get('accounts/{account}/import', 'create')->name('imports.create');
+        Route::post('accounts/{account}/import', 'store')->name('imports.store');
+        Route::get('imports/{batch}', 'show')->name('imports.show');
+        Route::patch('imports/{batch}/rows/{row}', 'updateRow')->name('imports.rows.update');
+        Route::post('imports/{batch}/approve', 'approve')->name('imports.approve');
+        Route::post('imports/{batch}/discard', 'discard')->name('imports.discard');
     });
 
     Route::prefix('statistics')->name('statistics.')->group(function (): void {

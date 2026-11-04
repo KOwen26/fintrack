@@ -9,6 +9,7 @@ use App\Models\Account;
 use App\Models\Provider;
 use App\Models\User;
 use App\Services\AccountService;
+use App\Services\Import\ParserRegistry;
 use App\Services\SpendingService;
 use App\Services\TransactionListService;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -22,6 +23,7 @@ final class AccountController extends Controller
     public function __construct(
         #[CurrentUser] private readonly ?User $user,
         private readonly AccountService $accountService,
+        private readonly ParserRegistry $parserRegistry,
     ) {}
 
     public function index(Request $request): Response
@@ -55,6 +57,7 @@ final class AccountController extends Controller
             'account' => $account,
             'transactions' => $transactions,
             'categorySpending' => $categorySpending,
+            'import_supported' => $this->parserRegistry->supports($account->provider),
         ]);
     }
 

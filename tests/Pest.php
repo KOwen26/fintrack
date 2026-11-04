@@ -61,6 +61,9 @@ pest()->group('module:statistics')->in('Integration/Services/SpendingServiceTest
 pest()->group('module:template')->in('Integration/Services/TransactionTemplateServiceTest.php');
 pest()->group('module:decorations')->in('Integration/Models/DecorationsTest.php');
 pest()->group('module:import')->in('Integration/Services/Import/MandiriStatementParserTest.php');
+pest()->group('module:import')->in('Integration/Models/ImportRowCastsTest.php');
+pest()->group('module:import')->in('Integration/Services/ImportServiceTest.php');
+pest()->group('module:import')->in('Feature/App/Import');
 
 /*
 |--------------------------------------------------------------------------

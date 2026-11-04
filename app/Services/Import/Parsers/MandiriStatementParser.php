@@ -121,23 +121,23 @@ final class MandiriStatementParser implements ProviderStatementParser
      * or unreadable companion leaves the date at start of day and is
      * never an error. Descriptions collapse to single-spaced text.
      *
-     * @param  array<int, string|null>  $main
+     * @param  array<int, string|null>  $row
      * @param  array<int, string|null>|null  $companion
      */
-    private function assembleRow(array $main, ?array $companion): ParsedRow
+    private function assembleRow(array $row, ?array $companion): ParsedRow
     {
-        $date = $this->parseDate($main[self::COLUMN_DATETIME] ?? null);
+        $date = $this->parseDate($row[self::COLUMN_DATETIME] ?? null);
         $time = $companion === null ? null : $this->parseTime($companion[self::COLUMN_DATETIME] ?? null);
 
         if ($date !== null && $time !== null) {
             $date = $date->setTimeFromTimeString($time->toTimeString());
         }
 
-        $description = isset($main[self::COLUMN_DESCRIPTION]) && $main[self::COLUMN_DESCRIPTION] !== null
-            ? trim((string) preg_replace('/\s+/u', ' ', $main[self::COLUMN_DESCRIPTION]))
+        $description = isset($row[self::COLUMN_DESCRIPTION]) && $row[self::COLUMN_DESCRIPTION] !== null
+            ? trim((string) preg_replace('/\s+/u', ' ', $row[self::COLUMN_DESCRIPTION]))
             : null;
-        $debit = $this->parseAmount((string) ($main[self::COLUMN_DEBIT] ?? ''));
-        $credit = $this->parseAmount((string) ($main[self::COLUMN_CREDIT] ?? ''));
+        $debit = $this->parseAmount((string) ($row[self::COLUMN_DEBIT] ?? ''));
+        $credit = $this->parseAmount((string) ($row[self::COLUMN_CREDIT] ?? ''));
 
         $errors = [];
         if ($date === null) {
@@ -159,6 +159,6 @@ final class MandiriStatementParser implements ProviderStatementParser
             default => null,
         };
 
-        return new ParsedRow($date, $description, $amount, $flow, $main, $errors);
+        return new ParsedRow($date, $description, $amount, $flow, $row, $errors);
     }
 }

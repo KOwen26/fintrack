@@ -994,7 +994,7 @@ final readonly class ParserRegistry
 
 ---
 
-### Task 6: Dev-only parser debug endpoint
+### Task 6: Dev-only parser debug + import emulation endpoints
 
 **Complexity:** Low
 
@@ -1005,31 +1005,20 @@ No test — dev-sandbox tooling inside the `OnlyDevelopment` group (not register
 
 **Interfaces:**
 - Consumes: `StatementFileReader::rows()`, `MandiriStatementParser::parse()` (Task 4).
-- Produces: `GET /dev/import` — reads the newest `statement-dummy.*` dropped in `storage/app/private` (no params; optional `?file=statement-dummy.xlsx` picks a specific file in that directory, basename-guarded). Returns JSON: the raw normalized first rows (eyeball `DATA_START_ROW`/`COLUMN_*` pins), the parsed rows with per-row errors and full datetimes, and a clean/error summary — the layout-verification loop from Post-Plan Notes, without tinker or the app's import flow.
+- Produces: `GET /dev/import` — reads `storage/app/private/statement-dummy.xlsx`. Returns JSON: the raw normalized first rows (eyeball `DATA_START_ROW`/`COLUMN_*` pins), the parsed rows with per-row errors and full datetimes, and a clean/error summary — the layout-verification loop from Post-Plan Notes, without tinker or the app's import flow.
+- Also produces (added during staging execution): `GET /dev/import-run` — emulates the real upload lifecycle by running `ImportService::upload()` (registry resolve → parse → fingerprint → stage) on `storage/app/private/statement-dummy.xlsx` for a throwaway user/account with the Mandiri provider; optional `&approve=1` materializes the staged rows and reports the balance delta. Creates throwaway DB rows per call — dev sandbox only.
 
 - [x] **Step 1: Add the route**
 
-Append inside the `dev` group in `routes/dev.php` (imports to add: `App\Services\Import\ImportFileException`, `App\Services\Import\Parsers\MandiriStatementParser`, `App\Services\Import\ParsedRow`, `App\Services\Import\StatementFileReader`, `Illuminate\Http\Request`, `Illuminate\Http\UploadedFile`):
+Append inside the `dev` group in `routes/dev.php` (imports to add: `App\Enums\ProviderType`, `App\Models\Account`, `App\Models\ImportRow`, `App\Models\Provider`, `App\Models\User`, `App\Services\Import\ImportFileException`, `App\Services\Import\Parsers\MandiriStatementParser`, `App\Services\Import\ParsedRow`, `App\Services\Import\StatementFileReader`, `App\Services\ImportService`, `Illuminate\Http\Request`, `Illuminate\Http\UploadedFile`):
 
 ```php
-    // Statement parser debug: reads the dummy statement dropped in storage/app/private
-    // (newest statement-dummy.* — no params needed; optional ?file=statement-dummy.xlsx
-    // picks a specific file in that directory). Dumps the raw normalized rows (to
-    // eyeball pinned layout constants) plus the parsed statement, so a real export
-    // can be verified without touching the app's import flow.
+    // Statement parser debug: parses storage/app/private/statement-dummy.xlsx and
+    // dumps the raw normalized rows (to eyeball pinned layout constants) plus the
+    // parsed statement, so a real export can be verified without touching the
+    // app's import flow.
     Route::get('import', function (Request $request) {
-        $directory = storage_path('app/private');
-        $requested = basename((string) $request->query('file', ''));
-
-        $candidates = glob($directory . '/' . ($requested !== '' ? $requested : 'statement-dummy.*')) ?: [];
-
-        if ($candidates === []) {
-            abort(422, "No statement file found in {$directory} — drop statement-dummy.xlsx there.");
-        }
-
-        usort($candidates, fn (string $a, string $b): int => filemtime($b) <=> filemtime($a));
-        $path = $candidates[0];
-
+        $path = storage_path('app/private/statement-dummy.xlsx');
         $file = new UploadedFile($path, basename($path));
         $raw = StatementFileReader::rows($file);
 
@@ -1061,6 +1050,68 @@ Append inside the `dev` group in `routes/dev.php` (imports to add: `App\Services
             ], array_slice($statement->rows, 0, (int) $request->query('rows', 50))),
         ]);
     })->name('import');
+
+    // Statement import emulation: runs the REAL ImportService lifecycle (registry
+    // resolve → parse → fingerprint → stage) on the dummy statement for a
+    // throwaway account with the Mandiri provider — the exact path the upload
+    // flow takes. Optional &approve=1 also materializes the staged rows into
+    // transactions/transfers and reports the balance delta.
+    Route::get('import-run', function (Request $request) {
+        $path = storage_path('app/private/statement-dummy.xlsx');
+        $file = new UploadedFile($path, basename($path));
+
+        $provider = Provider::factory()->create([
+            'name' => 'Mandiri',
+            'slug' => 'mandiri',
+            'type' => ProviderType::Bank,
+        ]);
+
+        $user = User::factory()->create();
+        $account = Account::factory()->for($user, 'owner')->create(['provider_id' => $provider->id]);
+
+        $service = app(ImportService::class);
+        $batch = $service->upload($user, $account, $file);
+
+        $rows = $batch->rows()->orderBy('row_number')->get();
+
+        $response = [
+            'account' => ['id' => $account->id, 'provider' => $provider->slug],
+            'batch' => [
+                'id' => $batch->id,
+                'status' => $batch->status->value,
+                'total_rows' => $batch->total_rows,
+                'source' => $file->getClientOriginalName(),
+            ],
+            'summary' => [
+                'staged' => $rows->count(),
+                'included' => $rows->where('is_included', true)->count(),
+                'duplicates' => $rows->where('is_duplicate', true)->count(),
+                'with_errors' => $rows->whereNotNull('parse_errors')->count(),
+            ],
+            'rows' => $rows->take((int) $request->query('rows', 20))->map(fn (ImportRow $row): array => [
+                'row' => $row->row_number,
+                'date' => $row->transaction_date?->toDateTimeString(),
+                'description' => $row->description,
+                'amount' => $row->amount,
+                'flow' => $row->flow?->value,
+                'category' => $row->category_id?->value,
+                'included' => $row->is_included,
+                'duplicate' => $row->is_duplicate,
+                'errors' => (object) ($row->parse_errors ?? []),
+            ])->all(),
+        ];
+
+        if ($request->boolean('approve')) {
+            $imported = $service->approve($batch);
+
+            $response['approved'] = [
+                'imported' => $imported,
+                'balance' => $account->fresh()->current_balance,
+            ];
+        }
+
+        return response()->json($response);
+    })->name('import-run');
 ```
 
 ---
