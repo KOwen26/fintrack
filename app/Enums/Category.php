@@ -17,6 +17,7 @@ enum Category: string
     case BusinessRevenue = 'business_revenue';
     case Bonus = 'bonus';
     case GrantsAndStipends = 'grants_and_stipends';
+    case Reimbursement = 'reimbursement';
     case InvestmentIncome = 'investment_income';
     case OtherIncome = 'other_income';
     case InitialBalance = 'initial_balance';
@@ -135,6 +136,7 @@ enum Category: string
             self::BusinessRevenue => 'Business Revenue',
             self::Bonus => 'Bonus',
             self::GrantsAndStipends => 'Grants & Stipends',
+            self::Reimbursement => 'Reimbursement',
             self::InvestmentIncome => 'Investment Income',
             self::OtherIncome => 'Other Income',
             self::InitialBalance => 'Initial Balance',
@@ -225,6 +227,7 @@ enum Category: string
             self::GrantsAndStipends => 'Non-repayable awards such as scholarships, grants, or stipends',
             self::InvestmentIncome => 'Passive income from investments — interest from savings and deposits, plus dividends from stock or fund holdings',
             self::OtherIncome => 'Inflow that fits no other income category',
+            self::Reimbursement => 'Money returned for expenses you paid — refunds, insurance payouts, and out-of-pocket reimbursements from employers or third parties',
             self::InitialBalance => 'System-only opening row that seeds an account with its starting balance',
 
             self::AdminBankFees => 'Administrative and bank account charges — transfer fees, monthly maintenance, ATM, and card fees',
@@ -311,6 +314,7 @@ enum Category: string
             self::BusinessRevenue,
             self::Bonus,
             self::GrantsAndStipends,
+            self::Reimbursement,
             self::InvestmentIncome,
             self::OtherIncome,
             self::InitialBalance => CategoryGroup::Income,
@@ -411,6 +415,7 @@ enum Category: string
             self::GrantsAndStipends => new Decoration(icon: 'hand-shake', color: 'green-500'),
             self::InvestmentIncome => new Decoration(icon: 'course-up', color: 'green-400'),
             self::OtherIncome => new Decoration(icon: 'add-circle', color: 'green-200'),
+            self::Reimbursement => new Decoration(icon: 'hand-money', color: 'green-500'),
             self::InitialBalance => new Decoration(icon: 'course-up', color: 'green-200'),
             self::AdminBankFees => new Decoration(icon: 'card', color: 'green-600'),
             self::InvestmentFees => new Decoration(icon: 'chart-2', color: 'green-500'),
