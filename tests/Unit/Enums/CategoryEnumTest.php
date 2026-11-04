@@ -6,9 +6,9 @@ use App\Enums\CategoryGroup;
 use App\Objects\Decoration;
 
 it('declares the full preset inventory', function (): void {
-    expect(Category::cases())->toHaveCount(79)
+    expect(Category::cases())->toHaveCount(80)
         ->and(CategoryGroup::cases())->toHaveCount(14)
-        ->and(Category::bookable())->toHaveCount(78)
+        ->and(Category::bookable())->toHaveCount(79)
         ->and(Category::bookable())->not->toContain(Category::InitialBalance);
 });
 
@@ -30,7 +30,7 @@ it('keeps group children consistent with group() back-references', function (): 
         }
     }
 
-    expect(CategoryGroup::Income->children())->toContain(Category::Salary, Category::InitialBalance)
+    expect(CategoryGroup::Income->children())->toContain(Category::Salary, Category::Reimbursement, Category::InitialBalance)
         ->and(CategoryGroup::Income->flow())->toBe(Cashflow::Inflow)
         ->and(CategoryGroup::Finance->flow())->toBe(Cashflow::Outflow);
 });

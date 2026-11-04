@@ -5,15 +5,8 @@ import createServer from '@inertiajs/svelte/server';
 import { hydrate } from 'svelte';
 import { render } from 'svelte/server';
 
-import DashboardLayout from '@components/layouts/dashboard-layout.svelte';
+import AppLayout from '@components/layouts/app-layout.svelte';
 
-/**
- * ! Ziggy route is not working for svelte SSR at the moment.
- * * https://github.com/tightenco/ziggy-js/issues/75
- *
- * might use laravel-wayfinder instead
- * ? https://github.com/laravel/wayfinder
- */
 createServer((page) =>
     createInertiaApp({
         page,
@@ -25,7 +18,7 @@ createServer((page) =>
 
             return {
                 default: page.default,
-                layout: page?.layout || DashboardLayout,
+                layout: page?.layout || AppLayout,
             } as typeof page;
         },
         setup({ el, App, props }) {

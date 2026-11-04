@@ -2,6 +2,8 @@
     import type { Snippet } from 'svelte';
     import type { HTMLAttributes } from 'svelte/elements';
 
+    import { APP_NAME } from '@data/constants';
+
     import AppIcon from '@components/ui/app-icon.svelte';
     import Toaster from '@components/ui/toaster.svelte';
 
@@ -48,7 +50,7 @@
             </div>
 
             <div class="relative z-10 mt-8">
-                <h2 class="mb-6 text-4xl font-bold tracking-tight text-white">Fintrack</h2>
+                <h2 class="mb-6 text-4xl font-bold tracking-tight text-white">{APP_NAME}</h2>
                 <p class="text-lg leading-relaxed text-white/80">
                     The ultimate platform for finance tracking and budget management. Streamline
                     your entire workflow with precision and speed.

@@ -1,4 +1,4 @@
-# FinTrack
+# Money Mate
 
 Personal finance tracker for the Indonesian market. Track balances across bank accounts, digital banks, e-wallets, cash wallets and investments; record income, expenses and transfers; organize spending in a two-level category tree; and review activity through monthly reports. Shareable accounts are supported.
 
@@ -96,12 +96,14 @@ All reports are SQL-aggregated and cached per account (past months indefinitely,
     - user can set a scheduled / recurring transaction by using a template.
     - those transaction might requiring a confirmation or not
     - the recurring can be daily, weekly, monthly, yearly, or every selected date.
+3. Household / shared-account membership
+    - shareable accounts are currently visible to all users as a placeholder until membership exists
+4. Deeper Provider integration
+    - Transaction import based by provider
 
 ### Later
 
 - Implement / rework budgeting
-- Household / shared-account membership — shareable accounts are currently visible to all users as a placeholder until membership exists
-- Deeper Provider integration (provider data is metadata-only today)
 
 ### Distant
 

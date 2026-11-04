@@ -44,7 +44,7 @@ export type ThemeName = string;
 
 export const DEFAULT_THEME = 'electric';
 
-const STORAGE_KEY = 'fintrack-theme';
+const STORAGE_KEY = 'money-mate-theme';
 
 function asValidTheme(value: unknown): string | undefined {
     if (typeof value === 'string' && (THEMES as readonly string[]).includes(value)) {
