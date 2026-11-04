@@ -60,6 +60,7 @@ pest()->group('module:account')->in(
 pest()->group('module:statistics')->in('Integration/Services/SpendingServiceTest.php');
 pest()->group('module:template')->in('Integration/Services/TransactionTemplateServiceTest.php');
 pest()->group('module:decorations')->in('Integration/Models/DecorationsTest.php');
+pest()->group('module:import')->in('Integration/Services/Import/MandiriStatementParserTest.php');
 
 /*
 |--------------------------------------------------------------------------

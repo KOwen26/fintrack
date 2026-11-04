@@ -16,3 +16,9 @@ function pageIds(array $page): array
 {
     return array_map(fn (array $row): int => $row['id'], $page['transactions']);
 }
+
+/** Raw contents of a statement import fixture, e.g. `import_fixture('mandiri-basic.xlsx')`. */
+function import_fixture(string $name): string
+{
+    return file_get_contents(__DIR__ . '/../Fixtures/Imports/' . $name);
+}
