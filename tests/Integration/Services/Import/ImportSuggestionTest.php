@@ -9,6 +9,7 @@ use App\Enums\TransactionType;
 use App\Models\ImportBatch;
 use App\Models\ImportRow;
 use App\Services\Import\ImportSuggestion;
+use Laravel\Ai\Prompts\AgentPrompt;
 
 beforeEach(function (): void {
     config([
@@ -24,7 +25,7 @@ beforeEach(function (): void {
     $this->gofood = ImportRow::factory()->create([
         'batch_id' => $this->batch->id,
         'row_number' => 1,
-        'description' => 'GOPAY QRIS GOFOOD JAKARTA',
+        'description' => 'GOPAY QRIS GOFOOD JAKARTA 609015160267',
         'amount' => 45000,
         'flow' => Cashflow::Outflow,
         'category_id' => Category::OtherExpenses->value,
@@ -76,6 +77,20 @@ it('is disabled when the API key is missing', function (): void {
     ]);
 
     expect(ImportSuggestion::isEnabled())->toBeFalse();
+});
+
+it('redacts long digit runs before the prompt leaves the app', function (): void {
+    $captured = null;
+    ImportSuggestions::fake(function (AgentPrompt $prompt) use (&$captured): array {
+        $captured = $prompt->prompt;
+
+        return ['rows' => []];
+    });
+
+    runSuggestions($this->batch);
+
+    expect($captured)->toContain('GOFOOD JAKARTA [REDACTED]')
+        ->not->toContain('609015160267');
 });
 
 it('applies suggested categories and types', function (): void {

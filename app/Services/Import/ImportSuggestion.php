@@ -162,7 +162,7 @@ final class ImportSuggestion
                 '#%d | %s | %s | %s',
                 $row->row_number,
                 $row->transaction_date?->toDateString() ?? '—',
-                $row->description ?? '—',
+                $this->redactIdentifiers($row->description),
                 $row->flow->value,
             )
         )->implode("\n");
@@ -259,6 +259,17 @@ final class ImportSuggestion
         }
 
         return $counts;
+    }
+
+    /**
+     * Long digit runs in statement descriptions are account, phone, and QR
+     * references — identifiers the categorization task never needs. Masked
+     * before the prompt is assembled so the API call and the debug log both
+     * carry the redacted form; merchant text stays intact as the signal.
+     */
+    private function redactIdentifiers(?string $description): string
+    {
+        return (string) preg_replace('/\d{5,}/', '[REDACTED]', (string) $description);
     }
 
     private function log(): Logger

@@ -112,7 +112,9 @@ return [
 ];
 ```
 
-**Prompt payload** — one compact line per row: `#12 | 2026-10-03 | GOPAY QRIS GOFOOD JAKARTA | outflow`. Amounts stay out — the description carries the categorization signal.
+**Prompt payload** — one compact line per row: `#12 | 2026-10-03 | GOPAY QRIS GOFOOD JAKARTA [masked] | outflow`. Amounts stay out — the description carries the categorization signal.
+
+**PII & data flow** — the only data leaving the app is the redacted prompt: descriptions with digit runs ≥5 masked as `[masked]` before assembly (account, phone, and QR references — the identifier vector — never transmitted; merchant text is kept because it *is* the categorization signal), plus row dates and flow direction, to Ollama Cloud. No identity, balances, or history beyond the statement itself; the provider's retention/training posture is unverified and structured outputs are unsupported on cloud. Debug logs inherit the redacted prompt and rotate in 14 days. This framing is personal-use; if the app ever serves other users, a settings-level consent gate for AI suggestions becomes a requirement (UU PDP 27/2022 classifies financial data as specific personal data), and local Ollama remains the zero-egress fallback.
 
 Every call passes `provider: 'ollama-cloud'` and the configured timeout.
 
