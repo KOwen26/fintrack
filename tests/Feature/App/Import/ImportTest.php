@@ -26,28 +26,6 @@ function stagedBatch(User $user, Account $account): ImportBatch
     return resolve(ImportService::class)->upload($user, $account, statementFile());
 }
 
-test('renders the upload page for the account owner', function (): void {
-    $this->actingAs($this->user)
-        ->get(route('imports.create', $this->account))
-        ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->component('app/account/import')
-            ->has('account')
-            ->where('provider_name', 'Mandiri')
-        );
-});
-
-test('forbids the upload page for non-owners even when shareable', function (): void {
-    $shareable = Account::factory()
-        ->shareable()
-        ->for($this->user, 'owner')
-        ->create(['provider_id' => $this->provider->id]);
-
-    $this->actingAs(User::factory()->create())
-        ->get(route('imports.create', $shareable))
-        ->assertForbidden();
-});
-
 test('stores an upload and redirects to the review page', function (): void {
     $this->actingAs($this->user)
         ->post(route('imports.store', $this->account), ['statement' => statementFile()])
@@ -64,17 +42,16 @@ test('rejects non-xlsx uploads', function (): void {
         ->assertInvalid('statement');
 });
 
-test('renders the review page with rows, categories and accounts', function (): void {
+test('renders the review page with rows and accounts', function (): void {
     $batch = stagedBatch($this->user, $this->account);
 
     $this->actingAs($this->user)
         ->get(route('imports.show', $batch))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->component('app/import/review')
+            ->component('app/settings/imports/review')
             ->has('batch')
             ->has('rows', 3)
-            ->has('categories')
             ->has('accounts')
         );
 });
@@ -91,6 +68,17 @@ test('updates a staged row via the row endpoint', function (): void {
         ->assertRedirectToRoute('imports.show', $batch);
 
     expect($row->fresh()->description)->toBe('Edited via HTTP');
+});
+
+test('requires a transfer destination when the type is transfer', function (): void {
+    $batch = stagedBatch($this->user, $this->account);
+    $row = $batch->rows->first();
+
+    $this->actingAs($this->user)
+        ->patch(route('imports.rows.update', ['batch' => $batch->id, 'row' => $row->id]), [
+            'transaction_type' => 'transfer',
+        ])
+        ->assertSessionHasErrors('transfer_destination_account_id');
 });
 
 test('rejects a row that does not belong to the batch', function (): void {
@@ -143,4 +131,20 @@ test('account show exposes import support', function (): void {
     $this->actingAs($this->user)->get(route('accounts.show', $unsupported))
         ->assertOk()
         ->assertInertia(fn ($page) => $page->where('import_supported', false));
+});
+
+test('settings imports index lists the creator batches only', function (): void {
+    $batch = stagedBatch($this->user, $this->account);
+
+    $stranger = User::factory()->create();
+    ImportBatch::factory()->create(['created_by' => $stranger->id]);
+
+    $this->actingAs($this->user)
+        ->get(route('imports.index'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('app/settings/imports')
+            ->has('batches', 1)
+            ->where('batches.0.id', $batch->id)
+        );
 });

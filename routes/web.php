@@ -54,7 +54,6 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
 
     // Statement imports (per-account upload; staging review; bulk approve)
     Route::controller(ImportController::class)->group(function (): void {
-        Route::get('accounts/{account}/import', 'create')->name('imports.create');
         Route::post('accounts/{account}/import', 'store')->name('imports.store');
         Route::get('imports/{batch}', 'show')->name('imports.show');
         Route::patch('imports/{batch}/rows/{row}', 'updateRow')->name('imports.rows.update');

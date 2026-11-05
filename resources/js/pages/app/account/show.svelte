@@ -15,25 +15,30 @@
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountCard from '@components/module/account/account-card.svelte';
+    import ImportUploadForm from '@components/module/import/import-upload-form.svelte';
     import CategorySpendingChart from '@components/module/statistics/category-spending-chart.svelte';
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
     import HeaderContext from '@components/navigation/header-context.svelte';
     import Button from '@components/ui/button.svelte';
     import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
+    import Separator from '@components/ui/separator.svelte';
 
     let {
         account,
         transactions,
         categorySpending,
+        import_supported,
     }: {
         account: App.Models.Account;
         transactions: TransactionListData[];
         categorySpending: CategorySpendingReportData;
+        import_supported: boolean;
     } = $props();
 
     pageLayoutProps({ title: account?.name, backUrl: AccountController.index.url() });
 
     let showDetail = $state(false);
+    let showImport = $state(false);
     let transactionsOpen = $state(true);
     let categoryOpen = $state(true);
 
@@ -213,7 +218,7 @@
                 </Collapsible.Root>
             {/if}
 
-            <div class="-mx-5 h-2.5 bg-muted"></div>
+            <Separator class="-mx-5" variant="thick" />
 
             <Collapsible.Root bind:open={transactionsOpen}>
                 <ResponsiveCard class=" {!transactionsOpen ? 'gap-0' : ''}">
@@ -243,6 +248,23 @@
                     </Collapsible.Content>
                 </ResponsiveCard>
             </Collapsible.Root>
+
+            <Separator class="-mx-5" variant="thick" />
+
+            {#if import_supported}
+                <ResponsiveCard>
+                    <Button
+                        color="primary"
+                        onclick={() => (showImport = true)}
+                        size="icon"
+                        title="Import Statement"
+                        variant="soft">
+                        <i class="iconify size-4 solar--upload-square-line-duotone"></i>
+                    </Button>
+                </ResponsiveCard>
+            {/if}
         {/if}
     </div>
 </MobilePageLayout>
+
+<ImportUploadForm {account} bind:open={showImport} />

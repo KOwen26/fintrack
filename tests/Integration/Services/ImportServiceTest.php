@@ -101,7 +101,7 @@ it('updates editable fields on a staging row', function (): void {
     resolve(ImportService::class)->updateRow($row, [
         'description' => 'Edited description',
         'amount' => 999999,
-        'flow' => 'outflow',
+        'transaction_type' => TransactionType::Expense,
         'category_id' => Category::Electricity->value,
         'is_included' => false,
     ]);
@@ -109,7 +109,7 @@ it('updates editable fields on a staging row', function (): void {
     expect($row->fresh())
         ->description->toBe('Edited description')
         ->amount->toBe(999999.0)
-        ->flow->toBe('outflow')
+        ->flow->toBe(Cashflow::Outflow)
         ->category_id->toBe(Category::Electricity)
         ->is_included->toBeFalse();
 });
@@ -132,6 +132,32 @@ it('rejects editing rows of non-staging batches', function (): void {
 
     resolve(ImportService::class)->updateRow($row, ['description' => 'nope']);
 })->throws(ValidationException::class);
+
+it('requires a transfer destination when the type is transfer', function (): void {
+    $user = User::factory()->create();
+    $account = importableAccount($user);
+
+    $batch = resolve(ImportService::class)->upload($user, $account, statementFile());
+    $row = $batch->rows->first();
+
+    resolve(ImportService::class)->updateRow($row, ['transaction_type' => TransactionType::Transfer]);
+})->throws(ValidationException::class);
+
+it('clears a stale transfer destination when switching to a non-transfer type', function (): void {
+    $user = User::factory()->create();
+    $account = importableAccount($user);
+    $destination = Account::factory()->for($user, 'owner')->create();
+
+    $batch = resolve(ImportService::class)->upload($user, $account, statementFile());
+    $row = $batch->rows->first();
+
+    resolve(ImportService::class)->updateRow($row, ['transfer_destination_account_id' => $destination->id]);
+    resolve(ImportService::class)->updateRow($row->fresh(), ['transaction_type' => TransactionType::Expense]);
+
+    expect($row->fresh())
+        ->flow->toBe(Cashflow::Outflow)
+        ->transfer_destination_account_id->toBeNull();
+});
 
 it('approves included rows into real transactions and updates the balance', function (): void {
     $user = User::factory()->create();

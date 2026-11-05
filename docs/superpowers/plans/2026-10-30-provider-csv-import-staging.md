@@ -773,7 +773,7 @@ Also add to `app/Models/Account.php` (after `transactions()`):
 
 **Interfaces:**
 - Consumes: Task 3's `ImportService`.
-- Produces: `App\Services\ImportService::updateRow(ImportRow $row, array $data): ImportRow` — accepts any subset of `transaction_date`, `description`, `amount`, `flow`, `category_id`, `transfer_destination_account_id`, `is_included` (validated upstream by `UpdateImportRowRequest`, Task 6).
+- Produces: `App\Services\ImportService::updateRow(ImportRow $row, array $data): ImportRow` — accepts any subset of `transaction_date`, `description`, `amount`, `transaction_type`, `category_id`, `transfer_destination_account_id`, `is_included` (validated upstream by `UpdateImportRowRequest`, Task 6). `transaction_type` picks the money direction: income/expense map to the stored cashflow and clear a stale transfer destination; `transfer` keeps the statement-derived direction and requires `transfer_destination_account_id`.
 
 - [x] **Step 1: Append the failing tests**
 
@@ -788,7 +788,7 @@ it('updates editable fields on a staging row', function (): void {
     app(ImportService::class)->updateRow($row, [
         'description' => 'Edited description',
         'amount' => 999999,
-        'flow' => 'outflow',
+        'transaction_type' => TransactionType::Expense,
         'category_id' => Category::Electricity->value,
         'is_included' => false,
     ]);
@@ -823,7 +823,7 @@ it('rejects editing rows of non-staging batches', function (): void {
 
 - [x] **Step 2: Implement**
 
-Append to `ImportService` (add `use App\Enums\Cashflow;` to the imports):
+Append to `ImportService` (add `use App\Enums\Cashflow;` and `use App\Enums\TransactionType;` to the imports):
 
 ```php
     /**
@@ -847,7 +847,11 @@ Append to `ImportService` (add `use App\Enums\Cashflow;` to the imports):
             'transaction_date' => $data['transaction_date'] ?? $row->transaction_date?->toDateTimeString(),
             'description' => array_key_exists('description', $data) ? $data['description'] : $row->description,
             'amount' => $data['amount'] ?? $row->amount,
-            'flow' => isset($data['flow']) ? Cashflow::from($data['flow']) : $row->flow,
+            'flow' => isset($data['transaction_type'])
+                ? (TransactionType::from($data['transaction_type']) === TransactionType::Income
+                    ? Cashflow::Inflow
+                    : Cashflow::Outflow)
+                : $row->flow,
             'category_id' => isset($data['category_id']) ? Category::from($data['category_id']) : $row->category_id,
             'transfer_destination_account_id' => array_key_exists('transfer_destination_account_id', $data)
                 ? $data['transfer_destination_account_id']
@@ -1109,8 +1113,8 @@ Append to `ImportService` (imports to add: `App\Data\Transaction\TransactionData
 - Test: `tests/Feature/App/Import/ImportTest.php`
 
 **Interfaces:**
-- Consumes: `ImportService` (Tasks 3–5), `ParserRegistry` (parsing plan Task 5), `CategoryService::getCategories()`, `AccountService::getAccountsByUser(User)` (existing).
-- Produces (used by the frontend plan): routes `imports.create` (GET `accounts/{account}/import`), `imports.store` (POST same), `imports.show` (GET `imports/{batch}`), `imports.rows.update` (PATCH `imports/{batch}/rows/{row}`), `imports.approve` (POST `imports/{batch}/approve`), `imports.discard` (POST `imports/{batch}/discard`) — controller `App\Http\Controllers\ImportController` (Wayfinder import path `@wayfinder/App/Http/Controllers/ImportController`), page props for `app/account/import` (`account`, `provider_name`) and `app/import/review` (`batch`, `rows`, `categories`, `accounts`), shared prop `import_supported` on `app/account/show`.
+- Consumes: `ImportService` (Tasks 3-5), `ParserRegistry` (parsing plan Task 5), `AccountService::getAccountsByUser(User)` (existing).
+- Produces (used by the frontend plan): routes `imports.store` (POST `accounts/{account}/import`), `imports.show` (GET `imports/{batch}`), `imports.rows.update` (PATCH `imports/{batch}/rows/{row}`), `imports.approve` (POST `imports/{batch}/approve`), `imports.discard` (POST `imports/{batch}/discard`) — controller `App\Http\Controllers\ImportController` (Wayfinder import path `@wayfinder/App/Http/Controllers/ImportController`), page props for `app/settings/imports` (`batches`) and `app/settings/imports/review` (`batch`, `rows`, `categories`, `accounts`), shared prop `import_supported` on `app/account/show`. (`imports.create` and its upload page were dropped during frontend execution — the upload form is a drawer on the account page.)
 
 - [x] **Step 1: Write the failing feature tests**
 
@@ -1144,28 +1148,6 @@ function stagedBatch(User $user, Account $account): ImportBatch
     return app(ImportService::class)->upload($user, $account, statementFile());
 }
 
-test('renders the upload page for the account owner', function (): void {
-    $this->actingAs($this->user)
-        ->get(route('imports.create', $this->account))
-        ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->component('app/account/import')
-            ->has('account')
-            ->where('provider_name', 'Mandiri')
-        );
-});
-
-test('forbids the upload page for non-owners even when shareable', function (): void {
-    $shareable = Account::factory()
-        ->shareable()
-        ->for($this->user, 'owner')
-        ->create(['provider_id' => $this->provider->id]);
-
-    $this->actingAs(User::factory()->create())
-        ->get(route('imports.create', $shareable))
-        ->assertForbidden();
-});
-
 test('stores an upload and redirects to the review page', function (): void {
     $this->actingAs($this->user)
         ->post(route('imports.store', $this->account), ['statement' => statementFile()])
@@ -1182,17 +1164,16 @@ test('rejects non-xlsx uploads', function (): void {
         ->assertInvalid('statement');
 });
 
-test('renders the review page with rows, categories and accounts', function (): void {
+test('renders the review page with rows and accounts', function (): void {
     $batch = stagedBatch($this->user, $this->account);
 
     $this->actingAs($this->user)
         ->get(route('imports.show', $batch))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->component('app/import/review')
+            ->component('app/settings/imports/review')
             ->has('batch')
             ->has('rows', 3)
-            ->has('categories')
             ->has('accounts')
         );
 });
@@ -1351,8 +1332,8 @@ final class ImportUploadRequest extends FormRequest
 
 namespace App\Http\Requests;
 
-use App\Enums\Cashflow;
 use App\Enums\Category;
+use App\Enums\TransactionType;
 use App\Models\ImportRow;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -1372,7 +1353,7 @@ final class UpdateImportRowRequest extends FormRequest
             'transaction_date' => ['sometimes', 'required', 'date', 'before_or_equal:now'],
             'description' => ['sometimes', 'nullable', 'string', 'max:500'],
             'amount' => ['sometimes', 'required', 'numeric', 'min:0.01'],
-            'flow' => ['sometimes', 'required', Rule::enum(Cashflow::class)],
+            'transaction_type' => ['sometimes', 'required', Rule::enum(TransactionType::class)],
             'category_id' => ['sometimes', 'required', Rule::enum(Category::class)->except(Category::InitialBalance)],
             'transfer_destination_account_id' => ['sometimes', 'nullable', 'integer', 'exists:accounts,id'],
             'is_included' => ['sometimes', 'boolean'],
@@ -1415,13 +1396,10 @@ final class ImportController extends Controller
         #[CurrentUser] private readonly ?User $user,
     ) {}
 
-    public function create(Request $request, Account $account): Response
+    public function index(): Response
     {
-        $this->authorize('update', $account);
-
-        return Inertia::render('app/account/import', [
-            'account' => $account->load('provider'),
-            'provider_name' => $account->provider?->name ?? 'Statement',
+        return Inertia::render('app/settings/imports', [
+            'batches' => $this->importService->getBatchesByUser($this->user),
         ]);
     }
 
@@ -1436,10 +1414,9 @@ final class ImportController extends Controller
     {
         $this->authorize('view', $batch);
 
-        return Inertia::render('app/import/review', [
+        return Inertia::render('app/settings/imports/review', [
             'batch' => $batch->load(['account.provider', 'provider']),
             'rows' => $batch->rows()->orderBy('row_number')->get(),
-            'categories' => CategoryService::getCategories(),
             'accounts' => $this->accountService->getAccountsByUser($this->user),
         ]);
     }
@@ -1481,7 +1458,6 @@ In `routes/web.php`, add `use App\Http\Controllers\ImportController;` with the o
 ```php
     // Statement imports (per-account upload; staging review; bulk approve)
     Route::controller(ImportController::class)->group(function (): void {
-        Route::get('accounts/{account}/import', 'create')->name('imports.create');
         Route::post('accounts/{account}/import', 'store')->name('imports.store');
         Route::get('imports/{batch}', 'show')->name('imports.show');
         Route::patch('imports/{batch}/rows/{row}', 'updateRow')->name('imports.rows.update');

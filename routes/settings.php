@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TransactionTemplateController;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,12 @@ Route::middleware('auth')->group(function (): void {
 
         // Theme
         Route::put('settings/theme', 'updateTheme')->name('settings.theme.update');
+    });
+
+    Route::prefix('settings/imports')->name('imports.')->group(function (): void {
+        Route::controller(ImportController::class)->group(function (): void {
+            Route::get('', 'index')->name('index');
+        });
     });
 
     Route::prefix('settings/transaction-templates')->name('transaction-templates.')->group(function (): void {

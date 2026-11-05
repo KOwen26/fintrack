@@ -6,6 +6,7 @@ import { can } from '@lib/auth/authorization.svelte';
 import { appearance, dashboard } from '@wayfinder/routes';
 import accounts from '@wayfinder/routes/accounts';
 import dev from '@wayfinder/routes/dev';
+import imports from '@wayfinder/routes/imports';
 import profile from '@wayfinder/routes/profile';
 import security from '@wayfinder/routes/security';
 import statistics from '@wayfinder/routes/statistics';
@@ -141,6 +142,14 @@ export const settingsMenu = {
             route: 'transaction-templates.index',
             active: 'transaction-templates.*',
             icon: 'iconify solar--notes-line-duotone',
+            type: 'menu',
+        },
+        imports: {
+            name: 'Imports',
+            url: imports.index().url,
+            route: 'imports.index',
+            active: 'imports.*',
+            icon: 'iconify solar--upload-square-line-duotone',
             type: 'menu',
         },
         profile: {

@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransferData;
-use App\Enums\Cashflow;
 use App\Enums\Category;
 use App\Enums\ImportBatchStatus;
 use App\Enums\TransactionType;
@@ -144,6 +143,10 @@ final readonly class ImportService
     {
         $this->assertStaging($row->batch);
 
+        $transactionType = isset($data['transaction_type'])
+            ? TransactionType::from($data['transaction_type'])
+            : null;
+
         if (isset($data['transfer_destination_account_id'])
             && (int) $data['transfer_destination_account_id'] === $row->batch->account_id) {
             throw ValidationException::withMessages([
@@ -151,15 +154,27 @@ final readonly class ImportService
             ]);
         }
 
+        if ($transactionType === TransactionType::Transfer
+            && blank($data['transfer_destination_account_id'] ?? null)) {
+            throw ValidationException::withMessages([
+                'transfer_destination_account_id' => 'The transfer destination is required.',
+            ]);
+        }
+
+        // Income/expense rows are never transfers — switching the type clears a stale mark.
+        $clearsTransfer = $transactionType !== null && $transactionType !== TransactionType::Transfer;
+
         $row->update([
             'transaction_date' => $data['transaction_date'] ?? $row->transaction_date?->toDateTimeString(),
             'description' => array_key_exists('description', $data) ? $data['description'] : $row->description,
             'amount' => $data['amount'] ?? $row->amount,
-            'flow' => isset($data['flow']) ? Cashflow::from($data['flow']) : $row->flow,
+            'flow' => $transactionType->toCashflow(),
             'category_id' => isset($data['category_id']) ? Category::from($data['category_id']) : $row->category_id,
-            'transfer_destination_account_id' => array_key_exists('transfer_destination_account_id', $data)
-                ? $data['transfer_destination_account_id']
-                : $row->transfer_destination_account_id,
+            'transfer_destination_account_id' => $clearsTransfer
+                ? null
+                : (array_key_exists('transfer_destination_account_id', $data)
+                    ? $data['transfer_destination_account_id']
+                    : $row->transfer_destination_account_id),
             'is_included' => $data['is_included'] ?? $row->is_included,
         ]);
 
@@ -224,6 +239,20 @@ final readonly class ImportService
             'status' => ImportBatchStatus::Discarded,
             'discarded_at' => now(),
         ]);
+    }
+
+    /**
+     * All import batches created by the user, newest first — the
+     * settings-level history list.
+     *
+     * @return Collection<int, ImportBatch>
+     */
+    public function getBatchesByUser(User $user): Collection
+    {
+        return ImportBatch::query()
+            ->where('created_by', $user->id)
+            ->with(['account', 'provider'])->latest()
+            ->get();
     }
 
     private function assertRowImportable(ImportRow $row): void
