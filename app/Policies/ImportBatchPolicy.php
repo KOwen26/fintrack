@@ -28,6 +28,11 @@ final class ImportBatchPolicy
         return $this->canAccess($user, $batch);
     }
 
+    public function retry(User $user, ImportBatch $batch): bool
+    {
+        return $this->canAccess($user, $batch);
+    }
+
     private function canAccess(User $user, ImportBatch $batch): bool
     {
         return $user->id === $batch->account->owner_id;

@@ -69,7 +69,6 @@ Review page
 ```
 
 - Feature gates live in a **`config/feature.php`** — the app's centralized feature-flag file, introduced by this feature (keyed per feature, each entry holding its `enabled` flag plus feature-specific tuning). First entry:
-
 ```php
 return [
     'import-suggestions' => [
@@ -81,6 +80,10 @@ return [
 ```
 
   **Effective gate = `feature.import-suggestions.enabled` AND a non-empty `OLLAMA_CLOUD_API_KEY`** — when the gate is closed, upload behaves exactly as today (`suggestion_status` stays `null`, nothing is deferred). The gate check is the static `ImportSuggestion::isEnabled()` on the suggestion service (§3), so both `upload()` and tests read one definition (singular class name keeps it distinct from the `ImportSuggestions` agent).
+
+- **Logging**: a dedicated daily channel `import-suggestions` (`config/logging.php` → `storage/logs/import-suggestions.log`, 14-day rotation, level env `LOG_IMPORT_SUGGESTIONS_LEVEL`, default `debug`). The run logs: start and finish (candidate rows, applied/dropped counts, duration, errors), per-chunk validation drops at `debug`, chunk failures after retry and stale flips at `warning` (with the exception object), user-triggered retries at `info` — all with `batch_id` context. At `debug`, the sent prompt (row lines + model name) and the received structured response are also logged — that is the tuning lens; set the level to `warning` in steady state to silence it. Raw prompts/responses are never logged at `info`+ levels.
+
+- **Ollama Cloud has no structured outputs** (per Ollama docs, cloud only): the SDK's `response_format` schema is ignored, so the response shape is unguaranteed. Two defenses: the agent instructions carry the exact JSON envelope (`{"rows": [...]}`) as prompt grounding, and extraction tolerates both the envelope and a bare array — `structured['rows'] ?? structured`, skipping non-array items. Per-item validation makes any unusable response degrade to "no suggestions", never a crash. Switching to a schema-enforcing provider later removes the need for the tolerance.
 
 ### 2. The agent — `App\Ai\Agents\ImportSuggestions`
 
@@ -115,18 +118,18 @@ Every call passes `provider: 'ollama-cloud'` and the configured timeout.
 
 ### 3. The service — `App\Services\Import\ImportSuggestion::suggestCategories()`
 
-One service class carries both the gate (`isEnabled()`, §1) and the runner: `suggestCategories(ImportBatch $batch)` — `defer()` runs in the same process moments after upload, so the model instance is safe to pass; the run re-checks lifecycle state between chunks anyway. Dispatched from `upload()` via `defer()` — `defer()` chosen over a queued job to drop the worker dependency; a plain method keeps a later queue swap trivial.
+One service class carries both the gate (`isEnabled()`, §1) and the runner: `suggestCategories(ImportBatch $batch)` — `defer()` runs in the same process moments after upload, so the model instance is safe to pass; the run re-checks lifecycle state between chunks anyway. Dispatched from `upload()` via `defer()` — `defer()` chosen over a queued job to drop the worker dependency; a plain method keeps a later queue swap trivial. `suggestChunk()` returns per-chunk `{applied, dropped_slug, dropped_direction, dropped_type}` counts that feed the aggregate logs (§1 Logging).
 
 1. Guard: batch is still `staging` and `suggestion_status ∈ {pending, processing}`; otherwise no-op.
 2. Snapshot `$startedAt`; set `suggestion_status = processing`.
-3. Select candidate rows: no `parse_errors`, `flow` and `amount` present, `updated_at <= startedAt` (rows the user already touched in review are left alone — closes the lost-edit race). Duplicates are included; the user may re-include them.
+3. Select candidate rows: no `parse_errors`, `flow` and `amount` present, and **parser-default fields only** — `category_id` still `other_income`/`other_expenses`, `transaction_type` still `income`/`expense`, `transfer_destination_account_id` still null. Anything else was touched by the user in review and is theirs — suggestions never overwrite human choices. (Field-level guard chosen over an `updated_at` comparison: precise about the fields actually written, and immune to NULL timestamps from `insert()` staging.) Duplicates are included; the user may re-include them.
 4. Chunk candidates by `chunk_size`; per chunk, prompt the agent.
 5. **Validate every returned row** before applying:
    - `row_number` exists in the chunk → else ignore that entry;
    - `category` resolves via `Category::tryFrom()` and the group's flow matches the row's flow (`$category->group()->flow() === $row->flow`) → else keep the row's current default category;
    - `transaction_type` matches the row's flow direction (`income` on inflow, `expense` on outflow) or is `transfer` → else keep the parsed type;
    - unknown/missing rows in the response simply keep their defaults.
-6. Apply per chunk with a guarded `whereKey(...)->where('updated_at', '<=', $startedAt)->update(...)` on still-staging rows: `category_id` (slug string) and `transaction_type` (enum value) — `flow` never changes, since income/expense already match the parsed flow by validation and `transfer` keeps it.
+6. Apply per chunk with a guarded `whereKey(...)->update(...)` that re-checks the same parser-default conditions at write time (rows re-categorized mid-run match nothing and are skipped): writes `category_id` (slug string) and `transaction_type` (enum value) — `flow` never changes, since income/expense already match the parsed flow by validation and `transfer` keeps it.
 7. A chunk that throws (connection, timeout, invalid structured output) is retried **once**; a second failure tolerates that chunk (its rows keep defaults) and records the error.
 8. Finalize: any chunk applied → `completed` (+ `suggested_at`; partial coverage noted in `suggestion_error`); none applied → `failed` (+ error message).
 9. Re-check staging before each apply: if the batch was approved/discarded mid-run, stop and mark `failed` with a "batch left staging" note.
@@ -148,6 +151,7 @@ Modified **in place** in the existing create-table migrations (dev-stage app, ex
 | Column | Type | Notes |
 | --- | --- | --- |
 | `transaction_type` | string, nullable | `App\Enums\TransactionType` values; set from parsed `flow` at staging time (`inflow→income`, `outflow→expense`, unknown→`null`) |
+| `created_at` / `updated_at` | timestamps | `upload()` stages rows via `insert()`, which bypasses Eloquent timestamps — both are set explicitly from `now()` at staging time (needed for the batch staleness check and general hygiene; the suggestion guard is field-based, not timestamp-based) |
 
 **Model changes**: `ImportBatch` casts `suggestion_status` to the new enum; `ImportRow` casts `transaction_type` to `TransactionType`.
 
@@ -191,7 +195,7 @@ The deferred closure takes the batch **id** and re-fetches — the model instanc
 | Structured output invalid / hallucinated ids | Row-level validation drops bad entries silently |
 | Process dies mid-defer | Stuck `processing`; stale >10 min → lazily failed on next review render; retry button |
 | Batch approved/discarded mid-run | Apply steps re-check staging; stop + `failed` ("batch left staging") |
-| User edits a row mid-run | Row's `updated_at > startedAt` → skipped by apply (no lost edits) |
+| User edits a row mid-run | Apply re-checks parser-default fields at write time — re-categorized/retyped rows match nothing (counted as `skipped_edited`) |
 
 Every path ends in a fully functional staging batch with dumb defaults — suggestions can only improve the starting point, never block the import.
 

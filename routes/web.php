@@ -59,6 +59,7 @@ Route::middleware(['auth', 'verified:auth.verification.notice'])->group(function
         Route::patch('imports/{batch}/rows/{row}', 'updateRow')->name('imports.rows.update');
         Route::post('imports/{batch}/approve', 'approve')->name('imports.approve');
         Route::post('imports/{batch}/discard', 'discard')->name('imports.discard');
+        Route::post('imports/{batch}/suggestions/retry', 'retrySuggestions')->name('imports.suggestions.retry');
     });
 
     Route::prefix('statistics')->name('statistics.')->group(function (): void {

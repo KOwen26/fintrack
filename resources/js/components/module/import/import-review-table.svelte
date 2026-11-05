@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { ImportRowData } from '@type/generated';
     import type { App } from '@wayfinder/types';
 
     import { router } from '@inertiajs/svelte';
@@ -6,6 +7,7 @@
 
     import DateTimeHelper from '@utilities/date-time-helper';
 
+    import DecorationBadge from '@components/module/decoration-badge.svelte';
     import TableBody from '@components/ui/atoms/table/table-body.svelte';
     import TableCell from '@components/ui/atoms/table/table-cell.svelte';
     import TableHead from '@components/ui/atoms/table/table-head.svelte';
@@ -22,9 +24,9 @@
         onEdit,
         editable = true,
     }: {
-        rows: App.Models.ImportRow[];
+        rows: ImportRowData[];
         batchId: number;
-        onEdit: (row: App.Models.ImportRow) => void;
+        onEdit: (row: ImportRowData) => void;
         editable?: boolean;
     } = $props();
 
@@ -41,6 +43,22 @@
             { preserveScroll: true, only: ['batch', 'rows'] }
         );
     }
+
+    function typeBadge(row: ImportRowData): 'success' | 'error' | 'info' | 'warning' {
+        if (row.transaction_type === 'transfer') {
+            return row.transfer_destination_account_id ? 'info' : 'warning';
+        }
+
+        return row.transaction_type === 'income' ? 'success' : 'error';
+    }
+
+    function typeLabel(row: ImportRowData): string {
+        if (row.transaction_type === 'transfer' && !row.transfer_destination_account_id) {
+            return 'transfer — set destination';
+        }
+
+        return row.transaction_type ?? '';
+    }
 </script>
 
 <TableRoot>
@@ -52,7 +70,7 @@
             <TableHead>Date</TableHead>
             <TableHead>Description</TableHead>
             <TableHead class="text-right">Amount</TableHead>
-            <TableHead>Flow</TableHead>
+            <TableHead>Type</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Flags</TableHead>
             {#if editable}
@@ -81,11 +99,24 @@
                     {currency.format(row.amount ?? 0)}
                 </TableCell>
                 <TableCell>
-                    <Badge color={row.flow === 'inflow' ? 'success' : 'error'} variant="soft">
-                        {row.flow ?? '—'}
-                    </Badge>
+                    {#if row.transaction_type}
+                        <Badge color={typeBadge(row)} variant="soft">
+                            {typeLabel(row)}
+                        </Badge>
+                    {:else}
+                        <span class="text-muted-foreground">—</span>
+                    {/if}
                 </TableCell>
-                <TableCell>{row.category_id ?? '—'}</TableCell>
+                <TableCell>
+                    {#if row.category}
+                        <div class="flex items-center gap-2">
+                            <DecorationBadge decorations={row.category.decorations} size="sm" />
+                            {row.category.name}
+                        </div>
+                    {:else}
+                        <span class="text-muted-foreground">—</span>
+                    {/if}
+                </TableCell>
                 <TableCell>
                     <div class="flex flex-wrap gap-1">
                         {#if row.is_duplicate}
@@ -95,9 +126,6 @@
                             <Badge color="error" variant="soft">
                                 {Object.values(row.parse_errors)[0] ?? 'Error'}
                             </Badge>
-                        {/if}
-                        {#if row.transfer_destination_account_id}
-                            <Badge color="info" variant="soft">Transfer</Badge>
                         {/if}
                     </div>
                 </TableCell>

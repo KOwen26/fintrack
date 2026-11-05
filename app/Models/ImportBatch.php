@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ImportBatchStatus;
+use App\Enums\ImportSuggestionStatus;
 use Database\Factories\ImportBatchFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,10 +23,12 @@ final class ImportBatch extends Model
     {
         return [
             'status' => ImportBatchStatus::class,
+            'suggestion_status' => ImportSuggestionStatus::class,
             'total_rows' => 'integer',
             'imported_rows' => 'integer',
             'approved_at' => 'datetime',
             'discarded_at' => 'datetime',
+            'suggested_at' => 'datetime',
         ];
     }
 

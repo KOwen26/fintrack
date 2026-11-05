@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Cashflow;
 use App\Enums\Category;
+use App\Enums\TransactionType;
 use Database\Factories\ImportRowFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,6 +25,7 @@ final class ImportRow extends Model
             'transaction_date' => 'datetime',
             'amount' => 'float',
             'flow' => Cashflow::class,
+            'transaction_type' => TransactionType::class,
             'category_id' => Category::class,
             'is_included' => 'boolean',
             'is_duplicate' => 'boolean',

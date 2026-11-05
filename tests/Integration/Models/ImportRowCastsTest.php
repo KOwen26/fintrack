@@ -3,6 +3,8 @@
 use App\Enums\Cashflow;
 use App\Enums\Category;
 use App\Enums\ImportBatchStatus;
+use App\Enums\ImportSuggestionStatus;
+use App\Enums\TransactionType;
 use App\Models\ImportBatch;
 use App\Models\ImportRow;
 
@@ -29,4 +31,18 @@ it('casts batch status and datetimes', function (): void {
     expect($batch->fresh())
         ->status->toBe(ImportBatchStatus::Approved)
         ->approved_at->not->toBeNull();
+});
+
+it('casts row transaction_type to the TransactionType enum', function (): void {
+    $row = ImportRow::factory()->create(['transaction_type' => 'transfer']);
+
+    expect($row->fresh())
+        ->transaction_type->toBe(TransactionType::Transfer);
+});
+
+it('casts batch suggestion_status and suggested_at', function (): void {
+    $batch = ImportBatch::factory()->create(['suggestion_status' => 'failed']);
+
+    expect($batch->fresh())
+        ->suggestion_status->toBe(ImportSuggestionStatus::Failed);
 });

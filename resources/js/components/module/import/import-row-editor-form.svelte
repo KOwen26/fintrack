@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { ImportRowData } from '@type/generated';
     import type { App } from '@wayfinder/types';
 
     import { page, useForm } from '@inertiajs/svelte';
@@ -23,7 +24,7 @@
         accounts,
         onDone,
     }: {
-        row: App.Models.ImportRow;
+        row: ImportRowData;
         batchId: number;
         batchAccountId: number;
         accounts: App.Models.Account[];
@@ -37,8 +38,7 @@
             transaction_date: row.transaction_date?.slice(0, 10) ?? '',
             description: row.description ?? '',
             amount: row.amount ?? 0,
-            transaction_type:
-                row.flow === 'inflow' ? TransactionType.Income : TransactionType.Expense,
+            transaction_type: row.transaction_type ?? TransactionType.Expense,
             category_id: row.category_id ?? '',
             transfer_destination_account_id: row.transfer_destination_account_id
                 ? String(row.transfer_destination_account_id)

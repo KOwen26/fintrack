@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->decimal('amount', 15, 2)->nullable();
             $table->string('flow')->nullable();
+            $table->string('transaction_type')->nullable();
             $table->string('category_id')->nullable();
             $table->boolean('is_included')->default(true);
             $table->boolean('is_duplicate')->default(false);

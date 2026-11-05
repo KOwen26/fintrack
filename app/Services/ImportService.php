@@ -6,6 +6,7 @@ use App\Data\Transaction\TransactionData;
 use App\Data\Transaction\TransferData;
 use App\Enums\Category;
 use App\Enums\ImportBatchStatus;
+use App\Enums\ImportSuggestionStatus;
 use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\ImportBatch;
@@ -14,6 +15,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Services\Import\ImportFileException;
 use App\Services\Import\ImportFingerprint;
+use App\Services\Import\ImportSuggestion;
 use App\Services\Import\ParsedRow;
 use App\Services\Import\ParsedStatement;
 use App\Services\Import\ParserRegistry;
@@ -57,7 +59,7 @@ final readonly class ImportService
             ]);
         }
 
-        return DB::transaction(function () use ($user, $account, $file, $statement): ImportBatch {
+        $batch = DB::transaction(function () use ($user, $account, $file, $statement): ImportBatch {
             $existing = $this->existingFingerprints($account, $statement);
 
             $batch = ImportBatch::create([
@@ -69,6 +71,7 @@ final readonly class ImportService
                 'total_rows' => count($statement->rows),
             ]);
 
+            $now = now();
             $seen = [];
             $rows = [];
             foreach ($statement->rows as $index => $parsed) {
@@ -83,6 +86,11 @@ final readonly class ImportService
                     'description' => $parsed->description,
                     'amount' => $parsed->amount,
                     'flow' => $parsed->flow?->value,
+                    'transaction_type' => match (true) {
+                        $parsed->flow?->isInflow() => TransactionType::Income->value,
+                        $parsed->flow?->isOutflow() => TransactionType::Expense->value,
+                        default => null,
+                    },
                     'category_id' => $parsed->flow === null
                         ? null
                         : ($parsed->flow->isInflow() ? Category::OtherIncome->value : Category::OtherExpenses->value),
@@ -92,6 +100,8 @@ final readonly class ImportService
                     'fingerprint' => $fingerprint,
                     'parse_errors' => $parsed->errors === [] ? null : json_encode($parsed->errors),
                     'raw' => json_encode($parsed->raw),
+                    'created_at' => $now,
+                    'updated_at' => $now,
                 ];
             }
 
@@ -103,6 +113,14 @@ final readonly class ImportService
 
             return $batch;
         });
+
+        if (ImportSuggestion::isEnabled()) {
+            $batch->update(['suggestion_status' => ImportSuggestionStatus::Pending]);
+
+            defer(fn () => resolve(ImportSuggestion::class)->suggestCategories($batch));
+        }
+
+        return $batch;
     }
 
     /**
@@ -168,7 +186,12 @@ final readonly class ImportService
             'transaction_date' => $data['transaction_date'] ?? $row->transaction_date?->toDateTimeString(),
             'description' => array_key_exists('description', $data) ? $data['description'] : $row->description,
             'amount' => $data['amount'] ?? $row->amount,
-            'flow' => $transactionType->toCashflow(),
+            // Transfer rows keep the parsed flow — the statement's direction
+            // decides source/destination booking in importTransferRow().
+            'flow' => $transactionType === TransactionType::Transfer
+                ? $row->flow
+                : ($transactionType?->toCashflow() ?? $row->flow),
+            'transaction_type' => $transactionType ?? $row->transaction_type,
             'category_id' => isset($data['category_id']) ? Category::from($data['category_id']) : $row->category_id,
             'transfer_destination_account_id' => $clearsTransfer
                 ? null
@@ -284,7 +307,13 @@ final readonly class ImportService
             ]);
         }
 
-        $isTransfer = $row->transfer_destination_account_id !== null;
+        $isTransfer = $row->transaction_type === TransactionType::Transfer;
+
+        if (! $isTransfer && $row->transfer_destination_account_id !== null) {
+            throw ValidationException::withMessages([
+                'rows' => "Row {$row->row_number} has a transfer destination but its type is not transfer.",
+            ]);
+        }
 
         if (! $isTransfer && $row->category_id === null) {
             throw ValidationException::withMessages([
