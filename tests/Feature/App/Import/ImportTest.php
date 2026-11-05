@@ -126,11 +126,41 @@ test('account show exposes import support', function (): void {
 
     $this->actingAs($this->user)->get(route('accounts.show', $this->account))
         ->assertOk()
-        ->assertInertia(fn ($page) => $page->where('import_supported', true));
+        ->assertInertia(fn ($page) => $page
+            ->where('import_supported', true)
+            ->has('imports', 0)
+        );
 
     $this->actingAs($this->user)->get(route('accounts.show', $unsupported))
         ->assertOk()
-        ->assertInertia(fn ($page) => $page->where('import_supported', false));
+        ->assertInertia(fn ($page) => $page
+            ->where('import_supported', false)
+            ->has('imports', 0)
+        );
+});
+
+test('account show lists the last five batches of the account, newest first', function (): void {
+    $batches = collect(range(1, 6))->map(
+        fn (int $i): ImportBatch => ImportBatch::factory()->create([
+            'created_by' => $this->user->id,
+            'account_id' => $this->account->id,
+            'provider_id' => $this->provider->id,
+            'created_at' => now()->subDays(7 - $i),
+        ]),
+    );
+
+    // A batch on another account never leaks into the account's list.
+    ImportBatch::factory()->create(['created_by' => $this->user->id]);
+
+    $this->actingAs($this->user)
+        ->get(route('accounts.show', $this->account))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('app/account/show')
+            ->has('imports', 5)
+            ->where('imports.0.id', $batches->last()->id)
+            ->where('imports.4.id', $batches->get(1)->id)
+        );
 });
 
 test('settings imports index lists the creator batches only', function (): void {

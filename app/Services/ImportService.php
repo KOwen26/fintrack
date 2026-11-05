@@ -255,6 +255,21 @@ final readonly class ImportService
             ->get();
     }
 
+    /**
+     * Newest batches for one account, capped for the account page's
+     * import card (history + batches still awaiting review).
+     *
+     * @return Collection<int, ImportBatch>
+     */
+    public function getRecentBatchesForAccount(Account $account, int $limit = 5): Collection
+    {
+        return ImportBatch::query()
+            ->where('account_id', $account->id)
+            ->with(['account', 'provider'])->latest()
+            ->limit($limit)
+            ->get();
+    }
+
     private function assertRowImportable(ImportRow $row): void
     {
         if ($row->parse_errors !== null) {
