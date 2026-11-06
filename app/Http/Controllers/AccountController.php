@@ -9,6 +9,8 @@ use App\Models\Account;
 use App\Models\Provider;
 use App\Models\User;
 use App\Services\AccountService;
+use App\Services\Import\ParserRegistry;
+use App\Services\ImportService;
 use App\Services\SpendingService;
 use App\Services\TransactionListService;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -22,6 +24,8 @@ final class AccountController extends Controller
     public function __construct(
         #[CurrentUser] private readonly ?User $user,
         private readonly AccountService $accountService,
+        private readonly ParserRegistry $parserRegistry,
+        private readonly ImportService $importService,
     ) {}
 
     public function index(Request $request): Response
@@ -51,10 +55,16 @@ final class AccountController extends Controller
 
         $categorySpending = $spendingService->categorySpendingForAccount($account, $period);
 
+        $importSupported = $this->parserRegistry->supports($account->provider);
+
         return Inertia::render('app/account/show', [
             'account' => $account,
             'transactions' => $transactions,
             'categorySpending' => $categorySpending,
+            'import_supported' => $importSupported,
+            'imports' => $importSupported
+                ? $this->importService->getRecentBatchesForAccount($account)
+                : collect(),
         ]);
     }
 

@@ -140,7 +140,7 @@
     const placeholder = $derived(_placeholder || typeConfig.placeholder);
     const allowInput = $derived(!!options?.allowInput);
 
-    const inputClass = $derived(cn(...inputClasses, 'pr-9 hover:bg-base-content/5', _class));
+    const inputClass = $derived(cn(...inputClasses, 'pr-9', _class));
 
     const resolvedOptions = $derived.by(() => {
         const { onChange: userOnChange, plugins: userPlugins, ...rest } = options ?? {};

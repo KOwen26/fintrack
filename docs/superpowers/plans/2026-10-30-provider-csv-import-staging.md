@@ -4,7 +4,7 @@
 
 **Goal:** The staging tables and import lifecycle — upload (parse → default → fingerprint → stage), review-time row editing, bulk approve into real transactions via the existing transaction/transfer services, discard, and the thin HTTP surface.
 
-**Architecture:** Two staging tables (`import_batches`, `import_rows`) hold parsed rows outside the transaction core. `ImportService` orchestrates the lifecycle, resolving the account's parser through `ParserRegistry` (built in the parsing plan). Approval re-validates server-side and materializes through `TransactionService`/`TransferService` so balance observers fire exactly as for hand-entered rows. Spec: `docs/superpowers/specs/2026-10-30-provider-csv-import-design.md`. Companion plans: `2026-10-30-provider-csv-import-parsing.md` (prerequisite), `2026-10-30-provider-csv-import-frontend.md` (depends on this one).
+**Architecture:** Two staging tables (`import_batches`, `import_rows`) hold parsed rows outside the transaction core. `ImportService` orchestrates the lifecycle, resolving the account's parser through `ParserRegistry` (built in the parsing plan). Approval re-validates server-side and materializes through `TransactionService`/`TransferService` so balance observers fire exactly as for hand-entered rows. Spec: `docs/superpowers/specs/2026-10-30-provider-csv-import-design.md`. Companion plans: `2026-11-04-provider-csv-import-parsing-excel.md` (prerequisite), `2026-10-30-provider-csv-import-frontend.md` (depends on this one).
 
 **Tech Stack:** Laravel / PHP 8.4, Eloquent with enum casts, Inertia responses, Pest (integration + feature).
 
@@ -12,7 +12,7 @@
 
 **Complexity:** Medium (all tasks fully concrete; no exploratory steps)
 
-**PREREQUISITE:** the parsing plan (`2026-10-30-provider-csv-import-parsing.md`) must be fully implemented — this plan consumes `ParserRegistry::supports/resolve`, `ParsedStatement`/`ParsedRow`, `ImportFileException`, and the fixtures in `tests/Fixtures/Imports/`. Do not start Task 3 before those exist (Tasks 1–2 are independent of it).
+**PREREQUISITE:** the parsing plan (`2026-11-04-provider-csv-import-parsing-excel.md`) must be fully implemented — this plan consumes `ParserRegistry::supports/resolve`, `ParsedStatement`/`ParsedRow`, `ImportFileException`, and the fixtures in `tests/Fixtures/Imports/`. Do not start Task 3 before those exist (Tasks 1–2 are independent of it).
 
 ## Global Constraints
 
@@ -64,7 +64,7 @@
   - `App\Models\ImportRow` with relations `batch(): BelongsTo`, `transferDestination(): BelongsTo`, casts `transaction_date → datetime`, `amount → float`, `flow → Cashflow`, `category_id → Category`, `is_included → bool`, `is_duplicate → bool`, `parse_errors → array`, `raw → array`.
   - `Database\Factories\ImportBatchFactory` (states `approved()`, `discarded()`), `Database\Factories\ImportRowFactory` (states `excluded()`, `duplicate()`, `withErrors()`).
 
-- [ ] **Step 1: Create the enum**
+- [x] **Step 1: Create the enum**
 
 ```php
 <?php
@@ -81,12 +81,10 @@ enum ImportBatchStatus: string
 
 (Check how `app/Enums/ProviderStatus.php` is written — if it carries a TypeScript attribute or helper methods, mirror that style.)
 
-- [ ] **Step 2: Create the migrations**
+- [x] **Step 2: Create the migrations**
 
 ```php
 <?php
-
-namespace Database\Migrations;
 
 use App\Enums\ImportBatchStatus;
 use Illuminate\Database\Migrations\Migration;
@@ -127,8 +125,6 @@ return new class extends Migration
 ```php
 <?php
 
-namespace Database\Migrations;
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -167,7 +163,7 @@ return new class extends Migration
 };
 ```
 
-- [ ] **Step 3: Create the models**
+- [x] **Step 3: Create the models**
 
 ```php
 <?php
@@ -218,7 +214,7 @@ final class ImportBatch extends Model
 
     public function rows(): HasMany
     {
-        return $this->hasMany(ImportRow::class);
+        return $this->hasMany(ImportRow::class, 'batch_id');
     }
 }
 ```
@@ -270,7 +266,7 @@ final class ImportRow extends Model
 }
 ```
 
-- [ ] **Step 4: Create the factories**
+- [x] **Step 4: Create the factories**
 
 ```php
 <?php
@@ -289,7 +285,7 @@ final class ImportBatchFactory extends Factory
             'created_by' => User::factory(),
             'account_id' => Account::factory(),
             'provider_id' => Provider::factory(),
-            'source_filename' => 'mutasi.csv',
+            'source_filename' => 'mutasi.xlsx',
             'status' => ImportBatchStatus::Staging,
             'total_rows' => 0,
             'imported_rows' => 0,
@@ -368,7 +364,7 @@ final class ImportRowFactory extends Factory
 }
 ```
 
-- [ ] **Step 5: Write the casts test**
+- [x] **Step 5: Write the casts test**
 
 `php artisan make:test --pest ImportRowCastsTest`, then move it to `tests/Integration/Models/ImportRowCastsTest.php` and write:
 
@@ -380,7 +376,7 @@ use App\Enums\Category;
 use App\Enums\ImportBatchStatus;
 use App\Models\ImportRow;
 
-test('casts row flow, category and boolean flags', function (): void {
+it('casts row flow, category and boolean flags', function (): void {
     $row = ImportRow::factory()->create([
         'flow' => Cashflow::Inflow,
         'category_id' => Category::OtherIncome,
@@ -397,7 +393,7 @@ test('casts row flow, category and boolean flags', function (): void {
         ->parse_errors->toBe(['amount' => 'No amount column has a readable value.']);
 });
 
-test('casts batch status and datetimes', function (): void {
+it('casts batch status and datetimes', function (): void {
     $batch = App\Models\ImportBatch::factory()->approved()->create();
 
     expect($batch->fresh())
@@ -425,7 +421,7 @@ pest()->group('module:import')->in('Integration/Models/ImportRowCastsTest.php');
 **Interfaces:**
 - Produces: `App\Services\Import\ImportFingerprint::make(int $accountId, ?CarbonImmutable $date, ?float $amount, ?string $description): string` — a stable sha1 over account, date (day precision), whole-rupiah amount, and a normalized (lowercased, whitespace-collapsed, trimmed) description. Used by Task 3.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```php
 <?php
@@ -433,14 +429,14 @@ pest()->group('module:import')->in('Integration/Models/ImportRowCastsTest.php');
 use App\Services\Import\ImportFingerprint;
 use Carbon\CarbonImmutable;
 
-test('is stable across case and whitespace differences in the description', function (): void {
+it('is stable across case and whitespace differences in the description', function (): void {
     $a = ImportFingerprint::make(1, CarbonImmutable::parse('2026-10-31'), 2500000.0, 'TRSF  E-Banking   cr BCA');
     $b = ImportFingerprint::make(1, CarbonImmutable::parse('2026-10-31 08:30:00'), 2500000.0, 'trsf e-banking cr bca');
 
     expect($a)->toBe($b);
 });
 
-test('differs across account, date, or amount', function (): void {
+it('differs across account, date, or amount', function (): void {
     $base = ImportFingerprint::make(1, CarbonImmutable::parse('2026-10-31'), 2500000.0, 'same');
 
     expect($base)
@@ -449,14 +445,14 @@ test('differs across account, date, or amount', function (): void {
         ->not->toBe(ImportFingerprint::make(1, CarbonImmutable::parse('2026-10-31'), 2600000.0, 'same'));
 });
 
-test('handles null parts deterministically', function (): void {
+it('handles null parts deterministically', function (): void {
     expect(ImportFingerprint::make(1, null, null, null))
         ->toBe(ImportFingerprint::make(1, null, null, null))
         ->not->toBe(ImportFingerprint::make(1, null, null, 'described'));
 });
 ```
 
-- [ ] **Step 2: Implement**
+- [x] **Step 2: Implement**
 
 ```php
 <?php
@@ -499,20 +495,20 @@ final class ImportFingerprint
 - Test: `tests/Integration/Services/ImportServiceTest.php`
 
 **Interfaces:**
-- Consumes: `ParserRegistry::resolve/supports` and `ParsedStatement`/`ParsedRow` (parsing plan Tasks 1–2), `ImportFileException` (parsing plan), `ImportFingerprint::make` (Task 2), `ImportBatch`/`ImportRow` (Task 1).
+- Consumes: `ParserRegistry::resolve/supports` and `ParsedStatement`/`ParsedRow` (parsing plan Tasks 1–4), `ImportFileException` (parsing plan), `ImportFingerprint::make` (Task 2), `ImportBatch`/`ImportRow` (Task 1).
 - Produces: `App\Services\ImportService::upload(User $user, Account $account, UploadedFile $file): ImportBatch` — used by `ImportController::store` (Task 6).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `php artisan make:test --pest ImportServiceTest`, move to `tests/Integration/Services/ImportServiceTest.php`:
 
 First, add the shared upload-fixture helper to `tests/Support/helpers.php` (used by this file and the Task 6 feature tests — with `use Illuminate\Http\UploadedFile;` added to the top of the file):
 
 ```php
-/** A fake statement upload built from an import fixture — `statementFile('mandiri-dirty.csv')`. */
-function statementFile(string $name = 'mandiri-basic.csv'): UploadedFile
+/** A fake statement upload built from an import fixture — `statementFile('mandiri-dirty.xlsx')`. */
+function statementFile(string $name = 'mandiri-basic.xlsx'): UploadedFile
 {
-    return UploadedFile::fake()->createWithContent('mutasi.csv', import_fixture($name));
+    return UploadedFile::fake()->createWithContent('mutasi.xlsx', import_fixture($name));
 }
 ```
 
@@ -547,7 +543,7 @@ function importableAccount(User $user): Account
         ->create(['provider_id' => $provider->id]);
 }
 
-test('uploads a statement and stages rows with category defaults', function (): void {
+it('uploads a statement and stages rows with category defaults', function (): void {
     $user = User::factory()->create();
     $account = importableAccount($user);
 
@@ -567,7 +563,7 @@ test('uploads a statement and stages rows with category defaults', function (): 
         ->and($inflow->raw)->not->toBeEmpty();
 });
 
-test('flags duplicates against existing transactions and within the file', function (): void {
+it('flags duplicates against existing transactions and within the file', function (): void {
     $user = User::factory()->create();
     $account = importableAccount($user);
 
@@ -589,19 +585,19 @@ test('flags duplicates against existing transactions and within the file', funct
         ->and($duplicate->is_included)->toBeFalse();
 });
 
-test('rejects upload when the provider has no parser', function (): void {
+it('rejects upload when the provider has no parser', function (): void {
     $user = User::factory()->create();
     $account = Account::factory()->for($user, 'owner')->create(); // no provider
 
     app(ImportService::class)->upload($user, $account, statementFile());
 })->throws(ValidationException::class);
 
-test('maps parser file failures to validation errors and creates nothing', function (): void {
+it('maps parser file failures to validation errors and creates nothing', function (): void {
     $user = User::factory()->create();
     $account = importableAccount($user);
 
     try {
-        app(ImportService::class)->upload($user, $account, statementFile('mandiri-unrecognized.csv'));
+        app(ImportService::class)->upload($user, $account, statementFile('mandiri-unrecognized.xlsx'));
         $this->fail('Expected a ValidationException.');
     } catch (ValidationException $exception) {
         expect($exception->errors())->toHaveKey('statement');
@@ -611,16 +607,13 @@ test('maps parser file failures to validation errors and creates nothing', funct
 });
 ```
 
-Then extend the `module:import` mapping in `tests/Pest.php` (integration files map per file — Task 1 registered the casts test; add the service test next to it):
+Then extend the `module:import` mappings in `tests/Pest.php` — integration files map per file, one line per file (the parsing plan already registered its parser test there):
 
 ```php
-pest()->group('module:import')->in(
-    'Integration/Models/ImportRowCastsTest.php',
-    'Integration/Services/ImportServiceTest.php',
-);
+pest()->group('module:import')->in('Integration/Services/ImportServiceTest.php');
 ```
 
-- [ ] **Step 2: Implement `ImportService::upload`**
+- [x] **Step 2: Implement `ImportService::upload`**
 
 `app/Services/ImportService.php`:
 
@@ -674,7 +667,7 @@ final readonly class ImportService
         }
 
         try {
-            $statement = $this->registry->resolve($provider)->parse($file->getContent());
+            $statement = $this->registry->resolve($provider)->parse($file);
         } catch (ImportFileException $exception) {
             throw ValidationException::withMessages([
                 'statement' => $exception->getMessage(),
@@ -714,12 +707,13 @@ final readonly class ImportService
                     'is_duplicate' => $isDuplicate,
                     'transfer_destination_account_id' => null,
                     'fingerprint' => $fingerprint,
-                    'parse_errors' => $parsed->errors === [] ? null : $parsed->errors,
-                    'raw' => $parsed->raw,
+                    'parse_errors' => $parsed->errors === [] ? null : json_encode($parsed->errors),
+                    'raw' => json_encode($parsed->raw),
                 ];
             }
 
-            // insert() bypasses casts — enum values are pre-stringified above.
+            // insert() bypasses casts — enum values are pre-stringified and
+            // the JSON columns (parse_errors, raw) pre-encoded above.
             collect($rows)
                 ->chunk(self::INSERT_CHUNK)
                 ->each(fn (Collection $chunk): bool => ImportRow::insert($chunk->all()));
@@ -779,12 +773,12 @@ Also add to `app/Models/Account.php` (after `transactions()`):
 
 **Interfaces:**
 - Consumes: Task 3's `ImportService`.
-- Produces: `App\Services\ImportService::updateRow(ImportRow $row, array $data): ImportRow` — accepts any subset of `transaction_date`, `description`, `amount`, `flow`, `category_id`, `transfer_destination_account_id`, `is_included` (validated upstream by `UpdateImportRowRequest`, Task 6).
+- Produces: `App\Services\ImportService::updateRow(ImportRow $row, array $data): ImportRow` — accepts any subset of `transaction_date`, `description`, `amount`, `transaction_type`, `category_id`, `transfer_destination_account_id`, `is_included` (validated upstream by `UpdateImportRowRequest`, Task 6). `transaction_type` picks the money direction: income/expense map to the stored cashflow and clear a stale transfer destination; `transfer` keeps the statement-derived direction and requires `transfer_destination_account_id`.
 
-- [ ] **Step 1: Append the failing tests**
+- [x] **Step 1: Append the failing tests**
 
 ```php
-test('updates editable fields on a staging row', function (): void {
+it('updates editable fields on a staging row', function (): void {
     $user = User::factory()->create();
     $account = importableAccount($user);
 
@@ -794,7 +788,7 @@ test('updates editable fields on a staging row', function (): void {
     app(ImportService::class)->updateRow($row, [
         'description' => 'Edited description',
         'amount' => 999999,
-        'flow' => 'outflow',
+        'transaction_type' => TransactionType::Expense,
         'category_id' => Category::Electricity->value,
         'is_included' => false,
     ]);
@@ -807,7 +801,7 @@ test('updates editable fields on a staging row', function (): void {
         ->is_included->toBeFalse();
 });
 
-test('rejects a transfer destination equal to the batch account', function (): void {
+it('rejects a transfer destination equal to the batch account', function (): void {
     $user = User::factory()->create();
     $account = importableAccount($user);
 
@@ -819,7 +813,7 @@ test('rejects a transfer destination equal to the batch account', function (): v
     ]);
 })->throws(ValidationException::class);
 
-test('rejects editing rows of non-staging batches', function (): void {
+it('rejects editing rows of non-staging batches', function (): void {
     $batch = App\Models\ImportBatch::factory()->approved()->create();
     $row = App\Models\ImportRow::factory()->create(['batch_id' => $batch->id]);
 
@@ -827,9 +821,9 @@ test('rejects editing rows of non-staging batches', function (): void {
 })->throws(ValidationException::class);
 ```
 
-- [ ] **Step 2: Implement**
+- [x] **Step 2: Implement**
 
-Append to `ImportService` (add `use App\Enums\Cashflow;` to the imports):
+Append to `ImportService` (add `use App\Enums\Cashflow;` and `use App\Enums\TransactionType;` to the imports):
 
 ```php
     /**
@@ -853,7 +847,11 @@ Append to `ImportService` (add `use App\Enums\Cashflow;` to the imports):
             'transaction_date' => $data['transaction_date'] ?? $row->transaction_date?->toDateTimeString(),
             'description' => array_key_exists('description', $data) ? $data['description'] : $row->description,
             'amount' => $data['amount'] ?? $row->amount,
-            'flow' => isset($data['flow']) ? Cashflow::from($data['flow']) : $row->flow,
+            'flow' => isset($data['transaction_type'])
+                ? (TransactionType::from($data['transaction_type']) === TransactionType::Income
+                    ? Cashflow::Inflow
+                    : Cashflow::Outflow)
+                : $row->flow,
             'category_id' => isset($data['category_id']) ? Category::from($data['category_id']) : $row->category_id,
             'transfer_destination_account_id' => array_key_exists('transfer_destination_account_id', $data)
                 ? $data['transfer_destination_account_id']
@@ -890,10 +888,10 @@ Append to `ImportService` (add `use App\Enums\Cashflow;` to the imports):
   - `App\Services\ImportService::approve(ImportBatch $batch): int` — returns imported count; batch → `approved`.
   - `App\Services\ImportService::discard(ImportBatch $batch): void` — batch → `discarded`.
 
-- [ ] **Step 1: Append the failing tests**
+- [x] **Step 1: Append the failing tests**
 
 ```php
-test('approves included rows into real transactions and updates the balance', function (): void {
+it('approves included rows into real transactions and updates the balance', function (): void {
     $user = User::factory()->create();
     $account = importableAccount($user);
     $balanceBefore = $account->current_balance;
@@ -914,7 +912,7 @@ test('approves included rows into real transactions and updates the balance', fu
     expect($batch->rows()->count())->toBe(3);
 });
 
-test('approve materializes a transfer-marked row as an aggregate with a mirrored member', function (): void {
+it('approve materializes a transfer-marked row as an aggregate with a mirrored member', function (): void {
     $user = User::factory()->create();
     $account = importableAccount($user);
     $destination = Account::factory()->for($user, 'owner')->create();
@@ -935,11 +933,11 @@ test('approve materializes a transfer-marked row as an aggregate with a mirrored
         ->and($destination->fresh()->current_balance - $destinationBefore)->toBe(350000);
 });
 
-test('approve re-validates and rejects error rows left included', function (): void {
+it('approve re-validates and rejects error rows left included', function (): void {
     $user = User::factory()->create();
     $account = importableAccount($user);
 
-    $batch = app(ImportService::class)->upload($user, $account, statementFile('mandiri-dirty.csv'));
+    $batch = app(ImportService::class)->upload($user, $account, statementFile('mandiri-dirty.xlsx'));
     $errorRow = $batch->rows->firstWhere('is_included', false);
 
     app(ImportService::class)->updateRow($errorRow, ['is_included' => true]);
@@ -947,7 +945,7 @@ test('approve re-validates and rejects error rows left included', function (): v
     app(ImportService::class)->approve($batch->fresh());
 })->throws(ValidationException::class);
 
-test('approve rejects zero included rows', function (): void {
+it('approve rejects zero included rows', function (): void {
     $user = User::factory()->create();
     $account = importableAccount($user);
 
@@ -957,7 +955,7 @@ test('approve rejects zero included rows', function (): void {
     app(ImportService::class)->approve($batch->fresh());
 })->throws(ValidationException::class);
 
-test('discard keeps rows and flips status', function (): void {
+it('discard keeps rows and flips status', function (): void {
     $user = User::factory()->create();
     $account = importableAccount($user);
 
@@ -971,7 +969,7 @@ test('discard keeps rows and flips status', function (): void {
 });
 ```
 
-- [ ] **Step 2: Implement**
+- [x] **Step 2: Implement**
 
 Append to `ImportService` (imports to add: `App\Data\Transaction\TransactionData`, `App\Data\Transaction\TransferData`, `App\Enums\TransactionType`):
 
@@ -1115,10 +1113,10 @@ Append to `ImportService` (imports to add: `App\Data\Transaction\TransactionData
 - Test: `tests/Feature/App/Import/ImportTest.php`
 
 **Interfaces:**
-- Consumes: `ImportService` (Tasks 3–5), `ParserRegistry` (parsing plan Task 2), `CategoryService::getCategories()`, `AccountService::getAccountsByUser(User)` (existing).
-- Produces (used by the frontend plan): routes `imports.create` (GET `accounts/{account}/import`), `imports.store` (POST same), `imports.show` (GET `imports/{batch}`), `imports.rows.update` (PATCH `imports/{batch}/rows/{row}`), `imports.approve` (POST `imports/{batch}/approve`), `imports.discard` (POST `imports/{batch}/discard`) — controller `App\Http\Controllers\ImportController` (Wayfinder import path `@wayfinder/App/Http/Controllers/ImportController`), page props for `app/account/import` (`account`, `provider_name`) and `app/import/review` (`batch`, `rows`, `categories`, `accounts`), shared prop `import_supported` on `app/account/show`.
+- Consumes: `ImportService` (Tasks 3-5), `ParserRegistry` (parsing plan Task 5), `AccountService::getAccountsByUser(User)` (existing).
+- Produces (used by the frontend plan): routes `imports.store` (POST `accounts/{account}/import`), `imports.show` (GET `imports/{batch}`), `imports.rows.update` (PATCH `imports/{batch}/rows/{row}`), `imports.approve` (POST `imports/{batch}/approve`), `imports.discard` (POST `imports/{batch}/discard`) — controller `App\Http\Controllers\ImportController` (Wayfinder import path `@wayfinder/App/Http/Controllers/ImportController`), page props for `app/settings/imports` (`batches`) and `app/settings/imports/review` (`batch`, `rows`, `categories`, `accounts`), shared prop `import_supported` on `app/account/show`. (`imports.create` and its upload page were dropped during frontend execution — the upload form is a drawer on the account page.)
 
-- [ ] **Step 1: Write the failing feature tests**
+- [x] **Step 1: Write the failing feature tests**
 
 `php artisan make:test --pest ImportTest`, then move it to the module directory as `tests/Feature/App/Import/ImportTest.php` (matching `Account/AccountTest.php`, `Transfer/TransferTest.php`) and write:
 
@@ -1150,28 +1148,6 @@ function stagedBatch(User $user, Account $account): ImportBatch
     return app(ImportService::class)->upload($user, $account, statementFile());
 }
 
-test('renders the upload page for the account owner', function (): void {
-    $this->actingAs($this->user)
-        ->get(route('imports.create', $this->account))
-        ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->component('app/account/import')
-            ->has('account')
-            ->where('provider_name', 'Mandiri')
-        );
-});
-
-test('forbids the upload page for non-owners even when shareable', function (): void {
-    $shareable = Account::factory()
-        ->shareable()
-        ->for($this->user, 'owner')
-        ->create(['provider_id' => $this->provider->id]);
-
-    $this->actingAs(User::factory()->create())
-        ->get(route('imports.create', $shareable))
-        ->assertForbidden();
-});
-
 test('stores an upload and redirects to the review page', function (): void {
     $this->actingAs($this->user)
         ->post(route('imports.store', $this->account), ['statement' => statementFile()])
@@ -1180,7 +1156,7 @@ test('stores an upload and redirects to the review page', function (): void {
     expect(ImportRow::count())->toBe(3);
 });
 
-test('rejects non-csv uploads', function (): void {
+test('rejects non-xlsx uploads', function (): void {
     $file = \Illuminate\Http\UploadedFile::fake()->create('statement.pdf', 100, 'application/pdf');
 
     $this->actingAs($this->user)
@@ -1188,17 +1164,16 @@ test('rejects non-csv uploads', function (): void {
         ->assertInvalid('statement');
 });
 
-test('renders the review page with rows, categories and accounts', function (): void {
+test('renders the review page with rows and accounts', function (): void {
     $batch = stagedBatch($this->user, $this->account);
 
     $this->actingAs($this->user)
         ->get(route('imports.show', $batch))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->component('app/import/review')
+            ->component('app/settings/imports/review')
             ->has('batch')
             ->has('rows', 3)
-            ->has('categories')
             ->has('accounts')
         );
 });
@@ -1278,7 +1253,7 @@ pest()->group('module:import')->in('Feature/App/Import');
 
 (Run the whole module's tests later with `php artisan test --compact --group=module:import`.)
 
-- [ ] **Step 2: Create the policy**
+- [x] **Step 2: Create the policy**
 
 `app/Policies/ImportBatchPolicy.php`:
 
@@ -1320,7 +1295,7 @@ final class ImportBatchPolicy
 }
 ```
 
-- [ ] **Step 3: Create the form requests**
+- [x] **Step 3: Create the form requests**
 
 `app/Http/Requests/ImportUploadRequest.php`:
 
@@ -1344,7 +1319,7 @@ final class ImportUploadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'statement' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
+            'statement' => ['required', 'file', 'mimes:xlsx', 'max:5120'],
         ];
     }
 }
@@ -1357,8 +1332,8 @@ final class ImportUploadRequest extends FormRequest
 
 namespace App\Http\Requests;
 
-use App\Enums\Cashflow;
 use App\Enums\Category;
+use App\Enums\TransactionType;
 use App\Models\ImportRow;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -1378,7 +1353,7 @@ final class UpdateImportRowRequest extends FormRequest
             'transaction_date' => ['sometimes', 'required', 'date', 'before_or_equal:now'],
             'description' => ['sometimes', 'nullable', 'string', 'max:500'],
             'amount' => ['sometimes', 'required', 'numeric', 'min:0.01'],
-            'flow' => ['sometimes', 'required', Rule::enum(Cashflow::class)],
+            'transaction_type' => ['sometimes', 'required', Rule::enum(TransactionType::class)],
             'category_id' => ['sometimes', 'required', Rule::enum(Category::class)->except(Category::InitialBalance)],
             'transfer_destination_account_id' => ['sometimes', 'nullable', 'integer', 'exists:accounts,id'],
             'is_included' => ['sometimes', 'boolean'],
@@ -1387,7 +1362,7 @@ final class UpdateImportRowRequest extends FormRequest
 }
 ```
 
-- [ ] **Step 4: Create the controller**
+- [x] **Step 4: Create the controller**
 
 `app/Http/Controllers/ImportController.php`:
 
@@ -1421,13 +1396,10 @@ final class ImportController extends Controller
         #[CurrentUser] private readonly ?User $user,
     ) {}
 
-    public function create(Request $request, Account $account): Response
+    public function index(): Response
     {
-        $this->authorize('update', $account);
-
-        return Inertia::render('app/account/import', [
-            'account' => $account->load('provider'),
-            'provider_name' => $account->provider?->name ?? 'Statement',
+        return Inertia::render('app/settings/imports', [
+            'batches' => $this->importService->getBatchesByUser($this->user),
         ]);
     }
 
@@ -1442,10 +1414,9 @@ final class ImportController extends Controller
     {
         $this->authorize('view', $batch);
 
-        return Inertia::render('app/import/review', [
+        return Inertia::render('app/settings/imports/review', [
             'batch' => $batch->load(['account.provider', 'provider']),
             'rows' => $batch->rows()->orderBy('row_number')->get(),
-            'categories' => CategoryService::getCategories(),
             'accounts' => $this->accountService->getAccountsByUser($this->user),
         ]);
     }
@@ -1480,14 +1451,13 @@ final class ImportController extends Controller
 }
 ```
 
-- [ ] **Step 5: Register routes**
+- [x] **Step 5: Register routes**
 
 In `routes/web.php`, add `use App\Http\Controllers\ImportController;` with the other controller imports, then inside the authenticated group, after the Transfers block:
 
 ```php
     // Statement imports (per-account upload; staging review; bulk approve)
     Route::controller(ImportController::class)->group(function (): void {
-        Route::get('accounts/{account}/import', 'create')->name('imports.create');
         Route::post('accounts/{account}/import', 'store')->name('imports.store');
         Route::get('imports/{batch}', 'show')->name('imports.show');
         Route::patch('imports/{batch}/rows/{row}', 'updateRow')->name('imports.rows.update');
@@ -1496,7 +1466,7 @@ In `routes/web.php`, add `use App\Http\Controllers\ImportController;` with the o
     });
 ```
 
-- [ ] **Step 6: Expose import support on the account page**
+- [x] **Step 6: Expose import support on the account page**
 
 In `app/Http/Controllers/AccountController.php`, add `ParserRegistry` to the constructor and one prop in `show()`:
 
@@ -1519,7 +1489,7 @@ In `app/Http/Controllers/AccountController.php`, add `ParserRegistry` to the con
 
 with `use App\Services\Import\ParserRegistry;` at the top.
 
-- [ ] **Step 7: Regenerate Wayfinder types (staging plan exit gate)**
+- [x] **Step 7: Regenerate Wayfinder types (staging plan exit gate)**
 
 Run: `php artisan wayfinder:generate`
 Expected: `resources/js/wayfinder/App/Http/Controllers/ImportController.php` exists and `App.Models.ImportBatch` / `App.Models.ImportRow` are present in `resources/js/wayfinder/types`. The frontend plan consumes these — this step is its prerequisite.
@@ -1528,4 +1498,5 @@ Expected: `resources/js/wayfinder/App/Http/Controllers/ImportController.php` exi
 
 ## Post-Plan Notes (not tasks)
 
-- **Known v1 limitations** (documented in the spec): cross-batch duplicate overlap, queue offloading for very large files, transfer fees on imported transfers, PDF/XLSX formats. (XLSX: if the parsing plan's optional laravel-excel task is taken, extend `ImportUploadRequest`'s mime rule to `'mimes:csv,txt,xlsx'` and the frontend upload input's `accept` to `.csv,.xlsx`.)
+- **Known v1 limitations** (documented in the spec): cross-batch duplicate overlap, queue offloading for very large files, transfer fees on imported transfers. The XLSX surface is already applied here (the parsing layer went XLSX-only during implementation): `ImportUploadRequest` validates `mimes:xlsx` and the frontend upload input accepts `.xlsx` (frontend plan delta).
+- **Deltas applied during execution** (this plan predates the parsing-layer refactor; see `2026-11-04-provider-csv-import-parsing-excel.md` Post-Plan Notes): `parse($file)` contract call-site, `.xlsx` fixture names, `mimes:xlsx`, `it()` declarations in Unit/Integration suites, static-style `AccountService` injection kept per sibling-controller convention, and the plan's own nested-ternary syntax error in Task 3's snippet fixed (parenthesized).

@@ -1,5 +1,3 @@
-import type { App } from '@wayfinder/types';
-
 export type BalanceTrendReportData = {
     readonly data: {
         date: string;
@@ -10,7 +8,6 @@ export type BalanceTrendReportData = {
     readonly to: string;
     readonly current_total: number;
 };
-
 export type CashflowPoint = {
     readonly date: string;
     readonly net: number;
@@ -19,7 +16,6 @@ export type CashflowPoint = {
     readonly expense: number;
     readonly tier: App.Enums.SavingsRateTier | null;
 };
-
 export type CashflowTrendReportData = {
     readonly data: CashflowPoint[];
     readonly from: string;
@@ -28,7 +24,6 @@ export type CashflowTrendReportData = {
     readonly total_expense: number;
     readonly total_net: number;
 };
-
 export type CategoryData = {
     id: string;
     name: string;
@@ -36,14 +31,12 @@ export type CategoryData = {
     decorations: Decoration;
     group: CategoryGroupData | string;
 };
-
 export type CategoryGroupData = {
     id: string;
     name: string;
     cashflow: App.Enums.Cashflow;
     decorations: Decoration;
 };
-
 export type CategorySpendingItemData = {
     category_id: string;
     group: string;
@@ -53,16 +46,13 @@ export type CategorySpendingItemData = {
     total: number;
     percentage: number;
 };
-
 export type CategorySpendingReportData = {
     readonly categories: ParentSpendingItemData[];
     readonly total_expense: number;
     readonly from: string;
     readonly to: string;
 };
-
 export type CursorPaginatedDataCollection<TKey, TValue> = CursorPaginator<TKey, TValue>;
-
 export type CursorPaginator<TKey, TValue> = {
     data: TKey extends string ? Record<TKey, TValue> : TValue[];
     links: {
@@ -79,9 +69,7 @@ export type CursorPaginator<TKey, TValue> = {
         prev_page_url: string | null;
     };
 };
-
 export type CursorPaginatorInterface<TKey, TValue> = CursorPaginator<TKey, TValue>;
-
 export type DataTablePayloadData = {
     has_sort: boolean;
     has_filters: boolean;
@@ -90,12 +78,24 @@ export type DataTablePayloadData = {
     sort: Array<any> | null;
     filters: Array<any> | null;
 };
-
 export type Decoration = {
     readonly icon: string | null;
     readonly color: string | null;
 };
-
+export type ImportRowData = {
+    id: number;
+    row_number: number;
+    transaction_date: string | null;
+    description: string | null;
+    amount: number | null;
+    transaction_type: App.Enums.TransactionType | null;
+    category_id: App.Enums.Category | null;
+    category: CategoryData | null;
+    is_included: boolean;
+    is_duplicate: boolean;
+    parse_errors: Array<any> | null;
+    transfer_destination_account_id: number | null;
+};
 export type LengthAwarePaginator<TKey, TValue> = {
     data: TKey extends string ? Record<TKey, TValue> : TValue[];
     links: {
@@ -117,9 +117,7 @@ export type LengthAwarePaginator<TKey, TValue> = {
         to: number | null;
     };
 };
-
 export type LengthAwarePaginatorInterface<TKey, TValue> = LengthAwarePaginator<TKey, TValue>;
-
 export type MonthlyCashflowReportData = {
     readonly data: CashflowPoint[];
     readonly from: string;
@@ -131,9 +129,7 @@ export type MonthlyCashflowReportData = {
     readonly max_income: number;
     readonly max_expense: number;
 };
-
 export type PaginatedDataCollection<TKey, TValue> = LengthAwarePaginator<TKey, TValue>;
-
 export type ParentSpendingItemData = {
     readonly group: string;
     readonly name: string;
@@ -143,7 +139,6 @@ export type ParentSpendingItemData = {
     readonly percentage: number;
     readonly children: CategorySpendingItemData[];
 };
-
 export type SavingsRateReportData = {
     readonly data: CashflowPoint[];
     readonly from: string;
@@ -156,7 +151,6 @@ export type SavingsRateReportData = {
     readonly best_rate: number;
     readonly worst_rate: number;
 };
-
 export type TransactionData = {
     account_id: number;
     type: App.Enums.TransactionType;
@@ -168,7 +162,6 @@ export type TransactionData = {
     flow: App.Enums.Cashflow | null;
     transfer_id: number | null;
 };
-
 export type TransactionDetailData = {
     id: number;
     type: App.Enums.TransactionType;
@@ -185,7 +178,6 @@ export type TransactionDetailData = {
     destination_account: App.Models.Account;
     tags: string[] | null;
 };
-
 export type TransactionFormData = {
     id: number | null;
     type: App.Enums.TransactionType;
@@ -199,12 +191,10 @@ export type TransactionFormData = {
     transfer_id: number | null;
     tags: string[] | null;
 };
-
 export type TransactionListCursor = {
     readonly value: string;
     readonly id: number;
 };
-
 export type TransactionListData = {
     id: number;
     type: App.Enums.TransactionType;
@@ -221,15 +211,14 @@ export type TransactionListData = {
     destination_account: App.Models.Account;
     tags: string[] | null;
 };
-
 export type TransactionListFilters = {
     readonly search: string | null;
     readonly accountIds: number[];
     readonly categoryIds: string[];
     readonly types: string[];
+    readonly tags: string[];
     readonly sort: App.Enums.TransactionSort;
 };
-
 export type TransferData = {
     account_id: number;
     destination_account_id: number;
@@ -239,7 +228,6 @@ export type TransferData = {
     description: string | null;
     tags: string[] | null;
 };
-
 export type WeekdayCashflow = {
     readonly deviation: number;
     readonly weekday: number;
@@ -247,7 +235,6 @@ export type WeekdayCashflow = {
     readonly baseline: number;
     readonly tier: App.Enums.StatisticDataTier;
 };
-
 export type WeekdayPatternReportData = {
     readonly data: WeekdayCashflow[];
     readonly from: string;

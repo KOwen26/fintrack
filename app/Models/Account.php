@@ -48,6 +48,11 @@ final class Account extends Model
         return $this->hasMany(Transaction::class);
     }
 
+    public function importBatches(): HasMany
+    {
+        return $this->hasMany(ImportBatch::class);
+    }
+
     #[Scope]
     protected function notArchived(Builder $builder): void
     {

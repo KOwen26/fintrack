@@ -73,6 +73,13 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'import-suggestions' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/import-suggestions.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'replace_placeholders' => true,
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),

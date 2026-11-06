@@ -15,25 +15,33 @@
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import AccountCard from '@components/module/account/account-card.svelte';
+    import ImportBatchList from '@components/module/import/import-batch-list.svelte';
+    import ImportUploadForm from '@components/module/import/import-upload-form.svelte';
     import CategorySpendingChart from '@components/module/statistics/category-spending-chart.svelte';
     import TransactionList from '@components/module/transaction/transaction-list.svelte';
     import HeaderContext from '@components/navigation/header-context.svelte';
     import Button from '@components/ui/button.svelte';
     import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
+    import Separator from '@components/ui/separator.svelte';
 
     let {
         account,
         transactions,
         categorySpending,
+        import_supported,
+        imports,
     }: {
         account: App.Models.Account;
         transactions: TransactionListData[];
         categorySpending: CategorySpendingReportData;
+        import_supported: boolean;
+        imports: App.Models.ImportBatch[];
     } = $props();
 
     pageLayoutProps({ title: account?.name, backUrl: AccountController.index.url() });
 
     let showDetail = $state(false);
+    let showImport = $state(false);
     let transactionsOpen = $state(true);
     let categoryOpen = $state(true);
 
@@ -213,7 +221,7 @@
                 </Collapsible.Root>
             {/if}
 
-            <div class="-mx-5 h-2.5 bg-muted"></div>
+            <Separator class="-mx-5 w-auto!" variant="thick" />
 
             <Collapsible.Root bind:open={transactionsOpen}>
                 <ResponsiveCard class=" {!transactionsOpen ? 'gap-0' : ''}">
@@ -243,6 +251,33 @@
                     </Collapsible.Content>
                 </ResponsiveCard>
             </Collapsible.Root>
+
+            <Separator class="-mx-5 w-auto!" variant="thick" />
+
+            {#if import_supported}
+                <ResponsiveCard contentClass="space-y-3">
+                    <h5 class="text-sm font-bold tracking-wider text-foreground uppercase">
+                        Statement Imports
+                    </h5>
+
+                    <div>
+                        <Button
+                            class="w-full"
+                            color="secondary"
+                            onclick={() => (showImport = true)}
+                            variant="soft">
+                            <i class="iconify size-5 solar--upload-square-line-duotone"></i>
+                            Import Statement
+                        </Button>
+                    </div>
+
+                    <div>
+                        <ImportBatchList {imports} />
+                    </div>
+                </ResponsiveCard>
+            {/if}
         {/if}
     </div>
 </MobilePageLayout>
+
+<ImportUploadForm {account} bind:open={showImport} />
