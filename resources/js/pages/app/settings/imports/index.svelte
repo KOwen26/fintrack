@@ -9,39 +9,48 @@
 
     import EmptyItemPlaceholder from '@components/data/empty-item-placeholder.svelte';
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
-    import Badge from '@components/ui/badge.svelte';
+    import ImportStatusBadge from '@components/module/import/import-status-badge.svelte';
+    import ImportUploadForm from '@components/module/import/import-upload-form.svelte';
+    import Button from '@components/ui/button.svelte';
     import Link from '@components/ui/link.svelte';
 
-    let { batches }: { batches: App.Models.ImportBatch[] } = $props();
+    let {
+        accounts,
+        batches,
+    }: {
+        accounts: App.Models.Account[];
+        batches: App.Models.ImportBatch[];
+    } = $props();
+
+    let showUpload = $state(false);
 
     setLayoutProps({ title: 'Imports', backUrl: settings.index.url() });
-
-    const statusColor: Record<string, 'info' | 'success' | 'warning'> = {
-        staging: 'info',
-        approved: 'success',
-        discarded: 'warning',
-    };
 </script>
 
 <MobilePageLayout variant="full">
-    <h2 class="text-lg font-semibold">Imports</h2>
+    <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold">Imports</h2>
 
-    <div class="mt-6 space-y-3">
+        <Button color="primary" onclick={() => (showUpload = true)} size="sm">
+            <i class="iconify size-4 solar--upload-square-line-duotone"></i> Import
+        </Button>
+    </div>
+
+    <div class="mt-5 space-y-3">
         {#each batches as batch (batch.id)}
             <Link
-                class="block rounded-xl border border-border p-4 transition-colors hover:bg-base-200"
+                class="block rounded-xl border border-border p-4 transition-colors hover:bg-card"
                 href={ImportController.show.url({ batch: batch.id })}>
                 <div class="flex items-center justify-between gap-3">
-                    <span class="min-w-0 truncate text-sm font-semibold">
-                        {batch.source_filename}
+                    <span class="min-w-0 truncate font-semibold capitalize">
+                        {batch?.account?.name}
                     </span>
-                    <Badge color={statusColor[batch.status] ?? 'info'} variant="soft">
-                        {batch.status}
-                    </Badge>
+
+                    <ImportStatusBadge status={batch.status} />
                 </div>
 
                 <p class="mt-1 text-sm text-muted-foreground">
-                    {batch.account?.name ?? '—'} · {batch.provider?.name ?? '—'}
+                    {batch.source_filename} · {batch.provider?.name ?? '—'}
                 </p>
 
                 <p class="mt-1 text-xs text-muted-foreground">
@@ -54,3 +63,5 @@
         {/each}
     </div>
 </MobilePageLayout>
+
+<ImportUploadForm {accounts} bind:open={showUpload} />

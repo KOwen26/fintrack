@@ -24,15 +24,18 @@
 <div class="flex flex-wrap items-center gap-2">
     {#if batch.suggestion_status === 'pending' || batch.suggestion_status === 'processing'}
         <Badge color="info" variant="soft">
-            <span class="loading loading-spinner loading-xs mr-1"></span>
-            Suggestions: processing…
+            <i class="iconify size-3 animate-spin solar--refresh-line-duotone"></i>
+            Suggestions Processing
         </Badge>
     {:else if batch.suggestion_status === 'completed'}
-        <Badge color="success" variant="soft">Suggestions applied — review before approving</Badge>
+        <Badge color="success" variant="soft">Suggestions Applied — review before approving</Badge>
     {:else if batch.suggestion_status === 'failed'}
-        <Badge color="warning" variant="soft">Suggestions unavailable</Badge>
+        <Badge color="warning" variant="soft">Suggestions Unavailable</Badge>
+
         {#if batch.status === 'staging'}
-            <Button size="sm" color="light" disabled={retrying} onclick={retry} variant="outline">
+            <Button color="light" disabled={retrying} onclick={retry} size="sm" variant="outline">
+                <i class={['iconify solar--refresh-line-duotone', retrying && 'animate-spin']}></i>
+
                 {retrying ? 'Retrying…' : 'Retry'}
             </Button>
         {/if}

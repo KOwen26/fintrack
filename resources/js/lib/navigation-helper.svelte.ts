@@ -1,3 +1,5 @@
+import type { LayoutProps } from '@type/inertia';
+
 import { router, setLayoutProps } from '@inertiajs/svelte';
 
 /**
@@ -73,7 +75,7 @@ export function backOrRedirectTo(fallbackUrl: Parameters<(typeof router)['visit'
  *
  * Must be called synchronously during page component initialization.
  */
-export function pageLayoutProps(props: Record<string, unknown>): void {
+export function pageLayoutProps(props: LayoutProps): void {
     $effect(() => {
         setLayoutProps(props);
 

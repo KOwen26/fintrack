@@ -11,8 +11,8 @@
     import TableFooter from '@components/ui/atoms/table/table-footer.svelte';
     import TableHead from '@components/ui/atoms/table/table-head.svelte';
     import TableHeader from '@components/ui/atoms/table/table-header.svelte';
-    import TableRoot from '@components/ui/atoms/table/table-root.svelte';
     import TableRow from '@components/ui/atoms/table/table-row.svelte';
+    import Table from '@components/ui/atoms/table/table.svelte';
     import Button from '@components/ui/button.svelte';
     import Input from '@components/ui/forms/input.svelte';
     import { Select as SelectRoot } from '@components/ui/forms/select';
@@ -72,16 +72,16 @@
 
 <div
     class={twMerge(
-        'space-y-5 overflow-clip border-neutral-400 bg-white',
+        'space-y-5 overflow-clip border-border bg-white',
         withFilter || withPagination ? 'rounded border py-5' : ''
     )}>
     {#if withFilter}
         {@render Filter({ table })}
     {/if}
 
-    <TableRoot
+    <Table
         class={twMerge(
-            'border-neutral-400',
+            'border-border',
             withFilter || withPagination ? 'border-y' : 'rounded-sm border'
         )}>
         <TableHeader>
@@ -129,7 +129,7 @@
                 {/each}
             </TableFooter>
         {/if}
-    </TableRoot>
+    </Table>
 
     {#if withTotal || withPagination}
         {@render Pagination({ table })}

@@ -32,7 +32,11 @@ final class ImportController extends Controller
 
     public function index(): Response
     {
+        $accounts = $this->accountService->getAccountsByUser($this->user)
+            ->filter(fn ($account): bool => in_array($account->provider?->slug, ParserRegistry::supportedProviders(), true));
+
         return Inertia::render('app/settings/imports/index', [
+            'accounts' => $accounts->values(),
             'batches' => $this->importService->getBatchesByUser($this->user),
         ]);
     }

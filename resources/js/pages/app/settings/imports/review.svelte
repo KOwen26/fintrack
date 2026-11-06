@@ -10,9 +10,12 @@
     import MobilePageLayout from '@components/layouts/mobile-page-layout.svelte';
     import ImportReviewTable from '@components/module/import/import-review-table.svelte';
     import ImportRowEditorModal from '@components/module/import/import-row-editor-form.svelte';
+    import ImportStatusBadge from '@components/module/import/import-status-badge.svelte';
     import ImportSuggestionStatus from '@components/module/import/import-suggestion-status.svelte';
-    import Badge from '@components/ui/badge.svelte';
+    import ProviderBadge from '@components/module/provider/provider-badge.svelte';
+    import BottomActionBar from '@components/navigation/bottom-action-bar.svelte';
     import Button from '@components/ui/button.svelte';
+    import ResponsiveCard from '@components/ui/cards/responsive-card.svelte';
     import ConfirmationModal from '@components/ui/modals/confirmation-modal.svelte';
 
     let {
@@ -28,6 +31,7 @@
     pageLayoutProps({
         title: 'Review Import',
         backUrl: AccountController.show.url({ account: batch.account_id }),
+        hideBottomNav: true,
     });
 
     let editingRow = $state<ImportRowData | null>(null);
@@ -69,47 +73,66 @@
     }
 
     function discard(): void {
-        router.post(ImportController.discard.url({ batch: batch.id }), {
-            onFinish: () => (showDiscard = false),
-        });
+        router.post(
+            ImportController.discard.url({ batch: batch.id }),
+            {},
+            {
+                onFinish: () => (showDiscard = false),
+            }
+        );
     }
 </script>
 
 <MobilePageLayout variant="full">
-    <div>
-        <h2 class="text-lg font-semibold">Review Import</h2>
-        <p class="text-sm text-muted-foreground">
-            {batch.source_filename} · {batch.provider?.name ?? 'Statement'}
-        </p>
-        {#if batch.status !== 'staging'}
-            <Badge
-                class="mt-2 inline-block"
-                color={batch.status === 'approved' ? 'success' : 'warning'}
-                variant="soft">
-                {batch.status}
-            </Badge>
-        {/if}
-        {#if batch.suggestion_status}
-            <div class="mt-2">
-                <ImportSuggestionStatus {batch} />
-            </div>
-        {/if}
-    </div>
+    <div class="mb-10 space-y-5">
+        <div>
+            <h2 class="text-lg font-semibold">Import For Account: {batch?.account?.name}</h2>
+            <div class="flex items-center justify-between gap-3">
+                <span class="grow text-sm text-muted-foreground">
+                    {batch.source_filename}
+                    <ProviderBadge class="ml-1.5" provider={batch?.provider} />
+                </span>
 
-    {#if batch.status === 'staging'}
-        <div
-            class="sticky top-0 z-10 mt-4 flex items-center justify-between gap-2 rounded-lg bg-card p-3 shadow-sm">
+                <ImportStatusBadge status={batch.status} />
+            </div>
+
+            {#if batch?.suggestion_status}
+                <div class="mt-2">
+                    <ImportSuggestionStatus {batch} />
+                </div>
+            {/if}
+        </div>
+
+        <ResponsiveCard onMobileStyle="card">
+            <ImportReviewTable
+                {batch}
+                editable={batch.status === 'staging'}
+                onEdit={(row) => (editingRow = row)}
+                {rows} />
+        </ResponsiveCard>
+    </div>
+</MobilePageLayout>
+
+{#if batch.status === 'staging'}
+    <BottomActionBar>
+        <div class="space-y-3">
             <p class="text-sm">
                 <span class="font-semibold">{includedCount}</span> included
                 <span class="text-muted-foreground">
                     · {duplicateCount} duplicates excluded · {errorCount} errors
                 </span>
             </p>
-            <div class="flex gap-2">
-                <Button color="error" onclick={() => (showDiscard = true)} variant="outline">
+
+            <div class="flex items-center gap-2">
+                <Button
+                    class="min-w-1/4"
+                    color="error"
+                    onclick={() => (showDiscard = true)}
+                    variant="outline">
                     Discard
                 </Button>
                 <Button
+                    class="grow"
                     color="primary"
                     disabled={includedCount === 0 || approving}
                     onclick={approve}>
@@ -117,24 +140,11 @@
                 </Button>
             </div>
         </div>
-    {/if}
-
-    <div class="mt-4">
-        <ImportReviewTable
-            batchId={batch.id}
-            editable={batch.status === 'staging'}
-            onEdit={(row) => (editingRow = row)}
-            {rows} />
-    </div>
-</MobilePageLayout>
+    </BottomActionBar>
+{/if}
 
 {#if editingRow}
-    <ImportRowEditorModal
-        {accounts}
-        batchAccountId={batch.account_id}
-        batchId={batch.id}
-        onDone={() => (editingRow = null)}
-        row={editingRow} />
+    <ImportRowEditorModal {accounts} {batch} onClose={() => (editingRow = null)} row={editingRow} />
 {/if}
 
 <ConfirmationModal

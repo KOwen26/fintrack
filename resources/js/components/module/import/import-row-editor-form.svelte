@@ -2,7 +2,7 @@
     import type { ImportRowData } from '@type/generated';
     import type { App } from '@wayfinder/types';
 
-    import { page, useForm } from '@inertiajs/svelte';
+    import { useForm } from '@inertiajs/svelte';
     import TransactionType from '@wayfinder/App/Enums/TransactionType';
     import ImportController from '@wayfinder/App/Http/Controllers/ImportController';
 
@@ -19,39 +19,31 @@
 
     let {
         row,
-        batchId,
-        batchAccountId,
+        batch,
         accounts,
-        onDone,
+        onClose,
     }: {
         row: ImportRowData;
-        batchId: number;
-        batchAccountId: number;
+        batch: App.Models.ImportBatch;
         accounts: App.Models.Account[];
-        onDone: () => void;
+        onClose: () => void;
     } = $props();
 
     let open = $state(true);
 
-    function buildInitialData() {
-        return {
-            transaction_date: row.transaction_date?.slice(0, 10) ?? '',
-            description: row.description ?? '',
-            amount: row.amount ?? 0,
-            transaction_type: row.transaction_type ?? TransactionType.Expense,
-            category_id: row.category_id ?? '',
-            transfer_destination_account_id: row.transfer_destination_account_id
-                ? String(row.transfer_destination_account_id)
-                : '',
-        };
-    }
-
-    const form = useForm(buildInitialData());
+    const form = useForm(() => ({
+        transaction_date: row.transaction_date?.slice(0, 10) ?? '',
+        description: row.description ?? '',
+        amount: row.amount ?? 0,
+        transaction_type: row.transaction_type ?? TransactionType.Expense,
+        category_id: row.category_id ?? '',
+        transfer_destination_account_id: row.transfer_destination_account_id ?? '',
+    }));
 
     // Any modal dismissal (X button, overlay) hands control back to the parent.
     $effect(() => {
         if (!open) {
-            onDone();
+            onClose();
         }
     });
 
@@ -62,86 +54,65 @@
         { label: 'Expense', value: TransactionType.Expense },
         { label: 'Transfer', value: TransactionType.Transfer },
     ];
-
-    /* The category catalog follows the picked type — a category from the other
-       catalog is cleared instead of silently mismatching at approve time. */
-    const sharedCategories = $derived(
-        (page.props?.static?.categories ?? {}) as Record<
-            string,
-            Array<{ id: string; options?: Array<{ id: string }> }>
-        >
-    );
-
-    $effect(() => {
-        if (isTransfer) return;
-
-        const cashflow = form.transaction_type === TransactionType.Income ? 'income' : 'expense';
-        const catalog = sharedCategories[`grouped_${cashflow}`] ?? [];
-
-        // Catalog not loaded yet — never clear blind.
-        if (catalog.length === 0 || !form.category_id) return;
-
-        const categoryIds = catalog.flatMap(
-            (group) => group.options?.map((option) => option.id) ?? []
-        );
-
-        if (!categoryIds.includes(String(form.category_id))) {
-            form.category_id = '';
-        }
-    });
 </script>
 
 <DrawerModal title="Edit Row #{row.row_number}" bind:open>
-    <Form
-        id="import-row-form"
-        class="space-y-5"
-        action={ImportController.updateRow.url({ batch: batchId, row: row.id })}
-        {form}
-        method="patch">
-        <Field error={form.errors.transaction_type} required title="Type">
-            <Select options={typeOptions} required bind:value={form.transaction_type} />
-        </Field>
-
-        <Field error={form.errors.amount} required title="Amount">
-            <CurrencyInput required bind:value={form.amount} />
-        </Field>
-
-        <Field error={form.errors.transaction_date} required title="Date">
-            <DateInput required bind:value={form.transaction_date} />
-        </Field>
-
-        <Field error={form.errors.description} required title="Description">
-            <Textarea
-                placeholder="e.g. Pembayaran QR ke Khas Solo 609015160267"
-                required
-                bind:value={form.description} />
-        </Field>
-
-        {#if isTransfer}
-            <Field
-                error={form.errors.transfer_destination_account_id}
-                required
-                title="Transfer Destination">
-                <AccountSelect
-                    accounts={accounts.filter(
-                        (account) => String(account.id) !== String(batchAccountId)
-                    )}
-                    required
-                    bind:value={form.transfer_destination_account_id} />
-            </Field>
-        {:else}
-            <Field error={form.errors.category_id} required title="Category">
-                <CategorySelect required bind:value={form.category_id} />
-            </Field>
-        {/if}
-    </Form>
-
-    <div class="mt-4">
-        <FormAction
+    <div class="px-5">
+        <Form
+            id="import-row-form"
+            class="space-y-5"
+            action={ImportController.updateRow.url({ batch: batch.id, row: row.id })}
             {form}
-            formId="import-row-form"
-            labelCancel="Close"
-            labelSubmit="Save Row"
-            onCancel={onDone} />
+            method="patch">
+            <Field error={form.errors.transaction_type} required title="Type">
+                <Select options={typeOptions} required bind:value={form.transaction_type} />
+            </Field>
+
+            <Field error={form.errors.amount} required title="Amount">
+                <CurrencyInput required bind:value={form.amount} />
+            </Field>
+
+            <Field error={form.errors.transaction_date} required title="Date">
+                <DateInput required bind:value={form.transaction_date} />
+            </Field>
+
+            {#if isTransfer}
+                <Field
+                    error={form.errors.transfer_destination_account_id}
+                    required
+                    title="Transfer Destination">
+                    <AccountSelect
+                        accounts={accounts.filter(
+                            (acct) => String(acct.id) !== String(batch.account_id)
+                        )}
+                        required
+                        bind:value={form.transfer_destination_account_id} />
+                </Field>
+            {:else}
+                <Field error={form.errors.category_id} required title="Category">
+                    <CategorySelect
+                        cashflow={form.transaction_type === TransactionType.Income
+                            ? 'inflow'
+                            : 'outflow'}
+                        required
+                        bind:value={form.category_id} />
+                </Field>
+            {/if}
+
+            <Field error={form.errors.description} required title="Description">
+                <Textarea required bind:value={form.description} />
+            </Field>
+        </Form>
     </div>
+
+    {#snippet footer()}
+        <div class="p-5">
+            <FormAction
+                {form}
+                formId="import-row-form"
+                labelCancel="Close"
+                labelSubmit="Save Row"
+                onCancel={onClose} />
+        </div>
+    {/snippet}
 </DrawerModal>

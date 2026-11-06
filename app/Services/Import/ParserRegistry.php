@@ -2,9 +2,9 @@
 
 namespace App\Services\Import;
 
-use App\Services\Import\Parsers\MandiriStatementParser;
 use App\Models\Provider;
 use App\Services\Import\Contracts\ProviderStatementParser;
+use App\Services\Import\Parsers\MandiriStatementParser;
 
 /** Provider slug → built-in parser. Adding a provider = one class + one entry. */
 final readonly class ParserRegistry
@@ -13,6 +13,12 @@ final readonly class ParserRegistry
     private const array PARSERS = [
         'mandiri' => MandiriStatementParser::class,
     ];
+
+    /** @return list<string> Provider slugs with a built-in statement parser. */
+    public static function supportedProviders(): array
+    {
+        return array_keys(self::PARSERS);
+    }
 
     public function supports(?Provider $provider): bool
     {
